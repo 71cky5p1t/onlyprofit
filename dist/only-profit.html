@@ -1467,7 +1467,14 @@ const OP = (() => {
       log(s, E, 'event', q.sab ? (lost.length ? `The table named ${who(s, q.id)}. Correctly. Clawback: ${lost.length === 1 ? 'their losing policy is' : `all ${lost.length} of their losing policies are`} reversed, ${fmt(swing)}.` : `The table named ${who(s, q.id)}. Correctly. Whistleblower settlement received: +3.`) : `The table named ${who(s, q.id)}, who ${q.human ? 'were' : 'was'} loyal. Wrongful dismissal claim settled out of court: −3.`);
     } else log(s, E, 'event', 'The table declined to name anyone.');
     s.win = s.profit >= s.target; s.phase = 'end';
+    scoreStaff(s);
     log(s, E, 'system', s.win ? `Final profit ${fmt(s.profit)} against a target of +${s.target}. Target met.` : `Final profit ${fmt(s.profit)} against a target of +${s.target}. Target missed.`);
+  }
+  // personal records: loyal staff +1 per money-maker someone else approved, minus their losses; saboteurs score their losses
+  function scoreStaff(s) {
+    s.scores = s.P.map(p => s.ledger.filter(l => l.author === p.id && !l.autopilot).reduce((a, l) => a + (p.sab ? Math.max(0, -l.actual) : l.actual < 0 ? l.actual : l.actual > 0 && l.ceo !== p.id ? 1 : 0), 0));
+    const side = s.P.filter(p => p.sab !== s.win);
+    s.eoty = side.length ? argmax(side, p => [s.scores[p.id], -p.id]).id : null;
   }
   function fmt(v) { if (v === 'V') return '±2'; return (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v); }
 
