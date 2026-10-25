@@ -1,4 +1,4 @@
-const OP=require('../src/engine.js');
+const OP=require('../src/engine/core.js');
 for(let seed=1;seed<300;seed++){ for(const n of [4,6,8]){
 let s=OP.newGame({players:n,seed});
 const go=a=>{const r=OP.apply(s,0,a); if(r.error) throw new Error(s.phase+' '+JSON.stringify(a)+' '+r.error); s=r.state;};

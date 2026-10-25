@@ -17,7 +17,7 @@ No dependencies. The page loads its fonts from Google Fonts and works offline wi
 
 | Path | What it is |
 | --- | --- |
-| `src/engine.js` | The game engine. No DOM, no `Math.random`, no clock. The seeded RNG lives in the state. |
+| `src/engine/` | Pure engine: `core.js` rules and state, `bots.js` bot players, `content.js` words. No DOM, no `Math.random`, no clock. |
 | `src/ui.js` | Browser UI. It renders from engine state and sends every change through `OP.apply`. |
 | `src/head.html` | Page title, fonts and all CSS (design tokens at the top, light and dark). |
 | `build.sh` | Builds `dist/only-profit.html` from the three files above. |

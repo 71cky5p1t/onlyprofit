@@ -717,11 +717,8 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 </style>
 <div id="app"></div>
 <script>
-// Only Profit — game engine (no DOM, no Math.random, no clock).
-// apply(state, seat, action) -> { state, events } | { error }
-// Bot logic started from sim2.py (FINAL config). Since 2026-10-25: Clawback, the Board vote, public reveals,
-// fair judging of human CEOs, ruthless saboteurs, credibility-weighted warnings and loyal temperaments (sim/playtest/).
-const OP = (() => {
+// Card, subject-line and company words. Data only.
+const OP_CONTENT = (() => {
   const SUITS = ['Action', 'Target', 'Modifier'];
   const WORDS = [
     ['Restructure', 'Outsource', 'Rightsize', 'Monetise', 'Gamify', 'Sunset', 'Offshore', 'Rebrand', 'Automate', 'Consolidate', 'Incentivise', 'Liquidate'],
@@ -729,21 +726,7 @@ const OP = (() => {
     ['Immediately', 'Without Consultation', 'Retroactively', 'At Scale', 'Going Forward', 'Off the Books', 'Pending Review', 'Indefinitely', 'With Thoughts and Prayers', "Per Legal's Advice", 'Ahead of Q4', 'In Perpetuity'],
   ];
   const VALUES = [2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, 'V', 'V'];
-  const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 18, 5: 20, 6: 21, 7: 21, 8: 22 }; // retuned 2026-10-25 for Clawback + Board vote against a mix of smart and ruthless saboteurs
-  const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
-  const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
-  const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
-  const STAMP_CLAIM = { Rec: 2.5, Risky: 0.5, Not: -1 };
-  const STAMP_LABEL = { Rec: 'Recommended', Risky: 'Risky', Not: 'Not Recommended' };
-  const SWAP_COST = [0, 1, 3, 6];
-  // Effect Modifiers replace the four 0-value Modifiers in the deck: [word, effect, own value]
   const FX = [['With Thoughts and Prayers', 'null', -1], ['Retroactively', 'x2', -2], ["Per Legal's Advice", 'shield', -1], ['Without Consultation', 'flip', 0]];
-  const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);
-  const TOKENS = 3, ROUNDS = 5, SLACK = 2;
-  // Loyal bot temperaments: how readily they believe a memo, and how much it takes to vote for a warning.
-  const PERS = { trusting: [1, 0.5], sceptic: [0.5, 1], gossip: [1, 0.5], beancounter: [0.75, 0.75], yesman: [1, 1] };
-  const PERS_SAY = { trusting: 'believes a memo', sceptic: 'wants hard evidence', gossip: 'reports small losses', beancounter: 'trusts audited numbers', yesman: 'votes with the CEO' };
   const NAMES = ['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'Pam', 'Keith', 'Linda'];
   const DEPTS = ['Finance', 'Marketing', 'Human Resources', 'Legal', 'Operations', 'Compliance', 'R&D', 'Facilities'];
   const COLORS = ['manila', 'salmon', 'carbon', 'mint', 'gold'];
@@ -753,8 +736,173 @@ const OP = (() => {
     ['Wellness Optimisation', 'Pension Agility', 'Break Room Monetisation', 'Synergy Roadmap', 'Headcount Harmony', 'Customer Delight', 'Mandatory Fun Week', 'Coffee Rationalisation', 'The Paperless Paper Drive', 'Cultural Realignment', 'Stakeholder Journey', 'Vision 2000', 'Right-Sizing Our Family', 'Morale Recovery', 'Lean Lunch Hours'],
     ['(Urgent)', '— Phase II', '— Revised', 'Going Forward', 'for Q3', '(Do Not Forward)', 'v2 FINAL', '— A Win-Win', 'Effective Immediately', '(Pilot)', '— Thoughts?', '(Mandatory)'],
   ];
+  // ~1 in 4 Targets, 3 Modifiers and some subject lines use the company's words
+  const LEX = {
+    op: { t: ['the Shareholders', 'the Bonus Pool', 'the Profit Target', 'the Founders\' Portrait', 'the Golden Parachutes', 'the Boardroom Bar'], m: ['For the Shareholders', 'Before the AGM'], subj: ['Profit Maximisation', 'Shareholder Joy', 'Bonus Pool Refresh'] },
+    granny: { t: ['the Grannies', 'Bingo Night', 'the Mobility Scooters', 'Speed Dating (90+)', 'the Hip Replacements', 'Next of Kin'], m: ['Before the Will Is Read', 'After Bingo', 'With Mild Sedation'], subj: ['Granny Retention Drive', 'Inheritance Matchmaking', 'Bingo Night Synergies'] },
+    clown: { t: ['the Clown Cars', 'the Ball Pit', 'Nap Time', 'the Balloon Animals', 'the Pie Budget', 'Parent Pick-Up'], m: ['Before Nap Time', 'In Full Makeup', 'Without Telling the Parents'], subj: ['Ball Pit Deep Clean', 'Clown Car Capacity Review', 'Big Shoes Policy'] },
+    widow: { t: ['the Widows', 'the Life Insurance', 'the Casserole Fund', 'Grief Counselling', 'the Late Husbands', 'the Wake Catering'], m: ['Before the Funeral', 'In Lieu of Flowers', 'While Still Grieving'], subj: ['Widow Pipeline Growth', 'Grief Monetisation', 'Casserole Logistics'] },
+    kidney: { t: ['the Kidneys', 'the Organ Donors', 'the Ice Baths', 'the Spare Kidney', 'Donor Consent Forms', 'the Bathtub Fleet'], m: ['Under Local Anaesthetic', 'While the Donor Sleeps', 'On Ice'], subj: ['Kidney Throughput Review', 'Organ Velocity', 'Bathtub Expansion'] },
+    stepdad: { t: ['the Stepdads', 'Custody Weekends', 'the Child Support', 'the Dad Jokes', 'the Barbecue', 'the Real Dad'], m: ['Every Second Weekend', 'Without Telling Mum', 'Per the Custody Agreement'], subj: ['Stepdad Onboarding', 'Custody Weekend Synergies', 'Barbecue Compliance'] },
+  };
+  return { SUITS, WORDS, VALUES, FX, NAMES, DEPTS, COLORS, TRIMS, SUBJ, LEX };
+})();
+// Bot players: saboteur modes and loyal temperaments.
+const OP_BOTS = (() => {
+  // [memo belief, warning threshold]
+  const PERS = { trusting: [1, 0.5], sceptic: [0.5, 1], gossip: [1, 0.5], beancounter: [0.75, 0.75], yesman: [1, 1] };
+  const PERS_SAY = { trusting: 'believes a memo', sceptic: 'wants hard evidence', gossip: 'reports small losses', beancounter: 'trusts audited numbers', yesman: 'votes with the CEO' };
+  const make = K => {
+    const { rand, pickOne, argmax, evs, estimate, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
+    function sabMode(s) {
+      const S = s.sabTier, r = s.r;
+      if (S === 'naive' || S === 'blatant') return 'bad';
+      if (S === 'patient') return r >= 3 ? 'bad' : 'good';
+      const pace = r > 1 ? s.profit / (r - 1) * 5 : 99;
+      return (r >= 3 || pace >= s.target) ? 'disguised' : 'good';
+    }
+    function botWork(s, i, I, D) {
+      const p = s.P[i], L = s.loyalTier, tok = TOKENS;
+      const mode = p.sab ? (p.ruthless && s.ceo === i ? 'bad' : sabMode(s)) : 'loyal';
+      const tier = p.sab ? (s.sabTier === 'smart' ? 'smart' : 'basic') : L;
+      let cost, prop, hand, redeal = false;
+      if (mode === 'loyal' || mode === 'good') {
+        [cost, prop, hand] = argmax(plans(I, D), x => [evs(x[1]), -x[0]]);
+        if (evs(prop) <= -1) {
+          const R = draw3(s); discard(s, I); redeal = true;
+          [cost, prop, hand] = argmax(plans(R, D, 1), x => [evs(x[1]), -x[0]]); cost += 2;
+        }
+      } else if (mode === 'bad') {
+        [cost, prop, hand] = argmax(plans(I, D), x => [-evs(x[1]), -x[0]]);
+      } else {
+        [cost, prop, hand] = argmax(plans(I, D), ([c, pr]) => {
+          const env = { cards: pr, revealed: revealPositive(pr, tok - c), stamp: 'Risky' };
+          return [evs(pr) <= -1 ? 1 : 0, estimate(env, L, true) - evs(pr)];
+        });
+      }
+      const left = tok - cost, v = evs(prop);
+      let stamp, rev;
+      if (mode === 'loyal' || mode === 'good') {
+        stamp = v >= 2 ? 'Rec' : v >= 0 ? 'Risky' : 'Not';
+        rev = tier === 'naive' ? [] : v >= 1 ? revealPositive(prop, left, tier === 'smart') : [];
+      } else if (mode === 'bad') {
+        stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : revealPositive(prop, left);
+      } else { stamp = 'Risky'; rev = revealPositive(prop, left); }
+      const style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
+      return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, redeal }, hand];
+    }
+    function autopilot(s, i, I, D) {
+      const cards = draw3(s); discard(s, I);
+      return [{ author: i, cards, stamp: 'Risky', revealed: [], autopilot: true, subject: 'Interim Management Update', style: { color: 'manila', trim: 'plain' }, mode: 'autopilot', cost: 0 }, D];
+    }
+    function botInheritMemo(s, i, inh) {
+      const p = s.P[i];
+      if (p.leave || inh.kind !== 'rejected' || inh.author == null || inh.author === i) return;
+      const v = evs(inh.cards), a = inh.author;
+      if (!p.sab && s.loyalTier === 'smart') {
+        if ((inh.stamp === 'Rec' && v <= -1) || (inh.stamp === 'Risky' && v <= (p.pers === 'sceptic' ? -3 : -2)) || (p.pers === 'gossip' && v <= -1)) accuse(s, i, a, inh.stamp, v, true);
+        else if (v >= 2 && rand(s) < 0.5) s.memos.push({ by: i, target: a, kind: 'vouch', truthful: true });
+      } else if (p.sab && s.sabTier === 'smart' && !s.P[a].leave) {
+        const lie = !(inh.stamp === 'Rec' && v <= -1);
+        accuse(s, i, a, 'Rec', lie ? pickOne(s, [-2, -3, -3, -4]) : v, !lie);
+      }
+    }
+    function viewValue(s, i, e) { return e.author === i ? evs(e.cards) : estimate(e, s.loyalTier, i === s.ceo); }
+    function botAuditVote(s, i) {
+      const c = s.envs.filter(e => !e.autopilot);
+      if (!c.length) return 'none';
+      const p = s.P[i];
+      if (p.sab) {
+        if (s.sabTier === 'naive' || s.sabTier === 'blatant') return 'none';
+        const sorted = c.slice().sort((a, b) => viewValue(s, i, b) - viewValue(s, i, a));
+        const top = sorted[0];
+        if (top.author === i && evs(top.cards) <= 0) return sorted[1] ? sorted[1].id : 'none';
+        return top.id;
+      }
+      if (s.loyalTier === 'naive') return pickOne(s, c).id;
+      return argmax(c, e => [viewValue(s, i, e)]).id;
+    }
+    function botPick(s) {
+      const ceo = s.ceo, L = s.loyalTier, envs = s.envs;
+      const est = e => estimate(e, L, true);
+      if (s.P[ceo].sab && s.P[ceo].ruthless) { const own = envs.find(e => e.author === ceo && !e.autopilot); if (own) return own.id; }
+      if (s.P[ceo].sab) {
+        const top = Math.max(...envs.map(est));
+        const deny = envs.filter(e => est(e) >= top - SLACK);
+        return argmax(deny, e => [-(e.author === ceo || e.audited || e.autopilot ? evs(e.cards) : est(e))]).id;
+      }
+      if (L === 'naive') {
+        const rank = { Rec: 2, Risky: 1, Not: 0 }; const top = Math.max(...envs.map(e => rank[e.stamp]));
+        return pickOne(s, envs.filter(e => rank[e.stamp] === top)).id;
+      }
+      return argmax(envs, e => [e.author === ceo ? evs(e.cards) : est(e)]).id;
+    }
+    // memos from suspects count less; table evidence counts double
+    function credibility(s, i, by) {
+      if (by === 'table') return 2;
+      if (by === i) return 0;
+      const a = s.P[by];
+      return Math.max(0.25, 1 - 0.5 * a.warnings - (s.accused[by] ? 0.5 : 0) - (a.claims > 2 ? 0.5 : 0));
+    }
+    function warnScore(s, i, t) {
+      const w = s.P[i].sab ? PERS.trusting : PERS[s.P[i].pers] || PERS.trusting;
+      return s.accused[t].reduce((a, by) => a + (by === 'table' ? 2 : w[0] * credibility(s, i, by)), 0) + 0.25 * s.P[t].warnings;
+    }
+    function botWarnVote(s, i) {
+      const p = s.P[i];
+      if (!p.sab && p.pers === 'yesman' && s.ceo !== i && !isHuman(s, s.ceo) && s.P[s.ceo].pers !== 'yesman') {
+        const v = botWarnVote(s, s.ceo); if (v !== 'none' && v !== i) return v;
+      }
+      const c = Object.keys(s.accused).map(Number).filter(t => t !== i && !s.P[t].leave);
+      if (!c.length) return 'none';
+      const t = argmax(c, t => [warnScore(s, i, t), s.P[t].accusations, s.P[t].warnings]);
+      const need = p.sab ? 1 : (PERS[p.pers] || PERS.trusting)[1];
+      return warnScore(s, i, t) >= need ? t : 'none';
+    }
+    const suspicion = (s, q) => q.claims + 4 * Math.min(q.accusations, 2);
+    function botWhistle(s, i) {
+      const others = s.P.filter(q => q.id !== i);
+      if (!s.P[i].sab && s.loyalTier === 'naive') return pickOne(s, others).id;
+      const best = argmax(others, q => [suspicion(s, q), q.warnings, -q.id]);
+      return suspicion(s, best) < 3 ? 'none' : best.id;
+    }
+    function botDesign(s) {
+      const d = s.P.find(p => p.spec === 'Designer');
+      if (!d || isHuman(s, d.id) || d.leave) return;
+      if (d.sab && rand(s) < 0.6) { const loyal = pickOne(s, s.P.filter(p => p.id !== d.id)); s.nextStyle = Object.assign({}, loyal.fav); }
+      else s.nextStyle = rand(s) < 0.5 ? randomStyle(s) : null;
+    }
 
-  // ---------- rng (state lives in s.rs) ----------
+    function botBoardVote(s, i) {
+      const p = s.P[i], nom = s.envs.find(x => x.id === s.nominee);
+      if (p.sab || !nom) return 'ratify';
+      const best = Math.max(...s.envs.map(x => pubEst(s, x)));
+      return pubEst(s, nom) <= best - 2 ? 'overrule' : 'ratify';
+    }
+    return { botWork, autopilot, botInheritMemo, botAuditVote, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion };
+  };
+  return { PERS, PERS_SAY, make };
+})();
+// Game rules and state. Pure: no DOM, no Math.random, no clock.
+// apply(state, seat, action) -> { state, events } | { error }
+const OP = (() => {
+  const C = typeof OP_CONTENT !== 'undefined' ? OP_CONTENT : require('./content.js');
+  const B = typeof OP_BOTS !== 'undefined' ? OP_BOTS : require('./bots.js');
+  const { SUITS, WORDS, VALUES, FX, NAMES, DEPTS, COLORS, TRIMS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
+  const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
+  const TARGETS = { 4: 18, 5: 20, 6: 21, 7: 21, 8: 22 };
+  const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
+  const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
+  const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
+  const STAMP_CLAIM = { Rec: 2.5, Risky: 0.5, Not: -1 };
+  const STAMP_LABEL = { Rec: 'Recommended', Risky: 'Risky', Not: 'Not Recommended' };
+  const SWAP_COST = [0, 1, 3, 6];
+  const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);
+  const TOKENS = 3, ROUNDS = 5, SLACK = 2;
+
+  const lexOf = s => LEX[s.brand] || LEX.op;
+
+  // ---------- rng (s.rs) ----------
   function rand(s) {
     let t = (s.rs = (s.rs + 0x6D2B79F5) | 0);
     t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -767,7 +915,7 @@ const OP = (() => {
   const range = n => [...Array(n).keys()];
 
   const ev = c => (c.v === 'V' ? 0 : c.v);
-  // An effect Modifier keeps its own value and rewrites what the Action and Target add up to.
+  // effect Modifiers rewrite Action + Target
   function total(vals, cards) {
     const fx = cards[2] && cards[2].fx, a = vals[0], b = vals[1], own = vals[2];
     if (fx === 'null') return own;
@@ -783,8 +931,12 @@ const OP = (() => {
   // ---------- deck ----------
   function newDeck(s) {
     const piles = SUITS.map((_, su) => {
-      if (su !== 2) { const words = shuffle(s, WORDS[su].concat(WORDS[su])); return shuffle(s, VALUES.map((v, k) => ({ id: `${su}.${k}`, s: su, v, w: words[k] }))); }
-      const plain = WORDS[2].filter(w => !FX.some(f => f[0] === w)), words = shuffle(s, plain.concat(plain, plain));
+      const L = lexOf(s);
+      if (su !== 2) {
+        const own = su === 1 ? L.t : [], words = shuffle(s, shuffle(s, WORDS[su].concat(WORDS[su])).slice(own.length).concat(own));
+        return shuffle(s, VALUES.map((v, k) => ({ id: `${su}.${k}`, s: su, v, w: words[k] })));
+      }
+      const plain = WORDS[2].filter(w => !FX.some(f => f[0] === w)), words = shuffle(s, shuffle(s, plain.concat(plain, plain)).slice(L.m.length).concat(L.m));
       let n = 0;
       return shuffle(s, VALUES.map((v, k) => {
         const f = FX[FX_SLOTS.indexOf(k)];
@@ -809,7 +961,7 @@ const OP = (() => {
     }
     return out;
   }
-  // What a player believes an envelope is worth. seeRev: the CEO sees cards revealed to them.
+  // believed worth; seeRev = CEO view
   function estimate(e, tier, seeRev) {
     if (e.audited || e.autopilot) return evs(e.cards);
     const rv = e.revealed;
@@ -821,7 +973,8 @@ const OP = (() => {
     const order = [0, 1, 2].sort((a, b) => ev(prop[b]) - ev(prop[a]));
     return (all ? order : order.filter(su => ev(prop[su]) > 0)).slice(0, Math.max(0, tokens));
   }
-  const randomSubject = s => SUBJ.map(l => pickOne(s, l)).join(' ');
+  const subjLists = s => SUBJ.map((l, i) => (i === 1 ? l.concat(lexOf(s).subj, lexOf(s).subj) : l));
+  const randomSubject = s => subjLists(s).map(l => pickOne(s, l)).join(' ');
   const randomStyle = s => ({ color: pickOne(s, COLORS), trim: pickOne(s, TRIMS) });
 
   // ---------- setup ----------
@@ -829,10 +982,12 @@ const OP = (() => {
     const n = Math.max(4, Math.min(8, opts.players || 4));
     const s = {
       v: 1, rs: (opts.seed >>> 0) || 1, seed: opts.seed >>> 0, n, spectate: !!opts.spectate,
+      brand: LEX[opts.brand] ? opts.brand : 'op',
       loyalTier: opts.loyalTier || 'smart', sabTier: opts.sabTier || 'smart', easy: !!opts.easy,
       target: TARGETS[n] - (opts.easy ? 3 : 0), profit: 0, r: 0, phase: 'brief',
       feed: [], ledger: [], history: [], memos: [], accused: {}, envs: [], left: {}, work: {},
     };
+    s.subj = subjLists(s);
     s.deck = newDeck(s);
     // Headcount Memo
     let x = rand(s), nSab = 0;
@@ -885,131 +1040,14 @@ const OP = (() => {
     });
   }
 
-  // ---------- bots ----------
-  function sabMode(s) {
-    const S = s.sabTier, r = s.r;
-    if (S === 'naive' || S === 'blatant') return 'bad';
-    if (S === 'patient') return r >= 3 ? 'bad' : 'good';
-    const pace = r > 1 ? s.profit / (r - 1) * 5 : 99;
-    return (r >= 3 || pace >= s.target) ? 'disguised' : 'good';
-  }
-  function botWork(s, i, I, D) {
-    const p = s.P[i], L = s.loyalTier, tok = TOKENS;
-    const mode = p.sab ? (p.ruthless && s.ceo === i ? 'bad' : sabMode(s)) : 'loyal';
-    const tier = p.sab ? (s.sabTier === 'smart' ? 'smart' : 'basic') : L;
-    let cost, prop, hand, redeal = false;
-    if (mode === 'loyal' || mode === 'good') {
-      [cost, prop, hand] = argmax(plans(I, D), x => [evs(x[1]), -x[0]]);
-      if (evs(prop) <= -1) {
-        const R = draw3(s); discard(s, I); redeal = true;
-        [cost, prop, hand] = argmax(plans(R, D, 1), x => [evs(x[1]), -x[0]]); cost += 2;
-      }
-    } else if (mode === 'bad') {
-      [cost, prop, hand] = argmax(plans(I, D), x => [-evs(x[1]), -x[0]]);
-    } else {
-      [cost, prop, hand] = argmax(plans(I, D), ([c, pr]) => {
-        const env = { cards: pr, revealed: revealPositive(pr, tok - c), stamp: 'Risky' };
-        return [evs(pr) <= -1 ? 1 : 0, estimate(env, L, true) - evs(pr)];
-      });
-    }
-    const left = tok - cost, v = evs(prop);
-    let stamp, rev;
-    if (mode === 'loyal' || mode === 'good') {
-      stamp = v >= 2 ? 'Rec' : v >= 0 ? 'Risky' : 'Not';
-      rev = tier === 'naive' ? [] : v >= 1 ? revealPositive(prop, left, tier === 'smart') : [];
-    } else if (mode === 'bad') {
-      stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : revealPositive(prop, left);
-    } else { stamp = 'Risky'; rev = revealPositive(prop, left); }
-    const style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
-    return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, redeal }, hand];
-  }
-  function autopilot(s, i, I, D) {
-    const cards = draw3(s); discard(s, I);
-    return [{ author: i, cards, stamp: 'Risky', revealed: [], autopilot: true, subject: 'Interim Management Update', style: { color: 'manila', trim: 'plain' }, mode: 'autopilot', cost: 0 }, D];
-  }
   function accuse(s, by, target, stamp, val, truthful) {
     s.memos.push({ by, target, kind: 'report', stamp, val, truthful });
     (s.accused[target] = s.accused[target] || []).push(by);
     s.P[target].accusations++;
   }
-  function botInheritMemo(s, i, inh) {
-    const p = s.P[i];
-    if (p.leave || inh.kind !== 'rejected' || inh.author == null || inh.author === i) return;
-    const v = evs(inh.cards), a = inh.author;
-    if (!p.sab && s.loyalTier === 'smart') {
-      if ((inh.stamp === 'Rec' && v <= -1) || (inh.stamp === 'Risky' && v <= (p.pers === 'sceptic' ? -3 : -2)) || (p.pers === 'gossip' && v <= -1)) accuse(s, i, a, inh.stamp, v, true);
-      else if (v >= 2 && rand(s) < 0.5) s.memos.push({ by: i, target: a, kind: 'vouch', truthful: true });
-    } else if (p.sab && s.sabTier === 'smart' && !s.P[a].leave) {
-      const lie = !(inh.stamp === 'Rec' && v <= -1);
-      accuse(s, i, a, 'Rec', lie ? pickOne(s, [-2, -3, -3, -4]) : v, !lie);
-    }
-  }
-  const tierOf = (s, i) => (s.P[i].sab ? (s.sabTier === 'smart' ? 'smart' : 'basic') : s.loyalTier);
-  function viewValue(s, i, e) { return e.author === i ? evs(e.cards) : estimate(e, s.loyalTier, i === s.ceo); }
-  function botAuditVote(s, i) {
-    const c = s.envs.filter(e => !e.autopilot);
-    if (!c.length) return 'none';
-    const p = s.P[i];
-    if (p.sab) {
-      if (s.sabTier === 'naive' || s.sabTier === 'blatant') return 'none';
-      const sorted = c.slice().sort((a, b) => viewValue(s, i, b) - viewValue(s, i, a));
-      const top = sorted[0];
-      if (top.author === i && evs(top.cards) <= 0) return sorted[1] ? sorted[1].id : 'none';
-      return top.id;
-    }
-    if (s.loyalTier === 'naive') return pickOne(s, c).id;
-    return argmax(c, e => [viewValue(s, i, e)]).id;
-  }
-  function botPick(s) {
-    const ceo = s.ceo, L = s.loyalTier, envs = s.envs;
-    const est = e => estimate(e, L, true);
-    if (s.P[ceo].sab && s.P[ceo].ruthless) { const own = envs.find(e => e.author === ceo && !e.autopilot); if (own) return own.id; }
-    if (s.P[ceo].sab) {
-      const top = Math.max(...envs.map(est));
-      const deny = envs.filter(e => est(e) >= top - SLACK);
-      return argmax(deny, e => [-(e.author === ceo || e.audited || e.autopilot ? evs(e.cards) : est(e))]).id;
-    }
-    if (L === 'naive') {
-      const rank = { Rec: 2, Risky: 1, Not: 0 }; const top = Math.max(...envs.map(e => rank[e.stamp]));
-      return pickOne(s, envs.filter(e => rank[e.stamp] === top)).id;
-    }
-    return argmax(envs, e => [e.author === ceo ? evs(e.cards) : est(e)]).id;
-  }
-  // A memo counts for less when its author is under a cloud; the table's own evidence counts double.
-  function credibility(s, i, by) {
-    if (by === 'table') return 2;
-    if (by === i) return 0;
-    const a = s.P[by];
-    return Math.max(0.25, 1 - 0.5 * a.warnings - (s.accused[by] ? 0.5 : 0) - (a.claims > 2 ? 0.5 : 0));
-  }
-  function warnScore(s, i, t) {
-    const w = s.P[i].sab ? PERS.trusting : PERS[s.P[i].pers] || PERS.trusting;
-    return s.accused[t].reduce((a, by) => a + (by === 'table' ? 2 : w[0] * credibility(s, i, by)), 0) + 0.25 * s.P[t].warnings;
-  }
-  function botWarnVote(s, i) {
-    const p = s.P[i];
-    if (!p.sab && p.pers === 'yesman' && s.ceo !== i && !isHuman(s, s.ceo) && s.P[s.ceo].pers !== 'yesman') {
-      const v = botWarnVote(s, s.ceo); if (v !== 'none' && v !== i) return v;
-    }
-    const c = Object.keys(s.accused).map(Number).filter(t => t !== i && !s.P[t].leave);
-    if (!c.length) return 'none';
-    const t = argmax(c, t => [warnScore(s, i, t), s.P[t].accusations, s.P[t].warnings]);
-    const need = p.sab ? 1 : (PERS[p.pers] || PERS.trusting)[1];
-    return warnScore(s, i, t) >= need ? t : 'none';
-  }
-  const suspicion = (s, q) => q.claims + 4 * Math.min(q.accusations, 2);
-  function botWhistle(s, i) {
-    const others = s.P.filter(q => q.id !== i);
-    if (!s.P[i].sab && s.loyalTier === 'naive') return pickOne(s, others).id;
-    const best = argmax(others, q => [suspicion(s, q), q.warnings, -q.id]);
-    return suspicion(s, best) < 3 ? 'none' : best.id;
-  }
-  function botDesign(s) {
-    const d = s.P.find(p => p.spec === 'Designer');
-    if (!d || isHuman(s, d.id) || d.leave) return;
-    if (d.sab && rand(s) < 0.6) { const loyal = pickOne(s, s.P.filter(p => p.id !== d.id)); s.nextStyle = Object.assign({}, loyal.fav); }
-    else s.nextStyle = rand(s) < 0.5 ? randomStyle(s) : null;
-  }
+
+  const pubEst = (s, e) => estimate(e, s.loyalTier, false);
+  const { botWork, autopilot, botInheritMemo, botAuditVote, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, evs, estimate, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
 
   // ---------- round flow ----------
   function startRound(s, E) {
@@ -1094,14 +1132,7 @@ const OP = (() => {
     else log(s, E, 'event', 'The table declined to audit anything.');
     s.phase = 'decide';
   }
-  // The CEO nominates; the Board (everyone else) ratifies or overrules on what the table can see.
-  const pubEst = (s, e) => estimate(e, s.loyalTier, false);
-  function botBoardVote(s, i) {
-    const p = s.P[i], nom = s.envs.find(x => x.id === s.nominee);
-    if (p.sab || !nom) return 'ratify';
-    const best = Math.max(...s.envs.map(x => pubEst(s, x)));
-    return pubEst(s, nom) <= best - 2 ? 'overrule' : 'ratify';
-  }
+  // CEO nominates; the Board ratifies or overrules.
   function nominate(s, id, E) {
     const e = s.envs.find(x => x.id === id); if (!e) return 'No such envelope.';
     s.nominee = id; s.bvotes = {};
@@ -1193,7 +1224,7 @@ const OP = (() => {
     s.whistle = { votes: s.wb, count, named: winner === 'none' ? null : +winner };
     if (s.whistle.named != null) {
       const q = s.P[s.whistle.named];
-      // Clawback: catching a saboteur reverses every losing policy they wrote (at least +3). Naming a loyal costs 3.
+      // Clawback: reverse a caught saboteur's losses (min +3)
       const lost = s.ledger.filter(l => l.author === q.id && !l.autopilot && l.actual < 0);
       const back = lost.reduce((a, l) => a - 2 * l.actual, 0);
       const swing = q.sab ? Math.max(3, back) : -3;
@@ -1241,7 +1272,7 @@ const OP = (() => {
   }
 
   return { PERS_SAY, apply, newGame, workResult, workCost, estimate, evs, ev, total, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
-    SUITS, SUBJ, COLORS, TRIMS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
+    SUITS, SUBJ, LEX, COLORS, TRIMS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
 })();
 </script>
 <script>
@@ -1328,10 +1359,10 @@ const OP = (() => {
   }
   function newDraft() {
     const p = me(), inh = p.inh;
-    return { redeal: false, swaps: [], reveals: [], stamp: null, words: OP.SUBJ.map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
+    return { redeal: false, swaps: [], reveals: [], stamp: null, words: (S.subj || OP.SUBJ).map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
       style: Object.assign({}, S.reqStyle || p.fav), claim: { kind: 'none', val: evs(inh.cards), stamp: inh.stamp || 'Rec' }, nextStyle: null };
   }
-  const subjectOf = d => (d.useCustom && d.custom.trim() ? d.custom.trim() : d.words.map((k, i) => OP.SUBJ[i][k]).join(' '));
+  const subjectOf = d => (d.useCustom && d.custom.trim() ? d.custom.trim() : d.words.map((k, i) => (S.subj || OP.SUBJ)[i][k]).join(' '));
   function costWith(ch) { return OP.workCost(Object.assign({}, draft, ch)); }
   function toast(t) { let el = document.querySelector('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); } el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, 2200); }
 
@@ -1574,7 +1605,7 @@ const OP = (() => {
     const arrive = ui.arrive ? ' arrive' : ''; ui.arrive = false;
     const designer = p.spec === 'Designer' ? `<div class="row-l"><span class="label">Next quarter</span><label class="drop"><select id="next-style" data-in="nextStyle"><option value="">Any envelope</option>${OP.COLORS.flatMap(c => OP.TRIMS.map(t => `<option value="${c}/${t}" ${draft.nextStyle && draft.nextStyle.color === c && draft.nextStyle.trim === t ? 'selected' : ''}>${c} · ${t}</option>`)).join('')}</select></label></div>` : '';
     const body = `<div class="preview${arrive}">${envHTML(mock, { preview: true })}</div>
-      <div class="subj">${draft.words.map((k, i) => `<button class="subj-word" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled' : ''}>${esc(OP.SUBJ[i][k])}</button>`).join('')}</div>
+      <div class="subj">${draft.words.map((k, i) => `<button class="subj-word" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled' : ''}>${esc((S.subj || OP.SUBJ)[i][k])}</button>`).join('')}</div>
       <input class="input" id="custom-subject" data-in="custom" maxlength="80" placeholder="Or write your own…" value="${esc(draft.custom)}">
       <div class="styles">${OP.COLORS.map(c => `<button class="swatch" style="background:var(--env-${c})" data-a="color" data-v="${c}" aria-pressed="${draft.style.color === c}" aria-label="${c}" ${locked ? 'disabled' : ''}></button>`).join('')}
         <span class="sep"></span>${OP.TRIMS.map(t => `<button class="trim-btn" data-a="trim" data-v="${t}" aria-pressed="${draft.style.trim === t}" ${locked ? 'disabled' : ''}>${t}</button>`).join('')}</div>
@@ -1849,7 +1880,7 @@ const OP = (() => {
       case 'stamp': draft.stamp = d.v; render(); break;
       case 'finalise': finalise(); break;
       case 'back': draft.page = 1; render(); break;
-      case 'reroll': { const i = +d.i, l = OP.SUBJ[i].length; let k; do { k = Math.floor(Math.random() * l); } while (k === draft.words[i] && l > 1); draft.words[i] = k; render(); break; }
+      case 'reroll': { const i = +d.i, l = (S.subj || OP.SUBJ)[i].length; let k; do { k = Math.floor(Math.random() * l); } while (k === draft.words[i] && l > 1); draft.words[i] = k; render(); break; }
       case 'color': draft.style.color = d.v; render(); break;
       case 'trim': draft.style.trim = d.v; render(); break;
       case 'claim': draft.claim.kind = d.k; render(); break;
