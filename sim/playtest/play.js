@@ -1,4 +1,4 @@
-const OP = require('./engine-x.js');
+const OP = require(process.env.OP_ENGINE || './engine-x.js');
 const { evs, ev, workResult, workCost, estimate } = OP;
 const SUBSETS = [[], [0], [1], [2], [0, 1], [0, 2], [1, 2]];
 // Seat 0 strategies for a human saboteur.
@@ -53,7 +53,7 @@ function humanWarn(s, st) {
   return c.length ? String(c[0]) : 'none';
 }
 function play(n, seed, x, strat) {
-  let s = OP.newGame({ players: n, seed, spectate: !strat, x, sabTier: x.sabTier });
+  let s = OP.newGame({ players: n, seed, spectate: !strat, x, sabTier: x.sabTier }); s.x = s.x || x;
   if (strat) {
     if (!s.P[0].sab) { const o = s.P.find(p => p.sab); if (o) o.sab = false; else s.nSab = 1; s.P[0].sab = true; }
   }
@@ -67,6 +67,7 @@ function play(n, seed, x, strat) {
     else if (s.phase === 'work') go(0, humanWork(s, st));
     else if (s.phase === 'pitch') go(0, { type: 'auditVote', target: 'none' });
     else if (s.phase === 'decide') { if (s.ceo === 0) go(0, { type: 'approve', id: humanPick(s, st) }); else go(0, { type: 'advance' }); }
+    else if (s.phase === 'board') go(0, { type: 'boardVote', vote: 'ratify' });
     else if (s.phase === 'reveal') go(0, { type: 'warnVote', target: humanWarn(s, st) });
     else if (s.phase === 'review') go(0, { type: 'advance' });
     else if (s.phase === 'whistle') { const c = s.P.filter(p => p.id !== 0 && !p.sab).sort((a, b) => b.accusations - a.accusations)[0]; go(0, { type: 'whistleVote', target: String(c.id) }); }
