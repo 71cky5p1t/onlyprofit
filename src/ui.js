@@ -47,7 +47,7 @@
   const isCEO = () => mine() && S.ceo === ME;
   const STAMP = OP.STAMP_LABEL;
   const TIER = { smart: 'Smart', basic: 'Basic', naive: 'Gullible', patient: 'Patient', blatant: 'Blatant' };
-  const PHASE = { brief: 'Onboarding', work: 'Work', pitch: 'Pitch + audit', decide: 'Decide', reveal: 'Reveal', review: 'Reveal', whistle: 'Whistleblower', end: 'Exit interview' };
+  const PHASE = { brief: 'Onboarding', work: 'Work', pitch: 'Pitch + audit', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Reveal', whistle: 'Whistleblower', end: 'Exit interview' };
 
   // ---------- actions ----------
   function dispatch(a) {
@@ -98,7 +98,7 @@
   function envHTML(e, opt) {
     opt = opt || {};
     const showAll = e.audited || e.autopilot || e.approved || ui.debug || (mine() && e.author === ME);
-    const vis = su => showAll || (isCEO() && e.revealed.includes(su));
+    const vis = su => showAll || e.revealed.includes(su);
     const anyVis = [0, 1, 2].some(vis);
     const cards = anyVis ? `<div class="env-cards">${e.cards.map((c, su) => {
       if (!vis(su)) return `<div class="env-card hidden"><b>OP</b><span class="w">${OP.SUITS[su]}</span></div>`;
@@ -110,10 +110,11 @@
     const tags = [];
     if (e.audited) tags.push('<span class="pill blue">Audited</span>');
     if (e.autopilot) tags.push('<span class="pill grey">Autopilot</span>');
-    if (isCEO() && e.revealed.length && !showAll) tags.push(`<span class="pill blue">${e.revealed.length} shown to you</span>`);
+    if (e.revealed.length && !showAll) tags.push(`<span class="pill blue">${e.revealed.length} shown</span>`);
+    if (e.unmasked && !e.approved) tags.push(`<span class="pill red">Overruled · ${e.author === S.ceo ? 'the CEO’s own' : esc(nm(e.author))}</span>`);
     if (mine() && e.author === ME && !e.approved) tags.push('<span class="pill grey">Yours</span>');
     if (mine() && !ui.debug && me().spec === 'Auditor' && e.author !== ME && !e.approved) tags.push('<span class="pill gold">Auditor sight</span>');
-    const dbg = ui.debug ? `<div class="env-dbg">${S.P[e.author].sab ? 'SAB' : 'LOYAL'} · ${esc(e.mode)} · true ${fmt(evs(e.cards))} · table est ${OP.estimate(e, S.loyalTier, false).toFixed(1)} · spent ${e.cost}${e.redeal ? ' · re-dealt' : ''}${e.revealed.length ? ' · showed CEO ' + e.revealed.map(s => OP.SUITS[s][0]).join('') : ''}</div>` : '';
+    const dbg = ui.debug ? `<div class="env-dbg">${S.P[e.author].sab ? 'SAB' : 'LOYAL'} · ${esc(e.mode)} · true ${fmt(evs(e.cards))} · table est ${OP.estimate(e, S.loyalTier, false).toFixed(1)} · spent ${e.cost}${e.redeal ? ' · re-dealt' : ''}${e.revealed.length ? ' · showed ' + e.revealed.map(s => OP.SUITS[s][0]).join('') : ''}</div>` : '';
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
     if (fresh) ui.stamped = `${S.r}${e.id}`;
@@ -147,7 +148,7 @@
       if (fresh) ui.printed = r;
       return `<tr class="${fresh ? 'new' : ''}"><td class="num">Q${r}</td><td><div class="sub-mono">${esc(l.subject)}</div><span class="muted" style="font-size:12px">${STAMP[l.stamp]} · approved by ${esc(nm(l.ceo))}</span></td><td>${l.autopilot ? 'Autopilot' : esc(nm(l.author))}</td><td class="n ${tone(l.actual)}">${fmt(l.actual)}</td></tr>`;
     }).join('');
-    const wb = S.whistle && S.whistle.named != null ? `<tr><td class="num">WB</td><td colspan="2">Whistleblower: ${esc(nm(S.whistle.named))}</td><td class="n ${S.whistle.correct ? 'pos' : 'neg'}">${S.whistle.correct ? '+3' : '−3'}</td></tr>` : '';
+    const wb = S.whistle && S.whistle.named != null ? `<tr><td class="num">WB</td><td colspan="2">${S.whistle.correct && S.whistle.clawed.length ? `Clawback: ${esc(nm(S.whistle.named))}, ${S.whistle.clawed.map(c => 'Q' + c.r).join(', ')} reversed` : `Whistleblower: ${esc(nm(S.whistle.named))}`}</td><td class="n ${S.whistle.correct ? 'pos' : 'neg'}">${fmt(S.whistle.swing)}</td></tr>` : '';
     return `<section><div class="section-head"><h2>Quarterly ledger</h2><span class="label">Target +${S.target}${S.easy ? ' (easy)' : ''}</span></div>
       <table class="ledger"><thead><tr><th>Qtr</th><th>Approved policy</th><th>Author</th><th style="text-align:right">Δ</th></tr></thead><tbody>${rows}${wb}</tbody>
       <tfoot><tr><td colspan="3">Total</td><td class="n ${S.profit < 0 ? 'neg' : ''}">${fmt(S.profit)}</td></tr></tfoot></table></section>`;
@@ -184,12 +185,12 @@
       const cells = S.P.map((p, i) => i < sealed ? '<div class="placeholder sealed">Sealed</div>' : `<div class="placeholder">${mine() && S.work[ME] && i === sealed ? 'Your desk is open' : 'Working…'}</div>`).join('');
       return `<section><div class="section-head"><h2>Envelopes</h2><span class="label">${sealed} of ${S.n} sealed</span></div><div class="envs">${cells}</div></section>`;
     }
-    if (!['pitch', 'decide', 'reveal', 'review'].includes(ph)) return '';
+    if (!['pitch', 'decide', 'board', 'reveal', 'review'].includes(ph)) return '';
     const click = ph === 'pitch' && mine() ? 'sel' : ph === 'decide' && isCEO() ? 'sel' : null;
     const envs = S.envs.slice().sort((a, b) => a.id.localeCompare(b.id));
-    const hint = ph === 'pitch' ? 'Shuffled. No authors, no departments.' : ph === 'decide' ? (isCEO() ? 'You are CEO. Pick one.' : 'Awaiting the CEO') : 'Approved policy unmasked';
+    const hint = ph === 'pitch' ? 'Shuffled. No authors, no departments.' : ph === 'decide' ? (isCEO() ? 'You are CEO. Nominate one.' : 'Awaiting the CEO') : ph === 'board' ? `The Board is voting on ${icon(S.nominee)}` : 'Approved policy unmasked';
     return `<section><div class="section-head"><h2>Envelopes on the table</h2><span class="label">${hint}</span></div>
-      <div class="envs">${envs.map(e => envHTML(e, { click: click && !(ph === 'pitch' && e.autopilot) ? click : null, faded: (ph === 'reveal' || ph === 'review') && !e.approved })).join('')}</div></section>`;
+      <div class="envs">${envs.map(e => envHTML(e, { click: click && !(ph === 'pitch' && e.autopilot) ? click : null, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
   function exitHTML() {
     const rounds = S.history.map(h => {
@@ -273,7 +274,7 @@
       const c = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
       const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
       return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, `<i class="eye" aria-hidden="true"></i>${n ? `<span class="coins paid">${coins(n)}</span>` : ''}`,
-        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the CEO' : 'Show to the CEO for 1 token'}"`));
+        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 token'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
       const c = wr.aside[su], on = draft.swaps.includes(su);
@@ -314,7 +315,7 @@
   // pick-one grids: envelopes as small envelopes, people as name tags
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
-      const peek = e.audited || (isCEO() && e.revealed.length) ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="${tone(c.v)}">${GLYPH[c.v]}</b>` : '<i>OP</i>').join('')}</span>` : '';
+      const peek = e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="${tone(c.v)}">${GLYPH[c.v]}</b>` : '<i>OP</i>').join('')}</span>` : '';
       return `<button class="mini c-${e.style.color} t-${e.style.trim}" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="Envelope ${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
         ${peek}<span class="mid">${icon(e.id)}</span>${stampMark(e.stamp)}<span class="ms">${esc(e.subject)}</span>${mine() && e.author === ME ? '<i class="yours">You</i>' : ''}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
@@ -323,6 +324,7 @@
     return `<div class="tags">${list.map(q => `<button class="nametag" data-a="sel" data-id="${q.id}" aria-pressed="${String(current) === String(q.id)}"><span class="hello">Hello<small>my name is</small></span><b>${esc(q.name)}</b>${stickers(q)}</button>`).join('')}
       ${none ? `<button class="nametag none" data-a="sel" data-id="none" aria-pressed="${String(current) === 'none'}"><b>${none}</b></button>` : ''}</div>`;
   }
+  const boardSlip = () => S.board ? slip(S.board.overruled ? `Board overruled ${icon(S.board.nominee)} · ${S.board.own ? 'the CEO’s own' : S.board.author == null ? 'autopilot' : esc(nm(S.board.author))}` : `Board ratified ${icon(S.board.nominee)}`) : '';
   const auditSlip = () => S.audit ? slip(S.audit.winner === 'none' ? 'Nothing audited' : `Audited ${icon(S.audit.winner)}`) : '';
   function resultSlip() {
     if (!S.result) return '';
@@ -334,7 +336,7 @@
     if (ph === 'end') return deskEnd();
     const label = { decide: 'See the decision', review: S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower' }[ph];
     const bits = [auditSlip()];
-    if (ph === 'review') bits.push(resultSlip());
+    if (ph === 'review') bits.push(boardSlip(), resultSlip());
     if (S.warn && ph === 'review') bits.push(slip(S.warn.target == null ? 'No warning' : `Warning · <b>${esc(nm(S.warn.target))}</b> ${S.warn.passed ? 'passed' : 'failed'}`));
     return deskWrap('Observing', `<div class="slips">${bits.join('')}</div>`, { foot: label ? key('advance', label) : '' });
   }
@@ -366,19 +368,25 @@
       return deskWrap('Audit vote', `${leave}${minis(list, ui.sel, 'Open nothing')}`, { foot: key('audit', ui.sel && ui.sel !== 'none' ? `Open ${icon(ui.sel)}` : 'Vote', !!ui.sel) });
     }
     if (ph === 'decide') {
-      if (isCEO()) return deskWrap('You are CEO', `<div class="slips">${auditSlip()}</div>${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Approve ${icon(ui.sel)}` : 'Approve', !!ui.sel) });
+      if (isCEO()) return deskWrap('You are CEO', `<div class="slips">${auditSlip()}</div>${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Nominate ${icon(ui.sel)}` : 'Nominate', !!ui.sel) });
       return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}<div class="slips">${auditSlip()}</div>`, { foot: key('advance', 'See the decision') });
+    }
+    if (ph === 'board') {
+      const nom = S.envs.find(e => e.id === S.nominee);
+      const body = `<div class="slips">${auditSlip()}${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}`)}</div>${minis([nom], S.nominee)}
+        <div class="bar2" role="radiogroup" aria-label="Board vote">${['ratify', 'overrule'].map(v => `<button class="board-${v}" role="radio" data-a="sel" data-id="${v}" aria-checked="${ui.sel === v}" aria-pressed="${ui.sel === v}">${v === 'ratify' ? 'Ratify' : 'Overrule'}</button>`).join('')}</div>`;
+      return deskWrap('Board vote', `${leave}${body}`, { foot: key('board', 'Sign', ui.sel === 'ratify' || ui.sel === 'overrule') });
     }
     if (ph === 'reveal') {
       const list = S.P.filter(q => q.id !== ME && !q.leave);
-      return deskWrap('Written Warning', `<div class="slips">${resultSlip()}</div>${nameTags(list, ui.sel, 'Nobody')}`, { foot: key('warn', 'Vote', ui.sel != null) });
+      return deskWrap('Written Warning', `<div class="slips">${boardSlip()}${resultSlip()}</div>${nameTags(list, ui.sel, 'Nobody')}`, { foot: key('warn', 'Vote', ui.sel != null) });
     }
     if (ph === 'review') {
       const w = S.warn;
       return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
-      return deskWrap('Name a saboteur', `<div class="slips">${slip(`Right <b class="pos">+3</b> · wrong <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
+      return deskWrap('Name a saboteur', `<div class="slips">${slip(`Right: <b class="pos">Clawback</b> · wrong <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
     }
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');
@@ -483,11 +491,11 @@
         <div class="field"><span class="label">Target</span>${seg('easy', [[false, 'Standard'], [true, 'Easy mode (−3)']])}</div>
         <div class="field"><label class="label" for="seed">Seed (optional, to replay a deal)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}" style="max-width:200px"></div>
         <details class="rules"><summary>The quarter, in brief</summary><ol>
-          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 tokens: swap a card in (1, then 2), re-deal all three (2), or show one card to the CEO (1). Stamp it, write a subject line, style the envelope.</li>
+          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 tokens: swap a card in (1, then 2), re-deal all three (2), or show one card to the table (1). Stamp it, write a subject line, style the envelope.</li>
           <li><b>Pitch.</b> Envelopes appear shuffled and anonymous. Memos on the bulletin board say who left whom a mess. Nobody can check them. The table votes to audit one envelope.</li>
-          <li><b>Decide + Reveal.</b> The CEO approves one. Profit moves and its author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
+          <li><b>Decide + Reveal.</b> The CEO nominates one; the Board (everyone else) ratifies it or overrules it, and a majority Overrule puts the best-looking envelope through instead. An overruled nominee is unmasked, and a CEO caught pushing their own sits out their next turn as CEO. Profit moves and the approved author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
           <li><b>Effect Modifiers.</b> Four Modifiers rewrite the other two cards: ∅ cancels them, ×2 doubles them, ≥0 stops them losing, ⇅ flips them. Each also has its own value.</li>
-          <li><b>After Q5.</b> The table may name a saboteur: +3 if right, −3 if wrong.</li></ol></details>
+          <li><b>After Q5.</b> The table may name a saboteur. Right, and Clawback reverses every losing policy they wrote (at least +3). Wrong costs −3. Audit and Whistleblower ties are drawn at random (a tied Whistleblower names nobody).</li></ol></details>
         <div class="setup-foot"><button class="btn primary" data-a="start">Start the game</button><span class="hint">About 10 minutes against bots.</span></div>
       </div></div></div>`;
   }
@@ -556,6 +564,7 @@
       case 'sel': ui.sel = d.id; render(); break;
       case 'audit': dispatch({ type: 'auditVote', target: ui.sel }); break;
       case 'approve': dispatch({ type: 'approve', id: ui.sel }); break;
+      case 'board': dispatch({ type: 'boardVote', vote: ui.sel }); break;
       case 'warn': dispatch({ type: 'warnVote', target: ui.sel }); break;
       case 'whistle': dispatch({ type: 'whistleVote', target: ui.sel }); break;
     }

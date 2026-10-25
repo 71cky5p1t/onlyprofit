@@ -1,6 +1,7 @@
 // Only Profit — game engine (no DOM, no Math.random, no clock).
 // apply(state, seat, action) -> { state, events } | { error }
-// Bot logic is ported from sim2.py (FINAL config: smart vs smart, stood down at 2 warnings, Whistleblower ±3).
+// Bot logic started from sim2.py (FINAL config). Since 2026-10-25: Clawback, the Board vote, public reveals,
+// fair judging of human CEOs, ruthless saboteurs, credibility-weighted warnings and loyal temperaments (sim/playtest/).
 const OP = (() => {
   const SUITS = ['Action', 'Target', 'Modifier'];
   const WORDS = [
@@ -10,7 +11,7 @@ const OP = (() => {
   ];
   const VALUES = [2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, 'V', 'V'];
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 18, 5: 20, 6: 20, 7: 21, 8: 21 }; // +1 over sim2 at 4–7p: the prototype's bots win ~5 points more often than the sim's
+  const TARGETS = { 4: 18, 5: 20, 6: 21, 7: 21, 8: 22 }; // retuned 2026-10-25 for Clawback + Board vote against a mix of smart and ruthless saboteurs
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
@@ -21,6 +22,9 @@ const OP = (() => {
   const FX = [['With Thoughts and Prayers', 'null', -1], ['Retroactively', 'x2', -2], ["Per Legal's Advice", 'shield', -1], ['Without Consultation', 'flip', 0]];
   const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);
   const TOKENS = 3, ROUNDS = 5, SLACK = 2;
+  // Loyal bot temperaments: how readily they believe a memo, and how much it takes to vote for a warning.
+  const PERS = { trusting: [1, 0.5], sceptic: [0.5, 1], gossip: [1, 0.5], beancounter: [0.75, 0.75], yesman: [1, 1] };
+  const PERS_SAY = { trusting: 'believes a memo', sceptic: 'wants hard evidence', gossip: 'reports small losses', beancounter: 'trusts audited numbers', yesman: 'votes with the CEO' };
   const NAMES = ['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'Pam', 'Keith', 'Linda'];
   const DEPTS = ['Finance', 'Marketing', 'Human Resources', 'Legal', 'Operations', 'Compliance', 'R&D', 'Facilities'];
   const COLORS = ['manila', 'salmon', 'carbon', 'mint', 'gold'];
@@ -89,7 +93,7 @@ const OP = (() => {
   // What a player believes an envelope is worth. seeRev: the CEO sees cards revealed to them.
   function estimate(e, tier, seeRev) {
     if (e.audited || e.autopilot) return evs(e.cards);
-    const rv = seeRev ? e.revealed : [];
+    const rv = e.revealed;
     const known = rv.reduce((a, su) => a + ev(e.cards[su]), 0);
     const mu = MU - (tier === 'smart' ? 0.4 : 0);
     return known + (3 - rv.length) * mu + STAMP_W[tier] * STAMP_ADJ[e.stamp];
@@ -120,8 +124,10 @@ const OP = (() => {
     s.P = range(n).map(i => ({
       id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate,
       sab: sabs.includes(i), spec: null, fav: randomStyle(s),
-      warnings: 0, leave: false, accusations: 0, claims: 0, approved: [], ceoTurns: 0,
+      warnings: 0, leave: false, accusations: 0, claims: 0, approved: [], ceoTurns: 0, skipCEO: false,
     }));
+    const pers = shuffle(s, Object.keys(PERS).concat(Object.keys(PERS)));
+    s.P.forEach((p, k) => { p.pers = pers[k]; p.ruthless = p.sab && s.sabTier === 'smart' && rand(s) < 0.5; });
     if (n >= 6) { const [a, b] = shuffle(s, range(n)); s.P[a].spec = 'Auditor'; s.P[b].spec = 'Designer'; }
     s.ceoOrder = shuffle(s, range(n));
     s.hands = range(n).map(() => ({ cards: draw3(s), author: null, kind: 'legacy' }));
@@ -139,11 +145,15 @@ const OP = (() => {
   function chooseCEO(s) {
     const n = s.n;
     if (n === 4 && s.r === 5) {
-      const act = s.P.filter(p => !p.leave); const mx = Math.max(...act.map(p => p.approved.length));
+      const act0 = s.P.filter(p => !p.leave && !p.skipCEO), act = act0.length ? act0 : s.P.filter(p => !p.leave); const mx = Math.max(...act.map(p => p.approved.length));
       return pickOne(s, act.filter(p => p.approved.length === mx)).id;
     }
     const base = (s.r - 1) % n;
-    for (let k = 0; k < n; k++) { const c = s.ceoOrder[(base + k) % n]; if (!s.P[c].leave) return c; }
+    for (let k = 0; k < n; k++) {
+      const c = s.ceoOrder[(base + k) % n];
+      if (s.P[c].skipCEO) { s.P[c].skipCEO = false; continue; }
+      if (!s.P[c].leave) return c;
+    }
     return s.ceoOrder[base];
   }
   function ceoSchedule(s) {
@@ -166,7 +176,7 @@ const OP = (() => {
   }
   function botWork(s, i, I, D) {
     const p = s.P[i], L = s.loyalTier, tok = TOKENS;
-    const mode = p.sab ? sabMode(s) : 'loyal';
+    const mode = p.sab ? (p.ruthless && s.ceo === i ? 'bad' : sabMode(s)) : 'loyal';
     const tier = p.sab ? (s.sabTier === 'smart' ? 'smart' : 'basic') : L;
     let cost, prop, hand, redeal = false;
     if (mode === 'loyal' || mode === 'good') {
@@ -208,7 +218,7 @@ const OP = (() => {
     if (p.leave || inh.kind !== 'rejected' || inh.author == null || inh.author === i) return;
     const v = evs(inh.cards), a = inh.author;
     if (!p.sab && s.loyalTier === 'smart') {
-      if ((inh.stamp === 'Rec' && v <= -1) || (inh.stamp === 'Risky' && v <= -2)) accuse(s, i, a, inh.stamp, v, true);
+      if ((inh.stamp === 'Rec' && v <= -1) || (inh.stamp === 'Risky' && v <= (p.pers === 'sceptic' ? -3 : -2)) || (p.pers === 'gossip' && v <= -1)) accuse(s, i, a, inh.stamp, v, true);
       else if (v >= 2 && rand(s) < 0.5) s.memos.push({ by: i, target: a, kind: 'vouch', truthful: true });
     } else if (p.sab && s.sabTier === 'smart' && !s.P[a].leave) {
       const lie = !(inh.stamp === 'Rec' && v <= -1);
@@ -234,6 +244,7 @@ const OP = (() => {
   function botPick(s) {
     const ceo = s.ceo, L = s.loyalTier, envs = s.envs;
     const est = e => estimate(e, L, true);
+    if (s.P[ceo].sab && s.P[ceo].ruthless) { const own = envs.find(e => e.author === ceo && !e.autopilot); if (own) return own.id; }
     if (s.P[ceo].sab) {
       const top = Math.max(...envs.map(est));
       const deny = envs.filter(e => est(e) >= top - SLACK);
@@ -245,10 +256,27 @@ const OP = (() => {
     }
     return argmax(envs, e => [e.author === ceo ? evs(e.cards) : est(e)]).id;
   }
+  // A memo counts for less when its author is under a cloud; the table's own evidence counts double.
+  function credibility(s, i, by) {
+    if (by === 'table') return 2;
+    if (by === i) return 0;
+    const a = s.P[by];
+    return Math.max(0.25, 1 - 0.5 * a.warnings - (s.accused[by] ? 0.5 : 0) - (a.claims > 2 ? 0.5 : 0));
+  }
+  function warnScore(s, i, t) {
+    const w = s.P[i].sab ? PERS.trusting : PERS[s.P[i].pers] || PERS.trusting;
+    return s.accused[t].reduce((a, by) => a + (by === 'table' ? 2 : w[0] * credibility(s, i, by)), 0) + 0.25 * s.P[t].warnings;
+  }
   function botWarnVote(s, i) {
+    const p = s.P[i];
+    if (!p.sab && p.pers === 'yesman' && s.ceo !== i && !isHuman(s, s.ceo) && s.P[s.ceo].pers !== 'yesman') {
+      const v = botWarnVote(s, s.ceo); if (v !== 'none' && v !== i) return v;
+    }
     const c = Object.keys(s.accused).map(Number).filter(t => t !== i && !s.P[t].leave);
     if (!c.length) return 'none';
-    return argmax(c, t => [s.accused[t].length, s.P[t].accusations, s.P[t].warnings]);
+    const t = argmax(c, t => [warnScore(s, i, t), s.P[t].accusations, s.P[t].warnings]);
+    const need = p.sab ? 1 : (PERS[p.pers] || PERS.trusting)[1];
+    return warnScore(s, i, t) >= need ? t : 'none';
   }
   const suspicion = (s, q) => q.claims + 4 * Math.min(q.accusations, 2);
   function botWhistle(s, i) {
@@ -266,7 +294,7 @@ const OP = (() => {
 
   // ---------- round flow ----------
   function startRound(s, E) {
-    s.r++; s.memos = []; s.accused = {}; s.audit = null; s.pick = null; s.warn = null; s.result = null;
+    s.r++; s.memos = []; s.accused = {}; s.audit = null; s.pick = null; s.warn = null; s.result = null; s.nominee = null; s.bvotes = {}; s.board = null;
     s.reqStyle = s.nextStyle; s.nextStyle = null;
     s.assign = shuffle(s, range(s.n));
     s.ceo = chooseCEO(s); s.P[s.ceo].ceoTurns++;
@@ -347,6 +375,37 @@ const OP = (() => {
     else log(s, E, 'event', 'The table declined to audit anything.');
     s.phase = 'decide';
   }
+  // The CEO nominates; the Board (everyone else) ratifies or overrules on what the table can see.
+  const pubEst = (s, e) => estimate(e, s.loyalTier, false);
+  function botBoardVote(s, i) {
+    const p = s.P[i], nom = s.envs.find(x => x.id === s.nominee);
+    if (p.sab || !nom) return 'ratify';
+    const best = Math.max(...s.envs.map(x => pubEst(s, x)));
+    return pubEst(s, nom) <= best - 2 ? 'overrule' : 'ratify';
+  }
+  function nominate(s, id, E) {
+    const e = s.envs.find(x => x.id === id); if (!e) return 'No such envelope.';
+    s.nominee = id; s.bvotes = {};
+    log(s, E, 'event', `${who(s, s.ceo, 1)} nominated envelope ${id}. The Board is voting.`);
+    for (const p of s.P) if (p.id !== s.ceo && !isHuman(s, p.id)) s.bvotes[p.id] = botBoardVote(s, p.id);
+    s.phase = 'board';
+    if (s.spectate || s.ceo === humanSeat(s)) resolveBoard(s, E);
+    return null;
+  }
+  function resolveBoard(s, E) {
+    const voters = s.n - 1, no = Object.values(s.bvotes).filter(v => v === 'overrule').length;
+    const nom = s.envs.find(x => x.id === s.nominee);
+    const best = argmax(s.envs, x => [pubEst(s, x)]);
+    const overruled = no > voters / 2 && best.id !== nom.id;
+    s.board = { nominee: nom.id, votes: s.bvotes, no, overruled };
+    if (!overruled) { log(s, E, 'event', `The Board ratified envelope ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
+    const own = nom.author === s.ceo && !nom.autopilot;
+    nom.unmasked = true; s.board.own = own; s.board.author = nom.autopilot ? null : nom.author;
+    log(s, E, 'event', `The Board overruled ${who(s, s.ceo)} (${no}–${voters - no}). Envelope ${nom.id} was written by ${nom.autopilot ? 'interim management' : own ? 'the CEO' : who(s, nom.author)}. Envelope ${best.id} goes through instead.`, { target: s.ceo });
+    (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++;
+    if (own) { s.P[s.ceo].skipCEO = true; log(s, E, 'event', `${who(s, s.ceo, 1)} tried to push ${s.P[s.ceo].human ? 'your' : 'their'} own envelope and will sit out ${s.P[s.ceo].human ? 'your' : 'their'} next turn as CEO.`, { target: s.ceo }); }
+    return approve(s, best.id, E);
+  }
   function approve(s, id, E) {
     const e = s.envs.find(x => x.id === id); if (!e) return 'No such envelope.';
     e.approved = true;
@@ -362,7 +421,8 @@ const OP = (() => {
     if (e.author === s.ceo && !e.autopilot) log(s, E, 'event', 'The CEO approved their own envelope. This has been noted.');
     if (s.loyalTier === 'smart') {
       if (!e.autopilot && e.stamp === 'Rec' && actual <= -1) { (s.accused[e.author] = s.accused[e.author] || []).push('table'); author.accusations++; log(s, E, 'event', `A Recommended envelope lost money. Questions are being asked of ${who(s, e.author)}.`, { target: e.author }); }
-      if (estimate(e, s.loyalTier, false) <= pubBest - 3 && !s.P[s.ceo].human) { (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; log(s, E, 'event', `${who(s, s.ceo, 1)} passed over a far better-looking envelope.`, { target: s.ceo }); }
+      if (e.author === s.ceo && !e.autopilot && actual <= -1 && e.stamp !== 'Rec') { (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; log(s, E, 'event', `${who(s, s.ceo, 1)} approved ${s.P[s.ceo].human ? 'your' : 'their'} own envelope and it lost money.`, { target: s.ceo }); }
+      if (estimate(e, s.loyalTier, false) <= pubBest - 3 && !(s.board && s.board.overruled)) { (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; log(s, E, 'event', `${who(s, s.ceo, 1)} passed over a far better-looking envelope.`, { target: s.ceo }); }
     }
     s.phase = 'reveal'; s.wvotes = {};
     for (const p of s.P) if (!isHuman(s, p.id)) s.wvotes[p.id] = botWarnVote(s, p.id);
@@ -414,8 +474,13 @@ const OP = (() => {
     s.whistle = { votes: s.wb, count, named: winner === 'none' ? null : +winner };
     if (s.whistle.named != null) {
       const q = s.P[s.whistle.named];
-      s.whistle.correct = q.sab; s.profit += q.sab ? 3 : -3;
-      log(s, E, 'event', q.sab ? `The table named ${who(s, q.id)}. Correctly. Whistleblower settlement received: +3.` : `The table named ${who(s, q.id)}, who ${q.human ? 'were' : 'was'} loyal. Wrongful dismissal claim settled out of court: −3.`);
+      // Clawback: catching a saboteur reverses every losing policy they wrote (at least +3). Naming a loyal costs 3.
+      const lost = s.ledger.filter(l => l.author === q.id && !l.autopilot && l.actual < 0);
+      const back = lost.reduce((a, l) => a - 2 * l.actual, 0);
+      const swing = q.sab ? Math.max(3, back) : -3;
+      s.whistle.correct = q.sab; s.whistle.swing = swing; s.whistle.clawed = q.sab ? lost.map(l => ({ r: l.r, id: l.id, actual: l.actual })) : [];
+      s.profit += swing;
+      log(s, E, 'event', q.sab ? (lost.length ? `The table named ${who(s, q.id)}. Correctly. Clawback: ${lost.length === 1 ? 'their losing policy is' : `all ${lost.length} of their losing policies are`} reversed, ${fmt(swing)}.` : `The table named ${who(s, q.id)}. Correctly. Whistleblower settlement received: +3.`) : `The table named ${who(s, q.id)}, who ${q.human ? 'were' : 'was'} loyal. Wrongful dismissal claim settled out of court: −3.`);
     } else log(s, E, 'event', 'The table declined to name anyone.');
     s.win = s.profit >= s.target; s.phase = 'end';
     log(s, E, 'system', s.win ? `Final profit ${fmt(s.profit)} against a target of +${s.target}. Target met.` : `Final profit ${fmt(s.profit)} against a target of +${s.target}. Target missed.`);
@@ -434,7 +499,10 @@ const OP = (() => {
         if (s.phase !== 'pitch' || !humanTurn) { err = 'No audit vote open.'; break; }
         if (a.target !== 'none' && !s.envs.some(e => e.id === a.target && !e.autopilot)) { err = 'Pick an envelope or none.'; break; }
         s.votes[seat] = a.target; resolveAudit(s, E); break;
-      case 'approve': if (s.phase !== 'decide' || seat !== s.ceo || !humanTurn) err = 'Only the CEO can approve.'; else err = approve(s, a.id, E); break;
+      case 'approve': if (s.phase !== 'decide' || seat !== s.ceo || !humanTurn) err = 'Only the CEO can nominate.'; else err = nominate(s, a.id, E); break;
+      case 'boardVote':
+        if (s.phase !== 'board' || !humanTurn || seat === s.ceo) { err = 'No Board vote open.'; break; }
+        s.bvotes[seat] = a.vote === 'overrule' ? 'overrule' : 'ratify'; resolveBoard(s, E); break;
       case 'warnVote':
         if (s.phase !== 'reveal' || !humanTurn) { err = 'No warning vote open.'; break; }
         s.wvotes[seat] = a.target === 'none' ? 'none' : +a.target; resolveWarn(s, E); break;
@@ -442,7 +510,8 @@ const OP = (() => {
         if (s.phase !== 'whistle' || !humanTurn) { err = 'No vote open.'; break; }
         s.wb[seat] = a.target === 'none' ? 'none' : +a.target; resolveWhistle(s, E); break;
       case 'advance':
-        if (s.phase === 'decide' && (s.spectate || s.ceo !== seat)) approve(s, botPick(s), E);
+        if (s.phase === 'decide' && (s.spectate || s.ceo !== seat)) nominate(s, botPick(s), E);
+        else if (s.phase === 'board') { if (humanSeat(s) >= 0 && !(humanSeat(s) in s.bvotes)) s.bvotes[humanSeat(s)] = 'ratify'; resolveBoard(s, E); }
         else if (s.phase === 'review') next(s, E);
         else if (s.phase === 'brief') startRound(s, E);
         else err = 'Nothing to advance.';
@@ -452,7 +521,7 @@ const OP = (() => {
     return err ? { error: err } : { state: s, events: E };
   }
 
-  return { apply, newGame, workResult, workCost, estimate, evs, ev, total, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
+  return { PERS_SAY, apply, newGame, workResult, workCost, estimate, evs, ev, total, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
     SUITS, SUBJ, COLORS, TRIMS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
 })();
 if (typeof module !== 'undefined') module.exports = OP;
