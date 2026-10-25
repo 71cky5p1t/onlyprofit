@@ -1,5 +1,8 @@
   // ---------- render ----------
   function render() {
+    applyDeskTheme();
+    if (TRAIN.active) { applyBrand(); document.documentElement.dataset.phase = 'induction'; $app.innerHTML = inductionHTML(); return; }
+    if (S && S.phase === 'brief' && !ui.inducted && !window.__opFreeze) { inductionStart(true); return; }
     cueSync();
     applyBrand();
     document.documentElement.dataset.phase = S ? S.phase : 'setup';
@@ -10,6 +13,8 @@
       : `${observerHTML()}${pilesHTML()}${feedHTML()}<div class="objs">${ledgerHTML()}${staffHTML()}</div>`;
     if (!(S.phase === 'work' && draft)) stopTimer();
     $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${board}</main>${desk()}</div></div>`;
+    teachingSync();
+    const body = document.querySelector('.desk-body'); if (body) body.insertAdjacentHTML('beforeend', teachingHTML());
     syncWheel();
     mountSign();
     transition();

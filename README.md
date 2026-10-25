@@ -1,5 +1,10 @@
 # Only Profit
 
+## Hosted multiplayer
+
+Run `npm ci`, `npm run build`, then `npm start` with Node 22.13+. Open `http://127.0.0.1:8787` to create a TV room. Players use the host/join invitations on their phones; bots are optional. See [room setup and architecture](docs/multiplayer.md) for HTTPS hosting, reconnects, timing and verification. The static prototype below remains available as solo practice.
+
+
 A Jackbox-style social deduction game for 4–8 players. One cheerfully awful company has to hit its profit target in five quarters. Some employees might be quietly sinking it, or nobody is, and the company is just like this.
 
 This repo holds the playable prototype: one human against bots, in a single HTML page.
@@ -21,6 +26,10 @@ No dependencies. The page loads its fonts from Google Fonts and works offline wi
 | `src/ui/*.js` | Browser UI, split by screen (core, brand, clip-art, cover pages, desk, clock-in, render, events, drag). Concatenated in order into one scope. |
 | `src/head.html` | Page title and fonts. |
 | `src/styles/*.css` | Styles, in cascade order (tokens in `01-base.css`). |
+| `src/explainer/` | Captioned, skippable induction, interactive practice and contextual teaching. |
+| `src/boot.js` | Startup after all UI and explainer modules initialize. |
+| `src/viewer/` | Screen viewer navigation, styles and shared-piece catalogue. |
+| `docs/architecture.md` | Agent source map, module boundaries, hand contract and validation commands. |
 | `build.sh` | Builds `dist/only-profit.html` from the files above. |
 | `sim/` | The Python Monte Carlo balance simulations the bots are ported from (`sim2.py` has the final config). |
 | `docs/how-to-play/` | The Staff Induction (how-to-play video): voiceover script, build brief, UI findings. |
@@ -33,7 +42,7 @@ const s0 = OP.newGame({ players: 4, seed: 123, loyalTier: 'smart', sabTier: 'sma
 const { state, events } = OP.apply(s0, seat, { type: 'begin' });   // or { error }
 ```
 
-Actions: `begin`, `submitWork` (`redeal`, `swaps`, `reveals`, `stamp`, `subject`, `style`, `claim`, `nextStyle`), `auditVote`, `approve` (the CEO nominates), `boardVote` (`vote`: `ratify` or `overrule`), `warnVote`, `whistleVote`, `advance`. `apply` never mutates the state it is given.
+Actions: `begin`, `submitWork` (`redeal`, `swaps`, `picks`, `reveals`, `stamp`, `subject`, `style`, `claim`, `nextStyle`), `auditVote`, `approve` (the CEO nominates), `boardVote` (`vote`: `ratify` or `overrule`), `warnVote`, `whistleVote`, `advance`. `apply` never mutates the state it is given.
 
 Seat 0 is the human. With `spectate: true` every seat is a bot and the game moves on `advance`.
 
@@ -43,7 +52,7 @@ Seat 0 is the human. With `spectate: true` every seat is a bot and the game move
 - Complaints are public memos on a bulletin board. Nobody can check them, and the human may lie.
 - Cards revealed with overtime hours (work tokens) are shown to the whole table, so the Board can judge the CEO's nominee.
 - Board vote, Clawback, ruthless saboteur bots, credibility-weighted warnings and loyal temperaments were added 2026-10-25 after the playtest review (https://claude.ai/artifact/66RMt61UfSLPKBWumRuCAd). Harness: `sim/playtest/`.
-- No phase timers yet.
+- Work has a 60-second card timer and a 35-second cover-page timer. Each quarter draws six spare cards, two per suit.
 
 ## Tests
 

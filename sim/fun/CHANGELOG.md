@@ -93,3 +93,17 @@ I re-ran the same five temperaments on main, 1,500 games per size. Compared with
 Option B (no end vote; saboteurs also win if their approved losses reach 3) was tested with targets lowered to 4p 17, 5p 19, 6p 20, 7p 21, 8p 21:
 - The damage threshold almost never decides a game. A saboteur's own losing policy gets approved in only 3–14% of saboteur games, and reaches 3 or more in 1–5%. A saboteur's real damage comes from denying the best page as CEO and handing over junk, not from getting their own pages through.
 - Without the end vote, nothing at the finish punishes a saboteur. Scripted human saboteurs win 63–69% (49–59% on main), comebacks drop from 3–8% to 0–1%, and Q5 is close more often (56–67% against 26–44%).
+
+## Round 7 (2026-10-25): six spare cards
+
+Each quarter now gives two alternatives per suit, keeping the three-card policy and three-hour budget. Bot plan enumeration considers both alternatives. Each suit deck has 48 cards (144 unique IDs overall), preserving value/effect density. Approved hands pass one seeded-random remaining card per suit; other leftovers are discarded.
+
+Six spares with the old targets raised company wins to 88–94%. Targets are now 24/25/26/26/27 for 4–8 players. At 600 games per size, balance.js reports 52/55/45/58/50% company wins; the independent fun.js run reports 49/59/49/56/52%. sweep.js confirms the selected target range. This is bot calibration, not human playtest evidence.
+
+human-actions.js passed (897 games). hand.js passed 120 full games checking six-card composition, second-choice selections, overtime, invalid moves, input immutability and all 144 unique cards conserved through five quarters. Variant patch anchors were updated to the current engine.
+
+## Round 8 (2026-10-25): multi-human rooms
+
+Human control now comes from an explicit roster, and votes resolve only after all eligible seats respond. Legacy solo/bot operation remains compatible. Hosted timeouts use deterministic fallbacks; bot decisions and targets are unchanged.
+
+Regression balance remains 52/55/45/58/50% company wins for 4–8 seats. fun.js reports 49/59/49/56/52%; the target sweep still supports the current target range. Human and hand suites pass. New multiplayer/privacy tests cover full 4/8-human games and per-seat views. These remain automated results, not human playtest acceptance.

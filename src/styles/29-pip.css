@@ -14,3 +14,6 @@
 .files:has(.pulled) { grid-template-columns: 160px; justify-content: center }
 .file.pulled { transform: rotate(-2deg) }
 .file-stamp { position: absolute; inset: auto 0 14px; margin: auto; width: max-content; font: 900 14px/1 var(--f-body); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: var(--red); border: 2px solid currentColor; border-radius: 3px; padding: 4px 8px 3px; transform: rotate(-7deg); opacity: .85 }
+
+.stampstrip button.right::after { opacity: 1; width: 18px; height: 16px; filter: brightness(.42); top: -4px; right: 5px }
+.bar3 button { color: #736d5e }.bar3 button span { border-color: #aaa18c }

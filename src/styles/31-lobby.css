@@ -1,0 +1,31 @@
+/* Title screen and induction share the office props. */
+body { margin: 0 }
+.lobby { max-width: 1230px; margin: auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 7%; padding: 54px 30px 70px; align-items: center }
+.lobby-pitch { position: relative; padding-block: 12px }
+.lobby-kicker { display: flex; align-items: center; gap: 14px; font-size: 10px; font-weight: 800; letter-spacing: .16em }
+.lobby-kicker .logo-mark { width: 37px; height: 37px }
+.lobby h1 { font-size: clamp(74px, 9vw, 128px); letter-spacing: -.075em; line-height: .82; font-weight: 900; margin: 28px 0 25px; text-shadow: 0 6px 0 #203a30 }
+.lobby h1 span { color: #efb74c }
+.lobby-tagline { font-size: clamp(24px, 3vw, 36px); font-weight: 800; letter-spacing: -.035em; line-height: 1.05; margin: 0 0 18px }
+.lobby-summary { color: #d4ddce; font-size: 16px; line-height: 1.5 }
+.lobby-props { display: flex; align-items: center; margin: 34px 0; padding-left: 12px; position: relative }
+.lobby-props .card { --cw: 110px; transform: rotate(-9deg); margin-right: 5px }
+.lobby-props .card:nth-child(2) { transform: rotate(2deg) translateY(-12px) }
+.lobby-props .card:nth-child(3) { transform: rotate(11deg) }
+.lobby-stamp { position: absolute; right: 0; bottom: 6px; color: #f0c86b; border: 4px solid; padding: 9px 15px; font-size: 22px; line-height: 1; font-weight: 900; transform: rotate(-13deg); background: #2d4a3eef }
+.lobby-stamp small { font: italic 16px/1.2 var(--f-body) }
+.lobby-meta { font-size: 12px; font-weight: 700; letter-spacing: .03em; color: #e8e7d2 }.lobby-meta i { padding-inline: 9px }
+.lobby-form { margin: 0; width: 100%; max-width: 460px; overflow: visible; transform: rotate(.5deg) }
+.lobby-form .setup-hero h2 { font-size: 43px; letter-spacing: -.045em; line-height: 1.1 }
+.lobby-form .setup-hero { border-bottom: 1px dashed #b5ac96; padding: 28px }
+.lobby-form .setup-body { gap: 23px }
+.lobby-form .seg button { min-height: 40px }.lobby-form .field:first-child .seg button { flex: 1 }
+.lobby-form .btn.primary { font-size: 17px; padding: 18px 12px; }
+.induction-binder { display: flex; align-items: center; text-align: left; gap: 16px; background: #243c36; color: #eee8d5; border: 0; padding: 16px; border-radius: 4px; box-shadow: 3px 4px 0 #bcb6a4; transform: rotate(-1deg) }
+.induction-binder b { font-size: 14px; letter-spacing: .07em }.induction-binder small { display: block; font-size: 12px; color: #c3ccbd; margin-top: 5px }.induction-binder i { margin-left: auto; font-style: normal }
+.book-spine { height: 37px; width: 7px; border-block: 5px solid #c6c4b8; background: #14251e; flex-shrink: 0 }
+.induction-binder:hover { background: #314f44; transform: rotate(0) }
+.lobby-options { border-top: 1px dashed #b5ac96; padding-top: 18px }.lobby-options summary { cursor: pointer; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em }.options-body { display: grid; gap: 19px; padding-top: 22px }
+.lobby-fine { margin: 0; text-align: center; font-size: 12px; color: #777064 }
+
+@media (max-width: 740px) { .lobby { grid-template-columns: 1fr; gap: 30px; padding: 25px 22px 50px }.lobby-pitch { text-align: center }.lobby-kicker,.lobby-props { justify-content: center }.lobby h1 { font-size: clamp(74px,19vw,110px) }.lobby-tagline { font-size: 28px }.lobby-props { display: none }.lobby-form { max-width: 500px; margin: auto }.lobby-meta { margin-top: 25px } }

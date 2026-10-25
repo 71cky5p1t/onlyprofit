@@ -1,0 +1,61 @@
+/* Layout: one spread per moment in the game, a TV and a phone side by side on the felt, in play order; no captions */
+:root {
+  --felt: #284338; --felt-hi: #3B6152; --paper: #F1E9D4; --paper-2: rgba(241,233,212,.62); --rule: rgba(241,233,212,.16);
+  --ink: #141414; --red: #D9261C; --gold: #E9A23B; --bezel: #111312;
+  --f-body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-seg: "Share Tech Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+body { margin: 0; background: radial-gradient(80% 50% at 30% 0%, var(--felt-hi), var(--felt) 70%) no-repeat, var(--felt); color: var(--paper); font: 15px/1.5 var(--f-body); -webkit-font-smoothing: antialiased }
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; padding-block: 12px 10px; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between; background: linear-gradient(var(--felt) 70%, rgba(40,67,56,0)) }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--felt) }
+.brands { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 auto; min-width: 0 }
+.brands button { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--rule); background: rgba(0,0,0,.2); color: var(--paper); border-radius: 16px; padding: 6px 11px 6px 7px; font: 800 12px/1 var(--f-body); cursor: pointer }
+.brands button i { width: 14px; height: 14px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35) }
+.brands button[aria-pressed="true"] { background: var(--paper); color: var(--ink); border-color: var(--paper) }
+.brands.sets { width: auto; margin-left: auto } .sets button i { border-radius: 2px; width: 10px; height: 14px; background: var(--stock, #F1E9D4) }
+.sets button i.colour { background: linear-gradient(90deg, #3F63B8 0 33%, #C9A227 33% 66%, #8A5FA8 66%); width: 18px }
+.brands button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px }
+.brand { display: flex; align-items: center; gap: 12px }
+.seal { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, #8E160F); color: rgba(255,255,255,.82); font: 900 14px/1 var(--f-body); letter-spacing: -.04em; box-shadow: 0 2px 6px rgba(0,0,0,.5) }
+.brand b { display: block; font: 900 24px/1 var(--f-body); letter-spacing: -.03em }
+.brand small { display: block; margin-top: 4px; font: 700 11px/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; color: var(--paper-2) }
+nav.jump { display: flex; flex-wrap: wrap; gap: 6px }
+nav.jump a { color: var(--paper); text-decoration: none; font: 700 12px/1 var(--f-body); padding: 7px 10px; border-radius: 14px; border: 1px solid var(--rule) }
+nav.jump a:hover, nav.jump a:focus-visible { background: var(--paper); color: var(--ink); outline: none }
+main { display: grid; gap: 8px; padding-block: 12px 80px }
+.spread { display: grid; gap: 10px; padding-block: 18px; border-top: 1px solid var(--rule); scroll-margin-top: 130px }
+.side { display: flex; gap: 8px; align-items: center }
+.tab { display: inline-flex; width: max-content; border-radius: 4px; overflow: hidden; font: 800 12px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 2px 0 rgba(0,0,0,.25) }
+.tab b { background: var(--red); color: #fff; padding: 7px 8px }
+.tab span { background: var(--paper); color: var(--ink); padding: 7px 10px }
+.side p { margin: 0; color: var(--paper-2); font-size: 14px; max-width: 26ch }
+.replay { border: 0; border-radius: 6px; padding: 6px 9px 5px; background: #4A4B47; color: #fff; font: 800 12px/1 var(--f-body); box-shadow: 0 3px 0 #1C1D1B; cursor: pointer }
+.replay:active { transform: translateY(2px); box-shadow: 0 1px 0 #1C1D1B }
+.replay:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px }
+.stage { display: flex; gap: 28px; align-items: flex-start; min-width: 0 }
+/* devices: a TV on a stand, a phone in a hand-sized bezel */
+.tv { flex: 1 1 auto; min-width: 0; display: grid; justify-items: center }
+.tv .screen { width: 100%; aspect-ratio: 16 / 10; max-width: 100%; background: var(--bezel); border-radius: 10px; padding: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 30px 50px -24px rgba(0,0,0,.8) }
+.tv .stand { width: 22%; height: 16px; background: linear-gradient(#1a1c1b, #0b0c0c); clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%) }
+.phone { flex: none; width: 322px; background: var(--bezel); border-radius: 38px; padding: 14px 9px; box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 30px 50px -24px rgba(0,0,0,.8); position: relative }
+.phone::before { content: ""; position: absolute; top: 6px; left: 50%; width: 70px; height: 4px; margin-left: -35px; border-radius: 3px; background: #2a2d2b }
+.phone .screen { height: 640px; border-radius: 28px }
+.screen { position: relative; overflow: hidden }
+.vp { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; background: #35574A }
+.tv .vp { inset: 10px; border-radius: 3px }
+.vp iframe { border: 0; transform-origin: 0 0; position: absolute; left: 0; top: 0; background: #35574A }
+.vp .wait { position: absolute; inset: 0; display: grid; place-items: center; font: 400 14px/1 var(--f-seg); letter-spacing: .1em; color: var(--paper-2); background: #35574A; transition: opacity .25s }
+.vp.live .wait { opacity: 0; pointer-events: none }
+.only-tv .phone, .only-phone .tv { display: none }
+.only-phone .stage { justify-content: flex-start }
+/* the parts sheet */
+.kit iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #35574A; min-height: 300px }
+@media (max-width: 860px) {
+  .stage { flex-direction: column-reverse; align-items: center }
+  .tv { width: 100% }
+}
+@media (max-width: 380px) { .phone { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .vp .wait { transition: none } }

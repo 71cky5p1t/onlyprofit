@@ -1,8 +1,11 @@
   // ---------- cards: drag between the policy and the hand, or tap ----------
-  function swapSuit(su) {
-    const next = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su);
+  function swapSuit(su, idx) {
+    if (!draft.picks) draft.picks = [0, 1, 2];
+    if (idx == null) idx = draft.picks[su];
+    const on = draft.swaps.includes(su), undo = on && draft.picks[su] === idx;
+    const next = undo ? draft.swaps.filter(x => x !== su) : on ? draft.swaps : draft.swaps.concat(su);
     if (costWith({ swaps: next }) > 3) return refuse(su);
-    draft.swaps = next; ui.land = su; render();
+    draft.picks[su] = idx; draft.swaps = next; ui.land = su; render();
   }
   function revealSuit(su) {
     const next = draft.reveals.includes(su) ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su);
@@ -13,7 +16,7 @@
     toast('Not enough overtime.');
     document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
   }
-  const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : revealSuit(su));
+  const tapCard = (zone, su, idx) => (zone === 'hand' ? swapSuit(su, idx) : revealSuit(su));
   let drag = null;
   function endDrag() {
     if (!drag) return;
@@ -26,7 +29,7 @@
   $app.addEventListener('pointerdown', ev => {
     const el = ev.target.closest('.card[data-drag]'); if (!el || !draft || ev.button > 0) return;
     const r = el.getBoundingClientRect();
-    drag = { el, zone: el.dataset.drag, su: +el.dataset.su, x: ev.clientX, y: ev.clientY, ox: ev.clientX - r.left, oy: ev.clientY - r.top, w: r.width, h: r.height, clone: null };
+    drag = { el, zone: el.dataset.drag, su: +el.dataset.su, idx: +el.dataset.idx, x: ev.clientX, y: ev.clientY, ox: ev.clientX - r.left, oy: ev.clientY - r.top, w: r.width, h: r.height, clone: null };
   });
   window.addEventListener('pointermove', ev => {
     if (!drag) return;
@@ -46,16 +49,16 @@
   }, { passive: false });
   window.addEventListener('pointerup', ev => {
     if (!drag) return;
-    const { zone, su, clone } = drag;
+    const { zone, su, idx, clone } = drag;
     const t = clone && slotAt(ev.clientX, ev.clientY);
     const hit = t && t.classList.contains('ok');
     endDrag();
-    if (!clone) tapCard(zone, su); else if (hit) swapSuit(su);
+    if (!clone) tapCard(zone, su, idx); else if (hit) swapSuit(su, zone === 'hand' ? idx : undefined);
   });
   window.addEventListener('pointercancel', endDrag);
   $app.addEventListener('keydown', ev => {
     const el = ev.target.closest && ev.target.closest('.card[data-drag]');
-    if (el && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); tapCard(el.dataset.drag, +el.dataset.su); }
+    if (el && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); tapCard(el.dataset.drag, +el.dataset.su, +el.dataset.idx); }
     if (ev.target.id === 'name-in' && ev.key === 'Enter') { ev.preventDefault(); const b = document.querySelector('[data-a="name-go"]'); if (b && !b.disabled) b.click(); }
   });
   $app.addEventListener('input', ev => {

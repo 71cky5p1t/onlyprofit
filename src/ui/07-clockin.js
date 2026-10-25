@@ -95,6 +95,6 @@
   }
   function startGame(seedFrom) {
     const seed = seedFrom === 'start' && /^\d+$/.test(String(setup.seed).trim()) ? +setup.seed : Math.floor(Math.random() * 1e9) + 1;
-    naming = null;
+    naming = null; ui.inducted = false; TEACH.seen.clear(); TEACH.key = ''; TEACH.line = '';
     S = OP.newGame(Object.assign({}, setup, { seed })); draft = null; err = ''; ui.sel = null; ui.shown = null; ui.lastKey = null; ui.printed = 0; render(); window.scrollTo(0, 0);
   }

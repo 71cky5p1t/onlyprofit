@@ -5,7 +5,7 @@ const OP = (() => {
   const B = typeof OP_BOTS !== 'undefined' ? OP_BOTS : require('./bots.js');
   const { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, TEMPLATES, FONTS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };
+  const TARGETS = { 4: 24, 5: 25, 6: 26, 7: 26, 8: 27 };
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
@@ -59,7 +59,7 @@ const OP = (() => {
         return f ? { id: `2.${k}`, s: 2, v: f[2], w: f[0], fx: f[1] } : { id: `2.${k}`, s: 2, v, w: words[n++] };
       }));
     });
-    return { piles, disc: [[], [], []] };
+    return { piles: piles.map(p => shuffle(s, p.concat(p.map(c => Object.assign({}, c, { id: c.id + '.b' }))))), disc: [[], [], []] };
   }
   function draw(s, su) {
     const d = s.deck;
@@ -70,11 +70,18 @@ const OP = (() => {
   const discard = (s, cards) => cards.forEach(c => s.deck.disc[c.s].push(c));
 
   function plans(I, D, max = 3) {
-    const out = [[0, I.slice(), D.slice()]];
-    for (let su = 0; su < 3; su++) { const p = I.slice(), h = D.slice(); p[su] = D[su]; h[su] = I[su]; out.push([1, p, h]); }
-    if (max >= 3) for (const pair of [[0, 1], [0, 2], [1, 2]]) {
-      const p = I.slice(), h = D.slice(); for (const su of pair) { p[su] = D[su]; h[su] = I[su]; } out.push([3, p, h]);
-    }
+    const out = [];
+    const visit = (su, chosen) => {
+      if (su === 3) {
+        const cost = SWAP_COST[chosen.length]; if (cost > max) return;
+        const prop = I.slice(), hand = D.slice();
+        for (const k of chosen) { prop[D[k].s] = D[k]; hand[k] = I[D[k].s]; }
+        out.push([cost, prop, hand]); return;
+      }
+      visit(su + 1, chosen);
+      D.forEach((c, k) => { if (c.s === su) visit(su + 1, chosen.concat(k)); });
+    };
+    visit(0, []);
     return out;
   }
   // believed worth; seeRev = CEO view
@@ -95,9 +102,9 @@ const OP = (() => {
 
   // ---------- setup ----------
   function newGame(opts) {
-    const n = Math.max(4, Math.min(8, opts.players || 4));
+    const n = Math.max(4, Math.min(8, opts.roster?.length || opts.players || 4));
     const s = {
-      v: 1, rs: (opts.seed >>> 0) || 1, seed: opts.seed >>> 0, n, spectate: !!opts.spectate,
+      v: 1, rs: (opts.seed >>> 0) || 1, seed: opts.seed >>> 0, n, spectate: !!opts.spectate, multiplayer: Array.isArray(opts.roster),
       brand: LEX[opts.brand] ? opts.brand : 'op',
       loyalTier: opts.loyalTier || 'smart', sabTier: opts.sabTier || 'smart', easy: !!opts.easy,
       target: TARGETS[n] - (opts.easy ? 3 : 0), profit: 0, r: 0, phase: 'brief',
@@ -112,7 +119,7 @@ const OP = (() => {
     const sabs = shuffle(s, range(n)).slice(0, nSab);
     const names = shuffle(s, NAMES);
     s.P = range(n).map(i => ({
-      id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate,
+      id: i, name: opts.roster ? String(opts.roster[i].name).slice(0, 24) : i === 0 && !s.spectate ? 'You' : names[i], human: opts.roster ? !!opts.roster[i].human : i === 0 && !s.spectate,
       sab: sabs.includes(i), spec: null, fav: randomStyle(s),
       warnings: 0, leave: false, pip: false, accusations: 0, claims: 0, approved: [], ceoTurns: 0, skipCEO: false,
     }));
@@ -126,11 +133,12 @@ const OP = (() => {
     if (s.spectate) startRound(s, []);
     return s;
   }
-  const isHuman = (s, i) => !s.spectate && i === 0;
+  const isHuman = (s, i) => !!s.P[i]?.human;
+  const complete = (s, votes, exclude = -1) => s.P.every(p => p.id === exclude || p.id in votes);
   const humanSeat = s => (s.spectate ? -1 : 0);
-  const who = (s, i, cap) => (s.P[i].human ? (cap ? 'You' : 'you') : s.P[i].name);
-  const whose = (s, i) => (s.P[i].human ? 'your' : s.P[i].name + "'s");
-  const isAre = (s, i) => (s.P[i].human ? 'are' : 'is');
+  const who = (s, i, cap) => (s.P[i].human && !s.multiplayer ? (cap ? 'You' : 'you') : s.P[i].name);
+  const whose = (s, i) => (s.P[i].human && !s.multiplayer ? 'your' : s.P[i].name + "'s");
+  const isAre = (s, i) => (s.P[i].human && !s.multiplayer ? 'are' : 'is');
   function log(s, ev_, kind, text, extra) { const e = Object.assign({ r: s.r, kind, text }, extra || {}); s.feed.push(e); ev_.push(e); }
 
   function chooseCEO(s) {
@@ -176,7 +184,7 @@ const OP = (() => {
     for (let i = 0; i < s.n; i++) {
       const d = s.assign[i], inh = s.hands[d], p = s.P[i];
       p.dept = d; p.inh = inh;
-      const D = draw3(s);
+      const D = draw3(s).concat(draw3(s));
       if (p.leave) { const [e, h] = autopilot(s, i, inh.cards, D); e.dept = d; s.envs.push(e); s.left[d] = h; continue; }
       if (isHuman(s, i)) { s.work[i] = { D, R: draw3(s) }; continue; }
       botInheritMemo(s, i, inh);
@@ -189,7 +197,7 @@ const OP = (() => {
   }
   // CEO investigations: one per quarter, checked in private; only a PIP is announced
   function investigate(s, t) {
-    const e = t != null && t !== s.ceo && !s.P[t].pip && s.envs.find(x => x.author === t && !x.autopilot);
+    const e = s.P[t] && t !== s.ceo && !s.P[t].pip && s.envs.find(x => x.author === t && !x.autopilot);
     if (!e) return 'Nobody to investigate.';
     s.invq = { r: s.r, t, guilty: e.stamp !== rightStamp(e.cards) };
     return null;
@@ -203,12 +211,15 @@ const OP = (() => {
   function workResult(s, i, w) {
     const inh = s.P[i].inh, wk = s.work[i];
     const base = w.redeal ? wk.R : inh.cards;
-    const prop = base.map((c, su) => (w.swaps.includes(su) ? wk.D[su] : c));
-    const aside = wk.D.map((c, su) => (w.swaps.includes(su) ? base[su] : c));
+    const picks = w.picks || [0, 1, 2];
+    const prop = base.map((c, su) => (w.swaps.includes(su) ? wk.D[picks[su]] : c));
+    const aside = wk.D.map((c, k) => (w.swaps.includes(c.s) && picks[c.s] === k ? base[c.s] : c));
     return { prop, aside };
   }
   function submitWork(s, i, a, E) {
-    const w = { redeal: !!a.redeal, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3) };
+    const w = { redeal: !!a.redeal, swaps: [...new Set(a.swaps || [])].filter(x => Number.isInteger(x) && x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => Number.isInteger(x) && x >= 0 && x < 3) };
+    w.picks = a.picks || [0, 1, 2];
+    if (!Array.isArray(w.picks) || w.picks.length !== 3 || w.picks.some((k, su) => !Number.isInteger(k) || !s.work[i].D[k] || s.work[i].D[k].s !== su)) return 'Choose a spare of the matching suit.';
     if (workCost(w) > TOKENS) return 'Not enough work tokens.';
     if (!STAMP_LABEL[a.stamp]) return 'Stamp the cover page first.';
     const p = s.P[i], wk = s.work[i], { prop, aside } = workResult(s, i, w);
@@ -264,7 +275,7 @@ const OP = (() => {
     log(s, E, 'event', `${who(s, s.ceo, 1)} nominated proposal ${id}. The Board is voting.`);
     for (const p of s.P) if (p.id !== s.ceo && !isHuman(s, p.id)) s.bvotes[p.id] = botBoardVote(s, p.id);
     s.phase = 'board';
-    if (s.spectate || s.ceo === humanSeat(s)) resolveBoard(s, E);
+    if (complete(s, s.bvotes, s.ceo)) resolveBoard(s, E);
     return null;
   }
   function resolveBoard(s, E) {
@@ -304,7 +315,7 @@ const OP = (() => {
     for (const p of s.P) if (!isHuman(s, p.id)) s.wvotes[p.id] = botWarnVote(s, p.id);
     s.invq = null;
     if (!isHuman(s, s.ceo) && s.wvotes[s.ceo] !== 'none') investigate(s, s.wvotes[s.ceo]);
-    if (s.spectate) resolveWarn(s, E);
+    if (complete(s, s.wvotes)) resolveWarn(s, E);
     return null;
   }
   function resolveWarn(s, E) {
@@ -329,7 +340,11 @@ const OP = (() => {
     const nh = range(s.n).map(() => null);
     for (const e of s.envs) {
       const d = e.dept;
-      if (e.id === s.pick) { discard(s, e.cards); nh[d] = { cards: s.left[d], author: e.autopilot ? null : e.author, kind: 'cleanup' }; }
+      if (e.id === s.pick) {
+        const cards = [0, 1, 2].map(su => pickOne(s, s.left[d].filter(c => c.s === su)));
+        discard(s, e.cards.concat(s.left[d].filter(c => !cards.includes(c))));
+        nh[d] = { cards, author: e.autopilot ? null : e.author, kind: 'cleanup' };
+      }
       else {
         discard(s, s.left[d]);
         nh[d] = e.autopilot ? { cards: e.cards, author: null, kind: 'autopilot' } : { cards: e.cards, author: e.author, kind: 'rejected', stamp: e.stamp, subject: e.subject, style: e.style, id: e.id };
@@ -346,7 +361,7 @@ const OP = (() => {
     else {
       s.phase = 'whistle'; s.envs = []; s.wb = {};
       for (const p of s.P) if (!isHuman(s, p.id)) s.wb[p.id] = botWhistle(s, p.id);
-      if (s.spectate) resolveWhistle(s, E);
+      if (complete(s, s.wb)) resolveWhistle(s, E);
     }
   }
   function resolveWhistle(s, E) {
@@ -375,28 +390,42 @@ const OP = (() => {
   }
   function fmt(v) { if (v === 'V') return '±2'; return (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v); }
 
+  const validTarget = (s, t) => t === 'none' || ((typeof t === 'number' || typeof t === 'string') && String(t).trim() !== '' && Number.isInteger(+t) && +t >= 0 && +t < s.n);
+
   // ---------- the one entry point ----------
   function apply(state, seat, a) {
     const s = JSON.parse(JSON.stringify(state)); const E = [];
-    const humanTurn = seat === humanSeat(s);
+    const humanTurn = isHuman(s, seat);
     let err = null;
     switch (a.type) {
-      case 'begin': if (s.phase !== 'brief') err = 'Already started.'; else startRound(s, E); break;
+      case 'begin': if (s.multiplayer && seat !== -1) { err = 'Room controls this phase.'; break; } if (s.phase !== 'brief') err = 'Already started.'; else startRound(s, E); break;
       case 'submitWork': if (s.phase !== 'work' || !s.work[seat]) err = 'Not your turn to work.'; else err = submitWork(s, seat, a, E); break;
       case 'approve': if (s.phase !== 'decide' || seat !== s.ceo || !humanTurn) err = 'Only the CEO can nominate.'; else err = nominate(s, a.id, E); break;
       case 'boardVote':
         if (s.phase !== 'board' || !humanTurn || seat === s.ceo) { err = 'No Board vote open.'; break; }
-        s.bvotes[seat] = a.vote === 'open' ? 'open' : 'ratify'; resolveBoard(s, E); break;
+        if (seat in s.bvotes || !['open', 'ratify'].includes(a.vote)) { err = 'Invalid or duplicate vote.'; break; }
+        s.bvotes[seat] = a.vote; if (complete(s, s.bvotes, s.ceo)) resolveBoard(s, E); break;
       case 'warnVote':
         if (s.phase !== 'reveal' || !humanTurn) { err = 'No warning vote open.'; break; }
-        s.wvotes[seat] = a.target === 'none' ? 'none' : +a.target; resolveWarn(s, E); break;
+        if (seat in s.wvotes || !validTarget(s, a.target)) { err = 'Invalid or duplicate vote.'; break; }
+        s.wvotes[seat] = a.target === 'none' ? 'none' : +a.target; if (complete(s, s.wvotes)) resolveWarn(s, E); break;
       case 'investigate':
         if ((s.phase !== 'reveal' && s.phase !== 'review') || seat !== s.ceo || !humanTurn || s.invq) { err = 'Only the CEO can investigate, once a quarter.'; break; }
         err = investigate(s, +a.target); break;
       case 'whistleVote':
         if (s.phase !== 'whistle' || !humanTurn) { err = 'No vote open.'; break; }
-        s.wb[seat] = a.target === 'none' ? 'none' : +a.target; resolveWhistle(s, E); break;
+        if (seat in s.wb || !validTarget(s, a.target)) { err = 'Invalid or duplicate vote.'; break; }
+        s.wb[seat] = a.target === 'none' ? 'none' : +a.target; if (complete(s, s.wb)) resolveWhistle(s, E); break;
+      case 'timeout':
+        if (!s.multiplayer || seat !== -1) { err = 'Room controls deadlines.'; break; }
+        if (s.phase === 'decide') nominate(s, isHuman(s, s.ceo) ? pickOne(s, s.envs).id : botPick(s), E);
+        else if (s.phase === 'board') { for (const p of s.P) if (p.id !== s.ceo && !(p.id in s.bvotes)) s.bvotes[p.id] = 'ratify'; resolveBoard(s, E); }
+        else if (s.phase === 'reveal') { for (const p of s.P) if (!(p.id in s.wvotes)) s.wvotes[p.id] = 'none'; resolveWarn(s, E); }
+        else if (s.phase === 'whistle') { for (const p of s.P) if (!(p.id in s.wb)) s.wb[p.id] = 'none'; resolveWhistle(s, E); }
+        else err = 'No deadline action.';
+        break;
       case 'advance':
+        if (s.multiplayer && seat !== -1) { err = 'Room controls this phase.'; break; }
         if (s.phase === 'decide' && (s.spectate || s.ceo !== seat)) nominate(s, botPick(s), E);
         else if (s.phase === 'board') { if (humanSeat(s) >= 0 && !(humanSeat(s) in s.bvotes)) s.bvotes[humanSeat(s)] = 'ratify'; resolveBoard(s, E); }
         else if (s.phase === 'review') next(s, E);

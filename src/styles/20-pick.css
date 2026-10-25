@@ -19,3 +19,10 @@
 @keyframes pgTurn { 0% { transform: scale(var(--k)) } 50% { transform: scale(var(--k)) translateY(-12px) rotate(-3deg) } 100% { transform: scale(var(--k)) } }
 @keyframes cardOut { from { transform: translateY(-30px) scale(.8) rotate(-4deg); opacity: 0 } to { transform: rotate(-.6deg); opacity: 1 } }
 @media (prefers-reduced-motion: reduce) { .pg.pick .cp-w, .pg.fall, .pg.pull .cp, .pg.pull .line { animation: none } }
+
+[data-phase="board"] .board .pages { justify-content: center; align-items: center }
+[data-phase="board"] .board .pg.faded { opacity: .28; transform: scale(.8) }
+[data-phase="board"] .board .pg:not(.faded) { order: -1; flex-basis: 100%; display: flex; flex-direction: column; align-items: center; padding: 20px 0 30px }
+[data-phase="board"] .board .pg:not(.faded) .cp-w { --k: 1 }
+[data-phase="board"] .board .pg:not(.faded)::before { content: 'THE CEO’S NOMINEE'; font-size: 12px; font-weight: 900; letter-spacing: .18em; margin-bottom: 25px; color: #efd091 }
+[data-phase="board"] .board .pg:not(.faded) .pg-under { max-width: 500px }

@@ -1,3 +1,5 @@
+> Original design brief. See [current implementation](IMPLEMENTED.md) for the shipped modules, controls, six-spare rules and narration status.
+
 # Staff Induction: build brief
 
 A skippable how-to-play video that plays before Q1, built from the game's own pieces (felt, paper, colour cards, cover pages, stickers, the calculator) and narrated by an ElevenLabs voice. Script and shot list: [`script.md`](script.md). Things the explainer exposed about the UI: [`ui-findings.md`](ui-findings.md).

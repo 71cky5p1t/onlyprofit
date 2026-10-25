@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Only Profit</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,6 +41,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 h1, h2, h3 { text-wrap: balance; margin: 0 }
 h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .muted { color: var(--ink-2) }
+
 /* ---------- masthead: black band, phase tab, profit calculator ---------- */
 .mast { background: var(--ink); color: var(--stock); position: relative; z-index: 2 }
 .mast .wrap { display: flex; align-items: center; gap: 18px 22px; padding-block: 10px; flex-wrap: wrap }
@@ -79,6 +81,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--table-rule); margin-bottom: 14px; color: var(--on-table) }
 .section-head .label { color: var(--on-table-2) }
 @media (max-width: 980px) { .layout { grid-template-columns: minmax(0, 1fr) } .desk { position: static; max-height: none; order: -1; width: 100%; max-width: 440px; justify-self: center } }
+
 /* ---------- desk: your phone. No paper box: objects lie on the same felt as the TV ---------- */
 .desk { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); max-height: calc(100vh - 32px); overflow: auto; color: var(--on-table); overscroll-behavior: contain; scrollbar-width: thin }
 .desk-head { position: sticky; top: 0; z-index: 5; display: grid; gap: 0; margin-bottom: 14px; border-radius: 10px 10px 4px 4px; overflow: hidden;
@@ -180,6 +183,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .row-label { font: 700 10px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3) }
 .tags.one { grid-template-columns: minmax(0, 220px); justify-content: center; margin-top: 18px }
 .nametag.mine { cursor: default; transform: rotate(-1.5deg) }
+
 /* the card: one layout at one size, scaled as a whole. 1u = 1/96 of the card's width, so words wrap the same everywhere */
 :root { --suit-0: #3F63B8; --suit-1: #C9A227; --suit-2: #8A5FA8 }
 .s-0 { --suit: var(--suit-0) } .s-1 { --suit: var(--suit-1) } .s-2 { --suit: var(--suit-2) }
@@ -212,6 +216,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 [data-cards="colour"] .card .dymo i { box-shadow: 0 0 0 1.5px #FBF6EA }
 [data-cards="colour"] .card.shown { box-shadow: inset 0 0 0 3px rgba(251,246,234,.9), 0 0 0 3px var(--gold), 0 7px 14px -7px rgba(0,0,0,.55) }
 [data-cards="colour"] .card.spare { opacity: .7 }
+
 
 
 /* ---------- the play area: one felt surface. Policy floats on top, hours in the tray, hand fanned below ---------- */
@@ -285,6 +290,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .play.redeal .fan .card, .play.redeal .fan .card::before, .play.redeal .fan .card::after { animation: none }
 
   background: repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 3px), var(--ink); box-shadow: 0 1px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15) }
+
 /* stamps */
 .stamps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
 .stamp-btn { border: 2px solid var(--ink-3); background: transparent; border-radius: 4px; padding: 9px 4px; font: 900 11px/1.15 var(--f-body); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3) }
@@ -316,6 +322,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .letter .role.sab { color: var(--red) }
 .letter .role.loyal { color: var(--good) }
 .sig { font: italic 500 14px/1.3 var(--f-body); color: var(--ink-2) }
+
 /* ---------- the pile on the table ---------- */
 .env-stamp { justify-self: start; font: 900 11px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; padding: 5px 7px; border: 2.5px solid currentColor; border-radius: 3px; transform: rotate(-4deg); mix-blend-mode: multiply }
 .env-stamp.Rec { color: var(--good) } .env-stamp.Risky { color: #B4561C } .env-stamp.Not { color: var(--red) }
@@ -347,6 +354,7 @@ button.pg { cursor: pointer } button.pg:hover .cp-w { transform: translateY(-4px
   .pages.n7 .pg { width: 148px } .pages.n7 .cp-w { --k: .51 } .pages.n7 .placeholder { width: 143px; height: 202px }
   .pages.n8 .pg { width: 130px } .pages.n8 .cp-w { --k: .45 } .pages.n8 .placeholder { width: 126px; height: 178px } }
 @media (max-width: 720px) { .pg { width: 150px } .pg .cp-w { --k: .52 } .placeholder { width: 146px; height: 206px } }
+
 /* ---------- paper on the table: bulletin board, ledger tape, staff ---------- */
 .feed { display: grid; background: var(--stock); color: var(--ink); border-radius: 4px; box-shadow: var(--lift); position: relative }
 .feed-item { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding: 10px 16px; border-top: 1px solid var(--stock-3); font-size: 14px }
@@ -399,6 +407,7 @@ table.exit-t th { font: 800 10px/1 var(--f-body); letter-spacing: .1em; text-tra
 table.exit-t tr.win td { background: #FBF6EA }
 table.exit-t .sub-mono { font-family: var(--f-body); font-weight: 700 }
 .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); transform: translateX(-50%); background: var(--ink); color: var(--stock); padding: 11px 16px; border-radius: 6px; font: 700 13.5px/1.2 var(--f-body); z-index: 30; box-shadow: 0 10px 24px -10px rgba(0,0,0,.6) }
+
 /* ---------- stripe wipe between phases ---------- */
 .wipe { position: fixed; inset: 0; z-index: 40; pointer-events: none; display: grid; place-items: center; transform: translateX(-101%);
   background: linear-gradient(90deg, var(--gold) 0 25%, var(--sunset) 25% 50%, var(--rust) 50% 75%, var(--teak) 75%);
@@ -416,6 +425,7 @@ table.exit-t .sub-mono { font-family: var(--f-body); font-weight: 700 }
   .wipe { display: none } .big-stamp, .deal .card, .tr-row.new { animation: none }
   button.env:hover, .env.sel { transform: none } .meter-fill { transition: none }
 }
+
 /* ---------- depth: felt nap, a pool of lamp light, and the phone's own surface ---------- */
 body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .22; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E") }
@@ -423,6 +433,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .desk-body { background: radial-gradient(90% 60% at 50% 18%, rgba(255,255,255,.07), transparent 70%) }
 .tray .slip { justify-self: start; font-size: 11.5px; padding: 5px 8px }
 .tray { grid-template-columns: 1fr auto 1fr }
+
 /* ---------- Finalise: the hand drops, the policy squares up into a pile, a blank cover page lands on top ---------- */
 .play { position: relative }
 .play > .stuff { position: absolute; left: 50%; top: 2px; width: 118px; height: 167px; margin-left: -59px; z-index: 9; pointer-events: none; border-radius: 2px;
@@ -439,6 +450,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 @keyframes pile-l { to { transform: translate(calc(100% + 10px), 6px) rotate(-4deg) } }
 @keyframes pile-m { to { transform: translate(0, 3px) rotate(2deg) } }
 @keyframes pile-r { to { transform: translate(calc(-100% - 10px), 0) rotate(-1deg) } }
+
 /* ---------- office icons and peeking cards ---------- */
 .ico { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; display: inline-block }
 .slip .ico, .btn .ico { width: 16px; height: 16px; stroke-width: 2.4 }
@@ -450,6 +462,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .mini .peek i { background: var(--brand); color: var(--brand-ink); font-size: 7px; padding-top: 5px }
 .mini .peek .pos { color: var(--good) } .mini .peek .neg { color: var(--red) } .mini .peek .gold { color: var(--sunset) }
 .mini .yours { z-index: 2 }
+
 /* ---------- stickers: cheap praise, dog-eared ---------- */
 .stickers { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 0; padding: 0 6px }
 .stk { --c: #F3D36B; --k: #6B4A0E; position: relative; font: 900 8.5px/1 var(--f-body); font-style: normal; letter-spacing: .06em; text-transform: uppercase; color: var(--k); background: var(--c); padding: 5px 9px 4px 6px; margin: 0 -2px; border-radius: 2px;
@@ -464,6 +477,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .nametag .stickers { min-height: 18px; margin-top: 2px }
 .staff-meta .stickers { justify-content: flex-end; padding: 0 }
 .staff .stk { font-size: 8px }
+
 /* ---------- clocking in ---------- */
 .nametag.big { width: min(300px, 100%); justify-self: center; cursor: default; padding-bottom: 14px; transform: rotate(-1.5deg); box-shadow: 0 16px 30px -14px rgba(0,0,0,.8) }
 .nametag.big .hello { font-size: 24px; padding: 12px 4px 9px } .nametag.big .hello small { font-size: 10px }
@@ -489,10 +503,12 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 @keyframes badge-in { from { transform: translateY(-60px) rotate(-14deg) scale(.6); opacity: 0 } }
 .ink-name { height: 20px; vertical-align: middle }
 @media (prefers-reduced-motion: reduce) { .play > .stuff, .preview.arrive .env, .badge-hold.reveal .nametag { animation: none } }
+
 /* on a phone the desk is the whole screen: header pinned top, footer pinned bottom */
 .desk { display: flex; flex-direction: column }
 .desk-body { flex: 1 0 auto; align-content: start }
 @media (max-width: 980px) { .desk { min-height: calc(100dvh - 24px) } }
+
 /* employment letter: a typed memo on letterhead with one rubber stamp */
 .memo-sheet { position: relative; display: grid; gap: 9px; background: #F7F1E1; color: var(--ink); padding: 16px 18px 18px; border-radius: 2px; box-shadow: var(--lift); transform: rotate(-.6deg); font: 400 14px/1.35 var(--f-seg);
   background-image: linear-gradient(transparent 0 calc(100% - 1px), rgba(0,0,0,.04) 0); background-size: 100% 26px }
@@ -516,6 +532,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .memo-fine { font-size: 12px; color: var(--ink-2); text-align: center }
 .memo-sig { width: 120px; justify-self: end; margin-top: -4px; fill: none; stroke: #2C46B8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: .8 }
 @media (prefers-reduced-motion: reduce) { .memo-stamp { animation: none } }
+
 /* brand type: the superlative decides how the company name is set */
 .logo-mark .ico { width: 20px; height: 20px; stroke-width: 2.2 }
 .mast { box-shadow: inset 0 -3px 0 var(--brand) }
@@ -525,6 +542,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 [data-brand-font="wide"] .brand-name { text-transform: uppercase; font-weight: 800; letter-spacing: .14em; font-size: .78em }
 [data-brand-font="script"] .brand-name { font-family: "Caveat", "Brush Script MT", cursive; font-weight: 700; font-size: 1.3em; letter-spacing: 0 }
 .lh-name .brand-name { font-size: inherit }
+
 /* ---------- Work screen, one material: cream paper on felt, overtime hours, red only for ink and the main key ---------- */
 /* the same card everywhere: the hand only leans a little */
 .fan .slot { margin-inline: 4px }
@@ -555,11 +573,22 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 /* the header keeps its rail; nothing else on the screen is dark */
 /* phones: the desk scrolls with the page (this has to come after the desk's own sticky rule) */
 @media (max-width: 980px) { .desk { position: static; max-height: none; overflow: visible } }
+
+/* A larger hand, with each spare directly below its policy suit. */
+.fan.expanded { display: grid; grid-template-columns: repeat(3, var(--cw)); gap: 17px 10px; padding: 8px 0 12px }
+.fan.expanded .slot { margin: 0; transform: none }
+.fan.expanded .card.drag:hover { transform: translateY(-5px) }
+.play.deal .fan .slot:nth-child(4) { --d: .61s }.play.deal .fan .slot:nth-child(5) { --d: .7s }.play.deal .fan .slot:nth-child(6) { --d: .79s }
+.hand-caption { text-align: center; font-size: 11px; letter-spacing: .03em; color: #e1e4d6; margin: 0 0 18px }
+.hand-labels { display: grid; grid-template-columns: repeat(3, var(--cw)); justify-content: center; gap: 10px; text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: #dbe2d1; margin: 10px 0 }
+@media (prefers-reduced-motion: reduce) { .fan.expanded .card.drag:hover { transform: none } }
+
 /* company logo marks */
 .mk { width: 60%; height: 60%; display: block; fill: currentColor }
 .mk .s { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round }
 .logo-mark .mk { width: 62%; height: 62% }
 .mini .peek i { display: grid; place-items: center; padding: 0 } .mini .peek i .mk { width: 16px; height: 16px; color: var(--brand-ink); opacity: .85 }
+
 /* phone: picked page lifts, the cards slide out from under it */
 .minis.picking .mini:not(.chosen) { animation: miniAway .45s ease both }
 .mini.chosen { z-index: 5; animation: miniLift .55s var(--bounce) both }
@@ -581,6 +610,14 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 @keyframes pgTurn { 0% { transform: scale(var(--k)) } 50% { transform: scale(var(--k)) translateY(-12px) rotate(-3deg) } 100% { transform: scale(var(--k)) } }
 @keyframes cardOut { from { transform: translateY(-30px) scale(.8) rotate(-4deg); opacity: 0 } to { transform: rotate(-.6deg); opacity: 1 } }
 @media (prefers-reduced-motion: reduce) { .pg.pick .cp-w, .pg.fall, .pg.pull .cp, .pg.pull .line { animation: none } }
+
+[data-phase="board"] .board .pages { justify-content: center; align-items: center }
+[data-phase="board"] .board .pg.faded { opacity: .28; transform: scale(.8) }
+[data-phase="board"] .board .pg:not(.faded) { order: -1; flex-basis: 100%; display: flex; flex-direction: column; align-items: center; padding: 20px 0 30px }
+[data-phase="board"] .board .pg:not(.faded) .cp-w { --k: 1 }
+[data-phase="board"] .board .pg:not(.faded)::before { content: 'THE CEO’S NOMINEE'; font-size: 12px; font-weight: 900; letter-spacing: .18em; margin-bottom: 25px; color: #efd091 }
+[data-phase="board"] .board .pg:not(.faded) .pg-under { max-width: 500px }
+
 /* ---------- cover pages: laid out at 280×396, scaled whole by --k ---------- */
 :root { --f-type: "Courier Prime", "Courier New", monospace; --f-comic: "Comic Neue", "Comic Sans MS", cursive; --f-serif: Fraunces, Georgia, serif; --f-poster: Anton, Impact, sans-serif }
 .cp-w { --k: 1; width: calc(280px * var(--k)); height: calc(396px * var(--k)); position: relative; flex: none; transform: rotate(var(--t, 0deg)) }
@@ -665,6 +702,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .cert-seal { align-self: flex-start; width: 58px; height: 58px; flex: none; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 38% 32%, #F7D38A, #E9A23B 50%, #A86A16); box-shadow: 0 0 0 4px #E9A23B, 0 0 0 5px #A86A16 }
 .cert-seal .px { width: 36px; height: 36px }
 .t-certificate .cp-stamp { right: 30px; bottom: 30px }
+
 /* ---------- tokens are overtime hours: a time card you punch, hour chits on the cards ---------- */
 .purse { justify-self: start; display: inline-flex; align-items: center; gap: 4px; padding: 4px 6px 4px 5px; border-radius: 2px; background: var(--stock); color: var(--ink); transform: rotate(-2deg);
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.1), 0 2px 4px rgba(0,0,0,.4) }
@@ -683,6 +721,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .t-cost .hrs { font-size: 11px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); transform: none }
 .t-redeal:disabled .hrs { opacity: .5 }
 @media (prefers-reduced-motion: reduce) { .land .paid, .shown .paid { animation: none } }
+
 /* ---------- the policy as one sentence, highlighter in the suit colours ---------- */
 .line { margin: 0; max-width: 100%; padding: 9px 12px 8px; background: var(--stock); color: var(--ink); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6);
   font: 800 15px/1.55 var(--f-body); letter-spacing: -.01em; text-align: center; text-wrap: balance; transform: rotate(-.6deg) }
@@ -709,6 +748,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 @keyframes was { to { opacity: .35; text-decoration: line-through } }
 @keyframes now { from { opacity: 0; transform: scale(2) } }
 @media (prefers-reduced-motion: reduce) { .line.go * { animation: none !important } .line.go .sfx { display: none } }
+
 /* ---------- the cover page on the phone: templates, then dress it ---------- */
 .tpls { display: grid; grid-template-columns: repeat(3, 98px); justify-content: center; gap: 18px 12px; padding: 14px 0 6px }
 .tpl { border: 0; padding: 0; background: none; cursor: pointer; transition: transform .2s var(--bounce) }
@@ -747,6 +787,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .mini .peek { z-index: 0 } .mini .cp-w { z-index: 1 }
 .board-nom { display: grid; justify-items: center; gap: 12px; padding: 4px 0 2px }
 .desk .line { font-size: 14px; margin-bottom: 4px }
+
 /* ---------- annual report ---------- */
 .report { display: grid; gap: 34px; justify-items: center; padding: 8px 0 18px }
 .rp-pages { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap }
@@ -771,6 +812,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .rp-tag.eoty { transform: translateY(-6px) rotate(-1.5deg); box-shadow: 0 0 0 3px var(--gold), var(--lift) }
 .rosette { position: absolute; left: -30px; top: -30px; width: 74px; height: auto; transform: rotate(-12deg); filter: drop-shadow(0 4px 4px rgba(0,0,0,.4)); font-family: var(--f-body); animation: thump .5s cubic-bezier(.2,.9,.3,1.3) 1s both }
 @media (prefers-reduced-motion: reduce) { .rosette { animation: none } }
+
 /* ---------- the signature line under every vote ---------- */
 .sign { position: relative; background: var(--stock); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); transform: rotate(-.6deg); touch-action: none }
 .sign::after { content: ""; position: absolute; left: 34px; right: 16px; bottom: 24%; border-bottom: 1.5px solid rgba(20,20,20,.45); pointer-events: none }
@@ -782,6 +824,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .sign.done { animation: filed .35s ease-in both }
 @keyframes filed { to { transform: translateY(-30px) rotate(-4deg); opacity: 0 } }
 @media (prefers-reduced-motion: reduce) { .sign.done, .sign.nope { animation: none } }
+
 /* ---------- TV desk objects: till roll ledger, name-tag staff, CEO name plates ---------- */
 .objs { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 44px; align-items: start; margin-top: 8px }
 @media (max-width: 760px) { .objs { grid-template-columns: minmax(0, 1fr) } }
@@ -823,6 +866,7 @@ section > .label { color: var(--on-table-2) }
 .plate-n b { font: 800 13px/1.15 var(--f-body); letter-spacing: .08em; text-transform: uppercase; overflow-wrap: anywhere; margin-top: 3px }
 .plate-n.past { color: #7D725A }
 .plate-n.now { background: linear-gradient(#E6CB86, #C49A45 55%, #9C7630); color: #241B0B; box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 10px 0 -4px #5A3E26, 0 0 22px -2px rgba(230,203,134,.45), 0 12px 12px -4px rgba(0,0,0,.6) }
+
 /* ---------- the honest stamp gets a pencil tick; PIP sticker; the CEO's file drawer ---------- */
 .stampstrip button { position: relative }
 .stampstrip button.right::after { content: ""; position: absolute; top: 3px; right: 6px; width: 14px; height: 12px; opacity: .55; pointer-events: none;
@@ -839,6 +883,10 @@ section > .label { color: var(--on-table-2) }
 .files:has(.pulled) { grid-template-columns: 160px; justify-content: center }
 .file.pulled { transform: rotate(-2deg) }
 .file-stamp { position: absolute; inset: auto 0 14px; margin: auto; width: max-content; font: 900 14px/1 var(--f-body); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: var(--red); border: 2px solid currentColor; border-radius: 3px; padding: 4px 8px 3px; transform: rotate(-7deg); opacity: .85 }
+
+.stampstrip button.right::after { opacity: 1; width: 18px; height: 16px; filter: brightness(.42); top: -4px; right: 5px }
+.bar3 button { color: #736d5e }.bar3 button span { border-color: #aaa18c }
+
 /* sound toggle: a small card-stock disc in the corner of the felt */
 .au-btn { position: fixed; z-index: 40; left: calc(14px + env(safe-area-inset-left, 0px)); bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--stock); color: var(--ink); box-shadow: var(--lift); display: grid; place-items: center; opacity: .85 }
@@ -846,6 +894,126 @@ section > .label { color: var(--on-table-2) }
 .au-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round }
 .au-btn svg path:first-child { fill: currentColor }
 .au-btn[aria-pressed="true"] .x, .au-btn[aria-pressed="false"] .w { display: none }
+
+.induction { max-width: 1120px; margin: auto; padding: 24px 30px 40px; min-height: 100svh; display: flex; flex-direction: column }
+.lesson-top { display: flex; justify-content: space-between; gap: 16px; align-items: center; font-size: 11px; letter-spacing: .12em; font-weight: 800 }.lesson-top b { margin-left: 14px; color: #e9bb62 }
+.lesson-skip { background: none; border: 1px solid #9eac95; color: #eee9d5; border-radius: 5px; padding: 10px 12px; font-size: 12px }
+.lesson-heading { text-align: center; margin: 30px 0 15px }.lesson-heading p { font-size: 10px; letter-spacing: .2em; opacity: .65 }.lesson-heading h1 { font-size: clamp(29px, 5vw, 53px); line-height: 1; letter-spacing: -.045em; max-width: 800px; margin: auto }
+.lesson-stage { flex: 1; min-height: 340px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 20px 0; animation: lesson-in .35s ease both }
+.lesson-cards { display: grid; grid-template-columns: repeat(3, auto); gap: 14px; align-items: center }.lesson-cards .card { --cw: clamp(88px, 13vw, 145px) }.lesson-cards .card:nth-child(1) { transform: rotate(-5deg) }.lesson-cards .card:nth-child(3) { transform: rotate(5deg) }
+.lesson-cards.six { gap: 12px }.lesson-cards.six .card { --cw: 84px }.lesson-cards.mini-policy .card { --cw: 60px }
+.lesson-suits { width: min(100%, 465px); display: grid; grid-template-columns: repeat(3,1fr); text-align: center; text-transform: uppercase; font-size: 12px; font-weight: 800; letter-spacing: .1em }
+.lesson-equation { font: 24px var(--f-seg); text-align: center }
+.lesson-caption { background: #eee8d8; color: #292c24; padding: 17px 25px; max-width: 780px; width: 100%; margin: 20px auto; font-size: clamp(15px, 2vw, 19px); line-height: 1.5; box-shadow: 0 7px 13px #142c2966; border-block: 1px dashed #aaa590; min-height: 91px; text-align: center }
+.lesson-controls { display: flex; align-items: center; gap: 10px; max-width: 780px; width: 100%; margin: 0 auto }
+.lesson-controls > button { background: #20392f; color: #eee8d8; border: 1px solid #849281; border-radius: 4px; min-height: 42px; padding: 10px 15px; font-weight: 700 }.lesson-controls button:disabled { opacity: .3 }
+.lesson-controls nav { display: flex; justify-content: center; flex: 1; gap: 5px; flex-wrap: wrap }.lesson-controls nav button { width: 9px; height: 9px; padding: 0; border: 1px solid #c1c7b1; border-radius: 50%; background: transparent }.lesson-controls nav button[aria-current="step"] { background: #efb74c; border-color: #efb74c; transform: scale(1.3) }
+.lesson-progress { height: 3px; max-width: 780px; width: 100%; margin: 15px auto; background: #1b362c }.lesson-progress i { display: block; height: 100%; background: #efb74c; transition: width .1s linear }
+.binder { width: min(350px, 88vw); min-height: 315px; padding: 35px 25px 25px 48px; border-radius: 7px 14px 14px 7px; display: flex; flex-direction: column; gap: 20px; background: linear-gradient(90deg,#142821 0 22px,#526052 23px,#243c31 26px); border: 1px solid #7b8970; box-shadow: 8px 9px 0 #d4cdb8, 11px 12px 0 #253c31, 0 25px 40px #172b2480; transform: rotate(-5deg) }
+.binder-seal { width: 45px; height: 45px; color: #f2d99f }.binder-seal svg { width: 100%; height: 100% }.binder small { font-size: 9px; text-transform: uppercase; letter-spacing: .11em }.binder strong { font-size: 45px; line-height: .95; letter-spacing: -.05em }.binder-label { background: #e6dfc8; color: #23342b; padding: 9px; font-size: 13px; letter-spacing: .07em; font-weight: 800; text-align: center }.binder-foot { font-size: 10px; opacity: .6 }
+.lesson-signoff .binder-label { color: #a62822; border: 3px solid; transform: rotate(-4deg) }
+.lesson-calculator { width: min(440px,100%); display: grid; justify-items: center; gap: 25px }.lesson-calculator .calc { width: 100%; padding: 22px }.lesson-calculator .val { font-size: 85px; text-align: right; margin-top: 18px }.lesson-quarters { display: flex; justify-content: space-around; padding: 12px; font-weight: 800 }
+.lesson-people { display: grid; grid-template-columns: repeat(3, minmax(90px,150px)); gap: 16px }.lesson-people .nametag:nth-child(even) { transform: rotate(4deg) }.lesson-memo,.lesson-record { background: var(--stock); color: var(--ink); padding: 22px 28px; box-shadow: var(--lift); display: grid; gap: 10px; text-align: center; transform: rotate(-2deg) }.lesson-memo span { font-size: 10px; letter-spacing: .07em }.lesson-memo b { font-size: 26px }.lesson-memo i { font-size: 14px; margin: 8px }.lesson-purse { transform: scale(1.5) }.lesson-stamps { width: min(480px,100%) }.lesson-pages { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: center }.lesson-pages .cp-w { --k: .58!important }.lesson-ceo { display: flex; gap: 32px; align-items: center }.lesson-ceo .nametag { width: 140px }.lesson-choices { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap }.vote-prop { border: 3px solid; padding: 10px 20px; color: #e2dfcc; font-weight: 900; letter-spacing: .1em; transform: rotate(-3deg) }.vote-prop.open { color: #f0bb65; transform: rotate(3deg) }.lesson-approved .line { max-width: 600px; background: var(--stock); padding: 15px }.final-people { grid-template-columns: repeat(2, minmax(110px,180px)) }
+@keyframes lesson-in { from { opacity: 0; transform: translateY(12px) } }
+
+@media (max-width: 740px) { .induction { padding: 18px 16px 35px }.lesson-heading { margin-top: 25px }.lesson-stage { min-height: 300px }.lesson-caption { padding: 14px; min-height: 100px }.lesson-controls { gap: 6px }.lesson-controls > button { padding: 8px 10px; font-size: 12px }.lesson-controls nav { gap: 4px }.lesson-controls nav button { width: 7px; height: 7px }.lesson-pages .cp-w { --k: .38!important }.lesson-ceo { gap: 15px }.lesson-ceo .cp-w { --k: .55!important }.lesson-ceo .nametag { width: 100px }.lesson-people { gap: 9px }.lesson-people .nametag b { font-size: 17px } }
+@media (prefers-reduced-motion: reduce) { .lesson-stage { animation: none }.lesson-progress i { transition: none } }
+
+/* Title screen and induction share the office props. */
+body { margin: 0 }
+.lobby { max-width: 1230px; margin: auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 7%; padding: 54px 30px 70px; align-items: center }
+.lobby-pitch { position: relative; padding-block: 12px }
+.lobby-kicker { display: flex; align-items: center; gap: 14px; font-size: 10px; font-weight: 800; letter-spacing: .16em }
+.lobby-kicker .logo-mark { width: 37px; height: 37px }
+.lobby h1 { font-size: clamp(74px, 9vw, 128px); letter-spacing: -.075em; line-height: .82; font-weight: 900; margin: 28px 0 25px; text-shadow: 0 6px 0 #203a30 }
+.lobby h1 span { color: #efb74c }
+.lobby-tagline { font-size: clamp(24px, 3vw, 36px); font-weight: 800; letter-spacing: -.035em; line-height: 1.05; margin: 0 0 18px }
+.lobby-summary { color: #d4ddce; font-size: 16px; line-height: 1.5 }
+.lobby-props { display: flex; align-items: center; margin: 34px 0; padding-left: 12px; position: relative }
+.lobby-props .card { --cw: 110px; transform: rotate(-9deg); margin-right: 5px }
+.lobby-props .card:nth-child(2) { transform: rotate(2deg) translateY(-12px) }
+.lobby-props .card:nth-child(3) { transform: rotate(11deg) }
+.lobby-stamp { position: absolute; right: 0; bottom: 6px; color: #f0c86b; border: 4px solid; padding: 9px 15px; font-size: 22px; line-height: 1; font-weight: 900; transform: rotate(-13deg); background: #2d4a3eef }
+.lobby-stamp small { font: italic 16px/1.2 var(--f-body) }
+.lobby-meta { font-size: 12px; font-weight: 700; letter-spacing: .03em; color: #e8e7d2 }.lobby-meta i { padding-inline: 9px }
+.lobby-form { margin: 0; width: 100%; max-width: 460px; overflow: visible; transform: rotate(.5deg) }
+.lobby-form .setup-hero h2 { font-size: 43px; letter-spacing: -.045em; line-height: 1.1 }
+.lobby-form .setup-hero { border-bottom: 1px dashed #b5ac96; padding: 28px }
+.lobby-form .setup-body { gap: 23px }
+.lobby-form .seg button { min-height: 40px }.lobby-form .field:first-child .seg button { flex: 1 }
+.lobby-form .btn.primary { font-size: 17px; padding: 18px 12px; }
+.induction-binder { display: flex; align-items: center; text-align: left; gap: 16px; background: #243c36; color: #eee8d5; border: 0; padding: 16px; border-radius: 4px; box-shadow: 3px 4px 0 #bcb6a4; transform: rotate(-1deg) }
+.induction-binder b { font-size: 14px; letter-spacing: .07em }.induction-binder small { display: block; font-size: 12px; color: #c3ccbd; margin-top: 5px }.induction-binder i { margin-left: auto; font-style: normal }
+.book-spine { height: 37px; width: 7px; border-block: 5px solid #c6c4b8; background: #14251e; flex-shrink: 0 }
+.induction-binder:hover { background: #314f44; transform: rotate(0) }
+.lobby-options { border-top: 1px dashed #b5ac96; padding-top: 18px }.lobby-options summary { cursor: pointer; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em }.options-body { display: grid; gap: 19px; padding-top: 22px }
+.lobby-fine { margin: 0; text-align: center; font-size: 12px; color: #777064 }
+
+@media (max-width: 740px) { .lobby { grid-template-columns: 1fr; gap: 30px; padding: 25px 22px 50px }.lobby-pitch { text-align: center }.lobby-kicker,.lobby-props { justify-content: center }.lobby h1 { font-size: clamp(74px,19vw,110px) }.lobby-tagline { font-size: 28px }.lobby-props { display: none }.lobby-form { max-width: 500px; margin: auto }.lobby-meta { margin-top: 25px } }
+
+.training-tip { position: relative; background: #eee7d3; color: #353a2d; padding: 12px 34px 12px 14px; border-left: 4px solid #dba444; box-shadow: var(--lift); font-size: 12px; line-height: 1.45 }
+.training-tip > span { font-size: 8px; font-weight: 900; letter-spacing: .14em; color: #8a6630 }.training-tip p { margin: 4px 0 0 }.training-tip button { position: absolute; right: 6px; top: 7px; border: 0; background: none; color: #5b6253; font-size: 22px }
+
+/* Personal desks keep the paper flat on a fixed perspective surface. */
+:root, [data-desk-theme="oak"] {
+  --desk-wood: #846341;
+  --desk-edge: #493420;
+  --desk-grain: repeating-linear-gradient(3deg, transparent 0 4px, #33231219 5px, transparent 7px 18px);
+  --desk-mat: #343e37;
+  --desk-mat-edge: #9eac9370;
+}
+[data-desk-theme="graphite"] {
+  --desk-wood: #505456;
+  --desk-edge: #262a2c;
+  --desk-grain: repeating-linear-gradient(90deg, transparent 0 2px, #ffffff08 3px, transparent 4px);
+  --desk-mat: #2c333e;
+  --desk-mat-edge: #94a4b270;
+}
+[data-desk-theme="mint"] {
+  --desk-wood: #90a694;
+  --desk-edge: #4d6558;
+  --desk-grain: repeating-linear-gradient(115deg, transparent 0 7px, #eef4dd12 8px, transparent 9px);
+  --desk-mat: #344b46;
+  --desk-mat-edge: #adc8b570;
+}
+.desk-theme-picker { min-width: 0; margin: 0; padding: 0; border: 0; }
+.desk-theme-picker legend { margin-bottom: 9px; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.desk-theme-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.desk-theme-option { min-width: 0; padding: 5px 5px 9px; border: 1px solid #27282245; border-radius: 3px; color: var(--ink); background: transparent; text-align: left; cursor: pointer; }
+.desk-theme-option[aria-pressed="true"] { border-color: var(--ink); background: #fff8; box-shadow: 0 0 0 1px var(--ink); }
+.desk-theme-option:hover { background: #fff5; }
+.desk-theme-option:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+.desk-theme-name { display: block; margin-top: 7px; font: 800 11px/1.2 var(--f-body); }
+.desk-theme-option small { display: block; margin-top: 3px; font: 10px/1.25 var(--f-body); opacity: .7; }
+.desk-swatch { display: block; position: relative; height: 55px; overflow: hidden; border-radius: 2px; border-bottom: 6px solid #493420; background: repeating-linear-gradient(3deg, transparent 0 5px, #33231220 6px, transparent 7px 15px), #96734f; }
+.desk-swatch-graphite { background: #505456; border-bottom-color: #262a2c; }
+.desk-swatch-mint { background: #90a694; border-bottom-color: #4d6558; }
+.desk-swatch::before { content: ''; position: absolute; inset: 10px 15px 5px 11px; background: #343e37; border: 1px solid #ffffff28; transform: skewX(-12deg); box-shadow: 2px 2px 3px #0004; }
+.desk-swatch-graphite::before { background: #2c333e; }
+.desk-swatch-mint::before { background: #344b46; }
+.desk-swatch i { position: absolute; left: 28%; top: 16px; width: 29%; height: 23px; background: #eee7d3; transform: rotate(-7deg); box-shadow: 1px 2px 2px #0005; }
+.desk-swatch b { position: absolute; right: 14%; top: 11px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid #e2d8be; background: #533a28; box-shadow: 1px 2px 1px #0005; }
+.layout:has(> .desk) { padding-top: 0; }
+.layout:has(> .desk) > .board { padding-top: 26px; }
+[data-desk-theme] .desk { top: 0; isolation: isolate; background: var(--desk-wood); border-inline: 1px solid var(--desk-edge); border-bottom: 8px solid var(--desk-edge); border-radius: 0 0 5px 5px; box-shadow: 8px 12px 22px -12px #0008; }
+[data-desk-theme] .desk-head { margin-bottom: 0; border-radius: 0; border-top: 0; box-shadow: inset 0 -1px #ffffff12, 0 3px 5px #0005; }
+[data-desk-theme] .desk-body { position: relative; padding: 25px 9px 24px; background: linear-gradient(160deg, #ffffff15, transparent 35%), var(--desk-grain), var(--desk-wood); }
+[data-desk-theme] .desk-body::before { content: ''; position: absolute; inset: 16px 5px 12px; border: 1px solid var(--desk-mat-edge); border-radius: 4px 4px 12px 12px; background: linear-gradient(105deg, #ffffff06, transparent 50%), var(--desk-mat); box-shadow: 0 3px 3px #0005, inset 0 0 0 3px #0002; pointer-events: none; }
+[data-desk-theme] .desk-body::after { content: ''; position: absolute; top: 5px; right: 20px; width: 64px; height: 4px; background: #d6b464; border-right: 8px solid #b47d6d; border-left: 5px solid #39352e; transform: rotate(-2deg); box-shadow: 0 2px 2px #0006; pointer-events: none; }
+[data-desk-theme] .desk-body > * { position: relative; }
+[data-desk-theme] .desk-foot { padding: 12px; border-radius: 0; border-top: 1px solid #ffffff20; background: #292b26; box-shadow: 0 -3px 7px #0003; }
+[data-desk-theme] .desk-foot .btn.primary { color: #292a24; background: #e9dfc4; border: 1px solid #f7efd9; border-bottom-color: #9c947e; border-radius: 4px; box-shadow: 0 4px 0 #8f8875, 0 5px 3px #0005; text-shadow: none; }
+[data-desk-theme] .desk-foot .btn.primary:hover:not(:disabled) { background: #f4ead1; }
+[data-desk-theme] .desk-foot .btn.primary:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #8f8875; }
+[data-desk-theme] .desk-foot .btn.primary:focus-visible { outline: 3px solid #e7bd64; outline-offset: 5px; }
+@media (max-width: 980px) {
+  [data-desk-theme] .desk { max-width: 560px; }
+  [data-desk-theme] .desk-body > * { max-width: 430px; width: 100%; margin-inline: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .desk-theme-option { transition: none; }
+}
+
 </style>
 <div id="app"></div>
 <script>
@@ -882,6 +1050,8 @@ const OP_CONTENT = (() => {
   const DISPUTE = ["That is not what I sent.", "That proposal left my desk in perfect health.", "I'd like it minuted that {n} is lying.", "Interesting that it's {n} saying this.", "Check {n}'s desk, not mine.", "I have receipts. Not on me."];
   return { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, TEMPLATES, FONTS, SUBJ, LEX };
 })();
+
+
 // Bot players: saboteur modes, loyal temperaments, and each bot's memory of the table.
 const OP_BOTS = (() => {
   // [memo belief, warning threshold, risk appetite, faith in a hidden card, faith in a stamp]
@@ -1109,6 +1279,8 @@ const OP_BOTS = (() => {
   };
   return { PERS, PERS_SAY, make };
 })();
+
+
 // Game rules and state. Pure: no DOM, no Math.random, no clock.
 // apply(state, seat, action) -> { state, events } | { error }
 const OP = (() => {
@@ -1116,7 +1288,7 @@ const OP = (() => {
   const B = typeof OP_BOTS !== 'undefined' ? OP_BOTS : require('./bots.js');
   const { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, TEMPLATES, FONTS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };
+  const TARGETS = { 4: 24, 5: 25, 6: 26, 7: 26, 8: 27 };
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
@@ -1170,7 +1342,7 @@ const OP = (() => {
         return f ? { id: `2.${k}`, s: 2, v: f[2], w: f[0], fx: f[1] } : { id: `2.${k}`, s: 2, v, w: words[n++] };
       }));
     });
-    return { piles, disc: [[], [], []] };
+    return { piles: piles.map(p => shuffle(s, p.concat(p.map(c => Object.assign({}, c, { id: c.id + '.b' }))))), disc: [[], [], []] };
   }
   function draw(s, su) {
     const d = s.deck;
@@ -1181,11 +1353,18 @@ const OP = (() => {
   const discard = (s, cards) => cards.forEach(c => s.deck.disc[c.s].push(c));
 
   function plans(I, D, max = 3) {
-    const out = [[0, I.slice(), D.slice()]];
-    for (let su = 0; su < 3; su++) { const p = I.slice(), h = D.slice(); p[su] = D[su]; h[su] = I[su]; out.push([1, p, h]); }
-    if (max >= 3) for (const pair of [[0, 1], [0, 2], [1, 2]]) {
-      const p = I.slice(), h = D.slice(); for (const su of pair) { p[su] = D[su]; h[su] = I[su]; } out.push([3, p, h]);
-    }
+    const out = [];
+    const visit = (su, chosen) => {
+      if (su === 3) {
+        const cost = SWAP_COST[chosen.length]; if (cost > max) return;
+        const prop = I.slice(), hand = D.slice();
+        for (const k of chosen) { prop[D[k].s] = D[k]; hand[k] = I[D[k].s]; }
+        out.push([cost, prop, hand]); return;
+      }
+      visit(su + 1, chosen);
+      D.forEach((c, k) => { if (c.s === su) visit(su + 1, chosen.concat(k)); });
+    };
+    visit(0, []);
     return out;
   }
   // believed worth; seeRev = CEO view
@@ -1206,9 +1385,9 @@ const OP = (() => {
 
   // ---------- setup ----------
   function newGame(opts) {
-    const n = Math.max(4, Math.min(8, opts.players || 4));
+    const n = Math.max(4, Math.min(8, opts.roster?.length || opts.players || 4));
     const s = {
-      v: 1, rs: (opts.seed >>> 0) || 1, seed: opts.seed >>> 0, n, spectate: !!opts.spectate,
+      v: 1, rs: (opts.seed >>> 0) || 1, seed: opts.seed >>> 0, n, spectate: !!opts.spectate, multiplayer: Array.isArray(opts.roster),
       brand: LEX[opts.brand] ? opts.brand : 'op',
       loyalTier: opts.loyalTier || 'smart', sabTier: opts.sabTier || 'smart', easy: !!opts.easy,
       target: TARGETS[n] - (opts.easy ? 3 : 0), profit: 0, r: 0, phase: 'brief',
@@ -1223,7 +1402,7 @@ const OP = (() => {
     const sabs = shuffle(s, range(n)).slice(0, nSab);
     const names = shuffle(s, NAMES);
     s.P = range(n).map(i => ({
-      id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate,
+      id: i, name: opts.roster ? String(opts.roster[i].name).slice(0, 24) : i === 0 && !s.spectate ? 'You' : names[i], human: opts.roster ? !!opts.roster[i].human : i === 0 && !s.spectate,
       sab: sabs.includes(i), spec: null, fav: randomStyle(s),
       warnings: 0, leave: false, pip: false, accusations: 0, claims: 0, approved: [], ceoTurns: 0, skipCEO: false,
     }));
@@ -1237,11 +1416,12 @@ const OP = (() => {
     if (s.spectate) startRound(s, []);
     return s;
   }
-  const isHuman = (s, i) => !s.spectate && i === 0;
+  const isHuman = (s, i) => !!s.P[i]?.human;
+  const complete = (s, votes, exclude = -1) => s.P.every(p => p.id === exclude || p.id in votes);
   const humanSeat = s => (s.spectate ? -1 : 0);
-  const who = (s, i, cap) => (s.P[i].human ? (cap ? 'You' : 'you') : s.P[i].name);
-  const whose = (s, i) => (s.P[i].human ? 'your' : s.P[i].name + "'s");
-  const isAre = (s, i) => (s.P[i].human ? 'are' : 'is');
+  const who = (s, i, cap) => (s.P[i].human && !s.multiplayer ? (cap ? 'You' : 'you') : s.P[i].name);
+  const whose = (s, i) => (s.P[i].human && !s.multiplayer ? 'your' : s.P[i].name + "'s");
+  const isAre = (s, i) => (s.P[i].human && !s.multiplayer ? 'are' : 'is');
   function log(s, ev_, kind, text, extra) { const e = Object.assign({ r: s.r, kind, text }, extra || {}); s.feed.push(e); ev_.push(e); }
 
   function chooseCEO(s) {
@@ -1287,7 +1467,7 @@ const OP = (() => {
     for (let i = 0; i < s.n; i++) {
       const d = s.assign[i], inh = s.hands[d], p = s.P[i];
       p.dept = d; p.inh = inh;
-      const D = draw3(s);
+      const D = draw3(s).concat(draw3(s));
       if (p.leave) { const [e, h] = autopilot(s, i, inh.cards, D); e.dept = d; s.envs.push(e); s.left[d] = h; continue; }
       if (isHuman(s, i)) { s.work[i] = { D, R: draw3(s) }; continue; }
       botInheritMemo(s, i, inh);
@@ -1300,7 +1480,7 @@ const OP = (() => {
   }
   // CEO investigations: one per quarter, checked in private; only a PIP is announced
   function investigate(s, t) {
-    const e = t != null && t !== s.ceo && !s.P[t].pip && s.envs.find(x => x.author === t && !x.autopilot);
+    const e = s.P[t] && t !== s.ceo && !s.P[t].pip && s.envs.find(x => x.author === t && !x.autopilot);
     if (!e) return 'Nobody to investigate.';
     s.invq = { r: s.r, t, guilty: e.stamp !== rightStamp(e.cards) };
     return null;
@@ -1314,12 +1494,15 @@ const OP = (() => {
   function workResult(s, i, w) {
     const inh = s.P[i].inh, wk = s.work[i];
     const base = w.redeal ? wk.R : inh.cards;
-    const prop = base.map((c, su) => (w.swaps.includes(su) ? wk.D[su] : c));
-    const aside = wk.D.map((c, su) => (w.swaps.includes(su) ? base[su] : c));
+    const picks = w.picks || [0, 1, 2];
+    const prop = base.map((c, su) => (w.swaps.includes(su) ? wk.D[picks[su]] : c));
+    const aside = wk.D.map((c, k) => (w.swaps.includes(c.s) && picks[c.s] === k ? base[c.s] : c));
     return { prop, aside };
   }
   function submitWork(s, i, a, E) {
-    const w = { redeal: !!a.redeal, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3) };
+    const w = { redeal: !!a.redeal, swaps: [...new Set(a.swaps || [])].filter(x => Number.isInteger(x) && x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => Number.isInteger(x) && x >= 0 && x < 3) };
+    w.picks = a.picks || [0, 1, 2];
+    if (!Array.isArray(w.picks) || w.picks.length !== 3 || w.picks.some((k, su) => !Number.isInteger(k) || !s.work[i].D[k] || s.work[i].D[k].s !== su)) return 'Choose a spare of the matching suit.';
     if (workCost(w) > TOKENS) return 'Not enough work tokens.';
     if (!STAMP_LABEL[a.stamp]) return 'Stamp the cover page first.';
     const p = s.P[i], wk = s.work[i], { prop, aside } = workResult(s, i, w);
@@ -1375,7 +1558,7 @@ const OP = (() => {
     log(s, E, 'event', `${who(s, s.ceo, 1)} nominated proposal ${id}. The Board is voting.`);
     for (const p of s.P) if (p.id !== s.ceo && !isHuman(s, p.id)) s.bvotes[p.id] = botBoardVote(s, p.id);
     s.phase = 'board';
-    if (s.spectate || s.ceo === humanSeat(s)) resolveBoard(s, E);
+    if (complete(s, s.bvotes, s.ceo)) resolveBoard(s, E);
     return null;
   }
   function resolveBoard(s, E) {
@@ -1415,7 +1598,7 @@ const OP = (() => {
     for (const p of s.P) if (!isHuman(s, p.id)) s.wvotes[p.id] = botWarnVote(s, p.id);
     s.invq = null;
     if (!isHuman(s, s.ceo) && s.wvotes[s.ceo] !== 'none') investigate(s, s.wvotes[s.ceo]);
-    if (s.spectate) resolveWarn(s, E);
+    if (complete(s, s.wvotes)) resolveWarn(s, E);
     return null;
   }
   function resolveWarn(s, E) {
@@ -1440,7 +1623,11 @@ const OP = (() => {
     const nh = range(s.n).map(() => null);
     for (const e of s.envs) {
       const d = e.dept;
-      if (e.id === s.pick) { discard(s, e.cards); nh[d] = { cards: s.left[d], author: e.autopilot ? null : e.author, kind: 'cleanup' }; }
+      if (e.id === s.pick) {
+        const cards = [0, 1, 2].map(su => pickOne(s, s.left[d].filter(c => c.s === su)));
+        discard(s, e.cards.concat(s.left[d].filter(c => !cards.includes(c))));
+        nh[d] = { cards, author: e.autopilot ? null : e.author, kind: 'cleanup' };
+      }
       else {
         discard(s, s.left[d]);
         nh[d] = e.autopilot ? { cards: e.cards, author: null, kind: 'autopilot' } : { cards: e.cards, author: e.author, kind: 'rejected', stamp: e.stamp, subject: e.subject, style: e.style, id: e.id };
@@ -1457,7 +1644,7 @@ const OP = (() => {
     else {
       s.phase = 'whistle'; s.envs = []; s.wb = {};
       for (const p of s.P) if (!isHuman(s, p.id)) s.wb[p.id] = botWhistle(s, p.id);
-      if (s.spectate) resolveWhistle(s, E);
+      if (complete(s, s.wb)) resolveWhistle(s, E);
     }
   }
   function resolveWhistle(s, E) {
@@ -1486,28 +1673,42 @@ const OP = (() => {
   }
   function fmt(v) { if (v === 'V') return '±2'; return (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v); }
 
+  const validTarget = (s, t) => t === 'none' || ((typeof t === 'number' || typeof t === 'string') && String(t).trim() !== '' && Number.isInteger(+t) && +t >= 0 && +t < s.n);
+
   // ---------- the one entry point ----------
   function apply(state, seat, a) {
     const s = JSON.parse(JSON.stringify(state)); const E = [];
-    const humanTurn = seat === humanSeat(s);
+    const humanTurn = isHuman(s, seat);
     let err = null;
     switch (a.type) {
-      case 'begin': if (s.phase !== 'brief') err = 'Already started.'; else startRound(s, E); break;
+      case 'begin': if (s.multiplayer && seat !== -1) { err = 'Room controls this phase.'; break; } if (s.phase !== 'brief') err = 'Already started.'; else startRound(s, E); break;
       case 'submitWork': if (s.phase !== 'work' || !s.work[seat]) err = 'Not your turn to work.'; else err = submitWork(s, seat, a, E); break;
       case 'approve': if (s.phase !== 'decide' || seat !== s.ceo || !humanTurn) err = 'Only the CEO can nominate.'; else err = nominate(s, a.id, E); break;
       case 'boardVote':
         if (s.phase !== 'board' || !humanTurn || seat === s.ceo) { err = 'No Board vote open.'; break; }
-        s.bvotes[seat] = a.vote === 'open' ? 'open' : 'ratify'; resolveBoard(s, E); break;
+        if (seat in s.bvotes || !['open', 'ratify'].includes(a.vote)) { err = 'Invalid or duplicate vote.'; break; }
+        s.bvotes[seat] = a.vote; if (complete(s, s.bvotes, s.ceo)) resolveBoard(s, E); break;
       case 'warnVote':
         if (s.phase !== 'reveal' || !humanTurn) { err = 'No warning vote open.'; break; }
-        s.wvotes[seat] = a.target === 'none' ? 'none' : +a.target; resolveWarn(s, E); break;
+        if (seat in s.wvotes || !validTarget(s, a.target)) { err = 'Invalid or duplicate vote.'; break; }
+        s.wvotes[seat] = a.target === 'none' ? 'none' : +a.target; if (complete(s, s.wvotes)) resolveWarn(s, E); break;
       case 'investigate':
         if ((s.phase !== 'reveal' && s.phase !== 'review') || seat !== s.ceo || !humanTurn || s.invq) { err = 'Only the CEO can investigate, once a quarter.'; break; }
         err = investigate(s, +a.target); break;
       case 'whistleVote':
         if (s.phase !== 'whistle' || !humanTurn) { err = 'No vote open.'; break; }
-        s.wb[seat] = a.target === 'none' ? 'none' : +a.target; resolveWhistle(s, E); break;
+        if (seat in s.wb || !validTarget(s, a.target)) { err = 'Invalid or duplicate vote.'; break; }
+        s.wb[seat] = a.target === 'none' ? 'none' : +a.target; if (complete(s, s.wb)) resolveWhistle(s, E); break;
+      case 'timeout':
+        if (!s.multiplayer || seat !== -1) { err = 'Room controls deadlines.'; break; }
+        if (s.phase === 'decide') nominate(s, isHuman(s, s.ceo) ? pickOne(s, s.envs).id : botPick(s), E);
+        else if (s.phase === 'board') { for (const p of s.P) if (p.id !== s.ceo && !(p.id in s.bvotes)) s.bvotes[p.id] = 'ratify'; resolveBoard(s, E); }
+        else if (s.phase === 'reveal') { for (const p of s.P) if (!(p.id in s.wvotes)) s.wvotes[p.id] = 'none'; resolveWarn(s, E); }
+        else if (s.phase === 'whistle') { for (const p of s.P) if (!(p.id in s.wb)) s.wb[p.id] = 'none'; resolveWhistle(s, E); }
+        else err = 'No deadline action.';
+        break;
       case 'advance':
+        if (s.multiplayer && seat !== -1) { err = 'Room controls this phase.'; break; }
         if (s.phase === 'decide' && (s.spectate || s.ceo !== seat)) nominate(s, botPick(s), E);
         else if (s.phase === 'board') { if (humanSeat(s) >= 0 && !(humanSeat(s) in s.bvotes)) s.bvotes[humanSeat(s)] = 'ratify'; resolveBoard(s, E); }
         else if (s.phase === 'review') next(s, E);
@@ -1522,8 +1723,11 @@ const OP = (() => {
   return { PERS_SAY, apply, newGame, workResult, workCost, estimate, evs, ev, total, rightStamp, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
     SUITS, SUBJ, LEX, TEMPLATES, FONTS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
 })();
+
+
 </script>
 <script>
+window.__opVoiceFiles=[];
 (() => {
   // ---------- audio: music bus with a phone-line filter, one-shot SFX (files in dist/audio) ----------
   const AU = { ctx: null, buf: {}, on: true, want: null, cur: null };
@@ -1600,6 +1804,7 @@ const OP = (() => {
     const wake = () => { const c = auCtx(); if (c && c.state !== 'running') c.resume(); };
     addEventListener('pointerdown', wake, true); addEventListener('keydown', wake, true);
   }
+
   // ---------- cues: which sound goes with which moment. Diffs state on every render ----------
   const CUE = { prev: null, idle: null, bound: false };
   const TAP = new Set(['set', 'debug', 'quit', 'begin', 'advance', 'sel', 'tpl', 'font', 'align', 'art', 'claim', 'back', 'start', 'again', 'name-skip', 'name-back', 'name-redo', 'board', 'warn', 'whistle']);
@@ -1688,6 +1893,7 @@ const OP = (() => {
       else if (ev.key.length === 1 || ev.key === 'Backspace') sfx('paper-type-key', 0, .5);
     }, true);
   }
+
   const $app = document.getElementById('app');
   const ME = 0;
   let S = null, draft = null, err = '', toastT = null;
@@ -1708,6 +1914,7 @@ const OP = (() => {
   const me = () => S.P[ME];
   // the company brand lives on objects only: logo, wax seals, card backs, letterhead. Never on card faces, never red or green
   // (Only Profit itself is the placeholder house brand)
+
   // logo marks, one per opener noun (48×48; .s = stroke)
   const MARKS = {
     op: '<path class="s" d="M5 39 17 26l8 8L39 16" style="stroke-width:5"/><path d="M30 11h14v14z"/>',
@@ -1770,6 +1977,7 @@ const OP = (() => {
     r.style.setProperty('--brand', b.color); r.style.setProperty('--brand-hi', b.hi); r.style.setProperty('--brand-lo', b.lo); r.style.setProperty('--brand-ink', b.ink);
     r.style.setProperty('--mono', `"${b.mono}"`); r.style.setProperty('--mark', markURL(b.mark, b.ink)); r.dataset.brandFont = b.font; r.dataset.cards = setup.cards;
   }
+
   // proposals are told apart by an office object, not a letter; same icon on the TV and the phone
   const ICONS = [
     '<path d="M5 8h11v7a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2M8.5 3.5v2M12 3.5v2"/>',
@@ -1802,7 +2010,8 @@ const OP = (() => {
   const isCEO = () => mine() && S.ceo === ME;
   const STAMP = OP.STAMP_LABEL;
   const TIER = { smart: 'Smart', basic: 'Basic', naive: 'Gullible', patient: 'Patient', blatant: 'Blatant' };
-  const PHASE = { brief: 'Onboarding', work: 'Work', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Quarter closed', whistle: 'Whistleblower', end: 'Annual report' };
+  const PHASE = { brief: 'Induction', work: 'Work', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Quarter closed', whistle: 'Whistleblower', end: 'Annual report' };
+
   // ---------- actions ----------
   function dispatch(a) {
     const r = OP.apply(S, S.spectate ? -1 : ME, a);
@@ -1814,12 +2023,13 @@ const OP = (() => {
   }
   function newDraft() {
     const p = me(), inh = p.inh;
-    return { redeal: false, swaps: [], reveals: [], stamp: null, words: (S.subj || OP.SUBJ).map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
+    return { redeal: false, swaps: [], picks: [0, 1, 2], reveals: [], stamp: null, words: (S.subj || OP.SUBJ).map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
       style: Object.assign({ tpl: 'memo', font: 'grotesk' }, p.fav, S.reqStyle), artSet: false, claim: { kind: 'none', val: evs(inh.cards), stamp: inh.stamp || 'Rec' }, nextStyle: null };
   }
   const subjectOf = d => (d.useCustom && d.custom.trim() ? d.custom.trim() : d.words.map((k, i) => (S.subj || OP.SUBJ)[i][k]).join(' '));
   function costWith(ch) { return OP.workCost(Object.assign({}, draft, ch)); }
   function toast(t) { let el = document.querySelector('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); } el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, 2200); }
+
   // ---------- clip-art: pixel pictures for cover pages. HAND are 12×12 colour maps, PX are 16×16 one-colour bitmaps ----------
   const PXC = { k: '#141414', y: '#E9A23B', r: '#D9261C', g: '#2C6A4E', b: '#2C46B8', w: '#FBF6EA', s: '#9A948A' };
   const HAND = {
@@ -1843,6 +2053,7 @@ const OP = (() => {
     g.forEach((row, y) => row.forEach((c, x) => { if (c) by[c] = (by[c] || '') + `M${x} ${y}h1v1h-1z`; }));
     return (artCache[id] = `<svg class='px' viewBox='0 0 ${n} ${n}' shape-rendering='crispEdges' aria-hidden='true'>${Object.entries(by).map(([c, d]) => `<path fill='${c}' d='${d}'/>`).join('')}</svg>`);
   }
+
   // ---------- cover pages: every proposal is a pile of paper with a cover page on top ----------
   // a page is laid out once at 280×396 and scaled whole (--k), so it reads the same on the TV and the phone
   const TPL = {
@@ -1942,6 +2153,34 @@ const OP = (() => {
     const sum = e.resolved ? `<b class="sum ${tone(OP.total(e.resolved, e.cards))}">= ${fmt(OP.total(e.resolved, e.cards))}</b>` : '';
     return `<p class="line${live ? ' go' : ''}">${ph}${sum}</p>`;
   }
+
+  function observerHTML() {
+    if (!ui.debug) return '';
+    const sus = S.P.map(p => `<span class="pill ${p.sab ? 'red' : 'green'}">${esc(p.name)} · ${p.sab ? (p.ruthless ? 'SAB · ruthless' : 'SAB') : `LOYAL · ${OP.PERS_SAY[p.pers]}`} · sus ${OP.suspicion(S, p).toFixed(1)}</span>`).join('');
+    return `<section class="observer"><div class="section-head" style="margin:0;border-bottom-width:1px"><h2>Observer view</h2><span class="label">Hidden from players</span></div>
+      <div style="font-size:13.5px">Headcount Memo: <b>${S.nSab} saboteur${S.nSab === 1 ? '' : 's'}</b>. Loyal bots play <b>${TIER[S.loyalTier]}</b>; saboteur bots play <b>${TIER[S.sabTier]}</b>. Seed <span class="mono">${S.seed}</span>.
+      ${S.nextStyle ? ` Designer has set next quarter: ${S.nextStyle.tpl} in ${S.nextStyle.font}.` : ''}</div>
+      <div class="observer-grid">${sus}</div>
+      <div class="hint">Debug strips show allegiance · bot mode (loyal, good = saboteur playing clean, disguised, bad) · true value · what the table would estimate · tokens spent. "sus" is the end-of-game Whistleblower score the bots use.</div></section>`;
+  }
+  function exitHTML() {
+    const rounds = S.history.map(h => {
+      const rows = h.envs.slice().sort((a, b) => a.id.localeCompare(b.id)).map(e => {
+        const p = S.P[e.author];
+        const vals = e.cards.map((c, k) => `<span class="${tone(e.resolved ? e.resolved[k] : c.v)}">${fmt(e.resolved ? e.resolved[k] : c.v)}${c.fx ? ' ' + FXSYM[c.fx] : ''}</span>`).join(' ');
+        const tot = e.resolved ? OP.total(e.resolved, e.cards) : evs(e.cards);
+        return `<tr class="${e.id === h.pick ? 'win' : ''}"><td class="num nw"><b class="ico-cell">${icon(e.id, h.envs)}</b>${e.id === h.pick ? ' ✓' : ''}${e.id === h.audit ? ' <span class="pill blue">aud</span>' : ''}</td>
+          <td class="nw">${e.autopilot ? 'Autopilot · ' : ''}${esc(p.name)} <span class="pill ${p.sab ? 'red' : 'green'}">${p.sab ? 'Sab' : 'Loyal'}</span></td>
+          <td class="muted">${OP.DEPTS[e.dept]}</td><td class="sub-mono">${esc(e.subject)}</td><td>${STAMP[e.stamp]}</td><td class="num nw">${vals}</td><td class="num ${tone(tot)}"><b>${fmt(tot)}</b></td></tr>`;
+      }).join('');
+      const memos = h.memos.filter(m => m.kind === 'report').map(m => `${esc(nm(m.by))} accused ${esc(nm(m.target))}${m.truthful ? '' : ' <span class="lie">LIE</span>'}`).join(' · ');
+      return `<div class="exit-round"><h3>Q${h.r}<span class="label">CEO ${esc(nm(h.ceo))}</span>${h.warn && h.warn.passed ? `<span class="label">Warning: ${esc(nm(h.warn.target))}</span>` : ''}</h3>
+        <div class="scroll-x"><table class="exit-t"><thead><tr><th>Page</th><th>Author</th><th>Dept</th><th>Subject</th><th>Stamp</th><th>Cards</th><th>Value</th></tr></thead><tbody>${rows}</tbody></table></div>
+        ${memos ? `<div class="hint">${memos}</div>` : ''}</div>`;
+    }).join('');
+    return `<section><div class="section-head"><h2>Exit interview</h2></div><div class="exit">${rounds}</div></section>`;
+  }
+
   // ---------- pieces ----------
   function meter() {
     const lo = Math.min(-6, S.profit), hi = Math.max(S.target + 4, S.profit + 1), pct = v => ((v - lo) / (hi - lo)) * 100;
@@ -1984,6 +2223,7 @@ const OP = (() => {
       ${coverHTML(e, { fresh })}<div class="pg-under">${lineHTML(e, { anim: opt.motion === 'pull' })}
       ${who ? `<div class="pg-from">From <b>${esc(who)}</b>${dept ? ` · ${esc(dept)}` : ''}</div>` : ''}${tags.length ? `<div class="pg-tags">${tags.join('')}</div>` : ''}${dbg}</div></${tag}>`;
   }
+
   function feedHTML() {
     const item = f => {
       const q = `<span class="q">Q${f.r}</span>`;
@@ -2028,15 +2268,6 @@ const OP = (() => {
     const plates = OP.ceoSchedule(S).map(c => `<div class="plate-n${c.r === S.r && live ? ' now' : c.r < S.r ? ' past' : ''}"><small>Q${c.r}</small><b>${c.who == null ? esc(c.note) : esc(nm(c.who))}</b></div>`).join('');
     return `<section class="staff-desk" aria-label="Staff"><div class="staff-tags">${tags}</div><div class="plates" aria-label="CEO rotation">${plates}</div></section>`;
   }
-  function observerHTML() {
-    if (!ui.debug) return '';
-    const sus = S.P.map(p => `<span class="pill ${p.sab ? 'red' : 'green'}">${esc(p.name)} · ${p.sab ? (p.ruthless ? 'SAB · ruthless' : 'SAB') : `LOYAL · ${OP.PERS_SAY[p.pers]}`} · sus ${OP.suspicion(S, p).toFixed(1)}</span>`).join('');
-    return `<section class="observer"><div class="section-head" style="margin:0;border-bottom-width:1px"><h2>Observer view</h2><span class="label">Hidden from players</span></div>
-      <div style="font-size:13.5px">Headcount Memo: <b>${S.nSab} saboteur${S.nSab === 1 ? '' : 's'}</b>. Loyal bots play <b>${TIER[S.loyalTier]}</b>; saboteur bots play <b>${TIER[S.sabTier]}</b>. Seed <span class="mono">${S.seed}</span>.
-      ${S.nextStyle ? ` Designer has set next quarter: ${S.nextStyle.tpl} in ${S.nextStyle.font}.` : ''}</div>
-      <div class="observer-grid">${sus}</div>
-      <div class="hint">Debug strips show allegiance · bot mode (loyal, good = saboteur playing clean, disguised, bad) · true value · what the table would estimate · tokens spent. "sus" is the end-of-game Whistleblower score the bots use.</div></section>`;
-  }
   function pilesHTML() {
     const ph = S.phase;
     if (ph === 'work') {
@@ -2052,23 +2283,7 @@ const OP = (() => {
     const motion = e => !anim ? '' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
     return `<section><div class="pages n${envs.length}">${envs.map(e => pageHTML(e, { motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
-  function exitHTML() {
-    const rounds = S.history.map(h => {
-      const rows = h.envs.slice().sort((a, b) => a.id.localeCompare(b.id)).map(e => {
-        const p = S.P[e.author];
-        const vals = e.cards.map((c, k) => `<span class="${tone(e.resolved ? e.resolved[k] : c.v)}">${fmt(e.resolved ? e.resolved[k] : c.v)}${c.fx ? ' ' + FXSYM[c.fx] : ''}</span>`).join(' ');
-        const tot = e.resolved ? OP.total(e.resolved, e.cards) : evs(e.cards);
-        return `<tr class="${e.id === h.pick ? 'win' : ''}"><td class="num nw"><b class="ico-cell">${icon(e.id, h.envs)}</b>${e.id === h.pick ? ' ✓' : ''}${e.id === h.audit ? ' <span class="pill blue">aud</span>' : ''}</td>
-          <td class="nw">${e.autopilot ? 'Autopilot · ' : ''}${esc(p.name)} <span class="pill ${p.sab ? 'red' : 'green'}">${p.sab ? 'Sab' : 'Loyal'}</span></td>
-          <td class="muted">${OP.DEPTS[e.dept]}</td><td class="sub-mono">${esc(e.subject)}</td><td>${STAMP[e.stamp]}</td><td class="num nw">${vals}</td><td class="num ${tone(tot)}"><b>${fmt(tot)}</b></td></tr>`;
-      }).join('');
-      const memos = h.memos.filter(m => m.kind === 'report').map(m => `${esc(nm(m.by))} accused ${esc(nm(m.target))}${m.truthful ? '' : ' <span class="lie">LIE</span>'}`).join(' · ');
-      return `<div class="exit-round"><h3>Q${h.r}<span class="label">CEO ${esc(nm(h.ceo))}</span>${h.warn && h.warn.passed ? `<span class="label">Warning: ${esc(nm(h.warn.target))}</span>` : ''}</h3>
-        <div class="scroll-x"><table class="exit-t"><thead><tr><th>Page</th><th>Author</th><th>Dept</th><th>Subject</th><th>Stamp</th><th>Cards</th><th>Value</th></tr></thead><tbody>${rows}</tbody></table></div>
-        ${memos ? `<div class="hint">${memos}</div>` : ''}</div>`;
-    }).join('');
-    return `<section><div class="section-head"><h2>Exit interview</h2></div><div class="exit">${rounds}</div></section>`;
-  }
+
   // ---------- desk: your phone. Objects on the felt, same as the TV; almost no prose ----------
   // a bakelite header bar (nameplate, time card, timer tape) and a footer bar that holds the one key that matters
   function deskWrap(title, body, o) {
@@ -2086,80 +2301,7 @@ const OP = (() => {
     if (inh.kind === 'autopilot') return 'Autopilot';
     return `From <b>${inh.author === ME ? 'yourself' : esc(nm(inh.author))}</b>${stampMark(inh.stamp)}`;
   }
-  // work has two timed pages: the cards (strategy), then the cover page (the fun bit)
-  const TIME = { cards: 45, dress: 35 };
-  let timer = null;
-  function stopTimer() { if (timer) clearInterval(timer.iv); timer = null; }
-  function fuse(key, secs, onEnd) {
-    if (!timer || timer.key !== key) {
-      stopTimer();
-      timer = { key, total: secs * 1000, end: Date.now() + secs * 1000, iv: null };
-      if (!window.__opFreeze) timer.iv = setInterval(() => {
-        const left = timer.end - Date.now(), el = document.querySelector('.fuse i');
-        if (el) el.style.width = Math.max(0, left / timer.total * 100) + '%';
-        if (left <= 0) { stopTimer(); onEnd(); }
-      }, 200);
-    }
-    const pct = window.__opFreeze ? 64 : Math.max(0, (timer.end - Date.now()) / timer.total * 100);
-    return `<div class="fuse" role="timer" aria-label="Time left"><i style="width:${pct}%"></i></div>`;
-  }
-  // Finalise: the hand drops away, the policy squares up into a pile and a blank cover page lands on it
-  function finalise() {
-    if (!draft || draft.page > 1 || ui.stuffing) return;
-    if (!draft.stamp) draft.stamp = 'Rec';
-    stopTimer();
-    const next = S.reqStyle ? 3 : 2, play = document.querySelector('.play');
-    if (!play || still()) { draft.page = next; render(); return; }
-    ui.stuffing = true;
-    play.insertAdjacentHTML('beforeend', '<i class="stuff" aria-hidden="true"></i>');
-    play.classList.add('stuff');
-    setTimeout(() => { ui.stuffing = false; if (draft && S.phase === 'work') { draft.page = next; ui.arrive = true; render(); } }, 1250);
-  }
-  function seal() {
-    const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
-    stopTimer();
-    dispatch({ type: 'submitWork', redeal: draft.redeal, swaps: draft.swaps, reveals: draft.reveals, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
-      claim: null, nextStyle: draft.nextStyle });
-    toast('Sealed.');
-  }
-  function deskWork() {
-    const p = me(), inh = p.inh, wr = OP.workResult(S, ME, draft), cost = OP.workCost(draft);
-    if (draft.page === 2) return deskTemplates(p);
-    if (draft.page === 3) return deskTweak(p);
-    const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
-    // tokens are overtime hours: chits on the hand, punched chits pinned to the policy cards they bought
-    const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.reveals.includes(su) ? 1 : 0);
-    const env = [0, 1, 2].map(su => {
-      const c = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
-      const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
-      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, n ? `<span class="paid">${hrs(n)}</span>` : '',
-        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 hour of overtime'}"`));
-    }).join('');
-    const hand = [0, 1, 2].map(su => {
-      const c = wr.aside[su], on = draft.swaps.includes(su);
-      const next = on ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su);
-      const price = on ? 0 : OP.SWAP_COST[next.length] - OP.SWAP_COST[draft.swaps.length];
-      const ok = costWith({ swaps: next }) <= 3;
-      return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, on ? '<span class="tag back">↺</span>' : `<span class="tag">${hrs(price)}</span>`,
-        `data-drag="hand" data-su="${su}" role="button" tabindex="0" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${on ? 'Swap back for free' : `Swap in for ${price} hour${price === 1 ? '' : 's'} of overtime`}"`));
-    }).join('');
-    ui.land = null;
-    const v = evs(wr.prop), vol = wr.prop.some(c => c.v === 'V');
-    const canRedeal = !draft.redeal && costWith({ redeal: true }) <= 3;
-    const left = Math.max(0, 3 - cost), dealCls = ui.deal ? (ui.deal === 'redeal' ? ' deal redeal' : ' deal') : '';
-    // a fresh quarter waits for the stripe wipe to clear before dealing
-    const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
-    ui.deal = false;
-    const purse = `<span class="purse" role="img" aria-label="${left} of 3 overtime hours left">${[0, 1, 2].map(k => `<i class="slotbox${k >= left ? ' punched' : ''}">${k + 1}</i>`).join('')}</span>`;
-    // one strip of adding-machine tape between the policy and the hand: where it came from, what it's worth, re-deal
-    const tray = `<div class="tape"><span class="t-src">${inhSource(inh)}</span>
-        <span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
-        <button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 hours of overtime">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="t-cost">${hrs(2)}</span></button></div>`;
-    const honest = OP.rightStamp(wr.prop);
-    const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
-    const body = `<div class="play${dealCls}" style="--wait:${wait}s"><div class="policy">${env}</div>${tray}<div class="fan">${hand}</div></div>${stamps}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: key('finalise', 'Finalise') });
-  }
+
   // the cover page: pick a template, then dress it. One timer across both
   const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', revealed: [], author: ME, dept: p.dept });
   function deskTemplates(p) {
@@ -2198,36 +2340,7 @@ const OP = (() => {
     const b = w.querySelector(`[data-v="${id}"]`); if (b) b.setAttribute('aria-selected', 'true');
     refreshPreview();
   }
-  // pick-one grids: proposals as small cover pages, people as name tags
-  // your own page, and every author for the Auditor; phone only
-  const auditor = () => mine() && me().spec === 'Auditor' && !me().leave;
-  const tagFor = e => !mine() || e.autopilot ? '' : e.author === ME ? '<i class="yours">You</i>' : auditor() ? `<i class="yours">${esc(nm(e.author))}</i>` : '';
-  function minis(list, current, none) {
-    return `<div class="minis">${list.map(e => {
-      const open = e.openTo && mine() && e.openTo.includes(ME);
-      const peek = open || e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => open || e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
-      return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
-        ${coverHTML(e, { k: .35 })}${peek}${tagFor(e)}</button>`;
-    }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
-  }
-  function nameTags(list, current, none) {
-    return `<div class="tags">${list.map(q => `<button class="nametag" data-a="sel" data-id="${q.id}" aria-pressed="${String(current) === String(q.id)}"><span class="hello">Hello<small>my name is</small></span><b>${esc(q.name)}</b>${stickers(q)}</button>`).join('')}
-      ${none ? `<button class="nametag none" data-a="sel" data-id="none" aria-pressed="${String(current) === 'none'}"><b>${none}</b></button>` : ''}</div>`;
-  }
-  const boardSlip = () => S.board ? slip(S.board.overruled ? `Board overruled ${icon(S.board.nominee)} · ${S.board.own ? 'the CEO’s own' : S.board.author == null ? 'autopilot' : esc(nm(S.board.author))}` : S.board.opened ? `Opened ${icon(S.board.nominee)} · it stands` : `Board ratified ${icon(S.board.nominee)}`) : '';
-  function resultSlip() {
-    if (!S.result) return '';
-    const e = S.envs.find(x => x.id === S.result.id); if (!e) return '';
-    return slip(`${icon(S.result.id)} ${e.autopilot ? 'Autopilot' : esc(nm(S.result.author))} <b class="${tone(S.result.actual)}">${fmt(S.result.actual)}</b>`);
-  }
-  // the CEO may pull one file a quarter; what's in it stays between them and HR
-  function filesHTML() {
-    if (S.invq && S.invq.r === S.r) return `<div class="files"><div class="file pulled"><span class="file-tab">${esc(nm(S.invq.t))}</span><i class="file-stamp">Pulled</i></div></div>`;
-    const list = S.P.filter(q => q.id !== ME && !q.pip && S.envs.some(e => e.author === q.id && !e.autopilot));
-    if (!list.length) return '';
-    return `<div class="slips">${slip('Pull a file')}</div><div class="files">${list.map(q => `<button class="file" data-a="sel" data-id="${q.id}" aria-pressed="${String(ui.sel) === String(q.id)}"><span class="file-tab">${esc(q.name)}</span></button>`).join('')}</div>
-      ${signHTML('investigate', ui.sel != null && list.some(q => String(q.id) === String(ui.sel)))}`;
-  }
+
   function deskSpectate() {
     const ph = S.phase;
     if (ph === 'end') return deskEnd();
@@ -2295,6 +2408,113 @@ const OP = (() => {
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');
   }
+
+  // pick-one grids: proposals as small cover pages, people as name tags
+  // your own page, and every author for the Auditor; phone only
+  const auditor = () => mine() && me().spec === 'Auditor' && !me().leave;
+  const tagFor = e => !mine() || e.autopilot ? '' : e.author === ME ? '<i class="yours">You</i>' : auditor() ? `<i class="yours">${esc(nm(e.author))}</i>` : '';
+  function minis(list, current, none) {
+    return `<div class="minis">${list.map(e => {
+      const open = e.openTo && mine() && e.openTo.includes(ME);
+      const peek = open || e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => open || e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
+      return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
+        ${coverHTML(e, { k: .35 })}${peek}${tagFor(e)}</button>`;
+    }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
+  }
+  function nameTags(list, current, none) {
+    return `<div class="tags">${list.map(q => `<button class="nametag" data-a="sel" data-id="${q.id}" aria-pressed="${String(current) === String(q.id)}"><span class="hello">Hello<small>my name is</small></span><b>${esc(q.name)}</b>${stickers(q)}</button>`).join('')}
+      ${none ? `<button class="nametag none" data-a="sel" data-id="none" aria-pressed="${String(current) === 'none'}"><b>${none}</b></button>` : ''}</div>`;
+  }
+  const boardSlip = () => S.board ? slip(S.board.overruled ? `Board overruled ${icon(S.board.nominee)} · ${S.board.own ? 'the CEO’s own' : S.board.author == null ? 'autopilot' : esc(nm(S.board.author))}` : S.board.opened ? `Opened ${icon(S.board.nominee)} · it stands` : `Board ratified ${icon(S.board.nominee)}`) : '';
+  function resultSlip() {
+    if (!S.result) return '';
+    const e = S.envs.find(x => x.id === S.result.id); if (!e) return '';
+    return slip(`${icon(S.result.id)} ${e.autopilot ? 'Autopilot' : esc(nm(S.result.author))} <b class="${tone(S.result.actual)}">${fmt(S.result.actual)}</b>`);
+  }
+  // the CEO may pull one file a quarter; what's in it stays between them and HR
+  function filesHTML() {
+    if (S.invq && S.invq.r === S.r) return `<div class="files"><div class="file pulled"><span class="file-tab">${esc(nm(S.invq.t))}</span><i class="file-stamp">Pulled</i></div></div>`;
+    const list = S.P.filter(q => q.id !== ME && !q.pip && S.envs.some(e => e.author === q.id && !e.autopilot));
+    if (!list.length) return '';
+    return `<div class="slips">${slip('Pull a file')}</div><div class="files">${list.map(q => `<button class="file" data-a="sel" data-id="${q.id}" aria-pressed="${String(ui.sel) === String(q.id)}"><span class="file-tab">${esc(q.name)}</span></button>`).join('')}</div>
+      ${signHTML('investigate', ui.sel != null && list.some(q => String(q.id) === String(ui.sel)))}`;
+  }
+
+  // work has two timed pages: the cards (strategy), then the cover page (the fun bit)
+  const TIME = { cards: 60, dress: 35 };
+  let timer = null;
+  function stopTimer() { if (timer) clearInterval(timer.iv); timer = null; }
+  function fuse(key, secs, onEnd) {
+    if (!timer || timer.key !== key) {
+      stopTimer();
+      timer = { key, total: secs * 1000, end: Date.now() + secs * 1000, iv: null };
+      if (!window.__opFreeze) timer.iv = setInterval(() => {
+        const left = timer.end - Date.now(), el = document.querySelector('.fuse i');
+        if (el) el.style.width = Math.max(0, left / timer.total * 100) + '%';
+        if (left <= 0) { stopTimer(); onEnd(); }
+      }, 200);
+    }
+    const pct = window.__opFreeze ? 64 : Math.max(0, (timer.end - Date.now()) / timer.total * 100);
+    return `<div class="fuse" role="timer" aria-label="Time left"><i style="width:${pct}%"></i></div>`;
+  }
+  // Finalise: the hand drops away, the policy squares up into a pile and a blank cover page lands on it
+  function finalise() {
+    if (!draft || draft.page > 1 || ui.stuffing) return;
+    if (!draft.stamp) draft.stamp = 'Rec';
+    stopTimer();
+    const next = S.reqStyle ? 3 : 2, play = document.querySelector('.play');
+    if (!play || still()) { draft.page = next; render(); return; }
+    ui.stuffing = true;
+    play.insertAdjacentHTML('beforeend', '<i class="stuff" aria-hidden="true"></i>');
+    play.classList.add('stuff');
+    setTimeout(() => { ui.stuffing = false; if (draft && S.phase === 'work') { draft.page = next; ui.arrive = true; render(); } }, 1250);
+  }
+  function seal() {
+    const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
+    stopTimer();
+    dispatch({ type: 'submitWork', redeal: draft.redeal, swaps: draft.swaps, picks: draft.picks, reveals: draft.reveals, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
+      claim: null, nextStyle: draft.nextStyle });
+    toast('Sealed.');
+  }
+  function deskWork() {
+    const p = me(), inh = p.inh, wr = OP.workResult(S, ME, draft), cost = OP.workCost(draft);
+    if (draft.page === 2) return deskTemplates(p);
+    if (draft.page === 3) return deskTweak(p);
+    const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
+    // tokens are overtime hours: chits on the hand, punched chits pinned to the policy cards they bought
+    const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.reveals.includes(su) ? 1 : 0);
+    const env = [0, 1, 2].map(su => {
+      const c = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
+      const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
+      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, n ? `<span class="paid">${hrs(n)}</span>` : '',
+        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 hour of overtime'}"`));
+    }).join('');
+    const hand = wr.aside.map((c, idx) => {
+      const su = c.s, swapped = draft.swaps.includes(su), on = swapped && (draft.picks || [0, 1, 2])[su] === idx;
+      const next = on ? draft.swaps.filter(x => x !== su) : swapped ? draft.swaps : draft.swaps.concat(su);
+      const price = swapped ? 0 : OP.SWAP_COST[next.length] - OP.SWAP_COST[draft.swaps.length];
+      const ok = costWith({ swaps: next }) <= 3;
+      return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, on ? '<span class="tag back">↺</span>' : `<span class="tag">${hrs(price)}</span>`,
+        `data-drag="hand" data-idx="${idx}" data-su="${su}" role="button" tabindex="0" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${on ? 'Swap back for free' : `Swap in for ${price} hour${price === 1 ? '' : 's'} of overtime`}"`));
+    }).join('');
+    ui.land = null;
+    const v = evs(wr.prop), vol = wr.prop.some(c => c.v === 'V');
+    const canRedeal = !draft.redeal && costWith({ redeal: true }) <= 3;
+    const left = Math.max(0, 3 - cost), dealCls = ui.deal ? (ui.deal === 'redeal' ? ' deal redeal' : ' deal') : '';
+    // a fresh quarter waits for the stripe wipe to clear before dealing
+    const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
+    ui.deal = false;
+    const purse = `<span class="purse" role="img" aria-label="${left} of 3 overtime hours left">${[0, 1, 2].map(k => `<i class="slotbox${k >= left ? ' punched' : ''}">${k + 1}</i>`).join('')}</span>`;
+    // one strip of adding-machine tape between the policy and the hand: where it came from, what it's worth, re-deal
+    const tray = `<div class="tape"><span class="t-src">${inhSource(inh)}</span>
+        <span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
+        <button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 hours of overtime">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="t-cost">${hrs(2)}</span></button></div>`;
+    const honest = OP.rightStamp(wr.prop);
+    const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-label="${STAMP[k]}${k === honest ? ' — honest answer' : ''}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
+    const body = `<div class="play${dealCls}" style="--wait:${wait}s"><div class="hand-caption">Your policy · tap a card to show it</div><div class="policy">${env}</div>${tray}<div class="hand-labels"><span>Action</span><span>Target</span><span>Modifier</span></div><div class="fan expanded">${hand}</div></div>${stamps}`;
+    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: key('finalise', 'Finalise') });
+  }
+
   // ---------- clocking in: type a name, trace it one letter at a time, get a name badge ----------
   // A letter passes as soon as every part of it is at least half inked and no more than 30% of the ink spills outside,
   // however many strokes that took. The stroke budget only decides when a failed letter starts again.
@@ -2392,9 +2612,10 @@ const OP = (() => {
   }
   function startGame(seedFrom) {
     const seed = seedFrom === 'start' && /^\d+$/.test(String(setup.seed).trim()) ? +setup.seed : Math.floor(Math.random() * 1e9) + 1;
-    naming = null;
+    naming = null; ui.inducted = false; TEACH.seen.clear(); TEACH.key = ''; TEACH.line = '';
     S = OP.newGame(Object.assign({}, setup, { seed })); draft = null; err = ''; ui.sel = null; ui.shown = null; ui.lastKey = null; ui.printed = 0; render(); window.scrollTo(0, 0);
   }
+
   // ---------- signing a vote: pick one, squiggle on the line, it locks a moment after the pen lifts ----------
   const SIGN = { w: 600, h: 130, ink: 140, hold: 1000 };
   const SIGNED = { board: () => ({ type: 'boardVote', vote: ui.sel }), warn: () => ({ type: 'warnVote', target: ui.sel }), whistle: () => ({ type: 'whistleVote', target: ui.sel }), investigate: () => ({ type: 'investigate', target: ui.sel }) };
@@ -2417,31 +2638,56 @@ const OP = (() => {
       wait = setTimeout(() => { box.classList.add('done'); cueSigned(); setTimeout(() => dispatch(SIGNED[kind]()), 350); }, SIGN.hold);
     };
   }
-  // ---------- setup ----------
+
+  const DESK_THEMES = [
+    { id: 'oak', name: 'Warm oak', detail: 'The corner office' },
+    { id: 'graphite', name: 'Graphite', detail: 'The night shift' },
+    { id: 'mint', name: 'Mint laminate', detail: 'Accounts payable' }
+  ];
+  let deskTheme = 'oak';
+  try {
+    const saved = localStorage.getItem('op-desk-theme');
+    if (DESK_THEMES.some(t => t.id === saved)) deskTheme = saved;
+  } catch (e) {}
+
+  function applyDeskTheme() {
+    document.documentElement.dataset.deskTheme = deskTheme;
+  }
+
+  function deskThemePicker() {
+    return `<fieldset class="desk-theme-picker"><legend>Your desk</legend><div class="desk-theme-options">${DESK_THEMES.map(t => `<button type="button" class="desk-theme-option" data-desk-theme="${t.id}" aria-pressed="${deskTheme === t.id}" aria-label="${t.name}: ${t.detail}"><span class="desk-swatch desk-swatch-${t.id}" aria-hidden="true"><i></i><b></b></span><span class="desk-theme-name">${t.name}</span><small>${t.detail}</small></button>`).join('')}</div></fieldset>`;
+  }
+
+  $app.addEventListener('click', e => {
+    const button = e.target.closest('[data-desk-theme]');
+    if (!button || !DESK_THEMES.some(t => t.id === button.dataset.deskTheme)) return;
+    deskTheme = button.dataset.deskTheme;
+    try { localStorage.setItem('op-desk-theme', deskTheme); } catch (e) {}
+    applyDeskTheme();
+    $app.querySelectorAll('.desk-theme-option').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.deskTheme === deskTheme)));
+  });
+
   function seg(key, opts) { return `<div class="seg">${opts.map(([v, l]) => `<button data-a="set" data-k="${key}" data-v="${v}" aria-pressed="${String(setup[key]) === String(v)}">${l}</button>`).join('')}</div>`; }
   function setupHTML() {
-    return `<div class="wrap"><div class="setup">
-      <div class="setup-hero"><span class="label">One human, the rest bots</span><h1>Only Profit</h1>
-        <p>Inherit someone else's mess, hand it in under an anonymous cover page, and find out whose name was on it only once it's approved. Hit the profit target in five quarters, or quietly make sure nobody does.</p></div>
-      <div class="setup-body">
-        <div class="field"><span class="label">Employees</span>${seg('players', [[4, '4'], [5, '5'], [6, '6'], [7, '7'], [8, '8']])}</div>
-        <div class="field"><span class="label">Your seat</span>${seg('spectate', [[false, 'Play'], [true, 'Watch the bots']])}</div>
-        <div class="field"><span class="label">Loyal bots</span>${seg('loyalTier', [['smart', 'Smart'], ['basic', 'Basic'], ['naive', 'Gullible']])}</div>
-        <div class="field"><span class="label">Saboteur bots</span>${seg('sabTier', [['smart', 'Smart'], ['patient', 'Patient'], ['blatant', 'Blatant']])}</div>
-        <div class="field"><span class="label">Company</span>${seg('brand', BRANDS.map(b => [b.id, b.name]))}</div>
-        <div class="field"><span class="label">Cards</span>${seg('cards', [['paper', 'Paper'], ['colour', 'Colour']])}</div>
-        <div class="field"><span class="label">Target</span>${seg('easy', [[false, 'Standard'], [true, 'Easy mode (−3)']])}</div>
-        <div class="field"><label class="label" for="seed">Seed (optional, to replay a deal)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}" style="max-width:200px"></div>
-        <details class="rules"><summary>The quarter, in brief</summary><ol>
-          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 hours of overtime: swap a card in (1, then 2), re-deal all three (2), or show one card to the table (1). Stamp it, then make a cover page: template, subject line, font, clip-art.</li>
-          <li><b>Decide + Reveal.</b> Proposals land shuffled and anonymous, and memos on the bulletin board say who left whom a mess. The CEO nominates one; the Board (everyone else) ratifies it or opens it. If an opened nominee disappoints, the best-looking proposal goes through instead, the nominee is unmasked, and a CEO caught pushing their own sits out their next turn as CEO. Profit moves and the approved author is unmasked. Rejected proposals pass, unopened, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
-          <li><b>Effect Modifiers.</b> Four Modifiers rewrite the other two cards: ∅ cancels them, ×2 doubles them, ≥0 stops them losing, ⇅ flips them. Each also has its own value.</li>
-          <li><b>After Q5.</b> The table may name a saboteur. Right, and Clawback reverses every losing policy they wrote (at least +3). Wrong costs −3. Audit and Whistleblower ties are drawn at random (a tied Whistleblower names nobody).</li></ol></details>
-        <div class="setup-foot"><button class="btn primary" data-a="start">Start the game</button><span class="hint">About 10 minutes against bots.</span></div>
-      </div></div></div>`;
+    return `<main class="lobby"><section class="lobby-pitch"><div class="lobby-kicker"><span class="logo-mark">${brandMark()}</span> A GAME OF QUESTIONABLE MANAGEMENT</div><h1>ONLY<br><span>PROFIT.</span></h1><p class="lobby-tagline">Good company.<br>Terrible colleagues.</p><p class="lobby-summary">Inherit a mess. Sell it as a good idea.<br>Keep the company afloat—or quietly sink it.</p><div class="lobby-props" aria-hidden="true">${demoCards().map(c => cardHTML(c)).join('')}<span class="lobby-stamp">APPROVED<br><small>probably</small></span></div><div class="lobby-meta">4–8 employees <i>·</i> 5 quarters <i>·</i> ~10 minutes</div></section>
+      <section class="setup lobby-form" aria-label="Game setup"><div class="setup-hero"><span class="label">Your next questionable career move</span><h2>Clock in.</h2><p>One human. The rest are bots.<br>Everyone has an agenda.</p></div><div class="setup-body"><div class="field"><span class="label">Employees at the table</span>${seg('players', [[4,'4'],[5,'5'],[6,'6'],[7,'7'],[8,'8']])}</div>
+        ${deskThemePicker()}
+        <button class="btn primary wide" data-a="start">${setup.spectate ? 'Watch the office' : 'Clock in & play'} ↗</button><button class="induction-binder" data-a="induction"><span class="book-spine"></span><span><b>STAFF INDUCTION</b><small>How to play · under 2 minutes</small></span><i>▶</i></button>
+        <details class="lobby-options" ${ui.settings ? 'open' : ''}><summary>Company &amp; game settings</summary><div class="options-body"><div class="field"><span class="label">Your seat</span>${seg('spectate', [[false,'Play'],[true,'Watch the bots']])}</div>
+          <div class="field"><span class="label">Company</span>${seg('brand', BRANDS.map(b => [b.id,b.name]))}</div>
+          <div class="field"><span class="label">Loyal bots</span>${seg('loyalTier', [['smart','Smart'],['basic','Basic'],['naive','Gullible']])}</div>
+          <div class="field"><span class="label">Saboteur bots</span>${seg('sabTier', [['smart','Smart'],['patient','Patient'],['blatant','Blatant']])}</div>
+          <div class="field"><span class="label">Cards</span>${seg('cards', [['paper','Paper'],['colour','Colour']])}</div>
+          <div class="field"><span class="label">Target</span>${seg('easy', [[false,'Standard'],[true,'Easy mode (−3)']])}</div>
+          <div class="field"><label class="label" for="seed">Replay a deal (optional seed)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}"></div></div></details><p class="lobby-fine">No experience necessary.<br>Accountability negotiable.</p></div></section></main>`;
   }
+  $app.addEventListener('toggle', e => { if (e.target.classList.contains('lobby-options')) ui.settings = e.target.open; }, true);
+
   // ---------- render ----------
   function render() {
+    applyDeskTheme();
+    if (TRAIN.active) { applyBrand(); document.documentElement.dataset.phase = 'induction'; $app.innerHTML = inductionHTML(); return; }
+    if (S && S.phase === 'brief' && !ui.inducted && !window.__opFreeze) { inductionStart(true); return; }
     cueSync();
     applyBrand();
     document.documentElement.dataset.phase = S ? S.phase : 'setup';
@@ -2452,6 +2698,8 @@ const OP = (() => {
       : `${observerHTML()}${pilesHTML()}${feedHTML()}<div class="objs">${ledgerHTML()}${staffHTML()}</div>`;
     if (!(S.phase === 'work' && draft)) stopTimer();
     $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${board}</main>${desk()}</div></div>`;
+    teachingSync();
+    const body = document.querySelector('.desk-body'); if (body) body.insertAdjacentHTML('beforeend', teachingHTML());
     syncWheel();
     mountSign();
     transition();
@@ -2475,6 +2723,7 @@ const OP = (() => {
     };
     ui.tick = setTimeout(step, 700);
   }
+
   // ---------- events ----------
   $app.addEventListener('click', ev => {
     const b = ev.target.closest('[data-a]'); if (!b || b.disabled) return;
@@ -2521,11 +2770,15 @@ const OP = (() => {
       case 'whistle': dispatch({ type: 'whistleVote', target: ui.sel }); break;
     }
   });
+
   // ---------- cards: drag between the policy and the hand, or tap ----------
-  function swapSuit(su) {
-    const next = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su);
+  function swapSuit(su, idx) {
+    if (!draft.picks) draft.picks = [0, 1, 2];
+    if (idx == null) idx = draft.picks[su];
+    const on = draft.swaps.includes(su), undo = on && draft.picks[su] === idx;
+    const next = undo ? draft.swaps.filter(x => x !== su) : on ? draft.swaps : draft.swaps.concat(su);
     if (costWith({ swaps: next }) > 3) return refuse(su);
-    draft.swaps = next; ui.land = su; render();
+    draft.picks[su] = idx; draft.swaps = next; ui.land = su; render();
   }
   function revealSuit(su) {
     const next = draft.reveals.includes(su) ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su);
@@ -2536,7 +2789,7 @@ const OP = (() => {
     toast('Not enough overtime.');
     document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
   }
-  const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : revealSuit(su));
+  const tapCard = (zone, su, idx) => (zone === 'hand' ? swapSuit(su, idx) : revealSuit(su));
   let drag = null;
   function endDrag() {
     if (!drag) return;
@@ -2549,7 +2802,7 @@ const OP = (() => {
   $app.addEventListener('pointerdown', ev => {
     const el = ev.target.closest('.card[data-drag]'); if (!el || !draft || ev.button > 0) return;
     const r = el.getBoundingClientRect();
-    drag = { el, zone: el.dataset.drag, su: +el.dataset.su, x: ev.clientX, y: ev.clientY, ox: ev.clientX - r.left, oy: ev.clientY - r.top, w: r.width, h: r.height, clone: null };
+    drag = { el, zone: el.dataset.drag, su: +el.dataset.su, idx: +el.dataset.idx, x: ev.clientX, y: ev.clientY, ox: ev.clientX - r.left, oy: ev.clientY - r.top, w: r.width, h: r.height, clone: null };
   });
   window.addEventListener('pointermove', ev => {
     if (!drag) return;
@@ -2569,16 +2822,16 @@ const OP = (() => {
   }, { passive: false });
   window.addEventListener('pointerup', ev => {
     if (!drag) return;
-    const { zone, su, clone } = drag;
+    const { zone, su, idx, clone } = drag;
     const t = clone && slotAt(ev.clientX, ev.clientY);
     const hit = t && t.classList.contains('ok');
     endDrag();
-    if (!clone) tapCard(zone, su); else if (hit) swapSuit(su);
+    if (!clone) tapCard(zone, su, idx); else if (hit) swapSuit(su, zone === 'hand' ? idx : undefined);
   });
   window.addEventListener('pointercancel', endDrag);
   $app.addEventListener('keydown', ev => {
     const el = ev.target.closest && ev.target.closest('.card[data-drag]');
-    if (el && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); tapCard(el.dataset.drag, +el.dataset.su); }
+    if (el && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); tapCard(el.dataset.drag, +el.dataset.su, +el.dataset.idx); }
     if (ev.target.id === 'name-in' && ev.key === 'Enter') { ev.preventDefault(); const b = document.querySelector('[data-a="name-go"]'); if (b && !b.disabled) b.click(); }
   });
   $app.addEventListener('input', ev => {
@@ -2598,10 +2851,7 @@ const OP = (() => {
   // keep a game in progress across page updates
   if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => ({ S, draft, setup, debug: ui.debug }));
   $app.addEventListener('scroll', ev => { if (ev.target.dataset && 'wheel' in ev.target.dataset) onWheel(ev.target); }, true);
-  const start = data => { if (data && data.S) { S = data.S; draft = data.draft; setup = data.setup || setup; } render(); };
-  if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(start); else start((window.claude && window.claude.hot && window.claude.hot.data) || {});
-  window.__op = { get S() { return S; }, dispatch, sign: () => { const b = document.querySelector('.desk [data-sign]:not(.off)'); if (b) dispatch(SIGNED[b.dataset.sign]()); }, brand: id => { setup.brand = id; render(); }, cards: m => { setup.cards = m; render(); }, BRANDS, markSVG, markURL,
-    cardHTML, coverHTML, lineHTML, artSVG, ART, brandMark, look: (b, c) => { setup.brand = b; setup.cards = c; applyBrand(); } };
+
   // ---------- annual report: the five approved pages, then who was who ----------
   // pinned to the best record on the winning side
   const ROSETTE = `<svg class="rosette" viewBox="0 0 80 104" role="img" aria-label="Employee of the Year"><path d="M24 52 14 100l14-9 9 13 5-44M56 52l10 48-14-9-9 13-5-44" fill="#B8322A"/><path d="M24 52 14 100l7-4.5L33 56M56 52l10 48-7-4.5L47 56" fill="#8E211B"/>
@@ -2624,5 +2874,153 @@ const OP = (() => {
       <div class="rp-total"><span class="num">${fmt(S.profit)}<small>/ +${S.target}</small></span><i class="rp-stamp big ${S.win ? 'ok' : 'sab'}">${S.win ? 'Target met' : 'Target missed'}</i></div>
       <div class="rp-staff">${staff}</div></section>`;
   }
+
+  // The induction uses demonstration props, never live hidden information.
+  const LESSONS = [
+    ['welcome', 'Welcome aboard.', 'Please enjoy this mandatory staff induction. Enjoyment is also mandatory.', 5],
+    ['goal', 'Five quarters. One target.', 'Loyal staff win by hitting the profit target. The number depends on your table. Everyone keeps their job. Probably.', 8],
+    ['saboteurs', 'Trust is not a company benefit.', 'There may be one saboteur. Maybe two at a larger table. Maybe nobody. Saboteurs win if the company misses its target.', 9],
+    ['inherit', 'Someone else’s problem. Yours now.', 'Each quarter you run a department and inherit three cards: one Action, one Target and one Modifier. Together, they make a policy.', 8],
+    ['policy', 'Read the small print.', 'Add the values. A question mark becomes +2 or −2 when approved. Special Modifiers can rewrite the other two cards.', 8],
+    ['overtime', 'Six options. Three unpaid hours.', 'Draw six spare cards: two of each suit. Tap or drag a spare to swap it in. Your first swap costs 1 hour; a second costs 2.', 10],
+    ['reveal', 'Show a little. Or start again.', 'Tap a policy card to show it to the table for 1 hour. Re-deal all three inherited cards for 2. Your budget is shared.', 8],
+    ['stamp', 'Give it your stamp of approval.', 'The pencil tick marks the honest stamp. A question mark or a zero total is Risky. You can lie, but an investigation may put you on a PIP.', 10],
+    ['cover', 'Make it look like a good idea.', 'Pick a cover page. Write a subject. Add some deeply convincing clip-art. Your proposal goes to the table anonymously.', 7],
+    ['ceo', 'Management has made a decision.', 'The CEO nominates one proposal. Everyone else votes: Ratify, or Open it. A majority must vote Open to inspect it.', 8],
+    ['approved', 'The numbers don’t lie. People do.', 'If the opened nominee looks worse than a rival, the Board can overrule it. The approved policy changes profit and reveals its author.', 9],
+    ['endgame', 'It goes on your permanent record.', 'After Q5, name a saboteur. Correct: reverse their approved losses, at least +3. Wrong: −3. A positive best record on the winning side earns Employee of the Year.', 11],
+    ['signoff', 'Please look busy.', 'Read your confidential role memo. Then clock in for quarter one. Your colleagues are already taking credit.', 5]
+  ];
+
+  function demoCards() {
+    const L = OP.LEX[setup.brand] || OP.LEX.op;
+    return [{ s: 0, v: 2, w: 'Monetise' }, { s: 1, v: -1, w: L.t[0] || 'the Break Room' }, { s: 2, v: 1, w: 'Off the Books' }];
+  }
+  const demoTag = (name, tape = '') => `<div class="nametag"><span class="hello">Hello<small>my name is</small></span><b>${name}</b>${tape ? `<span class="tag-tape">${tape}</span>` : ''}</div>`;
+  function demoPage(tpl = 'memo', approved = false) {
+    return { id: 'demo', cards: demoCards(), revealed: [], subject: 'Quick Win: Break Room Monetisation (Pilot)', stamp: 'Rec', approved, style: { tpl } };
+  }
+  function trainingProp(id) {
+    const cs = demoCards(), row = (cards, cls = '') => `<div class="lesson-cards ${cls}">${cards.map(c => cardHTML(c)).join('')}</div>`;
+    const page = tpl => coverHTML(demoPage(tpl), { list: [{ id: 'demo' }], k: .76 });
+    if (id === 'welcome' || id === 'signoff') return `<div class="binder"><span class="binder-seal">${brandMark()}</span><small>People &amp; Culture · Training film 01</small><strong>STAFF<br>INDUCTION</strong><span class="binder-label">${id === 'signoff' ? 'READ & UNDERSTOOD' : 'MANDATORY VIEWING'}</span><span class="binder-foot">${esc(brand().name)} · Enjoyment is mandatory.</span></div>`;
+    if (id === 'goal') return `<div class="lesson-calculator"><div class="calc"><div class="lcd"><div class="ann">PROFIT TARGET</div><div class="val">${lcd(S ? S.target : OP.TARGETS[setup.players] - (setup.easy ? 3 : 0))}</div></div><div class="lesson-quarters">${[1,2,3,4,5].map(q => `<span>Q${q}</span>`).join('')}</div></div><span class="slip">Five quarters to make it work.</span></div>`;
+    if (id === 'saboteurs') return `<div class="lesson-people">${['Gary','Denise','Trevor','Moira','Clive','You'].map(n => demoTag(n, '?')).join('')}</div><div class="lesson-memo"><span>CONFIDENTIAL · YOUR ROLE IS PRIVATE</span><b>Loyal <i>or</i> Saboteur</b></div>`;
+    if (id === 'inherit') return `<span class="slip inherited-note">From the last manager</span>${row(cs)}<div class="lesson-suits"><span>Action</span><span>Target</span><span>Modifier</span></div>`;
+    if (id === 'policy') return `${row([cs[0], { ...cs[1], v: 'V' }, { ...cs[2], w: 'Retroactively', fx: 'x2', v: -2 }])}<div class="lesson-equation">(Action + Target) × 2 − 2</div><span class="slip">? resolves to +2 or −2</span>`;
+    if (id === 'overtime') {
+      const spares = [{s:0,v:1,w:'Automate'},{s:1,v:2,w:'the Interns'},{s:2,v:0,w:'Pending Review'},{s:0,v:-1,w:'Outsource'},{s:1,v:1,w:'Customer Trust'},{s:2,v:2,w:'At Scale'}];
+      const spent = OP.SWAP_COST[Object.keys(TRAIN.demo).length];
+      const policy = cs.map((c, su) => TRAIN.demo[su] == null ? c : spares[TRAIN.demo[su]]);
+      const hand = spares.map((c, i) => cardHTML(TRAIN.demo[c.s] === i ? cs[c.s] : c, '', '', `role="button" tabindex="0" data-a="lesson-swap" data-su="${c.s}" data-i="${i}" aria-label="Try swapping ${esc(c.w)}"`)).join('');
+      return `<div class="purse lesson-purse" aria-label="${3 - spent} hours left">${[1,2,3].map(n => `<i class="slotbox${n > 3 - spent ? ' punched' : ''}">${n}</i>`).join('')}</div>${row(policy, 'mini-policy')}<div class="lesson-cards six">${hand}</div><span class="slip">Try a spare card · ${3 - spent} hours left · tap again to undo</span>`;
+    }
+    if (id === 'reveal') return `${row(cs.map((c,i) => ({...c, w:i ? '█████' : c.w})))}<div class="lesson-choices"><span class="slip">Show one · 1h</span><span class="slip">Re-deal three · 2h</span></div>`;
+    if (id === 'stamp') return `${row(cs)}<div class="bar3 stampstrip lesson-stamps">${Object.keys(STAMP).map(k => `<button tabindex="-1" class="s-${k} ${k === 'Rec' ? 'right' : ''}" aria-pressed="${k === 'Rec'}">${STAMP[k]}</button>`).join('')}</div><span class="slip">✓ Honest answer · lying is your decision</span>`;
+    if (id === 'cover') return `<div class="lesson-pages">${page('fax')}${page('memo')}${page('wordart')}</div>`;
+    if (id === 'ceo') return `<div class="lesson-ceo">${demoTag('Denise','CEO')}${page('memo')}</div><div class="lesson-choices"><span class="vote-prop">RATIFY</span><span class="vote-prop open">OPEN IT</span></div>`;
+    if (id === 'approved') return `${coverHTML(demoPage('memo', true), { list: [{id:'demo'}], k:.7 })}${lineHTML({...demoPage(), approved:true, resolved:[2,-1,1]}, {all:true})}<span class="slip">From Trevor · Facilities</span>`;
+    return `<div class="lesson-people final-people">${demoTag('Trevor', 'EMPLOYEE OF THE YEAR')}${demoTag('Gary', 'SABOTEUR')}</div><div class="lesson-record"><b>THE ANNUAL REPORT</b><span>Correct accusation: claw back losses</span><span>Wrong accusation: −3</span><span>Best positive record on the winning side wins the award</span></div>`;
+  }
+
+  const TRAIN = { active: false, i: 0, elapsed: 0, pause: false, tick: null, audio: null, duration: 0, game: false, last: 0, demo: {} };
+  function inductionHTML() {
+    const [id, title, line] = LESSONS[TRAIN.i];
+    return `<main class="induction" aria-label="Staff induction"><header class="lesson-top"><span>STAFF INDUCTION <b>${String(TRAIN.i + 1).padStart(2,'0')} / ${LESSONS.length}</b></span><button class="lesson-skip" data-a="induction-exit">${TRAIN.game ? 'Skip induction' : 'Back to menu'} ↗</button></header><div class="lesson-heading"><p>ONLY PROFIT · PEOPLE &amp; CULTURE</p><h1 tabindex="-1">${title}</h1></div><div class="lesson-stage lesson-${id}">${trainingProp(id)}</div><p class="lesson-caption" aria-live="polite">${line}</p><footer class="lesson-controls"><button data-a="induction-back" ${TRAIN.i ? '' : 'disabled'} aria-label="Previous chapter">←</button><button data-a="induction-pause">${TRAIN.pause ? 'Play' : 'Pause'}</button><nav aria-label="Induction chapters">${LESSONS.map((l,i) => `<button data-a="induction-chapter" data-i="${i}" aria-label="${l[1]}" aria-current="${i === TRAIN.i ? 'step' : 'false'}"></button>`).join('')}</nav><button data-a="induction-next">${TRAIN.i === LESSONS.length - 1 ? (TRAIN.game ? 'Read your role' : 'Finished') : 'Next →'}</button></footer><div class="lesson-progress"><i style="width:${TRAIN.elapsed / TRAIN.duration * 100}%"></i></div></main>`;
+  }
+  function inductionStart(game = false) {
+    stopTimer(); TRAIN.active = true; TRAIN.game = game; TRAIN.pause = !!window.__opFreeze;
+    inductionChapter(0); window.scrollTo(0, 0);
+  }
+  function inductionChapter(i) {
+    if (i >= LESSONS.length) return inductionExit();
+    clearInterval(TRAIN.tick); if (TRAIN.audio) TRAIN.audio.pause(); TRAIN.audio = null;
+    TRAIN.i = Math.max(0, i); TRAIN.demo = {}; TRAIN.elapsed = 0; TRAIN.duration = LESSONS[TRAIN.i][3];
+    music('music/05-hold-music-clean'); hold(true); sfx('paper-pull', 0, .4);
+    const id = 'vo-' + String(TRAIN.i + 1).padStart(2, '0') + '-' + LESSONS[TRAIN.i][0];
+    if ((window.__opVoiceFiles || []).includes(id)) {
+      const a = TRAIN.audio = new Audio(AU_BASE + 'vo/' + id + '.mp3'); a.muted = !AU.on;
+      a.onloadedmetadata = () => { if (TRAIN.audio === a && Number.isFinite(a.duration)) TRAIN.duration = a.duration + .4; };
+      a.onerror = () => { if (TRAIN.audio === a) { a.pause(); TRAIN.audio = null; TRAIN.duration = Math.max(TRAIN.elapsed + 1, LESSONS[TRAIN.i][3]); } };
+      if (!TRAIN.pause) a.play().catch(() => { if (TRAIN.audio === a) TRAIN.audio = null; });
+      duck(TRAIN.duration);
+    }
+    TRAIN.last = performance.now(); render();
+    const heading = document.querySelector('.lesson-heading h1'); if (heading) heading.focus({ preventScroll: true });
+    TRAIN.tick = setInterval(() => {
+      const now = performance.now(), delta = (now - TRAIN.last) / 1000; TRAIN.last = now;
+      if (TRAIN.audio) TRAIN.audio.muted = !AU.on;
+      if (TRAIN.pause || document.hidden) return;
+      TRAIN.elapsed = TRAIN.audio && !TRAIN.audio.paused ? TRAIN.audio.currentTime : TRAIN.elapsed + delta;
+      if (TRAIN.audio && TRAIN.audio.ended) TRAIN.elapsed += delta;
+      const bar = document.querySelector('.lesson-progress i'); if (bar) bar.style.width = Math.min(100, TRAIN.elapsed / TRAIN.duration * 100) + '%';
+      if (TRAIN.elapsed >= TRAIN.duration) inductionChapter(TRAIN.i + 1);
+    }, 100);
+  }
+  function inductionExit() {
+    clearInterval(TRAIN.tick); if (TRAIN.audio) TRAIN.audio.pause(); TRAIN.audio = null;
+    TRAIN.active = false; ui.inducted = true; hold(false); sfx('desk-stamp');
+    try { localStorage.setItem('op-induction-seen', '1'); } catch (e) {}
+    render(); window.scrollTo(0, 0);
+  }
+  function inductionPause() {
+    TRAIN.pause = !TRAIN.pause;
+    if (TRAIN.audio) { if (TRAIN.pause) TRAIN.audio.pause(); else TRAIN.audio.play().catch(() => {}); }
+    render();
+  }
+  $app.addEventListener('click', e => {
+    const b = e.target.closest('[data-a]'); if (!b || b.disabled) return;
+    const a = b.dataset.a;
+    if (a === 'lesson-swap' && TRAIN.active) {
+      const su = b.dataset.su, idx = +b.dataset.i;
+      if (TRAIN.demo[su] === idx) delete TRAIN.demo[su];
+      else if (TRAIN.demo[su] != null || Object.keys(TRAIN.demo).length < 2) TRAIN.demo[su] = idx;
+      sfx('desk-card-drop', 0, .5); render();
+    }
+    if (a === 'induction') inductionStart(false);
+    if (a === 'induction-next') inductionChapter(TRAIN.i + 1);
+    if (a === 'induction-back') inductionChapter(TRAIN.i - 1);
+    if (a === 'induction-chapter') inductionChapter(+b.dataset.i);
+    if (a === 'induction-exit') inductionExit();
+    if (a === 'induction-pause') inductionPause();
+  });
+  addEventListener('keydown', e => {
+    if (!TRAIN.active || e.target.matches('input,textarea,select') || e.altKey || e.ctrlKey || e.metaKey) return;
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-a="lesson-swap"]')) { e.preventDefault(); e.target.click(); }
+    if (e.key === 'Escape') { e.preventDefault(); inductionExit(); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); inductionChapter(TRAIN.i + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); inductionChapter(TRAIN.i - 1); }
+  });
+  document.addEventListener('visibilitychange', () => { if (TRAIN.active && document.hidden && !TRAIN.pause) inductionPause(); });
+
+  // Teach uncommon rules once, when the player's own screen makes them relevant.
+  const TEACH = { seen: new Set(), key: '', line: '' };
+  function teachingSync() {
+    if (!S || S.spectate || window.__opFreeze) return;
+    const key = `${S.r}:${S.phase}:${draft ? (draft.page || 1) : 0}`;
+    if (TEACH.key === key) return;
+    TEACH.key = key; TEACH.line = '';
+    const offer = (id, line) => { if (TEACH.seen.has(id) || TEACH.line) return; TEACH.seen.add(id); TEACH.line = line; };
+    if (S.phase === 'work' && draft && !draft.page) {
+      const inh = me().inh, cards = inh.cards.concat(S.work[ME].D);
+      if (S.r === 1) offer('hand', 'Three cards make your policy. Choose from six spares below. Tap a spare to swap; tap a policy card to show it to the table.');
+      if (inh.kind === 'rejected') offer('rejected', 'Rejected, with compliments. The handover names its previous author. Only you can see what they left behind.');
+      if (inh.kind === 'cleanup') offer('cleanup', 'The previous policy was approved. You inherit three of its leftover cards, one of each suit.');
+      const fx = cards.find(c => c.fx && !TEACH.seen.has(c.fx));
+      if (fx) offer(fx.fx, `${fx.w}: ${FXSAY[fx.fx].toLowerCase()}. Its own value still counts.`);
+    }
+    if (S.phase === 'board') offer('board', 'Ratify keeps the policy sealed. A majority voting Open reveals it and may overturn the CEO’s choice.');
+    if (S.phase === 'reveal') offer('warning', 'Pick someone for a Written Warning, or Nobody, then sign. A second warning stands them down.');
+    if (S.phase === 'review' && isCEO()) offer('investigate', 'As CEO, you may pull one file and sign to investigate its stamp. A dishonest stamp can mean a PIP next quarter.');
+    if (S.P.some(p => p.pip)) offer('pip', 'A Performance Improvement Plan makes that person’s future proposals visible to the CEO. Everyone else still sees a sealed page.');
+  }
+  const teachingHTML = () => TEACH.line ? `<div class="training-tip" role="status"><span>FROM YOUR INDUCTION</span><p>${esc(TEACH.line)}</p><button data-a="dismiss-tip" aria-label="Dismiss tip">×</button></div>` : '';
+  $app.addEventListener('click', e => { if (e.target.closest('[data-a="dismiss-tip"]')) { TEACH.line = ''; const tip = document.querySelector('.training-tip'); if (tip) tip.remove(); } });
+
+  const start = data => { if (data && data.S) { S = data.S; draft = data.draft; setup = data.setup || setup; } render(); };
+  if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(start); else start((window.claude && window.claude.hot && window.claude.hot.data) || {});
+  window.__op = { get S() { return S; }, dispatch, induction: () => inductionStart(false), sign: () => { const b = document.querySelector('.desk [data-sign]:not(.off)'); if (b) dispatch(SIGNED[b.dataset.sign]()); }, brand: id => { setup.brand = id; render(); }, cards: m => { setup.cards = m; render(); }, BRANDS, markSVG, markURL,
+    cardHTML, coverHTML, lineHTML, artSVG, ART, brandMark, look: (b, c) => { setup.brand = b; setup.cards = c; applyBrand(); } };
+
 })();
 </script>

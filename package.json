@@ -1,0 +1,13 @@
+{
+  "name": "only-profit", "version": "0.5.0", "private": true,
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "build": "node tools/build.js",
+    "start": "node --import tsx server/main.ts",
+    "typecheck": "tsc --noEmit",
+    "test:rooms": "node --import tsx --test test/rooms.test.ts",
+    "test:multiplayer": "node test/multiplayer.js"
+  },
+  "dependencies": { "ws": "^8.18.3", "qrcode": "^1.5.4" },
+  "devDependencies": { "tsx": "^4.20.6", "typescript": "^5.9.3", "@types/node": "^22.18.0", "@types/ws": "^8.18.1", "@types/qrcode": "^1.5.5" }
+}

@@ -1,0 +1,59 @@
+/* Personal desks keep the paper flat on a fixed perspective surface. */
+:root, [data-desk-theme="oak"] {
+  --desk-wood: #846341;
+  --desk-edge: #493420;
+  --desk-grain: repeating-linear-gradient(3deg, transparent 0 4px, #33231219 5px, transparent 7px 18px);
+  --desk-mat: #343e37;
+  --desk-mat-edge: #9eac9370;
+}
+[data-desk-theme="graphite"] {
+  --desk-wood: #505456;
+  --desk-edge: #262a2c;
+  --desk-grain: repeating-linear-gradient(90deg, transparent 0 2px, #ffffff08 3px, transparent 4px);
+  --desk-mat: #2c333e;
+  --desk-mat-edge: #94a4b270;
+}
+[data-desk-theme="mint"] {
+  --desk-wood: #90a694;
+  --desk-edge: #4d6558;
+  --desk-grain: repeating-linear-gradient(115deg, transparent 0 7px, #eef4dd12 8px, transparent 9px);
+  --desk-mat: #344b46;
+  --desk-mat-edge: #adc8b570;
+}
+.desk-theme-picker { min-width: 0; margin: 0; padding: 0; border: 0; }
+.desk-theme-picker legend { margin-bottom: 9px; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.desk-theme-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.desk-theme-option { min-width: 0; padding: 5px 5px 9px; border: 1px solid #27282245; border-radius: 3px; color: var(--ink); background: transparent; text-align: left; cursor: pointer; }
+.desk-theme-option[aria-pressed="true"] { border-color: var(--ink); background: #fff8; box-shadow: 0 0 0 1px var(--ink); }
+.desk-theme-option:hover { background: #fff5; }
+.desk-theme-option:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+.desk-theme-name { display: block; margin-top: 7px; font: 800 11px/1.2 var(--f-body); }
+.desk-theme-option small { display: block; margin-top: 3px; font: 10px/1.25 var(--f-body); opacity: .7; }
+.desk-swatch { display: block; position: relative; height: 55px; overflow: hidden; border-radius: 2px; border-bottom: 6px solid #493420; background: repeating-linear-gradient(3deg, transparent 0 5px, #33231220 6px, transparent 7px 15px), #96734f; }
+.desk-swatch-graphite { background: #505456; border-bottom-color: #262a2c; }
+.desk-swatch-mint { background: #90a694; border-bottom-color: #4d6558; }
+.desk-swatch::before { content: ''; position: absolute; inset: 10px 15px 5px 11px; background: #343e37; border: 1px solid #ffffff28; transform: skewX(-12deg); box-shadow: 2px 2px 3px #0004; }
+.desk-swatch-graphite::before { background: #2c333e; }
+.desk-swatch-mint::before { background: #344b46; }
+.desk-swatch i { position: absolute; left: 28%; top: 16px; width: 29%; height: 23px; background: #eee7d3; transform: rotate(-7deg); box-shadow: 1px 2px 2px #0005; }
+.desk-swatch b { position: absolute; right: 14%; top: 11px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid #e2d8be; background: #533a28; box-shadow: 1px 2px 1px #0005; }
+.layout:has(> .desk) { padding-top: 0; }
+.layout:has(> .desk) > .board { padding-top: 26px; }
+[data-desk-theme] .desk { top: 0; isolation: isolate; background: var(--desk-wood); border-inline: 1px solid var(--desk-edge); border-bottom: 8px solid var(--desk-edge); border-radius: 0 0 5px 5px; box-shadow: 8px 12px 22px -12px #0008; }
+[data-desk-theme] .desk-head { margin-bottom: 0; border-radius: 0; border-top: 0; box-shadow: inset 0 -1px #ffffff12, 0 3px 5px #0005; }
+[data-desk-theme] .desk-body { position: relative; padding: 25px 9px 24px; background: linear-gradient(160deg, #ffffff15, transparent 35%), var(--desk-grain), var(--desk-wood); }
+[data-desk-theme] .desk-body::before { content: ''; position: absolute; inset: 16px 5px 12px; border: 1px solid var(--desk-mat-edge); border-radius: 4px 4px 12px 12px; background: linear-gradient(105deg, #ffffff06, transparent 50%), var(--desk-mat); box-shadow: 0 3px 3px #0005, inset 0 0 0 3px #0002; pointer-events: none; }
+[data-desk-theme] .desk-body::after { content: ''; position: absolute; top: 5px; right: 20px; width: 64px; height: 4px; background: #d6b464; border-right: 8px solid #b47d6d; border-left: 5px solid #39352e; transform: rotate(-2deg); box-shadow: 0 2px 2px #0006; pointer-events: none; }
+[data-desk-theme] .desk-body > * { position: relative; }
+[data-desk-theme] .desk-foot { padding: 12px; border-radius: 0; border-top: 1px solid #ffffff20; background: #292b26; box-shadow: 0 -3px 7px #0003; }
+[data-desk-theme] .desk-foot .btn.primary { color: #292a24; background: #e9dfc4; border: 1px solid #f7efd9; border-bottom-color: #9c947e; border-radius: 4px; box-shadow: 0 4px 0 #8f8875, 0 5px 3px #0005; text-shadow: none; }
+[data-desk-theme] .desk-foot .btn.primary:hover:not(:disabled) { background: #f4ead1; }
+[data-desk-theme] .desk-foot .btn.primary:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #8f8875; }
+[data-desk-theme] .desk-foot .btn.primary:focus-visible { outline: 3px solid #e7bd64; outline-offset: 5px; }
+@media (max-width: 980px) {
+  [data-desk-theme] .desk { max-width: 560px; }
+  [data-desk-theme] .desk-body > * { max-width: 430px; width: 100%; margin-inline: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .desk-theme-option { transition: none; }
+}

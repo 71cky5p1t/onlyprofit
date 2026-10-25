@@ -1,0 +1,15 @@
+import { mkdirSync, chmodSync } from 'node:fs';
+import path from 'node:path';
+import { SQLiteStore } from './store';
+import { Rooms } from './rooms';
+import { createApp } from './http';
+const directory = process.env.DATA_DIR || path.resolve('data');
+mkdirSync(directory, { recursive: true, mode: 0o700 });
+const file = path.join(directory, 'rooms.sqlite');
+const store = new SQLiteStore(file); chmodSync(file, 0o600);
+const publicUrl = process.env.PUBLIC_URL;
+if (process.env.NODE_ENV === 'production' && (!publicUrl || !publicUrl.startsWith('https://'))) throw new Error('Production requires PUBLIC_URL=https://your-domain and a TLS reverse proxy.');
+const app = createApp(new Rooms(store), publicUrl);
+const port = Number(process.env.PORT || 8787);
+app.server.listen(port, process.env.HOST || '127.0.0.1', () => console.log(`Only Profit room server: ${publicUrl || 'http://127.0.0.1:' + port}`));
+for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, async () => { await app.close(); store.close(); process.exit(0); });

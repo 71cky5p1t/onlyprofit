@@ -1,0 +1,2 @@
+.training-tip { position: relative; background: #eee7d3; color: #353a2d; padding: 12px 34px 12px 14px; border-left: 4px solid #dba444; box-shadow: var(--lift); font-size: 12px; line-height: 1.45 }
+.training-tip > span { font-size: 8px; font-weight: 900; letter-spacing: .14em; color: #8a6630 }.training-tip p { margin: 4px 0 0 }.training-tip button { position: absolute; right: 6px; top: 7px; border: 0; background: none; color: #5b6253; font-size: 22px }
