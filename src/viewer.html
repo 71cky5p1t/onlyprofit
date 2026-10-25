@@ -107,7 +107,7 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     { id: 'widow', name: 'Eternal Widow', mono: 'EW', color: '#5E1A2B', hi: '#84324A', lo: '#330B16', ink: '#fff', mark: '<path fill-rule="evenodd" d="M24 3c7 0 10 6 10 12v14H14V15c0-6 3-12 10-12zM20 15a4 4 0 1 0 8 0a4 4 0 1 0-8 0z"/><path d="M8 45v-9a10 10 0 0 1 10-10h12a10 10 0 0 1 10 10v9z"/>' },
     { id: 'kidney', name: 'Executive Kidney Destruction', mono: 'EK', color: '#13807A', hi: '#3AA39C', lo: '#08504C', ink: '#fff', mark: '<path d="M27 5c9 0 15 8 15 19s-6 19-15 19c-8 0-11-4-11-8 0-5 5-6 5-11s-5-6-5-11c0-4 3-8 11-8z"/><path d="M14 20c-4 1-8 4-8 9" class="s" style="stroke-width:3"/>' },
     { id: 'stepdad', name: 'Compassionate Stepdad Childcare', mono: 'CS', color: '#7A5232', hi: '#9C7252', lo: '#4A2F19', ink: '#fff', mark: '<circle cx="15" cy="10" r="5.5"/><path d="M6 38V26a9 9 0 0 1 18 0v12z"/><path d="M26 45v-8h7v-8h7v-8h6v24z"/>' }];
-  let brandId = 'granny', cardSet = 'paper';
+  let brandId = 'granny', cardSet = 'colour';
   try { cardSet = localStorage.getItem('op-viewer-cards') || cardSet; } catch (e) {}
   const $cards = document.getElementById('cardsets');
   const drawCards = () => { $cards.innerHTML = [['paper', 'Paper cards'], ['colour', 'Colour cards']].map(([v, l]) => `<button data-cards="${v}" aria-pressed="${v === cardSet}"><i class="${v}"></i>${l}</button>`).join(''); };
