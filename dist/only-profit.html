@@ -665,6 +665,56 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .dymo .m0 { background: var(--suit-0) } .dymo .m1 { background: var(--suit-1); margin-left: 2px }
 .mini .peek > * { box-shadow: inset 0 3px 0 var(--suit, transparent), 0 1px 2px rgba(0,0,0,.4) }
 </style>
+<style>
+/* ---------- Work screen, one material: cream paper on felt, brass coins, red only for ink and the main key ---------- */
+:root { --suit-0: #4A6BB0; --suit-1: #C29433; --suit-2: #8A6A9C }
+/* suit is a small colour tab, not a header band */
+.card .hd { margin: 0; padding: 0; background: none; color: var(--ink-2); box-shadow: none; border-radius: 0 }
+.play .card .hd { margin: 0; padding: 0 }
+.card .hd .sp { display: inline-block; width: 8px; height: 8px; border: 0; border-radius: 2px; clip-path: none; background: var(--suit) }
+.card .word { border-top-color: var(--ink) }
+.card { box-shadow: inset 0 3px 0 var(--suit), 0 1px 0 rgba(0,0,0,.12), 0 8px 16px -10px rgba(0,0,0,.6) }
+.card.shown { box-shadow: inset 0 3px 0 var(--suit), 0 0 0 3px var(--gold), 0 7px 14px -7px rgba(0,0,0,.55) }
+.fan .card { box-shadow: inset 0 3px 0 var(--suit), 0 10px 18px -8px rgba(0,0,0,.7) }
+.policy .card { box-shadow: inset 0 3px 0 var(--suit), 0 2px 0 rgba(0,0,0,.12) }
+/* the same card everywhere: the hand only leans a little */
+.fan .slot { margin-inline: 4px }
+.fan .slot:nth-child(1) { transform: rotate(-4deg) translateY(3px) }
+.fan .slot:nth-child(3) { transform: rotate(4deg) translateY(3px) }
+.fan .slot { transform-origin: 50% 100% }
+/* coins are coins: no dark rings */
+.tag { background: none; box-shadow: none; padding: 0; min-width: 0; right: -7px; top: -8px }
+.tag .coin, .coins .coin { width: 20px; height: 20px }
+.tag.back { width: 22px; height: 22px; border-radius: 50%; background: var(--stock); color: var(--ink); font-size: 12px; display: grid; place-items: center; box-shadow: 0 1px 3px rgba(0,0,0,.4) }
+.card.broke .tag { background: none } .card.broke .tag .coin { filter: grayscale(1) brightness(.75); opacity: .7 }
+/* adding-machine tape between the policy and the hand */
+.tape { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0; margin: 14px 2px 12px; background: var(--stock); color: var(--ink); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); transform: rotate(-.5deg);
+  -webkit-mask-image: radial-gradient(circle at 50% 0, transparent 2.5px, #000 3px) 0 0 / 9px 100%, linear-gradient(#000, #000); mask-image: none }
+.tape > * { padding: 8px 10px 7px; min-width: 0 }
+.t-src { font: 700 11.5px/1.2 var(--f-body); color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center }
+.t-src b { color: var(--ink) }
+.t-src .env-stamp { font-size: 8.5px; padding: 2px 4px; border-width: 1.5px }
+.t-worth { font: 400 24px/1 var(--f-seg); border-inline: 1.5px dashed rgba(20,20,20,.2); padding-inline: 14px; font-variant-numeric: tabular-nums }
+.t-worth.pos { color: var(--good) } .t-worth.neg { color: var(--red) } .t-worth small { font-size: 11px; color: var(--sunset); margin-left: 2px }
+.t-redeal { justify-self: end; display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--ink); font: 800 11.5px/1 var(--f-body); cursor: pointer }
+.t-redeal:hover:not(:disabled) { text-decoration: underline }
+.t-redeal:disabled { color: var(--ink-3); cursor: not-allowed }
+.t-redeal:disabled .coin { filter: grayscale(1); opacity: .5 }
+.t-cost { display: inline-flex } .t-cost .coin { width: 16px; height: 16px }
+/* every pick-one bar (stamps, Ratify/Overrule) is the same paper strip: the chosen one inked, the rest ghosts */
+.bar3 { background: var(--stock); box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); border-radius: 2px; padding: 6px; transform: rotate(.4deg) }
+.bar3 button { color: rgba(20,20,20,.32); background: none; padding: 8px 2px }
+.bar3 button span { border: 2px dashed rgba(20,20,20,.18); border-radius: 3px; padding: 4px 5px }
+.bar3 button:hover { color: var(--ink-2) }
+.bar3 button[aria-pressed="true"] { background: none; box-shadow: none }
+.bar3 button[aria-pressed="true"] span { border-style: solid; border-color: currentColor; transform: rotate(-4deg); mix-blend-mode: multiply }
+/* the header keeps its rail; nothing else on the screen is dark */
+.desk-head .purse { background: rgba(0,0,0,.35) }
+</style>
+<style>
+/* phones: the desk scrolls with the page (this has to come after the desk's own sticky rule) */
+@media (max-width: 980px) { .desk { position: static; max-height: none; overflow: visible } }
+</style>
 <div id="app"></div>
 <script>
 // Only Profit — game engine (no DOM, no Math.random, no clock).
@@ -1439,11 +1489,11 @@ const OP = (() => {
   const stampMark = k => `<span class="env-stamp ${k}">${STAMP[k]}</span>`;
   const key = (a, label, on) => `<button class="btn primary wide" data-a="${a}" ${on === false ? 'disabled' : ''}>${label}</button>`;
   const coins = n => '<i class="coin"></i>'.repeat(n);
-  function inhSlip(inh) {
-    if (inh.kind === 'legacy') return slip('Legacy policy');
-    if (inh.kind === 'cleanup') return slip(`Leftovers · <b>${inh.author === ME ? 'yours' : esc(nm(inh.author))}</b>`);
-    if (inh.kind === 'autopilot') return slip('Autopilot');
-    return slip(`From <b>${inh.author === ME ? 'yourself' : esc(nm(inh.author))}</b>${stampMark(inh.stamp)}`);
+  function inhSource(inh) {
+    if (inh.kind === 'legacy') return 'Legacy';
+    if (inh.kind === 'cleanup') return `Leftovers <b>${inh.author === ME ? 'yours' : esc(nm(inh.author))}</b>`;
+    if (inh.kind === 'autopilot') return 'Autopilot';
+    return `From <b>${inh.author === ME ? 'yourself' : esc(nm(inh.author))}</b>${stampMark(inh.stamp)}`;
   }
   // work has two timed pages: the cards (strategy), then dressing the envelope (the fun bit)
   const TIME = { cards: 45, dress: 20 };
@@ -1510,10 +1560,11 @@ const OP = (() => {
     const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
     ui.deal = false;
     const purse = `<span class="purse" role="img" aria-label="${left} of 3 tokens left">${coins(left)}${'<i class="coin spent"></i>'.repeat(3 - left)}</span>`;
-    const tray = `<div class="tray">${inhSlip(inh)}
-        <span class="worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
-        <button class="shred" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 tokens">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="tag">${coins(2)}</span></button></div>`;
-    const stamps = `<div class="bar3" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
+    // one strip of adding-machine tape between the policy and the hand: where it came from, what it's worth, re-deal
+    const tray = `<div class="tape"><span class="t-src">${inhSource(inh)}</span>
+        <span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
+        <button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 tokens">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="t-cost">${coins(2)}</span></button></div>`;
+    const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}" style="--wait:${wait}s"><div class="policy">${env}</div>${tray}<div class="fan">${hand}</div></div>${stamps}`;
     return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: key('finalise', 'Finalise') });
   }
@@ -1617,9 +1668,9 @@ const OP = (() => {
   }
 
   // ---------- clocking in: type a name, trace it one letter at a time, get a name badge ----------
-  // A letter passes when the ink covers at least half of it and no more than 30% of the ink spills outside.
-  // Each letter has a stroke budget; run out without passing and that letter starts again.
-  const TRACE = { size: 520, brush: 58, cover: .5, spill: .3, part: .1, partCover: .4, dwell: 1800 };
+  // A letter passes as soon as every part of it is at least half inked and no more than 30% of the ink spills outside,
+  // however many strokes that took. The stroke budget only decides when a failed letter starts again.
+  const TRACE = { size: 520, brush: 58, spill: .3, part: .1, partCover: .4, dwell: 1800 };
   const maxStrokes = ch => ('IJLOCSUVZ017'.includes(ch) ? 3 : 'MWEKBRQ#'.includes(ch) ? 5 : 4);
   let naming = null;
   const nameLetters = t => t.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
@@ -1682,7 +1733,7 @@ const OP = (() => {
       }
       const area = ((bx1 - bx0) / 3) * ((by1 - by0) / 3) / 4;
       const parts = cl.every((v, q) => v < area * TRACE.part || cc[q] / v >= TRACE.partCover);
-      const pass = L && parts && cov / L >= TRACE.cover && out / Math.max(1, inkN) <= TRACE.spill;
+      const pass = L && parts && out / Math.max(1, inkN) <= TRACE.spill;
       if (pass) {
         // looks right: wait for the pen to stay lifted before moving on, in case they're still going
         pad.classList.add('ok');
