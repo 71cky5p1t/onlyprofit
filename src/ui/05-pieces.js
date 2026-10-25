@@ -10,7 +10,7 @@
     const stats = S ? `<span class="tab"><b>Q${Math.max(1, S.r)}</b><span>${PHASE[S.phase]}</span></span>
       <div class="stat"><span class="label">CEO</span><b>${S.r ? esc(nm(S.ceo)) : '—'}</b></div>${meter()}` : '';
     return `<header class="mast"><div class="wrap">
-      <div class="logo"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="logo-type"><span class="brand-name">${esc(brand().name)}</span><small>${esc(brand().suffix)} · Playtest build 0.4</small></span></div>
+      <div class="logo"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="logo-type"><span class="brand-name">${esc(brand().name)}</span><small>${esc(brand().suffix)}</small></span></div>
       <div class="mast-stats">${stats}<div class="tools">
         <button class="chip-btn" data-a="debug" aria-pressed="${ui.debug}" title="Show hidden roles, proposal contents and bot reasoning">Observer</button>
         ${S ? '<button class="chip-btn" data-a="quit">New game</button>' : ''}</div></div></div></header>`;
@@ -21,22 +21,17 @@
     const face = c.fx ? `${glyph(c.v)}<span class="dymo" title="${FXSAY[c.fx]}"><i class="m0"></i><i class="m1"></i><b>${FXSYM[c.fx]}</b></span>` : glyph(c.v);
     return `<div class="card s-${c.s} ${c.fx ? 'has-fx' : ''} ${cls || ''}" ${attrs || ''}><div class="cf" style="--fit:${fit(c.w)}"><span class="word">${esc(c.w)}</span><div class="fx">${face}</div></div>${extra || ''}</div>`;
   }
-  function authorVisible(e) {
-    if (e.approved || ui.debug) return true;
-    if (!mine()) return false;
-    if (e.author === ME) return true;
-    return me().spec === 'Auditor' && !me().leave;
-  }
+  // the table is a shared screen: authors appear only once approved
+  const authorVisible = e => e.approved || ui.debug;
   // one proposal on the TV: the cover page, its sentence once anything is shown, then the paperwork
   function pageHTML(e, opt) {
     opt = opt || {};
     const who = authorVisible(e) ? (e.autopilot ? 'Autopilot' : (mine() && e.author === ME ? 'You' : nm(e.author))) : null;
-    const dept = (ui.debug || e.approved || (mine() && e.author === ME)) ? OP.DEPTS[e.dept] : null;
+    const dept = authorVisible(e) ? OP.DEPTS[e.dept] : null;
     const tags = [];
     if (e.audited) tags.push('<span class="pill blue">Audited</span>');
     if (e.autopilot) tags.push('<span class="pill grey">Autopilot</span>');
     if (e.unmasked && !e.approved) tags.push(`<span class="pill red">Overruled · ${e.author === S.ceo ? 'the CEO’s own' : esc(nm(e.author))}</span>`);
-    if (mine() && !ui.debug && me().spec === 'Auditor' && e.author !== ME && !e.approved) tags.push('<span class="pill gold">Auditor sight</span>');
     const dbg = ui.debug ? `<div class="env-dbg">${S.P[e.author].sab ? 'SAB' : 'LOYAL'} · ${esc(e.mode)} · true ${fmt(evs(e.cards))} · table est ${OP.estimate(e, S.loyalTier, false).toFixed(1)} · spent ${e.cost}${e.redeal ? ' · re-dealt' : ''}</div>` : '';
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
@@ -55,7 +50,7 @@
       return `<div class="feed-item ${f.kind}">${q}<div>${esc(f.text)}</div></div>`;
     };
     const cur = S.feed.filter(f => f.r === S.r), old = S.feed.filter(f => f.r !== S.r && f.r > 0);
-    return `<section><div class="section-head"><h2>Bulletin board</h2><span class="label">Memos are unverifiable</span></div>
+    return `<section><div class="section-head"><h2>Bulletin board</h2></div>
       <div class="feed">${cur.length ? cur.map(item).join('') : '<div class="feed-empty">Nothing posted this quarter yet.</div>'}</div>
       ${old.length ? `<details class="rules" style="margin-top:10px"><summary>Earlier quarters (${old.length})</summary><div class="feed" style="margin-top:8px">${old.map(item).join('')}</div></details>` : ''}</section>`;
   }
@@ -78,10 +73,10 @@
       const meta = [];
       if (S.r && S.ceo === p.id && S.phase !== 'end' && S.phase !== 'whistle') meta.push('<span class="pill">CEO</span>');
       if (p.leave) meta.push('<span class="pill grey">Stood down</span>');
-      if (p.spec && (ui.debug || (mine() && p.id === ME))) meta.push(`<span class="pill gold">${p.spec}</span>`);
+      if (p.spec && ui.debug) meta.push(`<span class="pill gold">${p.spec}</span>`);
       if (ui.debug || S.phase === 'end') meta.push(p.sab ? '<span class="pill red">Saboteur</span>' : '<span class="pill green">Loyal</span>');
       meta.push(stickers(p));
-      const dept = (S.r && (ui.debug || (mine() && p.id === ME))) ? `<span class="muted" style="font-size:12px"> · ${OP.DEPTS[p.dept]}</span>` : '';
+      const dept = S.r && ui.debug ? `<span class="muted" style="font-size:12px"> · ${OP.DEPTS[p.dept]}</span>` : '';
       return `<div class="staff-row"><div><span class="staff-name">${p.id === ME && mine() && ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : esc(p.name)}</span>${dept}</div><div class="staff-meta">${meta.join('')}</div></div>`;
     }).join('');
     const sched = OP.ceoSchedule(S).map(c => `<div class="${c.r === S.r && S.phase !== 'end' && S.phase !== 'whistle' ? 'now' : ''}"><span class="label">Q${c.r}</span><span class="nm">${c.who == null ? esc(c.note) : esc(nm(c.who))}</span></div>`).join('');
@@ -101,8 +96,8 @@
     const ph = S.phase;
     if (ph === 'work') {
       const sealed = S.envs.length;
-      const cells = S.P.map((p, i) => i < sealed ? '<div class="placeholder sealed">Handed in</div>' : `<div class="placeholder">${mine() && S.work[ME] && i === sealed ? 'Your desk is open' : 'Working…'}</div>`).join('');
-      return `<section><div class="section-head"><h2>Proposals</h2><span class="label">${sealed} of ${S.n} handed in</span></div><div class="pages">${cells}</div></section>`;
+      const cells = S.P.map((p, i) => i < sealed ? '<div class="placeholder sealed">Handed in</div>' : '<div class="placeholder"></div>').join('');
+      return `<section><div class="pages n${S.n}">${cells}</div></section>`;
     }
     if (!['decide', 'board', 'reveal', 'review'].includes(ph)) return '';
     const click = ph === 'decide' && isCEO() ? 'sel' : null;
@@ -110,9 +105,7 @@
     const animKey = `${S.r}|${ph}`, anim = ui.envAnim !== animKey && !still();
     ui.envAnim = animKey;
     const motion = e => !anim ? '' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
-    const hint = ph === 'decide' ? (isCEO() ? 'You are CEO. Nominate one.' : 'Awaiting the CEO') : ph === 'board' ? `The Board is voting on ${icon(S.nominee)}` : 'Approved policy unmasked';
-    return `<section><div class="section-head"><h2>Proposals on the table</h2><span class="label">${hint}</span></div>
-      <div class="pages">${envs.map(e => pageHTML(e, { motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
+    return `<section><div class="pages n${envs.length}">${envs.map(e => pageHTML(e, { motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
   function exitHTML() {
     const rounds = S.history.map(h => {
@@ -129,5 +122,5 @@
         <div class="scroll-x"><table class="exit-t"><thead><tr><th>Page</th><th>Author</th><th>Dept</th><th>Subject</th><th>Stamp</th><th>Cards</th><th>Value</th></tr></thead><tbody>${rows}</tbody></table></div>
         ${memos ? `<div class="hint">${memos}</div>` : ''}</div>`;
     }).join('');
-    return `<section><div class="section-head"><h2>Exit interview</h2><span class="label">Every proposal, unmasked. * = volatile</span></div><div class="exit">${rounds}</div></section>`;
+    return `<section><div class="section-head"><h2>Exit interview</h2></div><div class="exit">${rounds}</div></section>`;
   }

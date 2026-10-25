@@ -23,4 +23,9 @@ button.pg { cursor: pointer } button.pg:hover .cp-w { transform: translateY(-4px
 .placeholder.sealed { border: 0; color: transparent; position: relative; background: var(--mark) center / 30% no-repeat, radial-gradient(circle at 50% 50%, var(--brand) 0 34px, transparent 35px), repeating-linear-gradient(45deg, rgba(255,255,255,.12) 0 4px, transparent 4px 9px), var(--brand);
   box-shadow: inset 0 0 0 6px var(--stock), inset 0 0 0 7px rgba(0,0,0,.2), 3px 3px 0 -1px #EAE3D2, 0 16px 24px -14px rgba(0,0,0,.8); transform: rotate(-1deg) }
 .placeholder.sealed:nth-child(even) { transform: rotate(1.2deg) }
+/* one row on the TV, however many pages */
+@media (min-width: 721px) { .pages { flex-wrap: nowrap; gap: 22px }
+  .pages.n6 .pg { width: 168px } .pages.n6 .cp-w { --k: .58 } .pages.n6 .placeholder { width: 162px; height: 229px }
+  .pages.n7 .pg { width: 148px } .pages.n7 .cp-w { --k: .51 } .pages.n7 .placeholder { width: 143px; height: 202px }
+  .pages.n8 .pg { width: 130px } .pages.n8 .cp-w { --k: .45 } .pages.n8 .placeholder { width: 126px; height: 178px } }
 @media (max-width: 720px) { .pg { width: 150px } .pg .cp-w { --k: .52 } .placeholder { width: 146px; height: 206px } }

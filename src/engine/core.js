@@ -360,8 +360,7 @@ const OP = (() => {
       case 'approve': if (s.phase !== 'decide' || seat !== s.ceo || !humanTurn) err = 'Only the CEO can nominate.'; else err = nominate(s, a.id, E); break;
       case 'boardVote':
         if (s.phase !== 'board' || !humanTurn || seat === s.ceo) { err = 'No Board vote open.'; break; }
-        // 'overrule' is the old UI's word for 'open'
-        s.bvotes[seat] = a.vote === 'open' || a.vote === 'overrule' ? 'open' : 'ratify'; resolveBoard(s, E); break;
+        s.bvotes[seat] = a.vote === 'open' ? 'open' : 'ratify'; resolveBoard(s, E); break;
       case 'warnVote':
         if (s.phase !== 'reveal' || !humanTurn) { err = 'No warning vote open.'; break; }
         s.wvotes[seat] = a.target === 'none' ? 'none' : +a.target; resolveWarn(s, E); break;

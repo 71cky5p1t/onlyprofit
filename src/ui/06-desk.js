@@ -127,11 +127,14 @@
     refreshPreview();
   }
   // pick-one grids: proposals as small cover pages, people as name tags
+  // your own page, and every author for the Auditor; phone only
+  const auditor = () => mine() && me().spec === 'Auditor' && !me().leave;
+  const tagFor = e => !mine() || e.autopilot ? '' : e.author === ME ? '<i class="yours">You</i>' : auditor() ? `<i class="yours">${esc(nm(e.author))}</i>` : '';
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
       const peek = e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
       return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
-        ${coverHTML(e, { k: .35 })}${peek}${mine() && e.author === ME ? '<i class="yours">You</i>' : ''}</button>`;
+        ${coverHTML(e, { k: .35 })}${peek}${tagFor(e)}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
   }
   function nameTags(list, current, none) {
@@ -184,11 +187,11 @@
     const leave = p.leave ? slip('Stood down') : '';
     if (ph === 'decide') {
       if (isCEO()) return deskWrap('You are CEO', `${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Nominate ${icon(ui.sel)}` : 'Nominate', !!ui.sel) });
-      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}`, { foot: key('advance', 'See the decision') });
+      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}${auditor() ? minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), null) : ''}`, { foot: key('advance', 'See the decision') });
     }
     if (ph === 'board') {
       const nom = S.envs.find(e => e.id === S.nominee);
-      const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom)}</div>
+      const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}${auditor() && !nom.autopilot ? ` · by <b>${nom.author === ME ? 'you' : esc(nm(nom.author))}</b>` : ''}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom)}</div>
         <div class="bar3 two" role="radiogroup" aria-label="Board vote">${['ratify', 'open'].map(v => `<button class="b-${v}" role="radio" data-a="sel" data-id="${v}" aria-checked="${ui.sel === v}" aria-pressed="${ui.sel === v}"><span>${v === 'ratify' ? 'Ratify' : 'Open it'}</span></button>`).join('')}</div>`;
       return deskWrap('Board vote', `${leave}${body}`, { foot: key('board', 'Sign', ui.sel === 'ratify' || ui.sel === 'open') });
     }
@@ -203,7 +206,7 @@
       return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
-      return deskWrap('Name a saboteur', `<div class="slips">${slip(`Right: <b class="pos">Clawback</b> · wrong <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
+      return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
     }
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');
