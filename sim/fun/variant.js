@@ -12,6 +12,12 @@ const TAMPER = `
     }
     s.phase = 'decide';`;
 const V = {
+  // no separate audit: the Board can open the nominee, and overrules only if it disappoints
+  openNom: [['core.js', 'const e = s.envs.find(x => x.id === winner);\n    if (e)', 'const e = null;\n    if (e)'],
+    ['core.js', 'const best = argmax(s.envs, x => [pubEst(s, x)]);\n    const overruled = no > voters / 2 && best.id !== nom.id;', 'if (no > voters / 2) nom.audited = true;\n    const best = argmax(s.envs, x => [pubEst(s, x)]);\n    const overruled = !!nom.audited && best.id !== nom.id && pubEst(s, nom) < pubEst(s, best) - 1;'],
+    ['bots.js', "return f.get(nom.id) <= best - (tell ? 1 : 2) ? 'overrule' : 'ratify';", "return nom.revealed.length < 3 && (tell || f.get(nom.id) <= best - 1 || (nom.stamp === 'Rec' && nom.revealed.length < 2 && pers(p)[4] < 1.2)) ? 'overrule' : 'ratify';"]],
+  // eight effect Modifiers instead of four
+  fx8: [['core.js', 'const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);', 'const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 || v === -1 ? a.concat(k) : a), []);'], ['content.js', "  const NAMES =", "  FX.push(...FX.map(f => f.slice()));\n  const NAMES ="]],
   // once a game, a saboteur may swap one hidden card in someone else's sealed envelope after the audit
   tamper: [['core.js', "log(s, E, 'event', 'The table declined to audit anything.');\n    s.phase = 'decide';", "log(s, E, 'event', 'The table declined to audit anything.');" + TAMPER]],
   // at most one card shown per envelope

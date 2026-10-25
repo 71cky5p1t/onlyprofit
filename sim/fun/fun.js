@@ -16,7 +16,7 @@ function play(n, seed, o = {}) {
 function measure(n, G, o) {
   const m = { games: G, win: 0, close5: 0, closeW: 0, whistleFlip: 0, comeback: 0, collapse: 0, cross: 0, blowout: 0,
     overrule: 0, ownOverrule: 0, auditHit: 0, recLoss: 0, warns: 0, wrongWarns: 0, standDown: 0, wrongStand: 0,
-    bust: 0, claw: 0, named: 0, correct: 0, cleanNamed: 0, clean: 0, choice: 0, rounds: 0, lies: 0, lieWarn: 0,
+    audits: 0, bust: 0, claw: 0, named: 0, correct: 0, cleanNamed: 0, clean: 0, choice: 0, rounds: 0, lies: 0, lieWarn: 0,
     sabGames: 0, sabWinLied: 0, sabLied: 0, sabWinHonest: 0, sabHonest: 0, liarNamed: 0, margin: [] };
   for (let g = 1; g <= G; g++) {
     const { s, R } = play(n, g * 7919 + n, o), T = s.target;
@@ -35,7 +35,7 @@ function measure(n, G, o) {
       m.rounds++;
       if (x.result && x.result.actual < 0) m.bust++;
       if (x.board && x.board.overruled) { m.overrule++; if (x.board.own) m.ownOverrule++; }
-      const au = x.envs.find(e => e.audited); if (au && OP.evs(au.cards) < 0) m.auditHit++;
+      const au = x.envs.find(e => e.audited); if (au) m.audits++; if (au && OP.evs(au.cards) < 0) m.auditHit++;
       if (x.result && x.result.actual <= -1 && x.envs.find(e => e.id === x.result.id).stamp === 'Rec') m.recLoss++;
       if (x.warn && x.warn.passed) { m.warns++; if (!s.P[x.warn.target].sab) m.wrongWarns++; }
       const ests = x.envs.map(e => OP.estimate(e, 'smart', true)).sort((a, b) => b - a);
@@ -63,7 +63,7 @@ function row(n, m) {
   const sd = Math.sqrt(m.margin.reduce((a, v) => a + v * v, 0) / G - (m.margin.reduce((a, v) => a + v, 0) / G) ** 2);
   return { n, win: pc(m.win), liveQ5: pc(m.close5), liveWhistle: pc(m.closeW), whistleFlips: pc(m.whistleFlip), comeback: pc(m.comeback), collapse: pc(m.collapse),
     paceCross: (m.cross / G).toFixed(1), blowout: pc(m.blowout), marginSD: sd.toFixed(1),
-    realChoice: rd(m.choice), bust: rd(m.bust), overrule: rd(m.overrule), auditHit: rd(m.auditHit), recLoss: rd(m.recLoss),
+    realChoice: rd(m.choice), bust: rd(m.bust), overrule: rd(m.overrule), audits: rd(m.audits), auditHit: rd(m.auditHit), recLoss: rd(m.recLoss),
     warnsPerG: (m.warns / G).toFixed(2), wrongWarn: (m.wrongWarns / Math.max(1, m.warns) * 100).toFixed(0) + '%',
     wrongStand: (m.wrongStand / Math.max(1, m.standDown) * 100).toFixed(0) + '%',
     named: pc(m.named), correct: (m.correct / Math.max(1, m.named) * 100).toFixed(0) + '%', cleanParanoia: (m.cleanNamed / Math.max(1, m.clean) * 100).toFixed(0) + '%',

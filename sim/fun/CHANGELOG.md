@@ -26,3 +26,16 @@ Each bot keeps a memory (`p.mind`): trust per player, the envelope colours it ha
 
 Unchanged and the main fun problems: an audit catches a losing envelope in 0–3% of quarters, an approved policy loses
 money in 2–5%, the CEO has a close call in 28–55%, and a saboteur's own envelope is almost never approved.
+
+## Round 2 (2026-10-25): what would make the big moments happen
+
+Saboteurs now build traps on purpose: they show their good cards, hide the losing ones, and stamp the envelope Recommended about half the time when nobody suspects them yet.
+That was a small effect. Bot games are 48–53% wins for the company, and a trap gets approved in 5–8% of quarters (it was 4–7%).
+
+The rule experiments are in `variant.js`, run at 800 games per player count:
+- `fineprint` (Modifier never shown), `reveal1` (one card shown), `fx8` (eight effect Modifiers), `tamper` (the saboteur secretly swaps one card, once a game).
+  None of them pushes losing approvals or audit catches above about 5% of quarters. Card values cap the damage a trap can do.
+- `openNom`: the separate Audit vote is removed. After the CEO nominates, the Board can vote to open the nominee and overrule only if it disappoints.
+  This is one vote fewer per quarter. The Board opens the nominee in 11–21% of quarters, and about half of those catch a losing envelope (6–9% of quarters, up from 1–4%).
+  Warnings that hit loyal players fall to 8–10%. The company gains 4–7 points of win rate, so it needs targets about 1 higher (4p 20, 5p 22, 6p 22, 7p 23, 8p 24).
+  This one needs Joel's call.
