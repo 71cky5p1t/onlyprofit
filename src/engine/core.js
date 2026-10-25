@@ -370,7 +370,8 @@ const OP = (() => {
   function scoreStaff(s) {
     s.scores = s.P.map(p => s.ledger.filter(l => l.author === p.id && !l.autopilot).reduce((a, l) => a + (p.sab ? Math.max(0, -l.actual) : l.actual < 0 ? l.actual : l.actual > 0 && l.ceo !== p.id ? 1 : 0), 0));
     const side = s.P.filter(p => p.sab !== s.win);
-    s.eoty = side.length ? argmax(side, p => [s.scores[p.id], -p.id]).id : null;
+    const best = side.length ? argmax(side, p => [s.scores[p.id], -p.id]) : null;
+    s.eoty = best && s.scores[best.id] > 0 ? best.id : null;
   }
   function fmt(v) { if (v === 'V') return '±2'; return (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v); }
 
