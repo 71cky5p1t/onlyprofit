@@ -82,8 +82,9 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
   const PHONE_CSS = '.board,.mast{display:none!important}.layout{padding-block:10px 30px!important}.wrap{padding-inline:8px!important}.desk{position:static!important;max-height:none!important;max-width:none!important}';
   const SPREADS = [
     { id: 'lobby', q: 'Q0', name: 'Lobby', say: 'Pick a table size and the bots. Seeded games replay exactly.', go: { ph: 'setup' }, only: 'tv' },
+    { id: 'clockin', q: 'Q0', name: 'Clocking in', say: 'Type your name, then trace it one letter at a time. Too much ink outside the letter and it starts again. You only see the result on your badge.', go: { ph: 'naming' }, only: 'phone' },
     { id: 'onboarding', q: 'Q0', name: 'Onboarding', say: 'Your employment letter tells you which side you are on. The TV shows the staff and the empty ledger.', go: { ph: 'brief' } },
-    { id: 'work', q: 'Q1', name: 'Work', say: 'Strategy first, on a timer. Drag a card up to swap it in, tap one to show the CEO, stamp it. Every move costs coins.', go: { ph: 'work', r: 1 } },
+    { id: 'work', q: 'Q1', name: 'Work', say: 'Strategy first, on a timer. Drag a card up to swap it in, tap one to show the CEO, stamp it. Finalise stuffs it all into an envelope.', go: { ph: 'work', r: 1 } },
     { id: 'dress', q: 'Q1', name: 'Dress it up', say: 'Then the fun bit: subject line, colour and trim. Seals itself when the tape runs out.', go: { ph: 'work', r: 1, page: 2 }, only: 'phone' },
     { id: 'pitch', q: 'Q1', name: 'Pitch + audit', say: 'Anonymous envelopes land on the board. The table votes to open one.', go: { ph: 'pitch', r: 1 } },
     { id: 'decide', q: 'Q1', name: 'Decide', say: 'You are CEO this quarter. Approve one envelope.', go: { ph: 'decide', r: 1 } },
@@ -110,13 +111,19 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     const click = sel => { const e = d.querySelector(sel); if (e && !e.disabled) { e.click(); return true; } return false; };
     if (go.ph === 'setup') return;
     click(`[data-a=set][data-k=players][data-v="${PLAYERS}"]`);
+    w.__opSkipName = go.ph !== 'naming';
+    if (go.ph === 'naming') {
+      click('[data-a=start]'); await sleep(50);
+      const inp = d.getElementById('name-in'); inp.value = 'Joel'; inp.dispatchEvent(new Event('input', { bubbles: true }));
+      click('[data-a="name-go"]'); await sleep(400); return;
+    }
     const seed = d.getElementById('seed'); seed.value = SEED; seed.dispatchEvent(new Event('input', { bubbles: true }));
     click('[data-a=start]');
     for (let i = 0; i < 500; i++) {
       const S = w.__op && w.__op.S; if (!S) return;
       if (S.phase === go.ph && (go.r == null || S.r === go.r) && !go.page) return;
       if (S.phase === 'brief') click('[data-a=begin]');
-      else if (S.phase === 'work') { if (go.page === 2 && S.r === go.r) { click('[data-a=next]'); return; } click('[data-a=stamp][data-v=Rec]'); click('[data-a=next]'); click('[data-a=seal]'); }
+      else if (S.phase === 'work') { if (click('[data-a=seal]')) { await sleep(20); continue; } if (go.page === 2 && S.r === go.r) { click('[data-a=finalise]'); await sleep(1600); return; } click('[data-a=stamp][data-v=Rec]'); click('[data-a=finalise]'); await sleep(1450); }
       else if (!click('.desk [data-a=advance]')) { click('.desk [data-a=sel]'); click('.desk .btn.primary'); }
       await sleep(12);
     }

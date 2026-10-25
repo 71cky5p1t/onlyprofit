@@ -18,6 +18,32 @@
   const nm = i => (i === 'table' ? 'The table' : S.P[i].name);
   const mine = () => S && !S.spectate;
   const me = () => S.P[ME];
+  // envelopes are told apart by an office object, not a letter; same icon on the TV and the phone
+  const ICONS = [
+    '<path d="M5 8h11v7a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2M8.5 3.5v2M12 3.5v2"/>',
+    '<path d="M16 7v9a4 4 0 0 1-8 0V6a2.5 2.5 0 0 1 5 0v9a1 1 0 0 1-2 0V8"/>',
+    '<path d="M9 3h6l-1 6 3 3H7l3-3z"/><path d="M12 12v9"/>',
+    '<path d="M10 3h4l-1 3 2 10-3 5-3-5 2-10z"/>',
+    '<circle cx="8" cy="8" r="4"/><path d="M11 11l9 9M17 17l2-2M14.5 14.5l2-2"/>',
+    '<path d="M12 21V6a2 2 0 0 1 4 0v7a2 2 0 0 1-2 2h-2M12 12H10a2 2 0 0 1-2-2V8M7 21h10"/>',
+    '<path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2v.1h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',
+    '<circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8 15.6L18 3M16 15.6L6 3"/>',
+    '<path d="M3 12a9 9 0 0 1 18 0z"/><path d="M12 12v7a2 2 0 0 1-4 0"/>',
+    '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>'];
+  const ICON_NAMES = ['mug', 'paperclip', 'pushpin', 'tie', 'key', 'cactus', 'light bulb', 'scissors', 'umbrella', 'phone'];
+  const iconIdx = (id, list) => Math.max(0, (list || S.envs).map(e => e.id).sort().indexOf(id)) % ICONS.length;
+  const icon = (id, list) => `<svg class="ico" viewBox="0 0 24 24" role="img" aria-label="${ICON_NAMES[iconIdx(id, list)]}"><title>${ICON_NAMES[iconIdx(id, list)]}</title>${ICONS[iconIdx(id, list)]}</svg>`;
+  // a person's record as cheap, dog-eared praise stickers
+  function stickers(q) {
+    const filed = S.history.flatMap(h => h.memos).concat(S.memos).filter(m => m.kind === 'report' && m.by === q.id).length;
+    const out = [];
+    q.approved.forEach(a => out.push(a.actual > 0 ? ['gold', 'Great work!'] : ['beige', 'Acceptable!']));
+    if (filed) out.push(['blue', 'Team player']);
+    for (let k = 0; k < q.warnings; k++) out.push(['red', 'See me']);
+    if (q.accusations) out.push(['grey', `Noted ×${q.accusations}`]);
+    if (!out.length) return '';
+    return `<span class="stickers">${out.map(([c, t], k) => `<i class="stk ${c}" style="--r:${((q.id * 7 + k * 13) % 11) - 5}deg">${t}</i>`).join('')}</span>`;
+  }
   const isCEO = () => mine() && S.ceo === ME;
   const STAMP = OP.STAMP_LABEL;
   const TIER = { smart: 'Smart', basic: 'Basic', naive: 'Gullible', patient: 'Patient', blatant: 'Blatant' };
@@ -92,7 +118,7 @@
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
     if (fresh) ui.stamped = `${S.r}${e.id}`;
     return `<${tag} class="env c-${e.style.color} t-${e.style.trim} ${ui.sel === e.id ? 'sel' : ''} ${e.approved ? 'approved' : ''} ${e.audited ? 'audited' : ''} ${opt.faded ? 'faded' : ''}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}"` : ''}>
-      <div class="env-top"><span class="env-id">${e.id}</span><span class="env-kind">Inter-office<br>mail</span><span class="clasp" aria-hidden="true"></span></div>
+      <div class="env-top"><span class="env-id">${e.id.length === 1 && S && S.envs.some(x => x.id === e.id) ? icon(e.id) : e.id}</span><span class="env-kind">Inter-office<br>mail</span><span class="clasp" aria-hidden="true"></span></div>
       <div class="env-subj">${esc(e.subject)}</div>
       <div class="env-route"><div><span>From</span>${who ? `<b>${esc(who)}</b>` : '<i class="redact"></i>'}</div><div><span>Dept</span>${dept ? esc(dept) : '<i class="redact"></i>'}</div></div>
       <div class="env-stamp ${e.stamp}">${STAMP[e.stamp]}</div>
@@ -134,11 +160,9 @@
       if (p.leave) meta.push('<span class="pill grey">Stood down</span>');
       if (p.spec && (ui.debug || (mine() && p.id === ME))) meta.push(`<span class="pill gold">${p.spec}</span>`);
       if (ui.debug || S.phase === 'end') meta.push(p.sab ? '<span class="pill red">Saboteur</span>' : '<span class="pill green">Loyal</span>');
-      if (p.accusations) meta.push(`<span class="muted" style="font-size:12px">${p.accusations} complaint${p.accusations > 1 ? 's' : ''}</span>`);
-      meta.push(`<span class="muted num" style="font-size:12px">${p.approved.length} appr.</span>`);
-      meta.push(pips(p.warnings));
+      meta.push(stickers(p));
       const dept = (S.r && (ui.debug || (mine() && p.id === ME))) ? `<span class="muted" style="font-size:12px"> · ${OP.DEPTS[p.dept]}</span>` : '';
-      return `<div class="staff-row"><div><span class="staff-name">${esc(p.name)}</span>${dept}</div><div class="staff-meta">${meta.join('')}</div></div>`;
+      return `<div class="staff-row"><div><span class="staff-name">${p.id === ME && mine() && ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : esc(p.name)}</span>${dept}</div><div class="staff-meta">${meta.join('')}</div></div>`;
     }).join('');
     const sched = OP.ceoSchedule(S).map(c => `<div class="${c.r === S.r && S.phase !== 'end' && S.phase !== 'whistle' ? 'now' : ''}"><span class="label">Q${c.r}</span><span class="nm">${c.who == null ? esc(c.note) : esc(nm(c.who))}</span></div>`).join('');
     return `<section><div class="section-head"><h2>Staff directory</h2><span class="label">${S.n} employees</span></div><div class="staff">${rows}</div>
@@ -173,7 +197,7 @@
         const p = S.P[e.author];
         const vals = e.cards.map((c, k) => `<span class="${tone(e.resolved ? e.resolved[k] : c.v)}">${fmt(e.resolved ? e.resolved[k] : c.v)}${c.fx ? ' ' + FXSYM[c.fx] : ''}</span>`).join(' ');
         const tot = e.resolved ? OP.total(e.resolved, e.cards) : evs(e.cards);
-        return `<tr class="${e.id === h.pick ? 'win' : ''}"><td class="num nw"><b>${e.id}</b>${e.id === h.pick ? ' ✓' : ''}${e.id === h.audit ? ' <span class="pill blue">aud</span>' : ''}</td>
+        return `<tr class="${e.id === h.pick ? 'win' : ''}"><td class="num nw"><b class="ico-cell">${icon(e.id, h.envs)}</b>${e.id === h.pick ? ' ✓' : ''}${e.id === h.audit ? ' <span class="pill blue">aud</span>' : ''}</td>
           <td class="nw">${e.autopilot ? 'Autopilot · ' : ''}${esc(p.name)} <span class="pill ${p.sab ? 'red' : 'green'}">${p.sab ? 'Sab' : 'Loyal'}</span></td>
           <td class="muted">${OP.DEPTS[e.dept]}</td><td class="sub-mono">${esc(e.subject)}</td><td>${STAMP[e.stamp]}</td><td class="num nw">${vals}</td><td class="num ${tone(tot)}"><b>${fmt(tot)}</b></td></tr>`;
       }).join('');
@@ -186,11 +210,16 @@
   }
 
   // ---------- desk: your phone. Objects on the felt, same as the TV; almost no prose ----------
-  function deskWrap(title, body, fuse) {
-    return `<aside class="desk" aria-label="Your desk"><div class="desk-head"><h3 class="plate">${title}</h3>${fuse || ''}</div><div class="desk-body">${body}${err ? `<div class="err" role="alert">${esc(err)}</div>` : ''}</div></aside>`;
+  // a bakelite header bar (nameplate, coins, timer tape) and a footer bar that holds the one key that matters
+  function deskWrap(title, body, o) {
+    o = o || {};
+    return `<aside class="desk" aria-label="Your desk"><div class="desk-head"><div class="bar-row"><h3 class="plate">${title}</h3>${o.right || ''}</div>${o.fuse || ''}</div>
+      <div class="desk-body">${body}${err ? `<div class="err" role="alert">${esc(err)}</div>` : ''}</div>${o.foot ? `<div class="desk-foot">${o.foot}</div>` : ''}</aside>`;
   }
   const slip = html => `<span class="slip">${html}</span>`;
   const stampMark = k => `<span class="env-stamp ${k}">${STAMP[k]}</span>`;
+  const key = (a, label, on) => `<button class="btn primary wide" data-a="${a}" ${on === false ? 'disabled' : ''}>${label}</button>`;
+  const coins = n => '<i class="coin"></i>'.repeat(n);
   function inhSlip(inh) {
     if (inh.kind === 'legacy') return slip('Legacy policy');
     if (inh.kind === 'cleanup') return slip(`Leftovers · <b>${inh.author === ME ? 'yours' : esc(nm(inh.author))}</b>`);
@@ -214,12 +243,24 @@
     const pct = window.__opFreeze ? 64 : Math.max(0, (timer.end - Date.now()) / timer.total * 100);
     return `<div class="fuse" role="timer" aria-label="Time left"><i style="width:${pct}%"></i></div>`;
   }
-  function toDress() { if (!draft.stamp) draft.stamp = 'Rec'; draft.page = 2; render(); }
+  // Finalise: the hand drops away, the policy slides together and is stuffed into an envelope, then styling opens
+  function finalise() {
+    if (!draft || draft.page === 2 || ui.stuffing) return;
+    if (!draft.stamp) draft.stamp = 'Rec';
+    stopTimer();
+    const play = document.querySelector('.play');
+    if (!play || still()) { draft.page = 2; render(); return; }
+    ui.stuffing = true;
+    play.style.setProperty('--env', `var(--env-${draft.style.color})`);
+    play.insertAdjacentHTML('beforeend', '<i class="stuff back" aria-hidden="true"></i><i class="stuff front" aria-hidden="true"></i><i class="stuff flap" aria-hidden="true"></i>');
+    play.classList.add('stuff');
+    setTimeout(() => { ui.stuffing = false; if (draft && S.phase === 'work') { draft.page = 2; ui.arrive = true; render(); } }, 1450);
+  }
   function seal() {
     const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
     stopTimer();
     dispatch({ type: 'submitWork', redeal: draft.redeal, swaps: draft.swaps, reveals: draft.reveals, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
-      claim: draft.claim.kind === 'none' ? null : draft.claim, nextStyle: draft.nextStyle });
+      claim: null, nextStyle: draft.nextStyle });
     toast('Sealed.');
   }
   function deskWork() {
@@ -227,7 +268,6 @@
     if (draft.page === 2) return deskDress(p, wr);
     const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
     // tokens are coins: price tags on the hand, paid coins sit on the policy card they bought
-    const coins = n => '<i class="coin"></i>'.repeat(n);
     const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.reveals.includes(su) ? 1 : 0);
     const env = [0, 1, 2].map(su => {
       const c = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
@@ -250,68 +290,53 @@
     // a fresh quarter waits for the stripe wipe to clear before dealing
     const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
     ui.deal = false;
-    const tray = `<div class="tray">
-        <span class="purse" role="img" aria-label="${left} of 3 tokens left">${coins(left)}${'<i class="coin spent"></i>'.repeat(3 - left)}</span>
+    const purse = `<span class="purse" role="img" aria-label="${left} of 3 tokens left">${coins(left)}${'<i class="coin spent"></i>'.repeat(3 - left)}</span>`;
+    const tray = `<div class="tray">${inhSlip(inh)}
         <span class="worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
         <button class="shred" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 tokens">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="tag">${coins(2)}</span></button></div>`;
     const stamps = `<div class="bar3" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
-    const claimable = inh.kind === 'rejected' && inh.author != null && inh.author !== ME;
-    const who = claimable ? esc(nm(inh.author)) : '';
-    const drop = (id, k, opts, cur) => `<label class="drop"><select id="${id}" data-in="${k}">${opts.map(([v, l]) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`;
-    const claim = claimable ? `<div class="memo"><div class="bar3 small" role="radiogroup" aria-label="Memo about ${who}">
-        <button data-a="claim" data-k="none" aria-pressed="${draft.claim.kind === 'none'}"><span>Say nothing</span></button>
-        <button data-a="claim" data-k="report" aria-pressed="${draft.claim.kind === 'report'}"><span>Report ${who}</span></button>
-        <button data-a="claim" data-k="vouch" aria-pressed="${draft.claim.kind === 'vouch'}"><span>Vouch</span></button></div>
-      ${draft.claim.kind === 'report' ? `<div class="lie">${drop('claim-stamp', 'claimStamp', Object.keys(STAMP).map(k => [k, STAMP[k]]), draft.claim.stamp)}${drop('claim-val', 'claimVal', [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6].map(x => [x, fmt(x)]), draft.claim.val)}</div>` : ''}</div>` : '';
-    const body = `${inhSlip(inh)}
-      <div class="play${dealCls}" style="--wait:${wait}s"><div class="policy">${env}</div>${tray}<div class="fan">${hand}</div></div>
-      ${stamps}${claim}
-      <button class="btn primary wide" data-a="next">Dress it up ›</button>`;
-    return deskWrap(OP.DEPTS[p.dept], body, fuse(`${S.r}-cards`, TIME.cards, toDress));
+    const body = `<div class="play${dealCls}" style="--wait:${wait}s"><div class="policy">${env}</div>${tray}<div class="fan">${hand}</div></div>${stamps}`;
+    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: key('finalise', 'Finalise') });
   }
   function deskDress(p, wr) {
     const locked = !!S.reqStyle;
     const mock = { id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', cards: wr.prop, revealed: [], author: ME, dept: p.dept };
+    const arrive = ui.arrive ? ' arrive' : ''; ui.arrive = false;
     const designer = p.spec === 'Designer' ? `<div class="row-l"><span class="label">Next quarter</span><label class="drop"><select id="next-style" data-in="nextStyle"><option value="">Any envelope</option>${OP.COLORS.flatMap(c => OP.TRIMS.map(t => `<option value="${c}/${t}" ${draft.nextStyle && draft.nextStyle.color === c && draft.nextStyle.trim === t ? 'selected' : ''}>${c} · ${t}</option>`)).join('')}</select></label></div>` : '';
-    const body = `<div class="preview">${envHTML(mock, { preview: true })}</div>
+    const body = `<div class="preview${arrive}">${envHTML(mock, { preview: true })}</div>
       <div class="subj">${draft.words.map((k, i) => `<button class="subj-word" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled' : ''}>${esc(OP.SUBJ[i][k])}</button>`).join('')}</div>
       <input class="input" id="custom-subject" data-in="custom" maxlength="80" placeholder="Or write your own…" value="${esc(draft.custom)}">
       <div class="styles">${OP.COLORS.map(c => `<button class="swatch" style="background:var(--env-${c})" data-a="color" data-v="${c}" aria-pressed="${draft.style.color === c}" aria-label="${c}" ${locked ? 'disabled' : ''}></button>`).join('')}
         <span class="sep"></span>${OP.TRIMS.map(t => `<button class="trim-btn" data-a="trim" data-v="${t}" aria-pressed="${draft.style.trim === t}" ${locked ? 'disabled' : ''}>${t}</button>`).join('')}</div>
-      ${designer}
-      <div class="two-keys"><button class="btn back" data-a="back">‹ Cards</button><button class="btn primary wide" data-a="seal">Seal</button></div>`;
-    return deskWrap(OP.DEPTS[p.dept], body, fuse(`${S.r}-dress`, TIME.dress, seal));
+      ${designer}`;
+    return deskWrap(OP.DEPTS[p.dept], body, { fuse: fuse(`${S.r}-dress`, TIME.dress, seal), foot: `<div class="two-keys"><button class="btn back" data-a="back">‹ Cards</button>${key('seal', 'Seal')}</div>` });
   }
   // pick-one grids: envelopes as small envelopes, people as name tags
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
-      const cards = e.audited || (isCEO() && e.revealed.length) ? `<span class="mg">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="${tone(c.v)}">${GLYPH[c.v]}</b>` : '<i></i>').join('')}</span>` : '';
-      return `<button class="mini c-${e.style.color} t-${e.style.trim}" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="Envelope ${e.id}: ${esc(e.subject)}">
-        <span class="mid">${e.id}</span>${stampMark(e.stamp)}<span class="ms">${esc(e.subject)}</span>${cards}${mine() && e.author === ME ? '<i class="yours">You</i>' : ''}</button>`;
+      const peek = e.audited || (isCEO() && e.revealed.length) ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="${tone(c.v)}">${GLYPH[c.v]}</b>` : '<i>OP</i>').join('')}</span>` : '';
+      return `<button class="mini c-${e.style.color} t-${e.style.trim}" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="Envelope ${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
+        ${peek}<span class="mid">${icon(e.id)}</span>${stampMark(e.stamp)}<span class="ms">${esc(e.subject)}</span>${mine() && e.author === ME ? '<i class="yours">You</i>' : ''}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
   }
   function nameTags(list, current, none) {
-    return `<div class="tags">${list.map(q => {
-      const c = (S.accused[q.id] || []).length + 0;
-      return `<button class="nametag" data-a="sel" data-id="${q.id}" aria-pressed="${String(current) === String(q.id)}"><span class="hello">Hello<small>my name is</small></span><b>${esc(q.name)}</b>
-        <span class="nt-foot">${pips(q.warnings)}${q.accusations ? `<i class="cmp" title="${q.accusations} complaints">${q.accusations}</i>` : ''}</span></button>`;
-    }).join('')}${none ? `<button class="nametag none" data-a="sel" data-id="none" aria-pressed="${String(current) === 'none'}"><b>${none}</b></button>` : ''}</div>`;
+    return `<div class="tags">${list.map(q => `<button class="nametag" data-a="sel" data-id="${q.id}" aria-pressed="${String(current) === String(q.id)}"><span class="hello">Hello<small>my name is</small></span><b>${esc(q.name)}</b>${stickers(q)}</button>`).join('')}
+      ${none ? `<button class="nametag none" data-a="sel" data-id="none" aria-pressed="${String(current) === 'none'}"><b>${none}</b></button>` : ''}</div>`;
   }
-  const key = (a, label, on) => `<button class="btn primary wide" data-a="${a}" ${on === false ? 'disabled' : ''}>${label}</button>`;
+  const auditSlip = () => S.audit ? slip(S.audit.winner === 'none' ? 'Nothing audited' : `Audited ${icon(S.audit.winner)}`) : '';
   function resultSlip() {
     if (!S.result) return '';
     const e = S.envs.find(x => x.id === S.result.id); if (!e) return '';
-    return slip(`<b>${S.result.id}</b> · ${e.autopilot ? 'Autopilot' : esc(nm(S.result.author))} · <b class="${tone(S.result.actual)}">${fmt(S.result.actual)}</b>`);
+    return slip(`${icon(S.result.id)} ${e.autopilot ? 'Autopilot' : esc(nm(S.result.author))} <b class="${tone(S.result.actual)}">${fmt(S.result.actual)}</b>`);
   }
   function deskSpectate() {
     const ph = S.phase;
     if (ph === 'end') return deskEnd();
     const label = { decide: 'See the decision', review: S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower' }[ph];
-    const bits = [];
-    if (S.audit) bits.push(slip(S.audit.winner === 'none' ? 'Nothing audited' : `Audited <b>${S.audit.winner}</b>`));
+    const bits = [auditSlip()];
     if (ph === 'review') bits.push(resultSlip());
     if (S.warn && ph === 'review') bits.push(slip(S.warn.target == null ? 'No warning' : `Warning · <b>${esc(nm(S.warn.target))}</b> ${S.warn.passed ? 'passed' : 'failed'}`));
-    return deskWrap('Observing', `<div class="slips">${bits.join('')}</div>${label ? key('advance', label) : ''}`);
+    return deskWrap('Observing', `<div class="slips">${bits.join('')}</div>`, { foot: label ? key('advance', label) : '' });
   }
   function deskEnd() {
     const sabs = S.P.filter(p => p.sab);
@@ -319,46 +344,129 @@
     const line = S.win ? 'Shareholders are mildly pleased. Bonuses have been deferred.' : sabs.length ? 'The company sank, with help.' : 'The company failed entirely on its own merits.';
     const body = `<div class="sheet letter"><div class="role ${S.win ? 'loyal' : 'sab'}">${youWon == null ? (S.win ? 'Target met' : 'Target missed') : youWon ? 'You win' : 'You lose'}</div>
       <div class="num big">${fmt(S.profit)} <small>/ +${S.target}</small></div><div>${line}</div>
-      <div class="hint">${sabs.length ? `Saboteur${sabs.length > 1 ? 's' : ''}: <b>${sabs.map(p => esc(p.name)).join(', ')}</b>` : 'No saboteur'}</div></div>
-      <div class="two-keys"><button class="btn back" data-a="quit">Settings</button><button class="btn primary wide" data-a="again">Again</button></div>`;
-    return deskWrap('Final figures', body);
+      <div class="hint">${sabs.length ? `Saboteur${sabs.length > 1 ? 's' : ''}: <b>${sabs.map(p => esc(p.name)).join(', ')}</b>` : 'No saboteur'}</div></div>`;
+    return deskWrap('Final figures', body, { foot: `<div class="two-keys"><button class="btn back" data-a="quit">Settings</button>${key('again', 'Again')}</div>` });
   }
   function desk() {
     if (S.spectate) return deskSpectate();
     const p = me(), ph = S.phase;
     if (ph === 'brief') {
-      const body = `<div class="sheet letter"><span class="label">Employment letter</span>
+      const body = `${ui.badge ? `<div class="badge-hold">${badgeHTML()}</div>` : ''}<div class="sheet letter"><span class="label">Employment letter</span>
         <div>Dear colleague, the company must reach <b>+${S.target} profit</b> in five quarters. Your allegiance is:</div>
         <div class="role ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Saboteur' : 'Loyal'}</div>
         <div>${p.sab ? `Make sure it finishes below +${S.target}. Quietly.` : `There may be ${S.n >= 6 ? 'one or two saboteurs' : 'a saboteur'}, or nobody at all.`}</div>
         ${p.spec ? `<div>You are also the <b>${p.spec}</b>. ${p.spec === 'Auditor' ? 'You see who wrote every envelope.' : 'You choose next quarter’s envelope.'}</div>` : ''}
-        <div class="sig">Warm regards,<br>People &amp; Culture</div></div>${key('begin', 'Start Q1')}`;
-      return deskWrap('Strictly confidential', body);
+        <div class="sig">Warm regards,<br>People &amp; Culture</div></div>`;
+      return deskWrap('Strictly confidential', body, { foot: key('begin', 'Start Q1') });
     }
     if (ph === 'work' && draft) return deskWork();
     const leave = p.leave ? slip('Stood down') : '';
     if (ph === 'pitch') {
       const list = S.envs.filter(e => !e.autopilot).sort((a, b) => a.id.localeCompare(b.id));
-      return deskWrap('Audit vote', `${leave}${minis(list, ui.sel, 'Open nothing')}${key('audit', ui.sel && ui.sel !== 'none' ? `Open ${ui.sel}` : 'Vote', !!ui.sel)}`);
+      return deskWrap('Audit vote', `${leave}${minis(list, ui.sel, 'Open nothing')}`, { foot: key('audit', ui.sel && ui.sel !== 'none' ? `Open ${icon(ui.sel)}` : 'Vote', !!ui.sel) });
     }
-    const audit = S.audit ? slip(S.audit.winner === 'none' ? 'Nothing audited' : `Audited <b>${S.audit.winner}</b>`) : '';
     if (ph === 'decide') {
-      if (isCEO()) return deskWrap('You are CEO', `${audit}${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}${key('approve', ui.sel ? `Approve ${ui.sel}` : 'Approve', !!ui.sel)}`);
-      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}<div class="slips">${audit}</div>${key('advance', 'See the decision')}`);
+      if (isCEO()) return deskWrap('You are CEO', `<div class="slips">${auditSlip()}</div>${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Approve ${icon(ui.sel)}` : 'Approve', !!ui.sel) });
+      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}<div class="slips">${auditSlip()}</div>`, { foot: key('advance', 'See the decision') });
     }
     if (ph === 'reveal') {
       const list = S.P.filter(q => q.id !== ME && !q.leave);
-      return deskWrap('Written Warning', `<div class="slips">${resultSlip()}</div>${nameTags(list, ui.sel, 'Nobody')}${key('warn', 'Vote', ui.sel != null)}`);
+      return deskWrap('Written Warning', `<div class="slips">${resultSlip()}</div>${nameTags(list, ui.sel, 'Nobody')}`, { foot: key('warn', 'Vote', ui.sel != null) });
     }
     if (ph === 'review') {
       const w = S.warn;
-      return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>${key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower')}`);
+      return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
-      return deskWrap('Name a saboteur', `<div class="slips">${slip(`Right <b class="pos">+3</b> · wrong <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${key('whistle', 'Vote', ui.sel != null)}`);
+      return deskWrap('Name a saboteur', `<div class="slips">${slip(`Right <b class="pos">+3</b> · wrong <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
     }
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');
+  }
+
+  // ---------- clocking in: type a name, trace it one letter at a time, get a name badge ----------
+  // A letter passes when the ink covers at least half of it and no more than 30% of the ink spills outside.
+  // Each letter has a stroke budget; run out without passing and that letter starts again.
+  const TRACE = { size: 520, brush: 58, cover: .5, spill: .3 };
+  const maxStrokes = ch => ('IJLOCSUVZ017'.includes(ch) ? 3 : 'MWEKBRQ#'.includes(ch) ? 5 : 4);
+  let naming = null;
+  const nameLetters = t => t.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+  function badgeHTML() { return `<div class="nametag big"><span class="hello">Hello<small>my name is</small></span><img src="${ui.badge}" alt="${esc(ui.badgeName)}"></div>`; }
+  function deskNaming() {
+    const n = naming;
+    if (n.phase === 'type') return deskWrap('Clocking in', `<div class="nametag big blank"><span class="hello">Hello<small>my name is</small></span>
+        <input id="name-in" data-in="name" maxlength="10" autocomplete="off" spellcheck="false" placeholder="Your name" value="${esc(n.name)}" aria-label="Your name"></div>`,
+      { foot: `<div class="two-keys"><button class="btn back" data-a="name-skip">Skip</button>${key('name-go', 'Sign in', nameLetters(n.name).length > 0)}</div>` });
+    if (n.phase === 'trace') {
+      const ch = n.letters[n.i], left = maxStrokes(ch) - n.strokes;
+      return deskWrap('Clocking in', `<div class="trace-top"><span class="dots">${n.letters.split('').map((_, k) => `<i class="${k < n.i ? 'done' : k === n.i ? 'now' : ''}"></i>`).join('')}</span>
+          <span class="nibs" aria-label="${left} strokes left">${'<i></i>'.repeat(left)}${'<i class="used"></i>'.repeat(n.strokes)}</span></div>
+        <div class="pad" id="pad"><canvas id="guide" width="${TRACE.size}" height="${TRACE.size}" aria-hidden="true"></canvas><canvas id="ink" width="${TRACE.size}" height="${TRACE.size}" aria-label="Trace the letter ${ch}"></canvas></div>`,
+        { foot: `<div class="two-keys"><button class="btn back" data-a="name-back">‹ Name</button><button class="btn back" data-a="name-redo">Redo letter</button></div>` });
+    }
+    return deskWrap('Clocking in', `<div class="badge-hold reveal">${badgeHTML()}</div>`, { foot: key('start', 'Clock in') });
+  }
+  function namingBoard() {
+    return `<section><div class="section-head"><h2>Clocking in</h2></div><div class="clock-wall">${naming && naming.phase === 'badge' ? badgeHTML() : '<div class="nametag big blank"><span class="hello">Hello<small>my name is</small></span><span class="ghost-name"></span></div>'}</div></section>`;
+  }
+  async function mountTrace() {
+    const n = naming, g = document.getElementById('guide'), c = document.getElementById('ink');
+    if (!g || !c) return;
+    const ch = n.letters[n.i], Z = TRACE.size;
+    try { await document.fonts.load(`700 100px "Schibsted Grotesk"`); } catch (e) {}
+    const gx = g.getContext('2d');
+    gx.clearRect(0, 0, Z, Z); gx.font = `700 ${Z * .86}px "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif`;
+    gx.textAlign = 'center'; gx.textBaseline = 'alphabetic'; gx.fillStyle = 'rgba(20,20,20,.13)';
+    const m = gx.measureText(ch), h = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+    gx.fillText(ch, Z / 2, Z / 2 + h / 2 - m.actualBoundingBoxDescent);
+    gx.setLineDash([10, 12]); gx.lineWidth = 3; gx.strokeStyle = 'rgba(20,20,20,.28)';
+    gx.strokeText(ch, Z / 2, Z / 2 + h / 2 - m.actualBoundingBoxDescent);
+    const mask = gx.getImageData(0, 0, Z, Z).data;
+    const ix = c.getContext('2d');
+    ix.lineCap = ix.lineJoin = 'round'; ix.lineWidth = TRACE.brush; ix.strokeStyle = '#161A2E';
+    let down = null;
+    const at = ev => { const r = c.getBoundingClientRect(); return [(ev.clientX - r.left) * Z / r.width, (ev.clientY - r.top) * Z / r.height]; };
+    c.onpointerdown = ev => { ev.preventDefault(); c.setPointerCapture(ev.pointerId); down = at(ev); ix.beginPath(); ix.moveTo(...down); ix.lineTo(down[0] + .1, down[1]); ix.stroke(); };
+    c.onpointermove = ev => { if (!down) return; const p = at(ev); ix.beginPath(); ix.moveTo(...down); ix.lineTo(...p); ix.stroke(); down = p; };
+    c.onpointerup = c.onpointercancel = () => {
+      if (!down) return; down = null; n.strokes++;
+      const ink = ix.getImageData(0, 0, Z, Z).data;
+      let L = 0, cov = 0, inkN = 0, out = 0, x0 = Z, y0 = Z, x1 = 0, y1 = 0;
+      for (let y = 0; y < Z; y += 2) for (let x = 0; x < Z; x += 2) {
+        const k = (y * Z + x) * 4, gi = mask[k + 3] > 20, ii = ink[k + 3] > 60;
+        if (gi) L++;
+        if (ii) { inkN++; if (gi) cov++; else out++; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      }
+      const pass = L && cov / L >= TRACE.cover && out / Math.max(1, inkN) <= TRACE.spill;
+      if (pass) {
+        const crop = document.createElement('canvas'); crop.width = x1 - x0 + 2; crop.height = Z;
+        crop.getContext('2d').drawImage(c, x0, 0, crop.width, Z, 0, 0, crop.width, Z);
+        n.inks.push(crop); n.i++; n.strokes = 0;
+        if (n.i >= n.letters.length) { composeBadge(); n.phase = 'badge'; }
+        render();
+      } else if (n.strokes >= maxStrokes(ch)) {
+        const pad = document.getElementById('pad'); pad.classList.remove('nope'); void pad.offsetWidth; pad.classList.add('nope');
+        toast('Inside the lines, please.');
+        setTimeout(() => { n.strokes = 0; render(); }, 450);
+      } else {
+        const nb = document.querySelectorAll('.nibs i:not(.used)'); if (nb.length) nb[nb.length - 1].classList.add('used');
+      }
+    };
+  }
+  // the badge shows only the ink, letter by letter, in a row: never the typed text
+  function composeBadge() {
+    const n = naming, k = .2, gap = 6, H = Math.round(TRACE.size * k);
+    const W = n.inks.reduce((w, c) => w + Math.round(c.width * k) + gap, 0);
+    const b = document.createElement('canvas'); b.width = W * 2; b.height = H * 2;
+    const x = b.getContext('2d'); x.scale(2, 2);
+    let at = 0;
+    n.inks.forEach((c, i) => { x.save(); x.translate(at, 0); x.rotate((((i * 37) % 9) - 4) * Math.PI / 180 / 2); x.drawImage(c, 0, 0, c.width * k, H); x.restore(); at += Math.round(c.width * k) + gap; });
+    ui.badge = b.toDataURL(); ui.badgeName = n.letters;
+  }
+  function startGame(seedFrom) {
+    const seed = seedFrom === 'start' && /^\d+$/.test(String(setup.seed).trim()) ? +setup.seed : Math.floor(Math.random() * 1e9) + 1;
+    naming = null;
+    S = OP.newGame(Object.assign({}, setup, { seed })); draft = null; err = ''; ui.sel = null; ui.shown = null; ui.lastKey = null; ui.printed = 0; render(); window.scrollTo(0, 0);
   }
 
   // ---------- setup ----------
@@ -387,6 +495,7 @@
   // ---------- render ----------
   function render() {
     document.documentElement.dataset.phase = S ? S.phase : 'setup';
+    if (!S && naming) { $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${namingBoard()}</main>${deskNaming()}</div></div>`; if (naming.phase === 'trace') mountTrace(); return; }
     if (!S) { $app.innerHTML = mast() + setupHTML(); return; }
     const board = S.phase === 'end' || S.phase === 'whistle'
       ? `${observerHTML()}${S.phase === 'end' ? exitHTML() : ''}<div class="two">${ledgerHTML()}${staffHTML()}</div>${feedHTML()}`
@@ -423,17 +532,21 @@
       case 'debug': ui.debug = !ui.debug; try { localStorage.setItem('op-debug', ui.debug ? '1' : '0'); } catch (e) {} render(); break;
       case 'quit': S = null; draft = null; ui.lastKey = null; render(); break;
       case 'set': setup[d.k] = d.k === 'players' ? +d.v : (d.v === 'true' ? true : d.v === 'false' ? false : d.v); render(); break;
-      case 'start': case 'again': {
-        const seed = a === 'start' && /^\d+$/.test(String(setup.seed).trim()) ? +setup.seed : Math.floor(Math.random() * 1e9) + 1;
-        S = OP.newGame(Object.assign({}, setup, { seed })); draft = null; err = ''; ui.sel = null; ui.shown = null; ui.lastKey = null; ui.printed = 0; render(); window.scrollTo(0, 0); break;
-      }
+      case 'start':
+        if (!naming && !setup.spectate && !ui.badge && !window.__opSkipName) { naming = { phase: 'type', name: '' }; render(); break; }
+        startGame('start'); break;
+      case 'again': startGame('again'); break;
+      case 'name-go': { const l = nameLetters(naming.name); if (!l) break; Object.assign(naming, { phase: 'trace', letters: l, i: 0, strokes: 0, inks: [] }); render(); break; }
+      case 'name-skip': naming = null; ui.badge = null; startGame('start'); break;
+      case 'name-back': naming.phase = 'type'; render(); break;
+      case 'name-redo': naming.strokes = 0; render(); break;
       case 'begin': dispatch({ type: 'begin' }); break;
       case 'advance': dispatch({ type: 'advance' }); break;
       case 'swap': { const su = +d.su; draft.swaps = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su); render(); break; }
       case 'reveal': { const su = +d.su; draft.reveals = draft.reveals.includes(su) ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su); render(); break; }
       case 'redeal': draft.redeal = true; ui.deal = 'redeal'; toast('Inherited cards shredded. Three fresh ones dealt.'); render(); break;
       case 'stamp': draft.stamp = d.v; render(); break;
-      case 'next': toDress(); break;
+      case 'finalise': finalise(); break;
       case 'back': draft.page = 1; render(); break;
       case 'reroll': { const i = +d.i, l = OP.SUBJ[i].length; let k; do { k = Math.floor(Math.random() * l); } while (k === draft.words[i] && l > 1); draft.words[i] = k; render(); break; }
       case 'color': draft.style.color = d.v; render(); break;
@@ -505,10 +618,12 @@
   $app.addEventListener('keydown', ev => {
     const el = ev.target.closest && ev.target.closest('.card[data-drag]');
     if (el && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); tapCard(el.dataset.drag, +el.dataset.su); }
+    if (ev.target.id === 'name-in' && ev.key === 'Enter') { ev.preventDefault(); const b = document.querySelector('[data-a="name-go"]'); if (b && !b.disabled) b.click(); }
   });
   $app.addEventListener('input', ev => {
     const el = ev.target, k = el.dataset && el.dataset.in; if (!k) return;
     if (k === 'seed') setup.seed = el.value;
+    if (k === 'name') { naming.name = el.value; const go = document.querySelector('[data-a="name-go"]'); if (go) go.disabled = !nameLetters(el.value); }
     if (k === 'custom') {
       draft.custom = el.value; const was = draft.useCustom; draft.useCustom = !!el.value.trim();
       if (was !== draft.useCustom) document.querySelectorAll('.subj-word').forEach(b => { b.disabled = draft.useCustom; });

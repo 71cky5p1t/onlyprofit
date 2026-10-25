@@ -81,16 +81,22 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 
 /* ---------- desk: your phone. No paper box: objects lie on the same felt as the TV ---------- */
 .desk { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); max-height: calc(100vh - 32px); overflow: auto; color: var(--on-table); overscroll-behavior: contain; scrollbar-width: thin }
-.desk-head { padding: 4px 2px 12px; display: grid; gap: 10px; justify-items: start }
-.plate { margin: 0; font: 800 12px/1 var(--f-body); letter-spacing: .16em; text-transform: uppercase; color: #E9C77B; padding: 9px 14px 8px; border-radius: 3px;
-  background: linear-gradient(#34322d, #151412); border: 1px solid #000; box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 2px rgba(233,199,123,.18), 0 5px 10px -4px rgba(0,0,0,.7); text-shadow: 0 -1px 0 rgba(0,0,0,.6) }
-.desk-body { padding: 0 2px 20px; display: grid; gap: 16px }
+.desk-head { position: sticky; top: 0; z-index: 5; display: grid; gap: 0; margin-bottom: 14px; border-radius: 10px 10px 4px 4px; overflow: hidden;
+  background: linear-gradient(#34352f, #1e1f1c); box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 10px 18px -10px rgba(0,0,0,.8) }
+.bar-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 10px 9px }
+.plate { margin: 0; font: 800 12px/1 var(--f-body); letter-spacing: .16em; text-transform: uppercase; color: #E9C77B; padding: 8px 12px 7px; border-radius: 3px;
+  background: linear-gradient(#2a2925, #0f0f0e); border: 1px solid #000; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 0 0 2px rgba(233,199,123,.2); text-shadow: 0 -1px 0 rgba(0,0,0,.6) }
+.desk-head .purse { background: rgba(0,0,0,.4) }
+.desk-head .purse .coin { width: 20px; height: 20px }
+.desk-body { padding: 0 4px 18px; display: grid; gap: 16px }
+.desk-foot { position: sticky; bottom: 0; z-index: 5; padding: 10px; border-radius: 4px 4px 10px 10px; background: linear-gradient(#2a2b27, #171816); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 -10px 18px -12px rgba(0,0,0,.8) }
+.desk-foot .btn.back { border-color: rgba(241,233,212,.25); color: var(--on-table) }
 .desk .label { color: var(--on-table-2) }
 .desk .hint { color: var(--on-table-2) }
 .desk .err { color: #FF8F84 }
 /* timer: a strip of red tape that shortens */
-.fuse { width: 100%; height: 6px; border-radius: 3px; background: rgba(0,0,0,.3); box-shadow: inset 0 1px 2px rgba(0,0,0,.5); overflow: hidden }
-.fuse i { display: block; height: 100%; background: repeating-linear-gradient(-45deg, var(--red) 0 6px, #E8483D 6px 12px); transition: width .2s linear; border-radius: 3px }
+.fuse { height: 7px; background: #0d0d0c; box-shadow: inset 0 2px 2px rgba(0,0,0,.6); overflow: hidden }
+.fuse i { display: block; height: 100%; background: repeating-linear-gradient(-45deg, var(--red) 0 6px, #E8483D 6px 12px); transition: width .2s linear; box-shadow: 0 0 8px rgba(217,38,28,.6) }
 /* paper slips for facts: who you inherited from, what got approved */
 .slips { display: flex; flex-wrap: wrap; gap: 8px }
 .slip { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; width: max-content; max-width: 100%; background: var(--stock); color: var(--ink); padding: 6px 10px; border-radius: 2px; font: 600 12.5px/1.2 var(--f-body); box-shadow: 0 3px 6px -2px rgba(0,0,0,.5); transform: rotate(-.8deg) }
@@ -128,7 +134,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .preview { display: grid; padding: 4px 6px 0 }
 .preview .env { min-height: 0; transform: rotate(-1deg) }
 /* envelopes to pick from */
-.minis { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 12px }
+.minis { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 30px 12px; padding-top: 18px }
 .mini { --c: var(--env-manila); position: relative; aspect-ratio: 1.42; max-width: 100%; border: 0; border-radius: 4px; background: var(--c); color: var(--ink); padding: 9px 10px 8px; text-align: left; display: grid; grid-template-rows: auto 1fr auto; gap: 2px; overflow: hidden; box-shadow: var(--lift); transition: transform .2s var(--bounce), box-shadow .2s }
 .mini::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 52%; pointer-events: none;
   background: linear-gradient(to top right, transparent calc(50% - .5px), rgba(0,0,0,.12) 50%, transparent calc(50% + 1px)) left / 50% 100% no-repeat, linear-gradient(to top left, transparent calc(50% - .5px), rgba(0,0,0,.12) 50%, transparent calc(50% + 1px)) right / 50% 100% no-repeat }
@@ -282,7 +288,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .worth { background: var(--stock); color: var(--ink); font: 400 22px/1 var(--f-seg); padding: 5px 10px 4px; border-radius: 3px; transform: rotate(-1.5deg); box-shadow: 0 3px 6px -2px rgba(0,0,0,.5); font-variant-numeric: tabular-nums }
 .worth.pos { color: var(--good) } .worth.neg { color: var(--red) }
 .worth small { font-size: 12px; margin-left: 2px; color: var(--sunset) }
-.shred { justify-self: end; position: relative; border: 0; border-radius: 6px; padding: 8px 36px 7px 10px; font: 800 11.5px/1 var(--f-body); color: #fff; background: var(--key); box-shadow: 0 3px 0 #1C1D1B }
+.shred { justify-self: end; position: relative; border: 0; border-radius: 6px; padding: 8px 44px 7px 10px; font: 800 11.5px/1 var(--f-body); color: #fff; background: var(--key); box-shadow: 0 3px 0 #1C1D1B }
 .shred .tag { top: 50%; right: 5px; transform: translateY(-50%); box-shadow: none; background: rgba(0,0,0,.3) }
 .shred:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #1C1D1B }
 .shred:disabled { opacity: .45; cursor: not-allowed }
@@ -507,4 +513,98 @@ table.exit-t .sub-mono { font-family: var(--f-body); font-weight: 700 }
   .wipe { display: none } .big-stamp, .deal .card, table.ledger tr.new td { animation: none }
   button.env:hover, .env.sel { transform: none } .meter-fill { transition: none }
 }
+</style>
+
+<style>
+/* ---------- depth: felt nap, a pool of lamp light, and the phone's own surface ---------- */
+body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .22; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E") }
+#app { position: relative; z-index: 1 }
+.desk-body { background: radial-gradient(90% 60% at 50% 18%, rgba(255,255,255,.07), transparent 70%) }
+.tray .slip { justify-self: start; font-size: 11.5px; padding: 5px 8px }
+.tray { grid-template-columns: 1fr auto 1fr }
+/* ---------- Finalise: hand drops, policy slides together and into an envelope ---------- */
+.play > .stuff { position: absolute; left: 50%; bottom: 8px; width: 230px; height: 150px; margin-left: -115px; border-radius: 5px; pointer-events: none; background: var(--env, var(--env-manila)); animation: env-up .45s var(--bounce) .25s both }
+.play > .stuff.back { z-index: 5; filter: brightness(.86) }
+.play > .stuff.front { z-index: 8; clip-path: polygon(0 26%, 50% 62%, 100% 26%, 100% 100%, 0 100%); box-shadow: 0 10px 20px -8px rgba(0,0,0,.6) }
+.play > .stuff.flap { z-index: 9; height: 93px; bottom: 65px; filter: brightness(.94); clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: 50% 0; animation: flap 1.4s linear both }
+@keyframes env-up { from { transform: translateY(140%) } }
+@keyframes flap { 0%, 18% { transform: translateY(240px) rotateX(180deg); z-index: 4 } 50%, 74% { transform: translateY(0) rotateX(180deg); z-index: 4; animation-timing-function: ease-in } 75% { z-index: 9 } 100% { transform: rotateX(0); z-index: 9 } }
+.play { position: relative }
+.play.stuff { perspective: 600px }
+.play.stuff .fan .slot { transition: transform .35s ease-in, opacity .3s; transform: translateY(160px) rotate(0); opacity: 0 }
+.play.stuff .tray { transition: opacity .2s; opacity: 0 }
+.play.stuff .policy .slot { animation: none }
+.play.stuff .policy .slot::after { display: none }
+.play.stuff .policy .slot:nth-child(1) { animation: stuff-l .75s cubic-bezier(.5,0,.6,1) .2s both }
+.play.stuff .policy .slot:nth-child(2) { animation: stuff-m .75s cubic-bezier(.5,0,.6,1) .28s both }
+.play.stuff .policy .slot:nth-child(3) { animation: stuff-r .75s cubic-bezier(.5,0,.6,1) .36s both }
+.play.stuff .policy .slot { position: relative; z-index: 7 }
+@keyframes stuff-l { 40% { transform: translate(60%, -10px) rotate(-6deg) scale(.7) } 100% { transform: translate(85%, 190px) rotate(-2deg) scale(.5); opacity: .9 } }
+@keyframes stuff-m { 40% { transform: translate(0, -14px) scale(.7) } 100% { transform: translate(0, 186px) scale(.5); opacity: .9 } }
+@keyframes stuff-r { 40% { transform: translate(-60%, -10px) rotate(6deg) scale(.7) } 100% { transform: translate(-85%, 192px) rotate(2deg) scale(.5); opacity: .9 } }
+.preview.arrive .env { animation: arrive .5s var(--bounce) both }
+@keyframes arrive { from { transform: translateY(40px) scale(.85) rotate(2deg); opacity: 0 } }
+/* ---------- envelope icons and peeking cards ---------- */
+.ico { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; display: inline-block }
+.env-id .ico { width: 28px; height: 28px; stroke-width: 2.2 }
+.mini .mid .ico { width: 30px; height: 30px; stroke-width: 2.2 }
+.slip .ico, .btn .ico { width: 16px; height: 16px; stroke-width: 2.4 }
+.ico-cell .ico { width: 18px; height: 18px }
+.mini { overflow: visible }
+.mini .peek { position: absolute; left: 50%; top: -24px; display: flex; transform: translateX(-50%); z-index: 0 }
+.mini .peek b, .mini .peek i { width: 28px; height: 40px; margin: 0 -3px; border-radius: 3px; display: grid; place-items: start center; padding-top: 3px; font: 900 13px/1 var(--f-body); font-style: normal; background: var(--stock); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.4), inset 0 0 0 1px rgba(0,0,0,.08); letter-spacing: -.04em }
+.mini .peek > :nth-child(1) { transform: rotate(-9deg) } .mini .peek > :nth-child(3) { transform: rotate(9deg) } .mini .peek > :nth-child(2) { transform: translateY(-3px) }
+.mini .peek i { background: var(--red); color: rgba(255,255,255,.75); font-size: 7px; padding-top: 5px }
+.mini .peek .pos { color: var(--good) } .mini .peek .neg { color: var(--red) } .mini .peek .gold { color: var(--sunset) }
+.mini > .mid, .mini > .ms { position: relative; z-index: 1 }
+.mini .yours { z-index: 2 }
+.mini::after { content: ""; position: absolute; inset: 0; border-radius: 4px; background: var(--c); z-index: 0; background-image: inherit; background-size: inherit; background-repeat: inherit; background-position: inherit }
+.mini.none::after { display: none }
+.mini::before { z-index: 1 }
+.mini.t-confidential::after { box-shadow: inset 0 5px 0 var(--ink) }
+.mini .env-stamp { z-index: 2 }
+/* ---------- stickers: cheap praise, dog-eared ---------- */
+.stickers { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 0; padding: 0 6px }
+.stk { --c: #F3D36B; --k: #6B4A0E; position: relative; font: 900 8.5px/1 var(--f-body); font-style: normal; letter-spacing: .06em; text-transform: uppercase; color: var(--k); background: var(--c); padding: 5px 9px 4px 6px; margin: 0 -2px; border-radius: 2px;
+  transform: rotate(var(--r, -3deg)); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%); box-shadow: 0 1px 1px rgba(0,0,0,.25); filter: saturate(.85) }
+.stk::after { content: ""; position: absolute; right: 0; bottom: 0; width: 7px; height: 7px; background: linear-gradient(135deg, rgba(0,0,0,.28) 0 50%, rgba(255,255,255,.75) 50%) }
+.stk::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 20% 70%, rgba(255,255,255,.35) 0 1px, transparent 1.5px) 0 0 / 7px 6px, linear-gradient(100deg, transparent 60%, rgba(255,255,255,.25) 62%, transparent 70%); opacity: .7 }
+.stk.gold { --c: #F3C94E; --k: #5C3E07 } .stk.gold:first-letter { }
+.stk.beige { --c: #E8DFC6; --k: #6E6450 }
+.stk.blue { --c: #9CC2E8; --k: #173E66 }
+.stk.red { --c: #F06A5C; --k: #fff }
+.stk.grey { --c: #C9C6BC; --k: #3C3A34 }
+.nametag .stickers { min-height: 18px; margin-top: 2px }
+.staff-meta .stickers { justify-content: flex-end; padding: 0 }
+.staff .stk { font-size: 8px }
+/* ---------- clocking in ---------- */
+.nametag.big { width: min(300px, 100%); justify-self: center; cursor: default; padding-bottom: 14px; transform: rotate(-1.5deg); box-shadow: 0 16px 30px -14px rgba(0,0,0,.8) }
+.nametag.big .hello { font-size: 24px; padding: 12px 4px 9px } .nametag.big .hello small { font-size: 10px }
+.nametag.big img { display: block; max-width: 86%; max-height: 92px; margin: 14px auto 0 }
+.nametag.big input { border: 0; background: transparent; font: 800 32px/1 var(--f-body); letter-spacing: -.02em; text-align: center; text-transform: uppercase; color: var(--ink); width: 100%; padding: 20px 10px 6px; outline: none }
+.nametag.big input::placeholder { color: rgba(20,20,20,.2); text-transform: none }
+.nametag.big .ghost-name { display: block; height: 70px }
+.clock-wall { display: grid; place-items: center; padding: 50px 0 }
+.trace-top { display: flex; justify-content: space-between; align-items: center }
+.dots { display: flex; gap: 6px } .dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(0,0,0,.35); box-shadow: inset 0 1px 2px rgba(0,0,0,.5) }
+.dots i.done { background: var(--stock) } .dots i.now { background: var(--gold); box-shadow: 0 0 0 3px rgba(233,162,59,.3) }
+.nibs { display: flex; gap: 5px } .nibs i { width: 10px; height: 16px; background: #161A2E; clip-path: polygon(50% 100%, 0 35%, 0 0, 100% 0, 100% 35%); transition: opacity .2s }
+.nibs i.used { opacity: .18 }
+.pad { position: relative; width: min(100%, 330px); aspect-ratio: 1; justify-self: center; border-radius: 6px; background: #FBF8F1; box-shadow: var(--lift); touch-action: none; transform: rotate(.6deg) }
+.pad::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: repeating-linear-gradient(transparent 0 31px, rgba(44,70,184,.12) 31px 32px); pointer-events: none }
+.pad canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none }
+.pad #ink { cursor: crosshair }
+.pad.nope { animation: nope .35s ease both }
+.badge-hold { display: grid; padding: 8px 0 4px }
+.badge-hold.reveal .nametag { animation: badge-in .7s var(--bounce) both }
+@keyframes badge-in { from { transform: translateY(-60px) rotate(-14deg) scale(.6); opacity: 0 } }
+.ink-name { height: 20px; vertical-align: middle }
+@media (prefers-reduced-motion: reduce) { .play > .stuff, .preview.arrive .env, .badge-hold.reveal .nametag { animation: none } }
+</style>
+<style>
+/* on a phone the desk is the whole screen: header pinned top, footer pinned bottom */
+.desk { display: flex; flex-direction: column }
+.desk-body { flex: 1 0 auto; align-content: start }
+@media (max-width: 980px) { .desk { min-height: calc(100dvh - 24px) } }
 </style>
