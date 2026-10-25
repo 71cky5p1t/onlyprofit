@@ -18,7 +18,7 @@
   function stickers(q, r) {
     const memos = r ? S.memos : S.history.flatMap(h => h.memos).concat(S.memos);
     const filed = memos.filter(m => m.kind === 'report' && m.by === q.id).length;
-    const out = [];
+    const out = q.pip ? [['pip', 'PIP']] : [];
     q.approved.filter(a => !r || a.r === r).forEach(a => out.push(a.actual > 0 ? ['gold', 'Great work!'] : ['beige', 'Acceptable!']));
     if (filed) out.push(['blue', 'Team player']);
     const warns = r ? (S.warn && S.warn.passed && S.warn.target === q.id ? 1 : 0) : q.warnings;

@@ -84,7 +84,8 @@
     const tray = `<div class="tape"><span class="t-src">${inhSource(inh)}</span>
         <span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
         <button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 hours of overtime">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="t-cost">${hrs(2)}</span></button></div>`;
-    const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
+    const honest = OP.rightStamp(wr.prop);
+    const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}" style="--wait:${wait}s"><div class="policy">${env}</div>${tray}<div class="fan">${hand}</div></div>${stamps}`;
     return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: key('finalise', 'Finalise') });
   }
@@ -132,7 +133,8 @@
   const tagFor = e => !mine() || e.autopilot ? '' : e.author === ME ? '<i class="yours">You</i>' : auditor() ? `<i class="yours">${esc(nm(e.author))}</i>` : '';
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
-      const peek = e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
+      const open = e.openTo && mine() && e.openTo.includes(ME);
+      const peek = open || e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => open || e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
       return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
         ${coverHTML(e, { k: .35 })}${peek}${tagFor(e)}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
@@ -146,6 +148,14 @@
     if (!S.result) return '';
     const e = S.envs.find(x => x.id === S.result.id); if (!e) return '';
     return slip(`${icon(S.result.id)} ${e.autopilot ? 'Autopilot' : esc(nm(S.result.author))} <b class="${tone(S.result.actual)}">${fmt(S.result.actual)}</b>`);
+  }
+  // the CEO may pull one file a quarter; what's in it stays between them and HR
+  function filesHTML() {
+    if (S.invq && S.invq.r === S.r) return `<div class="files"><div class="file pulled"><span class="file-tab">${esc(nm(S.invq.t))}</span><i class="file-stamp">Pulled</i></div></div>`;
+    const list = S.P.filter(q => q.id !== ME && !q.pip && S.envs.some(e => e.author === q.id && !e.autopilot));
+    if (!list.length) return '';
+    return `<div class="slips">${slip('Pull a file')}</div><div class="files">${list.map(q => `<button class="file" data-a="sel" data-id="${q.id}" aria-pressed="${String(ui.sel) === String(q.id)}"><span class="file-tab">${esc(q.name)}</span></button>`).join('')}</div>
+      ${signHTML('investigate', ui.sel != null && list.some(q => String(q.id) === String(ui.sel)))}`;
   }
   function deskSpectate() {
     const ph = S.phase;
@@ -192,7 +202,7 @@
     }
     if (ph === 'board') {
       const nom = S.envs.find(e => e.id === S.nominee);
-      const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}${auditor() && !nom.autopilot ? ` · by <b>${nom.author === ME ? 'you' : esc(nm(nom.author))}</b>` : ''}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom)}</div>
+      const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}${auditor() && !nom.autopilot ? ` · by <b>${nom.author === ME ? 'you' : esc(nm(nom.author))}</b>` : ''}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom, { all: nom.openTo && nom.openTo.includes(ME) })}</div>
         <div class="bar3 two" role="radiogroup" aria-label="Board vote">${['ratify', 'open'].map(v => `<button class="b-${v}" role="radio" data-a="sel" data-id="${v}" aria-checked="${ui.sel === v}" aria-pressed="${ui.sel === v}"><span>${v === 'ratify' ? 'Ratify' : 'Open it'}</span></button>`).join('')}</div>`;
       return deskWrap('Board vote', `${leave}${body}${signHTML('board', ui.sel === 'ratify' || ui.sel === 'open')}`);
     }
@@ -206,7 +216,7 @@
       const w = S.warn;
       const won = S.envs.find(e => e.approved), got = stickers(p, S.r);
       return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>${won ? lineHTML(won, { all: true }) : ''}
-        <div class="tags one"><div class="nametag mine"><span class="hello">Hello<small>my name is</small></span><b>${esc(p.name)}</b>${got || '<span class="stickers"><i class="stk grey">Present</i></span>'}</div></div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
+        ${isCEO() ? filesHTML() : ''}<div class="tags one"><div class="nametag mine"><span class="hello">Hello<small>my name is</small></span><b>${esc(p.name)}</b>${got || '<span class="stickers"><i class="stk grey">Present</i></span>'}</div></div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
       return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${signHTML('whistle', ui.sel != null)}`);
