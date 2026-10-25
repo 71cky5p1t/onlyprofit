@@ -10,6 +10,7 @@
     if (!(S.phase === 'work' && draft)) stopTimer();
     $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${board}</main>${desk()}</div></div>`;
     syncWheel();
+    mountSign();
     transition();
   }
   // stripe wipe when the phase label changes; the profit calculator counts up to the new total

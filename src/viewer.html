@@ -171,7 +171,7 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
         if (go.page && S.r === go.r) { click('[data-a=finalise]'); await sleep(1500); if (go.page === 3) { click('[data-a=tpl][data-v=wordart]'); await sleep(700); } return; }
         if (click('[data-a=tpl]')) { await sleep(20); continue; }
         click('[data-a=stamp][data-v=Rec]'); click('[data-a=finalise]'); await sleep(1300); }
-      else if (!click('.desk [data-a=advance]')) { click('.desk [data-a=sel]'); click('.desk .btn.primary'); }
+      else if (!click('.desk [data-a=advance]')) { click('.desk [data-a=sel]'); if (!click('.desk .btn.primary')) w.__op.sign(); }
       await sleep(12);
     }
   }
