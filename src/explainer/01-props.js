@@ -1,30 +1,34 @@
+  // Demonstration props only, never live hidden information. --at is when a beat lands, as a share of the chapter.
+  const at = f => `style="--at:${f}"`;
   function demoCards() {
     const L = OP.LEX[setup.brand] || OP.LEX.op;
     return [{ s: 0, v: 2, w: 'Monetise' }, { s: 1, v: -1, w: L.t[0] || 'the Break Room' }, { s: 2, v: 1, w: 'Off the Books' }];
   }
-  const demoTag = (name, tape = '') => `<div class="nametag"><span class="hello">Hello<small>my name is</small></span><b>${name}</b>${tape ? `<span class="tag-tape">${tape}</span>` : ''}</div>`;
-  function demoPage(tpl = 'memo', approved = false) {
-    return { id: 'demo', cards: demoCards(), revealed: [], subject: 'Quick Win: Break Room Monetisation (Pilot)', stamp: 'Rec', approved, style: { tpl } };
+  const demoTag = (name, f, extra = '') => `<div class="nametag b ${f == null ? '' : 'deal'}" ${f == null ? '' : at(f)}><span class="hello">Hello<small>my name is</small></span><b>${name}</b>${extra}</div>`;
+  const demoPage = (tpl, o = {}) => ({ id: o.id || 'demo', cards: o.cards || demoCards(), revealed: [], subject: o.subject || 'Quick Win: Break Room Monetisation (Pilot)', stamp: o.stamp || 'Rec', approved: !!o.approved, style: { tpl } });
+  const page = (tpl, o = {}) => coverHTML(demoPage(tpl, o), { list: [{ id: o.id || 'demo' }], k: o.k || .62, tilt: o.tilt });
+  const squiggle = f => `<svg class="squig b draw" ${at(f)} viewBox="0 0 120 40" aria-hidden="true"><path pathLength="1" d="M4 28c8-14 14-20 18-14s-6 16 2 12 10-20 16-16-4 18 4 14 12-18 18-12-2 14 6 10 16-12 22-8 6 8 14 2"/></svg>`;
+  const flipCard = (c, f) => `<div class="flip b deal-flip" ${at(f)}>${cardHTML(c)}<i class="cback">${brandMark()}</i></div>`;
+  const cardRow = (html, cls = '') => `<div class="i-cards ${cls}">${html}</div>`;
+  function binderHTML(stamped) {
+    const b = brand();
+    return `<div class="i-binder b ${stamped ? 'settle' : 'drop-in'}"><i class="rings"></i><div class="sleeve"><small>${esc(b.name)} · People &amp; Culture</small><strong>Staff<br>Induction</strong><span class="seal">${brandMark()}</span></div>${stamped ? `<span class="rubber b thump" ${at(.4)}>Read &amp;<br>Understood</span>` : ''}</div>`;
   }
+  // a hole for every hour spent; holes arrive on their own beat
+  const punch = (spent, beats = []) => `<span class="purse i-purse">${[0, 1, 2].map(k => `<i class="slotbox${k < spent ? ' punched' : ''}${beats[k] != null ? ' b hole' : ''}" ${beats[k] != null ? at(beats[k]) : ''}>${k + 1}</i>`).join('')}</span>`;
   function trainingProp(id) {
-    const cs = demoCards(), row = (cards, cls = '') => `<div class="lesson-cards ${cls}">${cards.map(c => cardHTML(c)).join('')}</div>`;
-    const page = tpl => coverHTML(demoPage(tpl), { list: [{ id: 'demo' }], k: .76 });
-    if (id === 'welcome' || id === 'signoff') return `<div class="binder"><span class="binder-seal">${brandMark()}</span><small>People &amp; Culture · Training film 01</small><strong>STAFF<br>INDUCTION</strong><span class="binder-label">${id === 'signoff' ? 'READ & UNDERSTOOD' : 'MANDATORY VIEWING'}</span><span class="binder-foot">${esc(brand().name)} · Enjoyment is mandatory.</span></div>`;
-    if (id === 'goal') return `<div class="lesson-calculator"><div class="calc"><div class="lcd"><div class="ann">PROFIT TARGET</div><div class="val">${lcd(S ? S.target : OP.TARGETS[setup.players] - (setup.easy ? 3 : 0))}</div></div><div class="lesson-quarters">${[1,2,3,4,5].map(q => `<span>Q${q}</span>`).join('')}</div></div><span class="slip">Five quarters to make it work.</span></div>`;
-    if (id === 'saboteurs') return `<div class="lesson-people">${['Gary','Denise','Trevor','Moira','Clive','You'].map(n => demoTag(n, '?')).join('')}</div><div class="lesson-memo"><span>CONFIDENTIAL · YOUR ROLE IS PRIVATE</span><b>Loyal <i>or</i> Saboteur</b></div>`;
-    if (id === 'inherit') return `<span class="slip inherited-note">From the last manager</span>${row(cs)}<div class="lesson-suits"><span>Action</span><span>Target</span><span>Modifier</span></div>`;
-    if (id === 'policy') return `${row([cs[0], { ...cs[1], v: 'V' }, { ...cs[2], w: 'Retroactively', fx: 'x2', v: -2 }])}<div class="lesson-equation">(Action + Target) × 2 − 2</div><span class="slip">? resolves to +2 or −2</span>`;
-    if (id === 'overtime') {
-      const spares = [{s:0,v:1,w:'Automate'},{s:1,v:2,w:'the Interns'},{s:2,v:0,w:'Pending Review'},{s:0,v:-1,w:'Outsource'},{s:1,v:1,w:'Customer Trust'},{s:2,v:2,w:'At Scale'}];
-      const spent = OP.SWAP_COST[Object.keys(TRAIN.demo).length];
-      const policy = cs.map((c, su) => TRAIN.demo[su] == null ? c : spares[TRAIN.demo[su]]);
-      const hand = spares.map((c, i) => cardHTML(TRAIN.demo[c.s] === i ? cs[c.s] : c, '', '', `role="button" tabindex="0" data-a="lesson-swap" data-su="${c.s}" data-i="${i}" aria-label="Try swapping ${esc(c.w)}"`)).join('');
-      return `<div class="purse lesson-purse" aria-label="${3 - spent} hours left">${[1,2,3].map(n => `<i class="slotbox${n > 3 - spent ? ' punched' : ''}">${n}</i>`).join('')}</div>${row(policy, 'mini-policy')}<div class="lesson-cards six">${hand}</div><span class="slip">Try a spare card · ${3 - spent} hours left · tap again to undo</span>`;
-    }
-    if (id === 'reveal') return `${row(cs.map((c,i) => ({...c, w:i ? '█████' : c.w})))}<div class="lesson-choices"><span class="slip">Show one · 1h</span><span class="slip">Re-deal three · 2h</span></div>`;
-    if (id === 'stamp') return `${row(cs)}<div class="bar3 stampstrip lesson-stamps">${Object.keys(STAMP).map(k => `<button tabindex="-1" class="s-${k} ${k === 'Rec' ? 'right' : ''}" aria-pressed="${k === 'Rec'}">${STAMP[k]}</button>`).join('')}</div><span class="slip">✓ Honest answer · lying is your decision</span>`;
-    if (id === 'cover') return `<div class="lesson-pages">${page('fax')}${page('memo')}${page('wordart')}</div>`;
-    if (id === 'ceo') return `<div class="lesson-ceo">${demoTag('Denise','CEO')}${page('memo')}</div><div class="lesson-choices"><span class="vote-prop">RATIFY</span><span class="vote-prop open">OPEN IT</span></div>`;
-    if (id === 'approved') return `${coverHTML(demoPage('memo', true), { list: [{id:'demo'}], k:.7 })}${lineHTML({...demoPage(), approved:true, resolved:[2,-1,1]}, {all:true})}<span class="slip">From Trevor · Facilities</span>`;
-    return `<div class="lesson-people final-people">${demoTag('Trevor', 'EMPLOYEE OF THE YEAR')}${demoTag('Gary', 'SABOTEUR')}</div><div class="lesson-record"><b>THE ANNUAL REPORT</b><span>Correct accusation: claw back losses</span><span>Wrong accusation: −3</span><span>Best positive record on the winning side wins the award</span></div>`;
+    const cs = demoCards(), target = S ? S.target : OP.TARGETS[setup.players] - (setup.easy ? 3 : 0);
+    if (id === 'welcome') return binderHTML(false);
+    if (id === 'signoff') return binderHTML(true);
+    if (id === 'goal') return `<div class="calc i-calc b rise"><div class="lcd"><div class="ann"><span>PROFIT</span><span>TARGET +${target}</span></div><div class="val" data-count="${target}">${lcd(0)}</div></div></div>
+      <div class="i-qtabs">${[1, 2, 3, 4, 5].map(q => `<span class="b fan-in" ${at(.3 + q * .06)}>Q${q}</span>`).join('')}</div>`;
+    if (id === 'saboteurs') return `<div class="i-staff">${['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'You'].map((n, k) => `<div class="i-seat">${demoTag(n, k * .03)}
+      <div class="i-role b ${k === 2 ? 'peek' : ''}" style="--at:${.74 + k * .025}"><i class="face back">${brandMark()}</i><i class="face front">Loyal</i>${k === 2 ? `<i class="under">Sabot</i>` : ''}</div></div>`).join('')}</div>`;
+    if (id === 'inherit') return `<div class="i-leaver b exit-left" ${at(.08)}>${demoTag('Gary')}</div>${cardRow(cs.map((c, k) => flipCard(c, .28 + k * .08)).join(''))}`;
+    if (id === 'policy') return cardRow(cs.map((c, k) => cardHTML(c, 'b pop', '', at(.3 + k * .1))).join('') + cardHTML({ s: 2, v: 'V', w: 'Going Forward' }, 'b spin-in coin', '', at(.78)));
+    if (id === 'overtime') return overtimeProp(cs);
+    if (id === 'stamp') return `<div class="i-stamp" ${at(.42)}>${page('memo', { cards: [cs[0], cs[1], { s: 2, v: 'V', w: 'Going Forward' }], stamp: 'Rec', tilt: -2 })}<span class="stk pip b slap" ${at(.74)}>PIP</span></div>
+      <div class="bar3 stampstrip i-strip">${Object.keys(STAMP).map(k => `<button tabindex="-1" class="s-${k}${k === 'Risky' ? ' right' : ''}"><span class="${k === 'Rec' ? 'b press' : ''}" ${k === 'Rec' ? at(.38) : ''}>${STAMP[k]}</span></button>`).join('')}</div>`;
+    if (id === 'cover') return `<div class="i-riffle">${['memo', 'report', 'wordart', 'fax'].map((t, k) => `<div class="leaf b ${k ? 'riffle' : 'keep'}" ${at(k ? .06 + (4 - k) * .07 : .88)}>${page(t, { tilt: (k - 1.5) * 2.4 })}${k ? '' : squiggle(.62)}</div>`).join('')}</div>`;
+    return trainingProp2(id, cs);
   }

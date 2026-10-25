@@ -9,7 +9,7 @@ const write = (file, content) => {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   if (!fs.existsSync(file) || read(file) !== content) fs.writeFileSync(file, content);
 };
-const voice = fs.existsSync('assets/audio/vo') ? files('assets/audio/vo', '.mp3') : [];
+const voice = fs.existsSync('assets/audio/induction') ? files('assets/audio/induction', '.mp3') : [];
 const engine = join(['src/engine/content.js', 'src/engine/bots.js', 'src/engine/core.js']).replace(/^if \(typeof module.*$/gm, '');
 const ui = 'window.__opVoiceFiles=' + JSON.stringify(voice.map(f => path.basename(f, '.mp3'))) + ';\n(() => {\n'
   + join([...files('src/ui', '.js'), ...files('src/explainer', '.js'), 'src/boot.js']) + '\n})();';
@@ -25,7 +25,7 @@ const music = ['01-water-cooler', '04-q5-overtime', '05-hold-music-clean', '06-s
 const assets = new Map([
   ...files('assets/audio/sfx', '.mp3').map(f => ['sfx/' + path.basename(f), f]),
   ...music.map(m => ['music/' + m + '.mp3', 'assets/audio/mp3/' + m + '.mp3']),
-  ...voice.map(f => ['vo/' + path.basename(f), f])
+  ...voice.map(f => ['induction/' + path.basename(f), f])
 ]);
 for (const [rel, source] of assets) {
   const target = 'dist/audio/' + rel, src = fs.statSync(source), dst = fs.existsSync(target) && fs.statSync(target);

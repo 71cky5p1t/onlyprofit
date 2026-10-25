@@ -1,23 +1,61 @@
-.induction { max-width: 1120px; margin: auto; padding: 24px 30px 40px; min-height: 100svh; display: flex; flex-direction: column }
-.lesson-top { display: flex; justify-content: space-between; gap: 16px; align-items: center; font-size: 11px; letter-spacing: .12em; font-weight: 800 }.lesson-top b { margin-left: 14px; color: #e9bb62 }
-.lesson-skip { background: none; border: 1px solid #9eac95; color: #eee9d5; border-radius: 5px; padding: 10px 12px; font-size: 12px }
-.lesson-heading { text-align: center; margin: 30px 0 15px }.lesson-heading p { font-size: 10px; letter-spacing: .2em; opacity: .65 }.lesson-heading h1 { font-size: clamp(29px, 5vw, 53px); line-height: 1; letter-spacing: -.045em; max-width: 800px; margin: auto }
-.lesson-stage { flex: 1; min-height: 340px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 20px 0; animation: lesson-in .35s ease both }
-.lesson-cards { display: grid; grid-template-columns: repeat(3, auto); gap: 14px; align-items: center }.lesson-cards .card { --cw: clamp(88px, 13vw, 145px) }.lesson-cards .card:nth-child(1) { transform: rotate(-5deg) }.lesson-cards .card:nth-child(3) { transform: rotate(5deg) }
-.lesson-cards.six { gap: 12px }.lesson-cards.six .card { --cw: 84px }.lesson-cards.mini-policy .card { --cw: 60px }
-.lesson-suits { width: min(100%, 465px); display: grid; grid-template-columns: repeat(3,1fr); text-align: center; text-transform: uppercase; font-size: 12px; font-weight: 800; letter-spacing: .1em }
-.lesson-equation { font: 24px var(--f-seg); text-align: center }
-.lesson-caption { background: #eee8d8; color: #292c24; padding: 17px 25px; max-width: 780px; width: 100%; margin: 20px auto; font-size: clamp(15px, 2vw, 19px); line-height: 1.5; box-shadow: 0 7px 13px #142c2966; border-block: 1px dashed #aaa590; min-height: 91px; text-align: center }
-.lesson-controls { display: flex; align-items: center; gap: 10px; max-width: 780px; width: 100%; margin: 0 auto }
-.lesson-controls > button { background: #20392f; color: #eee8d8; border: 1px solid #849281; border-radius: 4px; min-height: 42px; padding: 10px 15px; font-weight: 700 }.lesson-controls button:disabled { opacity: .3 }
-.lesson-controls nav { display: flex; justify-content: center; flex: 1; gap: 5px; flex-wrap: wrap }.lesson-controls nav button { width: 9px; height: 9px; padding: 0; border: 1px solid #c1c7b1; border-radius: 50%; background: transparent }.lesson-controls nav button[aria-current="step"] { background: #efb74c; border-color: #efb74c; transform: scale(1.3) }
-.lesson-progress { height: 3px; max-width: 780px; width: 100%; margin: 15px auto; background: #1b362c }.lesson-progress i { display: block; height: 100%; background: #efb74c; transition: width .1s linear }
-.binder { width: min(350px, 88vw); min-height: 315px; padding: 35px 25px 25px 48px; border-radius: 7px 14px 14px 7px; display: flex; flex-direction: column; gap: 20px; background: linear-gradient(90deg,#142821 0 22px,#526052 23px,#243c31 26px); border: 1px solid #7b8970; box-shadow: 8px 9px 0 #d4cdb8, 11px 12px 0 #253c31, 0 25px 40px #172b2480; transform: rotate(-5deg) }
-.binder-seal { width: 45px; height: 45px; color: #f2d99f }.binder-seal svg { width: 100%; height: 100% }.binder small { font-size: 9px; text-transform: uppercase; letter-spacing: .11em }.binder strong { font-size: 45px; line-height: .95; letter-spacing: -.05em }.binder-label { background: #e6dfc8; color: #23342b; padding: 9px; font-size: 13px; letter-spacing: .07em; font-weight: 800; text-align: center }.binder-foot { font-size: 10px; opacity: .6 }
-.lesson-signoff .binder-label { color: #a62822; border: 3px solid; transform: rotate(-4deg) }
-.lesson-calculator { width: min(440px,100%); display: grid; justify-items: center; gap: 25px }.lesson-calculator .calc { width: 100%; padding: 22px }.lesson-calculator .val { font-size: 85px; text-align: right; margin-top: 18px }.lesson-quarters { display: flex; justify-content: space-around; padding: 12px; font-weight: 800 }
-.lesson-people { display: grid; grid-template-columns: repeat(3, minmax(90px,150px)); gap: 16px }.lesson-people .nametag:nth-child(even) { transform: rotate(4deg) }.lesson-memo,.lesson-record { background: var(--stock); color: var(--ink); padding: 22px 28px; box-shadow: var(--lift); display: grid; gap: 10px; text-align: center; transform: rotate(-2deg) }.lesson-memo span { font-size: 10px; letter-spacing: .07em }.lesson-memo b { font-size: 26px }.lesson-memo i { font-size: 14px; margin: 8px }.lesson-purse { transform: scale(1.5) }.lesson-stamps { width: min(480px,100%) }.lesson-pages { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: center }.lesson-pages .cp-w { --k: .58!important }.lesson-ceo { display: flex; gap: 32px; align-items: center }.lesson-ceo .nametag { width: 140px }.lesson-choices { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap }.vote-prop { border: 3px solid; padding: 10px 20px; color: #e2dfcc; font-weight: 900; letter-spacing: .1em; transform: rotate(-3deg) }.vote-prop.open { color: #f0bb65; transform: rotate(3deg) }.lesson-approved .line { max-width: 600px; background: var(--stock); padding: 15px }.final-people { grid-template-columns: repeat(2, minmax(110px,180px)) }
-@keyframes lesson-in { from { opacity: 0; transform: translateY(12px) } }
+/* ---------- Staff Induction: a training tape played over the felt. Beats run off --dur (chapter) and --played (time already played) ---------- */
+.induction { --played: 0s; position: relative; height: 100svh; min-height: 540px; overflow: hidden; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; padding: 58px 16px 0; user-select: none }
+:where(.induction) .b { animation-delay: calc(var(--dur) * var(--at, 0) - var(--played)); animation-duration: .55s; animation-timing-function: var(--bounce); animation-fill-mode: both }
+.induction.paused *, .induction.paused *::before, .induction.paused *::after { animation-play-state: paused !important }
 
-@media (max-width: 740px) { .induction { padding: 18px 16px 35px }.lesson-heading { margin-top: 25px }.lesson-stage { min-height: 300px }.lesson-caption { padding: 14px; min-height: 100px }.lesson-controls { gap: 6px }.lesson-controls > button { padding: 8px 10px; font-size: 12px }.lesson-controls nav { gap: 4px }.lesson-controls nav button { width: 7px; height: 7px }.lesson-pages .cp-w { --k: .38!important }.lesson-ceo { gap: 15px }.lesson-ceo .cp-w { --k: .55!important }.lesson-ceo .nametag { width: 100px }.lesson-people { gap: 9px }.lesson-people .nametag b { font-size: 17px } }
-@media (prefers-reduced-motion: reduce) { .lesson-stage { animation: none }.lesson-progress i { transition: none } }
+/* the tape's own on-screen display, VCR style */
+.i-osd { position: absolute; top: 18px; left: 20px; z-index: 3; display: flex; gap: 14px; border: 0; background: none; padding: 4px 0; font: 400 14px/1 var(--f-seg); letter-spacing: .08em; color: var(--on-table); opacity: .72; text-shadow: 0 0 8px rgba(241,233,212,.35) }
+.i-osd b { font-weight: 400 } .i-osd:hover { opacity: 1 }
+.paused .i-osd b { animation: osd-blink 1s steps(2) infinite !important; animation-play-state: running !important }
+
+/* skip is a manila tag with a punched hole */
+.i-skip { position: absolute; top: 14px; right: 18px; z-index: 3; border: 0; background: none; padding: 10px 18px 9px 30px; font: 800 12px/1 var(--f-body); letter-spacing: .16em; text-transform: uppercase; color: #5A4A22; transform: rotate(3deg); filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); transition: transform .2s var(--bounce) }
+.i-skip::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle at 15px 50%, var(--baize) 0 3.5px, #C9B27A 4px 5.5px, transparent 6px), linear-gradient(#EAD9AA, var(--env-manila)); clip-path: polygon(11px 0, 100% 0, 100% 100%, 11px 100%, 0 50%) }
+.i-skip::after { content: "›"; margin-left: 8px; font-size: 15px }
+.i-skip:hover { transform: rotate(0) translateX(-3px) }
+
+.i-stage { min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(14px, 3vh, 28px); perspective: 1400px }
+
+/* the narrator's line, word by word, as a subtitle on the felt */
+.i-sub { margin: 0 auto; max-width: 34em; min-height: 2.8em; padding: 0 12px; text-align: center; text-wrap: balance; font: 600 clamp(17px, 2.1vw, 25px)/1.38 var(--f-body); letter-spacing: -.01em; color: var(--on-table); text-shadow: 0 1px 0 rgba(0,0,0,.35), 0 0 22px var(--baize-lo) }
+.i-sub span { display: inline-block; animation: word .4s ease both; animation-delay: calc(var(--dur) * var(--at) - var(--played)) }
+
+/* chapters are the binder's index tabs, peeking up from the bottom edge */
+.i-tabs { display: flex; justify-content: center; align-items: flex-end; gap: 4px; padding-top: 18px; height: 64px }
+.itab { position: relative; width: clamp(19px, 3.6vw, 44px); height: 30px; border: 0; padding: 6px 0 0; overflow: hidden; border-radius: 6px 6px 0 0; background: var(--stock-3); color: var(--ink-3); font: 400 11px/1 var(--f-seg); box-shadow: inset 0 -6px 8px -6px rgba(0,0,0,.3); transform: translateY(8px); transition: transform .25s var(--bounce), background .2s }
+.itab.past { background: var(--stock-2); color: var(--ink-2) }
+.itab:hover { transform: translateY(3px) }
+.itab[aria-current] { height: 40px; background: var(--stock); color: var(--ink); transform: none }
+.itab i { position: absolute; left: 0; bottom: 7px; height: 2px; width: 0; background: var(--ink-2); opacity: .55; border-radius: 1px }
+
+/* READ & UNDERSTOOD, then the Time & Attendance clock drops in on its chain */
+.i-outro { position: absolute; inset: 0; z-index: 4; pointer-events: none; display: grid; place-items: center }
+.outro .i-stage, .outro .i-sub, .outro .i-tabs { animation: sweep .7s cubic-bezier(.5, 0, .9, .4) .5s both !important }
+.outro .i-tabs { animation-name: sink !important }
+.rubber { display: inline-block; font: 900 15px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; color: var(--red); border: 3.5px solid currentColor; border-radius: 4px; padding: 7px 11px 6px; rotate: -8deg; mix-blend-mode: multiply; opacity: .92;
+  mask-image: radial-gradient(circle at 30% 40%, #000 0 60%, rgba(0,0,0,.7) 61%), repeating-linear-gradient(80deg, #000 0 3px, rgba(0,0,0,.82) 3px 5px); mask-composite: intersect }
+.rubber.big { position: absolute; font-size: clamp(28px, 6.5vw, 66px); border-width: clamp(4px, .7vw, 8px); padding: .2em .35em .14em; mix-blend-mode: normal; animation: thump .45s var(--bounce) both, sweep .7s cubic-bezier(.5, 0, .9, .4) .5s forwards }
+.tclock { position: absolute; top: 0; left: 50%; display: grid; justify-items: center; translate: -50% 0; animation: clock-drop .9s cubic-bezier(.3, 1.4, .5, 1) .6s both; transform-origin: 50% 0 }
+.tclock .chain { width: 4px; height: 24svh; background: repeating-linear-gradient(#9C9A8E 0 6px, #5E5D55 6px 8px, transparent 8px 10px) }
+.tc-body { padding: 10px 14px 14px; border-radius: 10px; background: linear-gradient(#ECE5D0, #D2C8AA); box-shadow: inset 0 1px 0 #fff8, inset 0 -3px 0 rgba(0,0,0,.12), 0 24px 30px -16px rgba(0,0,0,.7); display: grid; justify-items: center; gap: 8px; animation: swing 2.2s ease-out 1.3s both }
+.tc-plate { font: 800 9px/1 var(--f-body); letter-spacing: .22em; text-transform: uppercase; color: var(--ink-2) }
+.tc-face { display: flex; align-items: center; gap: 5px; padding: 8px 10px; border-radius: 6px; background: #2B2A26; box-shadow: inset 0 3px 6px rgba(0,0,0,.6); font: 900 clamp(38px, 7vw, 64px)/1 var(--f-body); color: var(--stock); font-variant-numeric: tabular-nums }
+.tc-face b, .tc-face .flap::before, .tc-face .flap::after { width: .74em; height: 1.18em; display: grid; place-items: center; border-radius: 4px; background: linear-gradient(#3A3934 0 49.4%, #121210 49.5% 50.5%, #34332E 50.6%) }
+.tc-face .flap { position: relative; background: none; perspective: 200px }
+.tc-face .flap::before, .tc-face .flap::after { position: absolute; inset: 0; backface-visibility: hidden; transform-origin: 50% 50% }
+.tc-face .flap::before { content: attr(data-a); animation: flap-out .16s ease-in 1.5s both }
+.tc-face .flap::after { content: attr(data-b); animation: flap-in .16s ease-out 1.64s both }
+.tc-face i { font-style: normal; opacity: .7; margin: 0 -2px; animation: osd-blink 1s steps(2) infinite }
+
+@keyframes word { from { opacity: 0; transform: translateY(.25em); filter: blur(3px) } }
+@keyframes osd-blink { 50% { opacity: .15 } }
+@keyframes sweep { to { transform: translateY(75svh) rotate(5deg); opacity: 0 } }
+@keyframes sink { to { transform: translateY(80px) } }
+@keyframes thump { from { scale: 2.6; opacity: 0 } 55% { scale: .94; opacity: 1 } to { scale: 1; opacity: 1 } }
+@keyframes clock-drop { from { translate: -50% -110% } }
+@keyframes swing { from { rotate: 4deg } 30% { rotate: -2.5deg } 60% { rotate: 1deg } to { rotate: 0deg } }
+@keyframes flap-out { to { transform: rotateX(-90deg) } }
+@keyframes flap-in { from { transform: rotateX(90deg) } }
+
+@media (max-width: 740px) { .induction { padding: 54px 12px 0 } .i-osd { top: 16px; left: 14px; font-size: 12px } .i-skip { top: 12px; right: 12px } .i-tabs { gap: 3px; height: 58px } .itab { font-size: 9px } }
+@media (prefers-reduced-motion: reduce) { .induction .b, .i-sub span, .tclock, .tc-body { animation-duration: .01s !important } }
