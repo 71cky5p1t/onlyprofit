@@ -97,3 +97,5 @@
 .key:active:not(:disabled), .swap:active:not(:disabled), .reveal-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #1C1D1B }
 .key:disabled, .swap:disabled, .reveal-btn:disabled { opacity: .35; cursor: not-allowed }
 .row-label { font: 700 10px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3) }
+.tags.one { grid-template-columns: minmax(0, 220px); justify-content: center; margin-top: 18px }
+.nametag.mine { cursor: default; transform: rotate(-1.5deg) }
