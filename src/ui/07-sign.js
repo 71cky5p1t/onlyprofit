@@ -1,6 +1,6 @@
   // ---------- signing a vote: pick one, squiggle on the line, it locks a moment after the pen lifts ----------
   const SIGN = { w: 600, h: 130, ink: 140, hold: 1000 };
-  const SIGNED = { board: () => ({ type: 'boardVote', vote: ui.sel }), warn: () => ({ type: 'warnVote', target: ui.sel }), whistle: () => ({ type: 'whistleVote', target: ui.sel }) };
+  const SIGNED = { board: () => ({ type: 'boardVote', vote: ui.sel }), warn: () => ({ type: 'warnVote', target: ui.sel }), whistle: () => ({ type: 'whistleVote', target: ui.sel }), investigate: () => ({ type: 'investigate', target: ui.sel }) };
   const signHTML = (kind, ready) => `<div class="sign${ready ? '' : ' off'}" data-sign="${kind}"><span class="sign-x" aria-hidden="true">×</span><canvas width="${SIGN.w}" height="${SIGN.h}" aria-label="${ready ? 'Sign here to lock in your vote' : 'Pick one, then sign here'}"></canvas></div>`;
   function mountSign() {
     const box = document.querySelector('.desk [data-sign]'); if (!box) return;
