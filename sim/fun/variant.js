@@ -36,6 +36,37 @@ const V = {
     ['bots.js', "e.author === ceo || e.audited || e.autopilot ? evs(e.cards)", "e.author === ceo || e.audited || e.autopilot || e.openTo ? evs(e.cards)"],
     ['bots.js', "      if (S === 'smart' && r < 5 && (p.warnings", "      if (p.inv === r || (p.pip && s.ceo !== undefined && !s.P[s.ceo].sab)) return 'good';\n      if (S === 'smart' && r < 5 && (p.warnings"],
   ],
+  // Joel's second pass: stamps have a right answer, the CEO may investigate one person a quarter in private, only a PIP is announced
+  ceoinv: [
+    ['core.js', 'warnings: 0, leave: false,', 'warnings: 0, leave: false, pip: false,'],
+    ['core.js', '  const evs = cs => total(cs.map(ev), cs);', "  const evs = cs => total(cs.map(ev), cs);\n  const rightStamp = cs => (cs.some(c => c.v === 'V') ? 'Risky' : evs(cs) > 0 ? 'Rec' : evs(cs) < 0 ? 'Not' : 'Risky');"],
+    ['core.js', "    if (s.spectate) resolveWarn(s, E);\n    return null;", "    const t = s.wvotes[s.ceo], te = t != null && t !== 'none' && !s.P[t].pip && s.envs.find(x => x.author === t && !x.autopilot);\n    s.invq = te ? { t, guilty: te.stamp !== rightStamp(te.cards) } : null;\n    if (s.spectate) resolveWarn(s, E);\n    return null;"],
+    ['core.js', "  function next(s, E) {\n", "  function next(s, E) {\n    pipVerdict(s, E);\n"],
+    ['core.js', "  function workCost(w) {", `  function pipVerdict(s, E) {
+    s.pipLog = s.pipLog || [];
+    const q = s.invq; s.invq = null; if (!q) return;
+    const p = s.P[q.t]; s.pipLog.push({ r: s.r, id: p.id, sab: p.sab, bad: q.guilty });
+    if (q.guilty) { p.pip = true; (s.accused[p.id] = s.accused[p.id] || []).push('table'); p.accusations++; log(s, E, 'event', \`\${who(s, p.id, 1)} \${p.human ? 'have' : 'has'} been placed on a Performance Improvement Plan.\`); }
+  }
+  function workCost(w) {`],
+    ['core.js', "    botDesign(s);\n    s.envs = shuffle", "    botDesign(s); for (const e of s.envs) if (!e.autopilot && s.P[e.author].pip) e.openTo = [s.ceo];\n    s.envs = shuffle"],
+    ['core.js', "{ rand, pickOne, argmax, ev, STAMP_ADJ, evs,", "{ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp,"],
+    ['bots.js', "    const { rand, pickOne, argmax, ev, evs,", "    const { rightStamp, rand, pickOne, argmax, ev, evs,"],
+    ['bots.js', "        stamp = v >= 2 ? 'Rec' : v >= 0 ? 'Risky' : 'Not';", "        stamp = rightStamp(prop);"],
+    ['bots.js', "      } else { stamp = !p.accusations", "      } else if (prop.some(c => c.v === 'V')) { stamp = 'Risky'; rev = revealPositive(prop, left); } else { stamp = !p.accusations"],
+    ['bots.js', "      if (e.author === i || e.audited || e.autopilot) return viewValue(s, i, e);", "      if (e.openTo && e.openTo.includes(i)) return evs(e.cards);\n      if (e.author === i || e.audited || e.autopilot) return viewValue(s, i, e);"],
+    ['bots.js', "e.author === ceo || e.audited || e.autopilot ? evs(e.cards)", "e.author === ceo || e.audited || e.autopilot || e.openTo ? evs(e.cards)"],
+    ['bots.js', "      if (S === 'smart' && r < 5 && (p.warnings", "      if (p.pip && !s.P[s.ceo].sab) return 'good';\n      if (S === 'smart' && r < 5 && (p.warnings"],
+  ],
+  // no end-game Whistleblower
+  nowhistle: [['core.js', "named: winner === 'none' ? null : +winner };", "named: null };"]],
+  // no Written Warning votes; only the CEO acts
+  nowarn: [['core.js', 'passed = mx > s.n / 2;', 'passed = false;']],
+  // targets without the whistle
+  lowtgt: [['core.js', 'const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };', 'const TARGETS = { 4: 17, 5: 19, 6: 20, 7: 21, 8: 21 };']],
+  // only the final CEO names a saboteur at the end
+  ceowhistle: [['core.js', "const { winner, count } = tally(s, s.wb, { noneWinsTies: true });", "const { winner, count } = tally(s, { [s.ceo]: s.wb[s.ceo] ?? 'none' }, { noneWinsTies: true });"]],
+  ceotgt: [['core.js', 'const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };', 'const TARGETS = { 4: 19, 5: 21, 6: 21, 7: 22, 8: 23 };']],
 };
 function load(names) {
   const dir = path.join(OUT, names.join('+') || 'base'); fs.mkdirSync(dir, { recursive: true });
