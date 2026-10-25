@@ -198,10 +198,13 @@
   function deskWork() {
     const p = me(), inh = p.inh, wr = OP.workResult(S, ME, draft), cost = OP.workCost(draft);
     const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
+    // tokens are coins: price tags on the hand, paid coins sit on the policy card they bought
+    const coins = n => '<i class="coin"></i>'.repeat(n);
+    const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.reveals.includes(su) ? 1 : 0);
     const env = [0, 1, 2].map(su => {
-      const c = wr.prop[su], rv = draft.reveals.includes(su);
+      const c = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
       const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
-      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, '<i class="eye" aria-hidden="true"></i>',
+      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, `<i class="eye" aria-hidden="true"></i>${n ? `<span class="coins paid">${coins(n)}</span>` : ''}`,
         `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the CEO' : 'Show to the CEO for 1 token'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
@@ -209,17 +212,20 @@
       const next = on ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su);
       const price = on ? 0 : OP.SWAP_COST[next.length] - OP.SWAP_COST[draft.swaps.length];
       const ok = costWith({ swaps: next }) <= 3;
-      return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, `<span class="price">${on ? '↺' : '◆' + price}</span>`,
+      return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, on ? '<span class="tag back">↺</span>' : `<span class="tag">${coins(price)}</span>`,
         `data-drag="hand" data-su="${su}" role="button" tabindex="0" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${on ? 'Swap back for free' : `Swap into the envelope for ${price} token${price === 1 ? '' : 's'}`}"`));
     }).join('');
     ui.land = null;
     const v = evs(wr.prop), vol = wr.prop.some(c => c.v === 'V');
     const canRedeal = !draft.redeal && costWith({ redeal: true }) <= 3;
-    const left = Math.max(0, 3 - cost), dealCls = ui.deal ? ' deal' : '';
+    const left = Math.max(0, 3 - cost), dealCls = ui.deal ? (ui.deal === 'redeal' ? ' deal redeal' : ' deal') : '';
+    // a fresh quarter waits for the stripe wipe to clear before dealing
+    const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
     ui.deal = false;
-    const calc = `<div class="calc"><div class="lcd" aria-label="Envelope worth ${fmt(v)}, ${left} of 3 tokens left"><div class="ann"><span>ENVELOPE</span><span class="${vol ? '' : 'off'}">±VOLATILE</span><span>TOKENS</span></div>
-        <div class="row"><span class="val">${lcd(v)}</span><span class="tok">${'◆'.repeat(left)}<i>${'◆'.repeat(3 - left)}</i></span></div></div>
-        <button class="key" data-a="redeal" ${canRedeal ? '' : 'disabled'}>${draft.redeal ? 'Re-dealt. Inherited cards shredded.' : 'Re-deal the inherited three ◆2'}</button></div>`;
+    const tray = `<div class="tray">
+        <span class="purse" role="img" aria-label="${left} of 3 tokens left">${coins(left)}${'<i class="coin spent"></i>'.repeat(3 - left)}</span>
+        <span class="worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
+        <button class="shred" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 tokens">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="tag">${coins(2)}</span></button></div>`;
     const claimable = inh.kind === 'rejected' && inh.author != null && inh.author !== ME;
     const claim = claimable ? `<div class="block"><span class="label">Memo to the bulletin board (optional)</span>
       <div class="radio-list">
@@ -238,11 +244,10 @@
       <select class="input" id="next-style" data-in="nextStyle"><option value="">No mandate</option>${OP.COLORS.flatMap(c => OP.TRIMS.map(t => `<option value="${c}/${t}" ${draft.nextStyle && draft.nextStyle.color === c && draft.nextStyle.trim === t ? 'selected' : ''}>${c} · ${t}</option>`)).join('')}</select>
       <div class="hint">Wipe out everyone's signature, or make them all look like someone in particular.</div></div>` : '';
     const body = `<div class="prov">${provenance(inh)}</div>
-      <div class="block play${dealCls}" style="--env:var(--env-${draft.style.color})">
-        <div class="zone env-zone"><div class="cards3">${env}</div></div>
-        <div class="zone hand-zone"><div class="cards3">${hand}</div></div>
-        <p class="tip">Drag a card up to swap it in. Tap one in the envelope to show the CEO.</p>
-        ${calc}</div>
+      <div class="block play${dealCls}" style="--wait:${wait}s">
+        <div class="policy">${env}</div>
+        ${tray}
+        <div class="fan">${hand}</div></div>
       <div class="block"><span class="label">Stamp</span><div class="stamps">${Object.keys(STAMP).map(k => `<button class="stamp-btn" data-a="stamp" data-v="${k}" aria-pressed="${draft.stamp === k}">${STAMP[k]}</button>`).join('')}</div></div>
       <div class="block"><span class="label">Subject line · tap a word to reroll</span>
         <div class="subj">${draft.words.map((k, i) => `<button class="subj-word" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled style="opacity:.4"' : ''}>${esc(OP.SUBJ[i][k])}</button>`).join('')}</div>
@@ -401,7 +406,7 @@
       case 'advance': dispatch({ type: 'advance' }); break;
       case 'swap': { const su = +d.su; draft.swaps = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su); render(); break; }
       case 'reveal': { const su = +d.su; draft.reveals = draft.reveals.includes(su) ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su); render(); break; }
-      case 'redeal': draft.redeal = true; ui.deal = true; toast('Inherited cards shredded. Three fresh ones dealt.'); render(); break;
+      case 'redeal': draft.redeal = true; ui.deal = 'redeal'; toast('Inherited cards shredded. Three fresh ones dealt.'); render(); break;
       case 'stamp': draft.stamp = d.v; render(); break;
       case 'reroll': { const i = +d.i, l = OP.SUBJ[i].length; let k; do { k = Math.floor(Math.random() * l); } while (k === draft.words[i] && l > 1); draft.words[i] = k; render(); break; }
       case 'color': draft.style.color = d.v; render(); break;

@@ -1,0 +1,181 @@
+<title>Only Profit Screens</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&family=Share+Tech+Mono&display=swap">
+<style>
+/* Layout: one spread per moment in the game, a TV and a phone side by side on the felt, in play order */
+:root {
+  --felt: #284338; --felt-hi: #3B6152; --paper: #F1E9D4; --paper-2: rgba(241,233,212,.62); --rule: rgba(241,233,212,.16);
+  --ink: #141414; --red: #D9261C; --gold: #E9A23B; --bezel: #111312;
+  --f-body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-seg: "Share Tech Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+body { margin: 0; background: radial-gradient(80% 50% at 30% 0%, var(--felt-hi), var(--felt) 70%) no-repeat, var(--felt); color: var(--paper); font: 15px/1.5 var(--f-body); -webkit-font-smoothing: antialiased }
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+header.top { padding-block: 28px 8px; display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; justify-content: space-between }
+.brand { display: flex; align-items: center; gap: 12px }
+.seal { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, #8E160F); color: rgba(255,255,255,.82); font: 900 14px/1 var(--f-body); letter-spacing: -.04em; box-shadow: 0 2px 6px rgba(0,0,0,.5) }
+.brand b { display: block; font: 900 24px/1 var(--f-body); letter-spacing: -.03em }
+.brand small { display: block; margin-top: 4px; font: 700 11px/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; color: var(--paper-2) }
+nav.jump { display: flex; flex-wrap: wrap; gap: 6px }
+nav.jump a { color: var(--paper); text-decoration: none; font: 700 12px/1 var(--f-body); padding: 7px 10px; border-radius: 14px; border: 1px solid var(--rule) }
+nav.jump a:hover, nav.jump a:focus-visible { background: var(--paper); color: var(--ink); outline: none }
+main { display: grid; gap: 8px; padding-block: 12px 80px }
+.spread { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px; padding-block: 30px; border-top: 1px solid var(--rule); scroll-margin-top: 12px }
+.side { display: grid; gap: 10px; align-content: start; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px) }
+.tab { display: inline-flex; width: max-content; border-radius: 4px; overflow: hidden; font: 800 12px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 2px 0 rgba(0,0,0,.25) }
+.tab b { background: var(--red); color: #fff; padding: 7px 8px }
+.tab span { background: var(--paper); color: var(--ink); padding: 7px 10px }
+.side p { margin: 0; color: var(--paper-2); font-size: 14px; max-width: 26ch }
+.replay { justify-self: start; border: 0; border-radius: 6px; padding: 8px 12px 7px; background: #4A4B47; color: #fff; font: 800 12px/1 var(--f-body); box-shadow: 0 3px 0 #1C1D1B; cursor: pointer }
+.replay:active { transform: translateY(2px); box-shadow: 0 1px 0 #1C1D1B }
+.replay:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px }
+.stage { display: flex; gap: 28px; align-items: flex-start; min-width: 0 }
+/* devices: a TV on a stand, a phone in a hand-sized bezel */
+.tv { flex: 1 1 auto; min-width: 0; display: grid; justify-items: center }
+.tv .screen { width: 100%; aspect-ratio: 16 / 10; max-width: 100%; background: var(--bezel); border-radius: 10px; padding: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 30px 50px -24px rgba(0,0,0,.8) }
+.tv .stand { width: 22%; height: 16px; background: linear-gradient(#1a1c1b, #0b0c0c); clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%) }
+.phone { flex: none; width: 322px; background: var(--bezel); border-radius: 38px; padding: 14px 9px; box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 30px 50px -24px rgba(0,0,0,.8); position: relative }
+.phone::before { content: ""; position: absolute; top: 6px; left: 50%; width: 70px; height: 4px; margin-left: -35px; border-radius: 3px; background: #2a2d2b }
+.phone .screen { height: 640px; border-radius: 28px }
+.screen { position: relative; overflow: hidden }
+.vp { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; background: #35574A }
+.tv .vp { inset: 10px; border-radius: 3px }
+.vp iframe { border: 0; transform-origin: 0 0; position: absolute; left: 0; top: 0; background: #35574A }
+.vp .wait { position: absolute; inset: 0; display: grid; place-items: center; font: 400 14px/1 var(--f-seg); letter-spacing: .1em; color: var(--paper-2); background: #35574A; transition: opacity .25s }
+.vp.live .wait { opacity: 0; pointer-events: none }
+.only-tv .phone, .only-phone .tv { display: none }
+.only-phone .stage { justify-content: flex-start }
+/* the parts sheet */
+.kit iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #35574A; min-height: 300px }
+@media (max-width: 860px) {
+  .spread { grid-template-columns: minmax(0, 1fr); gap: 16px }
+  .side { position: static }
+  .side p { max-width: 60ch }
+  .stage { flex-direction: column-reverse; align-items: center }
+  .tv { width: 100% }
+}
+@media (max-width: 380px) { .phone { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .vp .wait { transition: none } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="seal" aria-hidden="true">OP</span><div><b>Only Profit</b><small>Every screen · build 0.3</small></div></div>
+    <nav class="jump" id="jump" aria-label="Jump to a screen"></nav>
+  </header>
+  <main id="main"></main>
+</div>
+
+<script type="application/json" id="proto">/*PROTO*/</script>
+<script type="application/json" id="kitcss">/*KITCSS*/</script>
+<script>
+(() => {
+  const PROTO = JSON.parse(document.getElementById('proto').textContent);
+  const KITCSS = JSON.parse(document.getElementById('kitcss').textContent);
+  const SEED = 5, PLAYERS = 6;
+  // The TV shows the shared board; the phone shows only your own desk.
+  const TV_CSS = '.desk{display:none!important}.layout{grid-template-columns:minmax(0,1fr)!important}';
+  const PHONE_CSS = '.board,.mast{display:none!important}.layout{padding-block:10px 30px!important}.wrap{padding-inline:8px!important}.desk{position:static!important;max-height:none!important;max-width:none!important}';
+  const SPREADS = [
+    { id: 'lobby', q: 'Q0', name: 'Lobby', say: 'Pick a table size and the bots. Seeded games replay exactly.', go: { ph: 'setup' }, only: 'tv' },
+    { id: 'onboarding', q: 'Q0', name: 'Onboarding', say: 'Your employment letter tells you which side you are on. The TV shows the staff and the empty ledger.', go: { ph: 'brief' } },
+    { id: 'work', q: 'Q1', name: 'Work', say: 'Your inherited policy floats on top. Drag a card up from your hand to swap it, tap one to show the CEO. Each costs coins.', go: { ph: 'work', r: 1 } },
+    { id: 'pitch', q: 'Q1', name: 'Pitch + audit', say: 'Anonymous envelopes land on the board. The table votes to open one.', go: { ph: 'pitch', r: 1 } },
+    { id: 'decide', q: 'Q1', name: 'Decide', say: 'You are CEO this quarter. Approve one envelope.', go: { ph: 'decide', r: 1 } },
+    { id: 'reveal', q: 'Q1', name: 'Reveal', say: 'The approved policy is opened and stamped. The table may vote a Written Warning.', go: { ph: 'reveal', r: 1 } },
+    { id: 'closed', q: 'Q1', name: 'Quarter closed', say: 'The ledger prints the quarter and the profit meter counts up.', go: { ph: 'review', r: 1 } },
+    { id: 'deal', q: 'Q2', name: 'Next quarter', say: 'The stripe wipe clears, then the new hand is dealt in face down and flips.', go: { ph: 'work', r: 2 }, only: 'phone' },
+    { id: 'whistle', q: 'Q5', name: 'Whistleblower', say: 'One last accusation. Right is +3, wrong is −3.', go: { ph: 'whistle' } },
+    { id: 'exit', q: 'End', name: 'Exit interview', say: 'Everything that was hidden, quarter by quarter.', go: { ph: 'end' }, only: 'tv' },
+  ];
+  const $main = document.getElementById('main'), $jump = document.getElementById('jump');
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const device = (kind, s) => kind === 'tv'
+    ? `<div class="tv"><div class="screen"><div class="vp" data-kind="tv" data-id="${s.id}"><div class="wait">PRINTING…</div></div></div><div class="stand"></div></div>`
+    : `<div class="phone"><div class="screen"><div class="vp" data-kind="phone" data-id="${s.id}"><div class="wait">PRINTING…</div></div></div></div>`;
+  $main.innerHTML = SPREADS.map(s => `<section class="spread ${s.only ? 'only-' + s.only : ''}" id="${s.id}">
+      <div class="side"><span class="tab"><b>${s.q}</b><span>${s.name}</span></span><p>${s.say}</p><button class="replay" data-replay="${s.id}">↻ Replay</button></div>
+      <div class="stage">${s.only !== 'phone' ? device('tv', s) : ''}${s.only !== 'tv' ? device('phone', s) : ''}</div></section>`).join('')
+    + `<section class="spread kit" id="parts"><div class="side"><span class="tab"><b>Kit</b><span>Parts</span></span><p>Cards, coins, colours and type, as the game uses them.</p></div><div><iframe id="kit" title="Parts sheet"></iframe></div></section>`;
+  $jump.innerHTML = SPREADS.concat({ id: 'parts', name: 'Parts' }).map(s => `<a href="#${s.id}">${s.name}</a>`).join('');
+
+  // Plays a seeded game inside the frame until it reaches the moment this spread shows.
+  async function drive(f, go) {
+    const w = f.contentWindow, d = f.contentDocument;
+    const click = sel => { const e = d.querySelector(sel); if (e && !e.disabled) { e.click(); return true; } return false; };
+    if (go.ph === 'setup') return;
+    click(`[data-a=set][data-k=players][data-v="${PLAYERS}"]`);
+    const seed = d.getElementById('seed'); seed.value = SEED; seed.dispatchEvent(new Event('input', { bubbles: true }));
+    click('[data-a=start]');
+    for (let i = 0; i < 500; i++) {
+      const S = w.__op && w.__op.S; if (!S) return;
+      if (S.phase === go.ph && (go.r == null || S.r === go.r)) return;
+      if (S.phase === 'brief') click('[data-a=begin]');
+      else if (S.phase === 'work') { click('[data-a=stamp][data-v=Rec]'); click('[data-a=seal]'); }
+      else if (!click('.desk [data-a=advance]')) { click('.desk .radio[data-a=sel]'); click('.desk .btn.primary'); }
+      await sleep(12);
+    }
+  }
+  function mount(vp) {
+    const s = SPREADS.find(x => x.id === vp.dataset.id), tv = vp.dataset.kind === 'tv';
+    const old = vp.querySelector('iframe'); if (old) old.remove();
+    vp.classList.remove('live');
+    const f = document.createElement('iframe');
+    f.title = `${s.name}, ${tv ? 'TV' : 'phone'}`;
+    const W = tv ? 1360 : 390;
+    const fit = () => { const k = vp.clientWidth / W; f.style.width = W + 'px'; f.style.height = (vp.clientHeight / k) + 'px'; f.style.transform = `scale(${k})`; };
+    fit(); new ResizeObserver(fit).observe(vp);
+    f.addEventListener('load', async () => {
+      try { await drive(f, s.go); } catch (e) { console.log('drive', e); }
+      vp.classList.add('live');
+    }, { once: true });
+    f.srcdoc = PROTO + `<style>${tv ? TV_CSS : PHONE_CSS}</style>`;
+    vp.appendChild(f);
+  }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); mount(e.target); } }), { rootMargin: '400px 0px' });
+  document.querySelectorAll('.vp').forEach(vp => io.observe(vp));
+  document.addEventListener('click', ev => {
+    const b = ev.target.closest('[data-replay]'); if (!b) return;
+    document.querySelectorAll(`.vp[data-id="${b.dataset.replay}"]`).forEach(mount);
+  });
+
+  // parts sheet
+  const card = (s, v, cls, word, fx) => {
+    const SU = ['Action', 'Target', 'Modifier'], G = { 2: '++', 1: '+', 0: '0', '-1': '−', '-2': '−−', V: '?' };
+    const tone = v === 'V' ? 'v-v' : v > 0 ? 'pos' : v < 0 ? 'neg' : 'zero';
+    const FS = { null: ['∅', 'Cancels the rest'], x2: ['×2', 'Doubles the rest'], shield: ['≥0', "Rest can't lose"], flip: ['⇅', 'Flips the rest'] };
+    const face = fx ? `<div class="split"><b class="glyph ${tone}">${G[v]}</b><b class="eff fx-${fx}">${FS[fx][0]}</b></div><span class="amt">${FS[fx][1]}</span>` : `<b class="glyph ${tone}">${G[v]}</b>`;
+    return `<div class="card s-${s} ${fx ? 'has-fx' : ''} ${cls}"><div class="hd"><i class="sp"></i>${SU[s]}</div><div class="fx">${face}</div><span class="word">${word}</span></div>`;
+  };
+  const coins = n => '<i class="coin"></i>'.repeat(n);
+  const sw = (name, v) => `<div class="sw"><i style="background:var(${v})"></i><b>${name}</b><span>${v}</span></div>`;
+  const KIT = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&family=Share+Tech+Mono&display=swap"><style>${KITCSS}
+    html,body{min-height:0!important;height:auto!important} body{padding:22px 18px 28px} .kit{display:grid;gap:28px} .kit h4{margin:0 0 12px;font:800 11px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--on-table-2)}
+    .row{display:flex;flex-wrap:wrap;gap:16px 14px;align-items:flex-start} .play{margin:0;padding:18px 14px;background:transparent;box-shadow:none;overflow:visible}
+    .note{font:600 12px/1.3 var(--f-body);color:var(--on-table-2);max-width:12ch;margin-top:6px}
+    .sw{display:grid;grid-template-columns:34px auto;column-gap:10px;align-items:center;min-width:150px} .sw i{grid-row:span 2;width:34px;height:34px;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.2),0 2px 4px rgba(0,0,0,.4)} .sw b{font:800 13px/1.1 var(--f-body)} .sw span{font:400 11px/1.2 var(--f-seg);color:var(--on-table-2)}
+    .type{display:grid;gap:10px;background:var(--stock);color:var(--ink);border-radius:4px;padding:18px 20px;box-shadow:var(--lift)} .type .a{font:900 34px/1 var(--f-body);letter-spacing:-.03em} .type .b{font:400 15px/1.5 var(--f-body);max-width:60ch} .type .c{font:400 30px/1 var(--f-seg);background:var(--lcd);color:var(--lcd-ink);padding:6px 10px;border-radius:4px;width:max-content}
+    .piece{display:grid;justify-items:center;gap:6px} .slot{animation:none!important} .slot::after{display:none}
+  </style>
+  <div class="kit">
+    <section><h4>Values</h4><div class="play"><div class="row">${card(0, 2, '', 'Liquidate')}${card(1, 1, '', 'Interns')}${card(2, 0, '', 'Quietly')}${card(0, -1, '', 'Rightsize')}${card(1, -2, '', 'Union Relations')}${card(2, 'V', '', 'Allegedly')}</div></div></section>
+    <section><h4>Effect Modifiers · own value left, effect right</h4><div class="play"><div class="row">${card(2, -1, '', 'With Thoughts and Prayers', 'null')}${card(2, -2, '', 'Retroactively', 'x2')}${card(2, -1, '', "Per Legal's Advice", 'shield')}${card(2, 0, '', 'Without Consultation', 'flip')}</div></div></section>
+    <section><h4>Coins</h4><div class="play"><div class="row" style="align-items:center;gap:26px">
+      <div class="piece"><span class="purse">${coins(3)}</span><span class="note">Full purse</span></div>
+      <div class="piece"><span class="purse">${coins(1)}<i class="coin spent"></i><i class="coin spent"></i></span><span class="note">Two spent</span></div>
+      <div class="piece"><div class="slot">${card(1, 1, '', 'Interns').replace('<div class="hd">', '<span class="tag">' + coins(2) + '</span><div class="hd">')}</div><span class="note">Price to swap in</span></div>
+      <div class="piece"><div class="slot">${card(0, 2, 'shown', 'Liquidate').replace('<div class="hd">', '<i class="eye"></i><span class="coins paid">' + coins(2) + '</span><div class="hd">')}</div><span class="note">Paid, and shown to the CEO</span></div>
+      <div class="piece"><div class="slot">${card(2, 2, 'broke', 'In Perpetuity').replace('<div class="hd">', '<span class="tag">' + coins(3) + '</span><div class="hd">')}</div><span class="note">Can't afford</span></div>
+    </div></div></section>
+    <section><h4>Colour</h4><div class="row">${sw('Baize', '--baize')}${sw('Card stock', '--stock')}${sw('Ink', '--ink')}${sw('Red tape', '--red')}${sw('Good news', '--good')}${sw('Brass', '--gold')}${sw('Sunset', '--sunset')}${sw('Calculator', '--lcd')}${sw('Manila', '--env-manila')}${sw('Carbon copy', '--env-carbon')}</div></section>
+    <section><h4>Type</h4><div class="type"><div class="a">Restructure the Orphanage</div><div class="b">Schibsted Grotesk carries everything people read. Shareholders are mildly pleased. Bonuses have been deferred.</div><div class="c">+18.0</div></div></section>
+  </div>`;
+  const kit = document.getElementById('kit');
+  kit.addEventListener('load', () => { const fit = () => { kit.style.height = kit.contentDocument.body.offsetHeight + 'px'; }; fit(); setTimeout(fit, 600); new ResizeObserver(fit).observe(kit.contentDocument.body); });
+  kit.srcdoc = KIT;
+})();
+</script>
