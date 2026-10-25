@@ -1,0 +1,41 @@
+/* ---------- TV desk objects: till roll ledger, name-tag staff, CEO name plates ---------- */
+.objs { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 44px; align-items: start; margin-top: 8px }
+@media (max-width: 760px) { .objs { grid-template-columns: minmax(0, 1fr) } }
+section > .label { color: var(--on-table-2) }
+.sub-mono { font: 400 13px/1.35 var(--f-seg); color: #26261F }
+
+.till { justify-self: center; width: 100%; max-width: 320px; filter: drop-shadow(0 14px 14px rgba(0,0,0,.35)) drop-shadow(0 2px 2px rgba(0,0,0,.25)) }
+.tr-paper { background: linear-gradient(90deg, #EFEBE0, #F8F5EC 12% 88%, #EDE8DC); color: #2A2924; font: 400 13px/1.35 var(--f-seg); padding: 18px 18px 30px; transform: rotate(-.8deg);
+  -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 9px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 14px 9px repeat-x;
+  mask: linear-gradient(#000 0 0) top / 100% calc(100% - 9px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 14px 9px repeat-x }
+.tr-head { text-align: center; letter-spacing: .14em; font-size: 14px; padding-bottom: 10px; margin-bottom: 8px; border-bottom: 1px dashed #2A2924 }
+.tr-head small, .tr-row small { display: block; font-size: 10.5px; letter-spacing: .1em; color: #8A8578 }
+.tr-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; padding: 6px 0; align-items: baseline }
+.tr-row > span:nth-child(2) { text-transform: uppercase; overflow-wrap: anywhere }
+.tr-row b { font-weight: 400; font-size: 15px }
+.tr-row.muted { color: #B1AC9F }
+.tr-row.new { animation: print .6s steps(5) both }
+@keyframes print { from { clip-path: inset(0 0 100% 0) } to { clip-path: inset(0) } }
+.tr-total { display: flex; justify-content: space-between; border-top: 1px dashed #2A2924; border-bottom: 1px dashed #2A2924; margin-top: 8px; padding: 9px 0; font-size: 17px; letter-spacing: .12em }
+.tr-total b { font-weight: 400 }
+.tr-foot { text-align: center; font-size: 10.5px; letter-spacing: .12em; color: #8A8578; margin-top: 12px; line-height: 1.7 }
+
+.staff-desk { display: grid; gap: 34px }
+.staff-tags { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 18px 16px }
+.staff-tag { cursor: default; transform: rotate(var(--r)); padding-bottom: 10px }
+.staff-tag b { font-size: 21px }
+.staff-tag .ink-name { height: 30px; width: auto; justify-self: center }
+.staff-tag.down { filter: grayscale(.9) brightness(.82) }
+.tag-dept { font: 700 10px/1 var(--f-body); color: var(--ink-3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px }
+.tag-tapes { display: flex; justify-content: center; gap: 4px; margin: 0 0 5px }
+.tag-tape { --c: #151515; font: 800 9px/1 var(--f-body); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: #fff; background: var(--c); padding: 4px 6px 3px; border-radius: 2px; transform: rotate(-2.5deg); box-shadow: 0 1px 1px rgba(0,0,0,.3) }
+.tag-tape.grey { --c: #6E6B63 } .tag-tape.gold { --c: #A9852A } .tag-tape.red { --c: var(--red) } .tag-tape.green { --c: var(--good) }
+
+.plates { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; perspective: 600px }
+.plate-n { position: relative; display: grid; justify-items: center; padding: 9px 6px 8px; border-radius: 2px; text-align: center; min-width: 0;
+  background: linear-gradient(#34322E, #1D1C1A 60%, #141312); color: #D9C08A; transform: rotateX(16deg); transform-origin: bottom;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 0 0 1px rgba(217,192,138,.25), 0 10px 0 -4px #5A3E26, 0 12px 12px -4px rgba(0,0,0,.6) }
+.plate-n small { font: 700 9.5px/1 var(--f-body); letter-spacing: .18em; opacity: .7 }
+.plate-n b { font: 800 13px/1.15 var(--f-body); letter-spacing: .08em; text-transform: uppercase; overflow-wrap: anywhere; margin-top: 3px }
+.plate-n.past { color: #7D725A }
+.plate-n.now { background: linear-gradient(#E6CB86, #C49A45 55%, #9C7630); color: #241B0B; box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 10px 0 -4px #5A3E26, 0 0 22px -2px rgba(230,203,134,.45), 0 12px 12px -4px rgba(0,0,0,.6) }

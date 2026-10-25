@@ -187,7 +187,8 @@
     const leave = p.leave ? slip('Stood down') : '';
     if (ph === 'decide') {
       if (isCEO()) return deskWrap('You are CEO', `${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Nominate ${icon(ui.sel)}` : 'Nominate', !!ui.sel) });
-      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}${auditor() ? minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), null) : ''}`, { foot: key('advance', 'See the decision') });
+      const own = S.envs.find(e => !e.autopilot && e.author === ME);
+      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}${auditor() ? minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), null) : own ? `<div class="board-nom own">${coverHTML(own, { k: .6 })}${lineHTML(own)}</div>` : ''}`, { foot: key('advance', 'See the decision') });
     }
     if (ph === 'board') {
       const nom = S.envs.find(e => e.id === S.nominee);
@@ -203,7 +204,9 @@
     }
     if (ph === 'review') {
       const w = S.warn;
-      return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
+      const won = S.envs.find(e => e.approved), got = stickers(p, S.r);
+      return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>${won ? lineHTML(won, { all: true }) : ''}
+        <div class="tags one"><div class="nametag mine"><span class="hello">Hello<small>my name is</small></span><b>${esc(p.name)}</b>${got || '<span class="stickers"><i class="stk grey">Present</i></span>'}</div></div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
       return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${signHTML('whistle', ui.sel != null)}`);

@@ -14,13 +14,16 @@
   const iconIdx = (id, list) => Math.max(0, (list || S.envs).map(e => e.id).sort().indexOf(id)) % ICONS.length;
   const icon = (id, list) => `<svg class="ico" viewBox="0 0 24 24" role="img" aria-label="${ICON_NAMES[iconIdx(id, list)]}"><title>${ICON_NAMES[iconIdx(id, list)]}</title>${ICONS[iconIdx(id, list)]}</svg>`;
   // a person's record as cheap, dog-eared praise stickers
-  function stickers(q) {
-    const filed = S.history.flatMap(h => h.memos).concat(S.memos).filter(m => m.kind === 'report' && m.by === q.id).length;
+  // r: only what was earned this quarter
+  function stickers(q, r) {
+    const memos = r ? S.memos : S.history.flatMap(h => h.memos).concat(S.memos);
+    const filed = memos.filter(m => m.kind === 'report' && m.by === q.id).length;
     const out = [];
-    q.approved.forEach(a => out.push(a.actual > 0 ? ['gold', 'Great work!'] : ['beige', 'Acceptable!']));
+    q.approved.filter(a => !r || a.r === r).forEach(a => out.push(a.actual > 0 ? ['gold', 'Great work!'] : ['beige', 'Acceptable!']));
     if (filed) out.push(['blue', 'Team player']);
-    for (let k = 0; k < q.warnings; k++) out.push(['red', 'See me']);
-    if (q.accusations) out.push(['grey', `Noted ×${q.accusations}`]);
+    const warns = r ? (S.warn && S.warn.passed && S.warn.target === q.id ? 1 : 0) : q.warnings;
+    for (let k = 0; k < warns; k++) out.push(['red', 'See me']);
+    if (q.accusations && !r) out.push(['grey', `Noted ×${q.accusations}`]);
     if (!out.length) return '';
     return `<span class="stickers">${out.map(([c, t], k) => `<i class="stk ${c}" style="--r:${((q.id * 7 + k * 13) % 11) - 5}deg">${t}</i>`).join('')}</span>`;
   }
