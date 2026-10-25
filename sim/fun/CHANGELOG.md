@@ -111,3 +111,20 @@ Option B (no end vote; saboteurs also win if their approved losses reach 3) was 
 | legal proposals per desk (before re-deal) | 7 | 19 |
 
 Codex's targets are right for bots. 4p is one too high for a human saboteur (61–66%); 23 gives bots 60%, scripted saboteurs 50–54%. With the hand rule reverted, Codex's multiplayer engine changes play identical games to main on 300 seeds per size.
+
+## Card chaos and two policies (2026-10-25)
+
+New `variant.js` keys: `wide` (one +3 and one −3 per suit), `wild4` (four wildcards per suit), `wild3` (wildcards swing ±3), `chaos` (wide + four wildcards), `two` (the CEO also approves a second page of their own choosing, with no Board vote). 1,500 games per size, targets retuned so bots and the scripted saboteur both sit near 50%:
+
+| | targets | right saboteur named | loyal warned | accusation in a clean game | losing policy approved | margin SD | Q5 live |
+|---|---|---|---|---|---|---|---|
+| main | 19/21/22/23/23 | 90–91% | 9–12% | 3–7% | 1–3% | 3.1–3.5 | 43–56% |
+| wide | 21/23/24/26/27 | 90–92% | 9–11% | 3–7% | 1–3% | 3.6–3.9 | 34–51% |
+| wild4 | 19/21/22/23/24 | 88–90% | 8–13% | 2–6% | 1–3% | 3.2–3.8 | 43–56% |
+| wild3 | 19/21/22/23/23 | 89–91% | 9–12% | 3–8% | 1–5% | 3.3–3.9 | 41–53% |
+| chaos | 21/24/25/26/27 | 89–91% | 8–11% | 2–8% | 1–3% | 3.7–4.2 | 42–55% |
+| two | 26/30/31/34/35 | 85–91% | 11–15% | 11–17% | 1–5% | 5.2–6.2 | 49–75% |
+
+Swingier cards widen the final spread but barely touch deduction or how often a loser gets through: bots simply avoid the bad cards. A second approval is the only change here that adds real noise. It also hands a saboteur CEO a free bad pick, so subtle saboteurs win 59–67% at 4–6p.
+
+Everyone submitting two pages from a six-spare hand (scratch engine, bots only) behaved like six spares: targets 23/25/26/27/27, saboteur named 93–94%.

@@ -19,6 +19,18 @@ const V = {
   ceotgt: [['core.js', 'const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };', 'const TARGETS = { 4: 19, 5: 21, 6: 21, 7: 22, 8: 23 };']],
   // saboteurs also win if their approved losses reach DMG_X (env)
   damage: [['core.js', 's.win = s.profit >= s.target;', 's.dmg = s.ledger.filter(l => !l.autopilot && s.P[l.author].sab && l.actual < 0).reduce((a, l) => a - l.actual, 0); s.win = s.profit >= s.target && !(s.dmg >= (+process.env.DMG_X || 99));']],
+  // wider card values: one +3 and one −3 per suit, same average
+  wide: [['content.js', "const VALUES = [2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, 'V', 'V'];", "const VALUES = [3, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2, -2, -2, -3, 'V', 'V'];"]],
+  // four wildcards per suit instead of two (two 0s become wildcards)
+  wild4: [['content.js', "const VALUES = [2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, 'V', 'V'];", "const VALUES = [2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -2, -2, -2, -2, 'V', 'V', 'V', 'V'];"]],
+  // both: wider values and four wildcards
+  chaos: [['content.js', "const VALUES = [2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, 'V', 'V'];", "const VALUES = [3, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -2, -2, -2, -3, 'V', 'V', 'V', 'V'];"]],
+  // wildcards swing ±3
+  wild3: [['core.js', '(rand(s) < 0.5 ? 2 : -2)', '(rand(s) < 0.5 ? 3 : -3)']],
+  // CEO also approves a second proposal (own pick, no Board vote)
+  two: [['core.js', 's.pick = null; s.warn', 's.pick = null; s.pick2 = null; s.warn'],
+    ['core.js', "    s.phase = 'reveal'; s.wvotes = {};", "    if (s.pick2 === null) { const all = s.envs; s.envs = all.filter(x => !x.approved); s.pick2 = s.envs.length ? botPick(s) : -1; s.envs = all; const e2 = all.find(x => x.id === s.pick2); if (e2) { e2.approved = true; e2.resolved = e2.cards.map(c => (c.v === 'V' ? (rand(s) < 0.5 ? 2 : -2) : c.v)); const a2 = total(e2.resolved, e2.cards); s.profit += a2; if (!e2.autopilot) s.P[e2.author].approved.push({ r: s.r, stamp: e2.stamp, actual: a2 }); s.ledger.push({ r: s.r, id: e2.id, subject: e2.subject, author: e2.author, ceo: s.ceo, actual: a2, stamp: e2.stamp, autopilot: !!e2.autopilot }); } }\n    s.phase = 'reveal'; s.wvotes = {};"],
+    ['core.js', 'if (e.id === s.pick) {', 'if (e.id === s.pick || e.id === s.pick2) {']],
 };
 function load(names) {
   const dir = path.join(OUT, names.join('+') || 'base'); fs.mkdirSync(dir, { recursive: true });
