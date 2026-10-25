@@ -128,44 +128,55 @@ def overcooked_shift():
   return s, True, None
 
 
+def minorise(i, pitch):
+  # Eb6 bars go minor: G -> Gb, Gb -> F keeps the grace-note shape
+  if HARM[bar(i)][0] != 'Eb6': return pitch
+  return pitch - 1 if pitch % 12 in (6, 7) else pitch
+
+
 def overtime():
-  s = Song(184, 16, swing=0.54, seed=11)
-  s.track('bass', 0, 33, vol=112, pan=62, rev=18)
-  s.track('pizz', 1, 45, vol=98, pan=36, rev=40)
-  s.track('trem', 2, 44, vol=92, pan=84, rev=60)
-  s.track('brass', 3, 61, vol=98, pan=60, rev=45)
-  s.track('timp', 4, 47, vol=100, pan=64, rev=50)
-  s.track('drums', 9, 0, vol=100, rev=25)
+  # Water Cooler after hours: minor, quicker, a clock ticking under it
+  s = Song(172, 16, swing=0.62, seed=11)
+  s.track('bass', 0, 32, vol=112, pan=60, rev=22)
+  s.track('piano', 1, 0, vol=76, pan=46, rev=40)
+  s.track('trumpet', 2, 59, vol=98, pan=78, rev=55)
+  s.track('vibes', 3, 11, vol=80, pan=52, rev=60)
+  s.track('trem', 4, 44, vol=58, pan=84, rev=70)
+  s.track('drums', 9, 32, vol=96, rev=30)
+  m = lambda c: {'Eb6': 'Ebm', 'E6': 'Em'}.get(c, c)
   for i in range(16):
     t = i * 4
     for k, p in enumerate(BASS[bar(i)]):
-      s.note('bass', t + k, .8, p, 102 if k % 2 == 0 else 90)
-    r = BASS[bar(i)][0] + 24
-    for e, d in enumerate([0, 0, 3, 3, 2, 2, 1, 1]):
-      s.note('pizz', t + e / 2, .3, r + d, 84 if e % 2 == 0 else 70)
-    s.chord('trem', t, 3.95, VOICE[chord_at(i, 0, True)], 80)
-    s.note('timp', t, 1, BASS[bar(i)][0], 92)
-    tick = range(8) if i >= 8 else range(0, 8, 2)
-    for e in tick:
-      s.note('drums', t + e / 2, .1, WBH if e % 4 == 0 else WBL, 92 if e % 2 == 0 else 62)
-    for b in (range(4) if i >= 8 else (0, 2)):
-      s.note('drums', t + b, .2, KICK, 96)
+      s.note('bass', t + k, .86, p, 98 if k % 2 == 0 else 84)
+    if i % 2 == 1:
+      s.note('bass', t + 3.5, .3, BASS[bar(i + 1)][0], 52)
+    if i % 2 == 0:
+      for b, d in ((0, .5), (1.5, .4)):
+        s.chord('piano', t + b, d, VOICE[m(chord_at(i, b))], 60)
+    else:
+      s.chord('piano', t + 2.5, .8, VOICE[m(chord_at(i, 2))], 62)
+    for b in (0, 1, 1.5, 2, 3, 3.5):
+      s.note('drums', t + b, .2, RIDE, 70 if b % 1 == 0 else 50)
+    for b in (1, 3):
+      s.note('drums', t + b, .2, PHH, 66)
+    for b in range(4):
+      s.note('drums', t + b, .2, KICK, 36)
+      s.note('drums', t + b, .1, WBH if b % 2 == 0 else WBL, 44 if i < 8 else 54, jit=0)
+    if s.rng.random() < .5:
+      s.note('drums', t + s.rng.choice([1.5, 2.5, 3.5]), .2, SNARE, 40)
     if i >= 8:
-      for b in (1, 3): s.note('drums', t + b, .2, SNARE, 96)
-      for e in range(8): s.note('drums', t + e / 2, .1, CHH, 58)
+      s.chord('trem', t, 3.95, [x + 12 for x in VOICE[m(chord_at(i, 0))]], 60)
+  for i in range(8, 16):
+    s.cc('trem', i * 4, 11, 70 + 7 * (i - 8))
+  for i in (7, 15):
+    for b in (2, 2 + 1/3, 2 + 2/3, 3, 3.5):
+      s.note('drums', i * 4 + b, .2, SNARE, 62, jit=0)
+  s.note('drums', 32, .5, CRASH, 60)
   for i in range(16):
-    lo, hi = (60, 108) if i < 8 else (84, 127)
-    s.cc('trem', i * 4, 11, lo + (hi - lo) * (i % 8) / 7)
-  hit = lambda b, c, d=.3, v=104: s.chord('brass', b, d, [x + 12 for x in VOICE[c]], v)
-  for o in (0, 32):
-    hit(o, 'Ebm'); hit(o + 14.5, 'Em'); hit(o + 16, 'Abm'); hit(o + 20, 'Bbalt'); hit(o + 22, 'E9')
-  for k, p in enumerate([78, 77, 76, 75]):
-    s.note('brass', 28 + k, .5, p, 108)
-  for k, p in enumerate([70, 71, 72, 73]):
-    s.note('brass', 48 + k * 4, 3.9, p, 84 + k * 6)
-  for n in range(8):
-    s.note('drums', 62 + n / 4, .1, SNARE, 70 + n * 7, jit=0)
-  s.note('drums', 32, .5, CRASH, 96)
+    tr = 'trumpet' if i < 8 else 'vibes'
+    for b, d, p in MEL[bar(i)]:
+      s.note(tr, i * 4 + b, d * .9, minorise(i, p), 90)
+      if i >= 8: s.note('trumpet', i * 4 + b, d * .6, minorise(i, p) - 12, 62)
   return s, True, None
 
 
@@ -238,5 +249,6 @@ CUES = {
   '03-overcooked-shift': overcooked_shift,
   '04-q5-overtime': overtime,
   '05-hold-music': hold_music,
+  '05-hold-music-clean': lambda: hold_music()[:2] + (None,),
   '06-stripe-wipe': stripe_wipe,
 }
