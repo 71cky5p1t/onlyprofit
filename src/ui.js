@@ -242,11 +242,11 @@
   const stampMark = k => `<span class="env-stamp ${k}">${STAMP[k]}</span>`;
   const key = (a, label, on) => `<button class="btn primary wide" data-a="${a}" ${on === false ? 'disabled' : ''}>${label}</button>`;
   const coins = n => '<i class="coin"></i>'.repeat(n);
-  function inhSlip(inh) {
-    if (inh.kind === 'legacy') return slip('Legacy policy');
-    if (inh.kind === 'cleanup') return slip(`Leftovers · <b>${inh.author === ME ? 'yours' : esc(nm(inh.author))}</b>`);
-    if (inh.kind === 'autopilot') return slip('Autopilot');
-    return slip(`From <b>${inh.author === ME ? 'yourself' : esc(nm(inh.author))}</b>${stampMark(inh.stamp)}`);
+  function inhSource(inh) {
+    if (inh.kind === 'legacy') return 'Legacy';
+    if (inh.kind === 'cleanup') return `Leftovers <b>${inh.author === ME ? 'yours' : esc(nm(inh.author))}</b>`;
+    if (inh.kind === 'autopilot') return 'Autopilot';
+    return `From <b>${inh.author === ME ? 'yourself' : esc(nm(inh.author))}</b>${stampMark(inh.stamp)}`;
   }
   // work has two timed pages: the cards (strategy), then dressing the envelope (the fun bit)
   const TIME = { cards: 45, dress: 20 };
@@ -313,10 +313,11 @@
     const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
     ui.deal = false;
     const purse = `<span class="purse" role="img" aria-label="${left} of 3 tokens left">${coins(left)}${'<i class="coin spent"></i>'.repeat(3 - left)}</span>`;
-    const tray = `<div class="tray">${inhSlip(inh)}
-        <span class="worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
-        <button class="shred" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 tokens">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="tag">${coins(2)}</span></button></div>`;
-    const stamps = `<div class="bar3" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
+    // one strip of adding-machine tape between the policy and the hand: where it came from, what it's worth, re-deal
+    const tray = `<div class="tape"><span class="t-src">${inhSource(inh)}</span>
+        <span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
+        <button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 tokens">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="t-cost">${coins(2)}</span></button></div>`;
+    const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}" style="--wait:${wait}s"><div class="policy">${env}</div>${tray}<div class="fan">${hand}</div></div>${stamps}`;
     return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: key('finalise', 'Finalise') });
   }
@@ -420,9 +421,9 @@
   }
 
   // ---------- clocking in: type a name, trace it one letter at a time, get a name badge ----------
-  // A letter passes when the ink covers at least half of it and no more than 30% of the ink spills outside.
-  // Each letter has a stroke budget; run out without passing and that letter starts again.
-  const TRACE = { size: 520, brush: 58, cover: .5, spill: .3, part: .1, partCover: .4, dwell: 1800 };
+  // A letter passes as soon as every part of it is at least half inked and no more than 30% of the ink spills outside,
+  // however many strokes that took. The stroke budget only decides when a failed letter starts again.
+  const TRACE = { size: 520, brush: 58, spill: .3, part: .1, partCover: .4, dwell: 1800 };
   const maxStrokes = ch => ('IJLOCSUVZ017'.includes(ch) ? 3 : 'MWEKBRQ#'.includes(ch) ? 5 : 4);
   let naming = null;
   const nameLetters = t => t.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
@@ -485,7 +486,7 @@
       }
       const area = ((bx1 - bx0) / 3) * ((by1 - by0) / 3) / 4;
       const parts = cl.every((v, q) => v < area * TRACE.part || cc[q] / v >= TRACE.partCover);
-      const pass = L && parts && cov / L >= TRACE.cover && out / Math.max(1, inkN) <= TRACE.spill;
+      const pass = L && parts && out / Math.max(1, inkN) <= TRACE.spill;
       if (pass) {
         // looks right: wait for the pen to stay lifted before moving on, in case they're still going
         pad.classList.add('ok');
