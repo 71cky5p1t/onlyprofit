@@ -5,7 +5,7 @@
 .bar-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 10px 9px }
 .plate { margin: 0; font: 800 12px/1 var(--f-body); letter-spacing: .16em; text-transform: uppercase; color: #E9C77B; padding: 8px 12px 7px; border-radius: 3px;
   background: linear-gradient(#2a2925, #0f0f0e); border: 1px solid #000; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 0 0 2px rgba(233,199,123,.2); text-shadow: 0 -1px 0 rgba(0,0,0,.6) }
-.desk-body { padding: 0 4px 18px; display: grid; gap: 16px }
+.desk-body { padding: 0 4px 18px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px }
 .desk-foot { position: sticky; bottom: 0; z-index: 5; padding: 10px; border-radius: 4px 4px 10px 10px; background: linear-gradient(#2a2b27, #171816); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 -10px 18px -12px rgba(0,0,0,.8) }
 .desk-foot .btn.back { border-color: rgba(241,233,212,.25); color: var(--on-table) }
 .desk .label { color: var(--on-table-2) }
@@ -33,7 +33,7 @@
 .bar3 .s-Rec[aria-pressed="true"] { color: var(--good) } .bar3 .s-Risky[aria-pressed="true"] { color: #B4561C } .bar3 .s-Not[aria-pressed="true"] { color: var(--red) }
 .bar3.small button { font-size: 10px; padding: 8px 3px; letter-spacing: .03em }
 .bar3.two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 10px }
-.bar3 .b-ratify[aria-pressed="true"] { color: var(--good) } .bar3 .b-overrule[aria-pressed="true"] { color: var(--red) }
+.bar3 .b-ratify[aria-pressed="true"] { color: var(--good) } .bar3 .b-open[aria-pressed="true"] { color: var(--red) }
 .memo { display: grid; gap: 8px }
 .lie { display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
 .drop { position: relative; display: block }

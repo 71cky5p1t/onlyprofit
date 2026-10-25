@@ -9,17 +9,17 @@
 
 /* TV: pages lie on the felt, each with its paperwork clipped underneath */
 .pages { display: flex; flex-wrap: wrap; gap: 30px 26px; justify-content: center; padding: 10px 0 6px }
-.pg { display: grid; justify-items: center; align-content: start; gap: 12px; width: 212px; border: 0; background: none; padding: 0; color: inherit; text-align: left; font: inherit }
-.pg .cp-w { --k: .74; transition: transform .25s var(--bounce) }
+.pg { display: grid; justify-items: center; align-content: start; gap: 12px; width: 186px; border: 0; background: none; padding: 0; color: inherit; text-align: left; font: inherit }
+.pg .cp-w { --k: .64; transition: transform .25s var(--bounce) }
 .pg .cp-w > .cp { box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 16px 24px -14px rgba(0,0,0,.8) }
 button.pg { cursor: pointer } button.pg:hover .cp-w { transform: translateY(-4px) rotate(var(--t)) }
 .pg.sel .cp-w { transform: translateY(-6px) rotate(calc(var(--t) - 1deg)); outline: 3px solid var(--gold); outline-offset: 4px }
-.pg.faded .cp-w { opacity: .45; filter: saturate(.5) }
+.pg.faded .cp-w { filter: grayscale(.7) brightness(.62) }
 .pg-under { display: grid; gap: 6px; justify-items: center; width: 100%; min-width: 0 }
 .pg-from { font: 700 12px/1.2 var(--f-body); color: var(--on-table-2) } .pg-from b { color: var(--on-table) }
 .pg-tags { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center }
 /* a face-down page waiting on the felt */
-.placeholder { width: 207px; height: 293px; border: 2px dashed var(--table-rule); border-radius: 3px; display: grid; place-items: center; color: var(--on-table-2); font: 700 13px/1.4 var(--f-body); text-align: center; padding: 12px; box-sizing: border-box }
+.placeholder { width: 179px; height: 253px; border: 2px dashed var(--table-rule); border-radius: 3px; display: grid; place-items: center; color: var(--on-table-2); font: 700 13px/1.4 var(--f-body); text-align: center; padding: 12px; box-sizing: border-box }
 .placeholder.sealed { border: 0; color: transparent; position: relative; background: var(--mark) center / 30% no-repeat, radial-gradient(circle at 50% 50%, var(--brand) 0 34px, transparent 35px), repeating-linear-gradient(45deg, rgba(255,255,255,.12) 0 4px, transparent 4px 9px), var(--brand);
   box-shadow: inset 0 0 0 6px var(--stock), inset 0 0 0 7px rgba(0,0,0,.2), 3px 3px 0 -1px #EAE3D2, 0 16px 24px -14px rgba(0,0,0,.8); transform: rotate(-1deg) }
 .placeholder.sealed:nth-child(even) { transform: rotate(1.2deg) }

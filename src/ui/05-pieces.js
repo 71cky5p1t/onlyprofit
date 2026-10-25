@@ -104,15 +104,15 @@
       const cells = S.P.map((p, i) => i < sealed ? '<div class="placeholder sealed">Handed in</div>' : `<div class="placeholder">${mine() && S.work[ME] && i === sealed ? 'Your desk is open' : 'Working…'}</div>`).join('');
       return `<section><div class="section-head"><h2>Proposals</h2><span class="label">${sealed} of ${S.n} handed in</span></div><div class="pages">${cells}</div></section>`;
     }
-    if (!['pitch', 'decide', 'board', 'reveal', 'review'].includes(ph)) return '';
-    const click = ph === 'pitch' && mine() ? 'sel' : ph === 'decide' && isCEO() ? 'sel' : null;
+    if (!['decide', 'board', 'reveal', 'review'].includes(ph)) return '';
+    const click = ph === 'decide' && isCEO() ? 'sel' : null;
     const envs = S.envs.slice().sort((a, b) => a.id.localeCompare(b.id));
     const animKey = `${S.r}|${ph}`, anim = ui.envAnim !== animKey && !still();
     ui.envAnim = animKey;
     const motion = e => !anim ? '' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
-    const hint = ph === 'pitch' ? 'Shuffled. No authors, no departments.' : ph === 'decide' ? (isCEO() ? 'You are CEO. Nominate one.' : 'Awaiting the CEO') : ph === 'board' ? `The Board is voting on ${icon(S.nominee)}` : 'Approved policy unmasked';
+    const hint = ph === 'decide' ? (isCEO() ? 'You are CEO. Nominate one.' : 'Awaiting the CEO') : ph === 'board' ? `The Board is voting on ${icon(S.nominee)}` : 'Approved policy unmasked';
     return `<section><div class="section-head"><h2>Proposals on the table</h2><span class="label">${hint}</span></div>
-      <div class="pages">${envs.map(e => pageHTML(e, { motion: motion(e), click: click && !(ph === 'pitch' && e.autopilot) ? click : null, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
+      <div class="pages">${envs.map(e => pageHTML(e, { motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
   function exitHTML() {
     const rounds = S.history.map(h => {

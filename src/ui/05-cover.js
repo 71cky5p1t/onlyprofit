@@ -10,7 +10,7 @@
     overhead: { name: 'Overhead', font: 'grotesk', align: 'left', art: 'bulb' },
     certificate: { name: 'Certificate', font: 'serif', align: 'center', art: 'planet' }};
   const FONTS = { grotesk: 'Grotesk', typewriter: 'Typewriter', comic: 'Comic', serif: 'Serif', poster: 'Poster' };
-  const FW = { poster: .5, grotesk: .6, typewriter: .62, comic: .56, serif: .6 };
+  const FW = { poster: .58, grotesk: .6, typewriter: .62, comic: .56, serif: .6 };
   const hash = t => { let h = 7; for (const ch of String(t)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
   function lookOf(e) {
     const st = e.style || {}, tpl = TPL[st.tpl] ? st.tpl : 'memo', d = TPL[tpl];
@@ -28,7 +28,7 @@
     let cut = 0, run = 0;
     words.forEach((w, k) => { if (run < half) { run += w.length + 1; cut = k + 1; } });
     const lines = words.length > 1 ? [words.slice(0, cut).join(' '), words.slice(cut).join(' ')].filter(Boolean) : [text];
-    const W = FW[font], fs = Math.max(13, Math.min(32, 250 / (W * Math.max(...lines.map(l => l.length)))));
+    const W = FW[font], fs = Math.max(12, Math.min(32, 236 / (W * Math.max(...lines.map(l => l.length)))));
     let n = 0;
     const out = lines.flatMap((line, li) => {
       const R = 210, cy = 236 + li * (fs + 6) + (lines.length === 1 ? 24 : 0), step = (fs * W) / R, start = -((line.length - 1) * step) / 2;

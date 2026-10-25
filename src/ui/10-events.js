@@ -30,7 +30,6 @@
       case 'claim': draft.claim.kind = d.k; render(); break;
       case 'seal': seal(); break;
       case 'sel': ui.sel = d.id; render(); break;
-      case 'audit': dispatch({ type: 'auditVote', target: ui.sel }); break;
       case 'approve': {
         const id = ui.sel, el = document.querySelector(`.desk .mini[data-id="${id}"]`);
         if (!el || still()) { dispatch({ type: 'approve', id }); break; }

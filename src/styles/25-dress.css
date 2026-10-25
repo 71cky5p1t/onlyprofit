@@ -1,5 +1,5 @@
 /* ---------- the cover page on the phone: templates, then dress it ---------- */
-.tpls { display: grid; grid-template-columns: repeat(3, 106px); justify-content: center; gap: 22px 14px; padding: 14px 0 6px }
+.tpls { display: grid; grid-template-columns: repeat(3, 98px); justify-content: center; gap: 18px 12px; padding: 14px 0 6px }
 .tpl { border: 0; padding: 0; background: none; cursor: pointer; transition: transform .2s var(--bounce) }
 .tpl .cp-w::before, .tpl .cp-w::after, .mini .cp-w::before, .mini .cp-w::after { display: none }
 .tpl .cp, .mini .cp { box-shadow: 0 10px 16px -10px rgba(0,0,0,.7) }
@@ -21,7 +21,7 @@
 .chip svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round }
 .chip.f-grotesk { font-weight: 800 }
 /* clip-art wheel: swipe, the one in the frame is yours */
-.wheel { position: relative; margin-inline: -16px; background: var(--stock); box-shadow: 0 8px 14px -10px rgba(0,0,0,.6), inset 0 2px 4px rgba(0,0,0,.18) }
+.wheel { position: relative; min-width: 0; margin-inline: -4px; background: var(--stock); box-shadow: 0 8px 14px -10px rgba(0,0,0,.6), inset 0 2px 4px rgba(0,0,0,.18) }
 .wheel-in { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding: 10px calc(50% - 30px); scrollbar-width: none;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent); mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent) }
 .wheel-in::-webkit-scrollbar { display: none }
@@ -29,10 +29,10 @@
 .px-opt .px { width: 36px; height: 36px } .px-opt[aria-selected="true"] { transform: scale(1.12); opacity: 1 }
 .wheel-frame { position: absolute; left: 50%; top: 5px; bottom: 5px; width: 60px; margin-left: -30px; border: 3px solid var(--ink); border-radius: 4px; pointer-events: none }
 /* proposals to pick from on the phone */
-.minis { display: grid; grid-template-columns: repeat(3, 106px); justify-content: center; gap: 34px 14px; padding-top: 30px }
+.minis { display: grid; grid-template-columns: repeat(3, 98px); justify-content: center; gap: 34px 12px; padding-top: 30px }
 .mini { position: relative; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 2px; transition: transform .2s var(--bounce) }
 .mini[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--gold), 0 18px 26px -12px rgba(0,0,0,.75) }
-.mini.none { width: 106px; height: 150px }
+.mini.none { width: 98px; height: 139px }
 .mini .peek { z-index: 0 } .mini .cp-w { z-index: 1 }
 .board-nom { display: grid; justify-items: center; gap: 12px; padding: 4px 0 2px }
 .desk .line { font-size: 14px; margin-bottom: 4px }

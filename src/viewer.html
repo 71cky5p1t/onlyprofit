@@ -22,7 +22,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .brands button i { width: 14px; height: 14px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35) }
 .brands button[aria-pressed="true"] { background: var(--paper); color: var(--ink); border-color: var(--paper) }
 .brands.sets { width: auto; margin-left: auto } .sets button i { border-radius: 2px; width: 10px; height: 14px; background: var(--stock, #F1E9D4) }
-.sets button i.colour { background: linear-gradient(90deg, #4A6BB0 0 33%, #C29433 33% 66%, #8A6A9C 66%) ; width: 18px }
+.sets button i.colour { background: linear-gradient(90deg, #3F63B8 0 33%, #C9A227 33% 66%, #8A5FA8 66%); width: 18px }
 .brands button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px }
 .brand { display: flex; align-items: center; gap: 12px }
 .seal { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, #8E160F); color: rgba(255,255,255,.82); font: 900 14px/1 var(--f-body); letter-spacing: -.04em; box-shadow: 0 2px 6px rgba(0,0,0,.5) }
@@ -78,11 +78,9 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
 </div>
 
 <script type="application/json" id="proto">/*PROTO*/</script>
-<script type="application/json" id="kitcss">/*KITCSS*/</script>
 <script>
 (() => {
   const PROTO = JSON.parse(document.getElementById('proto').textContent);
-  const KITCSS = JSON.parse(document.getElementById('kitcss').textContent);
   const SEED = 5, PLAYERS = 6;
   // The TV shows the shared board; the phone shows only your own desk.
   const TV_CSS = '.desk{display:none!important}.layout{grid-template-columns:minmax(0,1fr)!important}';
@@ -92,8 +90,8 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     { id: 'clockin', q: 'Q0', name: 'Clocking in', go: { ph: 'naming' }, only: 'phone' },
     { id: 'onboarding', q: 'Q0', name: 'Onboarding', go: { ph: 'brief' } },
     { id: 'work', q: 'Q1', name: 'Work', go: { ph: 'work', r: 1 } },
-    { id: 'dress', q: 'Q1', name: 'Dress it up', go: { ph: 'work', r: 1, page: 2 }, only: 'phone' },
-    { id: 'pitch', q: 'Q1', name: 'Pitch + audit', go: { ph: 'pitch', r: 1 } },
+    { id: 'templates', q: 'Q1', name: 'Cover page', go: { ph: 'work', r: 1, page: 2 }, only: 'phone' },
+    { id: 'tweak', q: 'Q1', name: 'Dress it up', go: { ph: 'work', r: 1, page: 3 }, only: 'phone' },
     { id: 'decide', q: 'Q1', name: 'Decide', go: { ph: 'decide', r: 1 } },
     { id: 'board', q: 'Q2', name: 'Board vote', go: { ph: 'board' } },
     { id: 'reveal', q: 'Q1', name: 'Reveal', go: { ph: 'reveal', r: 1 } },
@@ -104,11 +102,11 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
   ];
   const BRANDS = [
     { id: 'op', name: 'Only Profit', mono: 'OP', color: '#D9261C', hi: '#EF4A37', lo: '#8E160F', ink: '#fff', mark: '<path class="s" d="M5 39 17 26l8 8L39 16" style="stroke-width:5"/><path d="M30 11h14v14z"/>' },
-    { id: 'granny', name: 'Family Granny Dating', mono: 'FG', color: '#9B7BB8', hi: '#BBA0D4', lo: '#5E4478', ink: '#fff', mark: '<circle class="s" cx="13" cy="27" r="8"/><circle class="s" cx="35" cy="27" r="8"/><path class="s" d="M21 26c2-3 4-3 6 0M5 25 2 18M43 25l3-7"/>' },
-    { id: 'clown', name: 'Ultra Clown Childcare', mono: 'UC', color: '#E8B81E', hi: '#F7D560', lo: '#9A7406', ink: '#1a1a1a', mark: '<circle cx="9" cy="22" r="6"/><circle cx="39" cy="22" r="6"/><path fill-rule="evenodd" d="M11 25a13 13 0 1 0 26 0a13 13 0 1 0-26 0zM21 26a3 3 0 1 0 6 0a3 3 0 1 0-6 0z"/><path d="M18 13 24 1l6 12z"/>' },
-    { id: 'widow', name: 'Eternal Widow', mono: 'EW', color: '#4A3E60', hi: '#6E5F8A', lo: '#211A2D', ink: '#fff', mark: '<path fill-rule="evenodd" d="M24 3c7 0 10 6 10 12v14H14V15c0-6 3-12 10-12zM20 15a4 4 0 1 0 8 0a4 4 0 1 0-8 0z"/><path d="M8 45v-9a10 10 0 0 1 10-10h12a10 10 0 0 1 10 10v9z"/>' },
-    { id: 'kidney', name: 'Executive Kidney Destruction', mono: 'EK', color: '#2F5D8A', hi: '#4F7FB0', lo: '#18344F', ink: '#fff', mark: '<path d="M27 5c9 0 15 8 15 19s-6 19-15 19c-8 0-11-4-11-8 0-5 5-6 5-11s-5-6-5-11c0-4 3-8 11-8z"/><path d="M14 20c-4 1-8 4-8 9" class="s" style="stroke-width:3"/>' },
-    { id: 'stepdad', name: 'Compassionate Stepdad Childcare', mono: 'CS', color: '#C2793A', hi: '#DC9C63', lo: '#7A4519', ink: '#fff', mark: '<circle cx="15" cy="10" r="5.5"/><path d="M6 38V26a9 9 0 0 1 18 0v12z"/><path d="M26 45v-8h7v-8h7v-8h6v24z"/>' }];
+    { id: 'granny', name: 'Family Granny Dating', mono: 'FG', color: '#C9577A', hi: '#E07D9C', lo: '#82304B', ink: '#fff', mark: '<circle class="s" cx="13" cy="27" r="8"/><circle class="s" cx="35" cy="27" r="8"/><path class="s" d="M21 26c2-3 4-3 6 0M5 25 2 18M43 25l3-7"/>' },
+    { id: 'clown', name: 'Ultra Clown Childcare', mono: 'UC', color: '#E8641E', hi: '#F68A4C', lo: '#9A3C0B', ink: '#fff', mark: '<circle cx="9" cy="22" r="6"/><circle cx="39" cy="22" r="6"/><path fill-rule="evenodd" d="M11 25a13 13 0 1 0 26 0a13 13 0 1 0-26 0zM21 26a3 3 0 1 0 6 0a3 3 0 1 0-6 0z"/><path d="M18 13 24 1l6 12z"/>' },
+    { id: 'widow', name: 'Eternal Widow', mono: 'EW', color: '#5E1A2B', hi: '#84324A', lo: '#330B16', ink: '#fff', mark: '<path fill-rule="evenodd" d="M24 3c7 0 10 6 10 12v14H14V15c0-6 3-12 10-12zM20 15a4 4 0 1 0 8 0a4 4 0 1 0-8 0z"/><path d="M8 45v-9a10 10 0 0 1 10-10h12a10 10 0 0 1 10 10v9z"/>' },
+    { id: 'kidney', name: 'Executive Kidney Destruction', mono: 'EK', color: '#13807A', hi: '#3AA39C', lo: '#08504C', ink: '#fff', mark: '<path d="M27 5c9 0 15 8 15 19s-6 19-15 19c-8 0-11-4-11-8 0-5 5-6 5-11s-5-6-5-11c0-4 3-8 11-8z"/><path d="M14 20c-4 1-8 4-8 9" class="s" style="stroke-width:3"/>' },
+    { id: 'stepdad', name: 'Compassionate Stepdad Childcare', mono: 'CS', color: '#7A5232', hi: '#9C7252', lo: '#4A2F19', ink: '#fff', mark: '<circle cx="15" cy="10" r="5.5"/><path d="M6 38V26a9 9 0 0 1 18 0v12z"/><path d="M26 45v-8h7v-8h7v-8h6v24z"/>' }];
   let brandId = 'granny', cardSet = 'paper';
   try { cardSet = localStorage.getItem('op-viewer-cards') || cardSet; } catch (e) {}
   const $cards = document.getElementById('cardsets');
@@ -125,14 +123,11 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
   const $brands = document.getElementById('brands');
   const drawBrands = () => { $brands.innerHTML = BRANDS.map(b => `<button data-brand="${b.id}" aria-pressed="${b.id === brandId}" style="--c:${b.color}"><i></i>${b.name}</button>`).join(''); };
   drawBrands();
+  // the parts sheet is the game itself, printing its own pieces
   function kitBrand() {
-    const d = document.getElementById('kit').contentDocument; if (!d || !d.documentElement) return;
-    const b = BRANDS.find(x => x.id === brandId), r = d.documentElement.style;
-    r.setProperty('--brand', b.color); r.setProperty('--brand-hi', b.hi); r.setProperty('--brand-lo', b.lo); r.setProperty('--brand-ink', b.ink); r.setProperty('--mono', `"${b.mono}"`);
-    const svg = `<svg class="mk" viewBox="0 0 48 48" aria-hidden="true">${b.mark}</svg>`;
-    const img = `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='${b.ink}'><style>.s{fill:none;stroke:${b.ink};stroke-width:4;stroke-linecap:round;stroke-linejoin:round}</style>${b.mark.replace(/"/g, "'")}</svg>`)}")`;
-    r.setProperty('--mark', img); d.documentElement.dataset.cards = cardSet;
-    d.querySelectorAll('.kmono').forEach(el => { el.innerHTML = svg; });
+    const f = document.getElementById('kit'), w = f.contentWindow;
+    if (!w || !w.__op || !w.__op.look) return;
+    w.__op.look(brandId, cardSet); f.contentDocument.getElementById('app').innerHTML = kitHTML(w.__op);
   }
   $brands.addEventListener('click', ev => {
     const btn = ev.target.closest('[data-brand]'); if (!btn) return;
@@ -171,7 +166,11 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
       const S = w.__op && w.__op.S; if (!S) return;
       if (S.phase === go.ph && (go.r == null || S.r === go.r) && !go.page) return;
       if (S.phase === 'brief') click('[data-a=begin]');
-      else if (S.phase === 'work') { if (click('[data-a=seal]')) { await sleep(20); continue; } if (go.page === 2 && S.r === go.r) { click('[data-a=finalise]'); await sleep(1600); return; } click('[data-a=stamp][data-v=Rec]'); click('[data-a=finalise]'); await sleep(1450); }
+      else if (S.phase === 'work') {
+        if (click('[data-a=seal]')) { await sleep(20); continue; }
+        if (go.page && S.r === go.r) { click('[data-a=finalise]'); await sleep(1500); if (go.page === 3) { click('[data-a=tpl][data-v=wordart]'); await sleep(700); } return; }
+        if (click('[data-a=tpl]')) { await sleep(20); continue; }
+        click('[data-a=stamp][data-v=Rec]'); click('[data-a=finalise]'); await sleep(1300); }
       else if (!click('.desk [data-a=advance]')) { click('.desk [data-a=sel]'); click('.desk .btn.primary'); }
       await sleep(12);
     }
@@ -199,43 +198,45 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     document.querySelectorAll(`.vp[data-id="${b.dataset.replay}"]`).forEach(mount);
   });
 
-  // parts sheet
-  const card = (s, v, cls, word, fx) => {
-    const SU = ['Action', 'Target', 'Modifier'], G = { 2: '++', 1: '+', 0: '0', '-1': '−', '-2': '−−', V: '?' };
-    const tone = v === 'V' ? 'v-v' : v > 0 ? 'pos' : v < 0 ? 'neg' : 'zero';
-    const FS = { null: '×0', x2: '×2', shield: '≥0', flip: '×−1' };
-    const face = `<b class="glyph ${tone}">${G[v]}</b>` + (fx ? `<span class="dymo fx-${fx}"><i class="m0"></i><i class="m1"></i><b>${FS[fx]}</b></span>` : '');
-    return `<div class="card s-${s} ${fx ? 'has-fx' : ''} ${cls}"><div class="hd"><i class="sp"></i>${SU[s]}</div><div class="fx">${face}</div><span class="word">${word}</span></div>`;
-  };
-  const coins = n => '<i class="coin"></i>'.repeat(n);
-  const sw = (name, v) => `<div class="sw"><i style="background:var(${v})"></i><b>${name}</b><span>${v}</span></div>`;
-  const KIT = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&family=Share+Tech+Mono&display=swap"><style>${KITCSS}
-    html,body{min-height:0!important;height:auto!important} body{padding:22px 18px 28px} .kit{display:grid;gap:28px} .kit h4{margin:0 0 12px;font:800 11px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--on-table-2)}
-    .row{display:flex;flex-wrap:wrap;gap:16px 14px;align-items:flex-start} .play{margin:0;padding:18px 14px;background:transparent;box-shadow:none;overflow:visible}
-    .note{font:600 12px/1.3 var(--f-body);color:var(--on-table-2);max-width:12ch;margin-top:6px}
+  const KIT_CSS = `html,body{min-height:0!important;height:auto!important} body{padding:22px 18px 28px} .kit{display:grid;gap:28px} .kit h4{margin:0 0 12px;font:800 11px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--on-table-2)}
+    .row{display:flex;flex-wrap:wrap;gap:22px 16px;align-items:flex-start} .play{margin:0;padding:18px 14px;background:transparent;box-shadow:none;overflow:visible}
+    .note{font:600 12px/1.3 var(--f-body);color:var(--on-table-2);max-width:14ch;margin-top:6px;text-align:center}
     .sw{display:grid;grid-template-columns:34px auto;column-gap:10px;align-items:center;min-width:150px} .sw i{grid-row:span 2;width:34px;height:34px;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.2),0 2px 4px rgba(0,0,0,.4)} .sw b{font:800 13px/1.1 var(--f-body)} .sw span{font:400 11px/1.2 var(--f-seg);color:var(--on-table-2)}
     .type{display:grid;gap:10px;background:var(--stock);color:var(--ink);border-radius:4px;padding:18px 20px;box-shadow:var(--lift)} .type .a{font:900 34px/1 var(--f-body);letter-spacing:-.03em} .type .b{font:400 15px/1.5 var(--f-body);max-width:60ch} .type .c{font:400 30px/1 var(--f-seg);background:var(--lcd);color:var(--lcd-ink);padding:6px 10px;border-radius:4px;width:max-content}
-    .piece{display:grid;justify-items:center;gap:6px} .kback{width:88px;height:124px;border-radius:7px;display:grid;place-items:center;background:radial-gradient(circle,transparent 0 22px,var(--brand) 22.5px 26px,transparent 26.5px),repeating-linear-gradient(45deg,rgba(255,255,255,.12) 0 4px,transparent 4px 9px),var(--brand);box-shadow:inset 0 0 0 5px var(--stock),inset 0 0 0 6px rgba(0,0,0,.2),var(--lift);color:var(--brand-ink);font:900 17px/1 var(--f-body);letter-spacing:-.04em} .kback.r{transform:rotate(6deg)} .kback b{display:grid;place-items:center;width:36px;height:36px} .kback .mk{width:100%;height:100%} .kmono{display:grid;place-items:center;width:100%;height:100%} .logo-mark .kmono .mk{width:58%;height:58%} .slot{animation:none!important} .slot::after{display:none}
-  </style>
-  <div class="kit">
-    <section><h4>Values</h4><div class="play"><div class="row">${card(0, 2, '', 'Liquidate')}${card(1, 1, '', 'Interns')}${card(2, 0, '', 'Quietly')}${card(0, -1, '', 'Rightsize')}${card(1, -2, '', 'Union Relations')}${card(2, 'V', '', 'Allegedly')}</div></div></section>
-    <section><h4>Effect Modifiers</h4><div class="play"><div class="row">${card(2, -1, '', 'With Thoughts and Prayers', 'null')}${card(2, -2, '', 'Retroactively', 'x2')}${card(2, -1, '', "Per Legal's Advice", 'shield')}${card(2, 0, '', 'Without Consultation', 'flip')}</div></div></section>
-    <section><h4>Coins</h4><div class="play"><div class="row" style="align-items:center;gap:26px">
-      <div class="piece"><span class="purse">${coins(3)}</span><span class="note">Full purse</span></div>
-      <div class="piece"><span class="purse">${coins(1)}<i class="coin spent"></i><i class="coin spent"></i></span><span class="note">Two spent</span></div>
-      <div class="piece"><div class="slot">${card(1, 1, '', 'Interns').replace('<div class="hd">', '<span class="tag">' + coins(2) + '</span><div class="hd">')}</div><span class="note">Price to swap in</span></div>
-      <div class="piece"><div class="slot">${card(0, 2, 'shown', 'Liquidate').replace('<div class="hd">', '<i class="eye"></i><span class="coins paid">' + coins(2) + '</span><div class="hd">')}</div><span class="note">Paid, and shown to the table</span></div>
-      <div class="piece"><div class="slot">${card(2, 2, 'broke', 'In Perpetuity').replace('<div class="hd">', '<span class="tag">' + coins(3) + '</span><div class="hd">')}</div><span class="note">Can't afford</span></div>
-    </div></div></section>
-    <section><h4>Brand objects</h4><div class="row" style="align-items:center;gap:22px">
-      <span class="logo-mark" style="width:56px;height:56px;font-size:19px"><span class="kmono">OP</span></span>
-      <div class="kback"><b class="kmono">OP</b></div><div class="kback r"><b class="kmono">OP</b></div>
-      <span class="logo-mark" style="width:40px;height:40px;border-radius:50% 46% 52% 48%;clip-path:polygon(0 0,46% 0,54% 40%,44% 60%,52% 100%,0 100%)"></span></div></section>
-    <section><h4>Colour</h4><div class="row">${sw('Baize', '--baize')}${sw('Card stock', '--stock')}${sw('Ink', '--ink')}${sw('Red tape', '--red')}${sw('Good news', '--good')}${sw('Brass', '--gold')}${sw('Sunset', '--sunset')}${sw('Calculator', '--lcd')}${sw('Manila', '--env-manila')}${sw('Carbon copy', '--env-carbon')}</div></section>
-    <section><h4>Type</h4><div class="type"><div class="a">Restructure the Orphanage</div><div class="b">Schibsted Grotesk carries everything people read. Shareholders are mildly pleased. Bonuses have been deferred.</div><div class="c">+18.0</div></div></section>
-  </div>`;
+    .piece{display:grid;justify-items:center;gap:6px} .slot{animation:none!important;width:96px;height:134px} .slot::after{display:none} .pages .pg{width:212px} .pages .pg .cp-w{--k:.74} .line{max-width:340px}
+    .kback{width:88px;height:124px;border-radius:7px;display:grid;place-items:center;background:var(--mark) center / 40% no-repeat,radial-gradient(circle,transparent 0 22px,var(--brand) 22.5px 26px,transparent 26.5px),repeating-linear-gradient(45deg,rgba(255,255,255,.12) 0 4px,transparent 4px 9px),var(--brand);box-shadow:inset 0 0 0 5px var(--stock),inset 0 0 0 6px rgba(0,0,0,.2),var(--lift)} .kback.r{transform:rotate(6deg)}`;
+  function kitHTML(op) {
+    const C = (s, v, w, fx) => ({ s, v, w, fx });
+    const card = (c, cls, extra) => op.cardHTML(c, cls, extra);
+    const hrs = n => `<i class="hrs">${n}h</i>`, purse = left => `<span class="purse">${[0, 1, 2].map(k => `<i class="slotbox${k >= left ? ' punched' : ''}">${k + 1}</i>`).join('')}</span>`;
+    const sw = (name, v) => `<div class="sw"><i style="background:var(${v})"></i><b>${name}</b><span>${v}</span></div>`;
+    const page = (tpl, subject, stamp, art) => ({ id: '·', subject, stamp, style: { tpl, art }, revealed: [] });
+    const SUBJ = { fax: 'Fwd: Pension Agility — Revised', memo: 'Synergy Alert: Customer Delight for Q3', wordart: 'Action Required: Break Room Monetisation', clipart: 'Low-Hanging Fruit: Bingo Night Synergies',
+      report: 'Circling Back: Morale Recovery (Pilot)', dossier: 'Confidential: Inheritance Matchmaking', overhead: 'Granny Retention Drive', certificate: 'Speed Dating (90+) Going Forward' };
+    const stamps = ['Risky', 'Rec', 'Rec', 'Risky', 'Rec', 'Not', 'Risky', 'Rec'];
+    const pages = Object.keys(SUBJ).map((t, k) => `<div class="pg">${op.coverHTML(page(t, SUBJ[t], stamps[k]), { list: [{ id: '·' }] })}</div>`).join('');
+    const said = { id: '·', revealed: [], audited: true, cards: [C(0, 2, 'Restructure'), C(1, 1, 'Next of Kin'), C(2, -2, 'Retroactively', 'x2')], resolved: [2, 1, -2] };
+    const part = { id: '·', revealed: [0, 2], cards: [C(0, 2, 'Offshore'), C(1, 1, 'the Regional Office'), C(2, 2, 'In Perpetuity')] };
+    return `<style>${KIT_CSS}</style><div class="kit">
+    <section><h4>Values</h4><div class="play"><div class="row">${card(C(0, 2, 'Liquidate'))}${card(C(1, 1, 'Interns'))}${card(C(2, 0, 'Quietly'))}${card(C(0, -1, 'Rightsize'))}${card(C(1, -2, 'Union Relations'))}${card(C(2, 'V', 'Allegedly'))}</div></div></section>
+    <section><h4>Effect Modifiers</h4><div class="play"><div class="row">${card(C(2, -1, 'With Thoughts and Prayers', 'null'))}${card(C(2, -2, 'Retroactively', 'x2'))}${card(C(2, -1, "Per Legal's Advice", 'shield'))}${card(C(2, 0, 'Without Consultation', 'flip'))}</div></div></section>
+    <section><h4>Overtime</h4><div class="play"><div class="row" style="align-items:center;gap:26px">
+      <div class="piece">${purse(3)}<span class="note">Three hours to give</span></div><div class="piece">${purse(1)}<span class="note">Two punched</span></div>
+      <div class="piece"><div class="slot">${card(C(1, 1, 'Interns'), '', `<span class="tag">${hrs(2)}</span>`)}</div><span class="note">Price to swap in</span></div>
+      <div class="piece"><div class="slot">${card(C(0, 2, 'Liquidate'), 'shown', `<span class="paid">${hrs(2)}</span>`)}</div><span class="note">Paid, and shown to the table</span></div>
+      <div class="piece"><div class="slot">${card(C(2, 2, 'In Perpetuity'), 'broke', `<span class="tag">${hrs(3)}</span>`)}</div><span class="note">Can't afford</span></div></div></div></section>
+    <section><h4>Cover pages</h4><div class="pages" style="justify-content:flex-start">${pages}</div></section>
+    <section><h4>The policy, read out</h4><div class="row" style="align-items:center">${op.lineHTML(part)}${op.lineHTML(said, { all: true })}</div></section>
+    <section><h4>Clip-art (${op.ART.length})</h4><div class="row" style="gap:10px">${op.ART.map(id => `<span style="display:grid;width:40px;height:40px;padding:4px;background:var(--stock);border-radius:2px">${op.artSVG(id)}</span>`).join('')}</div></section>
+    <section><h4>Brand objects</h4><div class="row" style="align-items:center;gap:22px"><span class="logo-mark" style="width:56px;height:56px">${op.brandMark()}</span><div class="kback"></div><div class="kback r"></div><div class="placeholder sealed" style="width:146px;height:206px"></div></div></section>
+    <section><h4>Colour</h4><div class="row">${sw('Baize', '--baize')}${sw('Card stock', '--stock')}${sw('Ink', '--ink')}${sw('Red tape', '--red')}${sw('Good news', '--good')}${sw('Brass', '--gold')}${sw('Action', '--suit-0')}${sw('Target', '--suit-1')}${sw('Modifier', '--suit-2')}${sw('Company', '--brand')}</div></section>
+    <section><h4>Type</h4><div class="type"><div class="a">Restructure the Orphanage</div><div class="b">Schibsted Grotesk carries everything people read. Shareholders are mildly pleased. Bonuses have been deferred.</div><div class="c">+18.0</div></div></section></div>`;
+  }
   const kit = document.getElementById('kit');
-  kit.addEventListener('load', () => { const fit = () => { kit.style.height = kit.contentDocument.body.offsetHeight + 'px'; }; fit(); setTimeout(fit, 600); kitBrand(); new ResizeObserver(fit).observe(kit.contentDocument.body); });
-  kit.srcdoc = KIT;
+  kit.addEventListener('load', () => {
+    kitBrand();
+    const fit = () => { kit.style.height = kit.contentDocument.body.offsetHeight + 'px'; }; fit(); setTimeout(fit, 800); new ResizeObserver(fit).observe(kit.contentDocument.body);
+  });
+  kit.srcdoc = `<script>window.__opFreeze = true; window.__opBrand = ${JSON.stringify(brandId)}; window.__opCards = ${JSON.stringify(cardSet)}<\/script>` + PROTO;
 })();
 </script>
