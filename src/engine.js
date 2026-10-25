@@ -35,6 +35,17 @@ const OP = (() => {
     ['(Urgent)', '— Phase II', '— Revised', 'Going Forward', 'for Q3', '(Do Not Forward)', 'v2 FINAL', '— A Win-Win', 'Effective Immediately', '(Pilot)', '— Thoughts?', '(Mandatory)'],
   ];
 
+  // Company lexicon: about 1 in 4 Targets, a few Modifiers and some subject lines use the company's own nouns. Names only; values are untouched.
+  const LEX = {
+    op: { t: ['the Shareholders', 'the Bonus Pool', 'the Profit Target', 'the Founders\' Portrait', 'the Golden Parachutes', 'the Boardroom Bar'], m: ['For the Shareholders', 'Before the AGM'], subj: ['Profit Maximisation', 'Shareholder Joy', 'Bonus Pool Refresh'] },
+    granny: { t: ['the Grannies', 'Bingo Night', 'the Mobility Scooters', 'Speed Dating (90+)', 'the Hip Replacements', 'Next of Kin'], m: ['Before the Will Is Read', 'After Bingo', 'With Mild Sedation'], subj: ['Granny Retention Drive', 'Inheritance Matchmaking', 'Bingo Night Synergies'] },
+    clown: { t: ['the Clown Cars', 'the Ball Pit', 'Nap Time', 'the Balloon Animals', 'the Pie Budget', 'Parent Pick-Up'], m: ['Before Nap Time', 'In Full Makeup', 'Without Telling the Parents'], subj: ['Ball Pit Deep Clean', 'Clown Car Capacity Review', 'Big Shoes Policy'] },
+    widow: { t: ['the Widows', 'the Life Insurance', 'the Casserole Fund', 'Grief Counselling', 'the Late Husbands', 'the Wake Catering'], m: ['Before the Funeral', 'In Lieu of Flowers', 'While Still Grieving'], subj: ['Widow Pipeline Growth', 'Grief Monetisation', 'Casserole Logistics'] },
+    kidney: { t: ['the Kidneys', 'the Organ Donors', 'the Ice Baths', 'the Spare Kidney', 'Donor Consent Forms', 'the Bathtub Fleet'], m: ['Under Local Anaesthetic', 'While the Donor Sleeps', 'On Ice'], subj: ['Kidney Throughput Review', 'Organ Velocity', 'Bathtub Expansion'] },
+    stepdad: { t: ['the Stepdads', 'Custody Weekends', 'the Child Support', 'the Dad Jokes', 'the Barbecue', 'the Real Dad'], m: ['Every Second Weekend', 'Without Telling Mum', 'Per the Custody Agreement'], subj: ['Stepdad Onboarding', 'Custody Weekend Synergies', 'Barbecue Compliance'] },
+  };
+  const lexOf = s => LEX[s.brand] || LEX.op;
+
   // ---------- rng (state lives in s.rs) ----------
   function rand(s) {
     let t = (s.rs = (s.rs + 0x6D2B79F5) | 0);
@@ -64,8 +75,12 @@ const OP = (() => {
   // ---------- deck ----------
   function newDeck(s) {
     const piles = SUITS.map((_, su) => {
-      if (su !== 2) { const words = shuffle(s, WORDS[su].concat(WORDS[su])); return shuffle(s, VALUES.map((v, k) => ({ id: `${su}.${k}`, s: su, v, w: words[k] }))); }
-      const plain = WORDS[2].filter(w => !FX.some(f => f[0] === w)), words = shuffle(s, plain.concat(plain, plain));
+      const L = lexOf(s);
+      if (su !== 2) {
+        const own = su === 1 ? L.t : [], words = shuffle(s, shuffle(s, WORDS[su].concat(WORDS[su])).slice(own.length).concat(own));
+        return shuffle(s, VALUES.map((v, k) => ({ id: `${su}.${k}`, s: su, v, w: words[k] })));
+      }
+      const plain = WORDS[2].filter(w => !FX.some(f => f[0] === w)), words = shuffle(s, shuffle(s, plain.concat(plain, plain)).slice(L.m.length).concat(L.m));
       let n = 0;
       return shuffle(s, VALUES.map((v, k) => {
         const f = FX[FX_SLOTS.indexOf(k)];
@@ -102,7 +117,8 @@ const OP = (() => {
     const order = [0, 1, 2].sort((a, b) => ev(prop[b]) - ev(prop[a]));
     return (all ? order : order.filter(su => ev(prop[su]) > 0)).slice(0, Math.max(0, tokens));
   }
-  const randomSubject = s => SUBJ.map(l => pickOne(s, l)).join(' ');
+  const subjLists = s => SUBJ.map((l, i) => (i === 1 ? l.concat(lexOf(s).subj, lexOf(s).subj) : l));
+  const randomSubject = s => subjLists(s).map(l => pickOne(s, l)).join(' ');
   const randomStyle = s => ({ color: pickOne(s, COLORS), trim: pickOne(s, TRIMS) });
 
   // ---------- setup ----------
@@ -110,10 +126,12 @@ const OP = (() => {
     const n = Math.max(4, Math.min(8, opts.players || 4));
     const s = {
       v: 1, rs: (opts.seed >>> 0) || 1, seed: opts.seed >>> 0, n, spectate: !!opts.spectate,
+      brand: LEX[opts.brand] ? opts.brand : 'op',
       loyalTier: opts.loyalTier || 'smart', sabTier: opts.sabTier || 'smart', easy: !!opts.easy,
       target: TARGETS[n] - (opts.easy ? 3 : 0), profit: 0, r: 0, phase: 'brief',
       feed: [], ledger: [], history: [], memos: [], accused: {}, envs: [], left: {}, work: {},
     };
+    s.subj = subjLists(s);
     s.deck = newDeck(s);
     // Headcount Memo
     let x = rand(s), nSab = 0;
@@ -522,6 +540,6 @@ const OP = (() => {
   }
 
   return { PERS_SAY, apply, newGame, workResult, workCost, estimate, evs, ev, total, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
-    SUITS, SUBJ, COLORS, TRIMS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
+    SUITS, SUBJ, LEX, COLORS, TRIMS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
 })();
 if (typeof module !== 'undefined') module.exports = OP;
