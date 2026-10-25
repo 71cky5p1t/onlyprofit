@@ -18,9 +18,10 @@ No dependencies. The page loads its fonts from Google Fonts and works offline wi
 | Path | What it is |
 | --- | --- |
 | `src/engine/` | Pure engine: `core.js` rules and state, `bots.js` bot players, `content.js` words. No DOM, no `Math.random`, no clock. |
-| `src/ui.js` | Browser UI. It renders from engine state and sends every change through `OP.apply`. |
-| `src/head.html` | Page title, fonts and all CSS (design tokens at the top, light and dark). |
-| `build.sh` | Builds `dist/only-profit.html` from the three files above. |
+| `src/ui/*.js` | Browser UI, split by screen (core, brand, desk, clock-in, render, events, drag). Concatenated in order into one scope. |
+| `src/head.html` | Page title and fonts. |
+| `src/styles/*.css` | Styles, in cascade order (tokens in `01-base.css`). |
+| `build.sh` | Builds `dist/only-profit.html` from the files above. |
 | `sim/` | The Python Monte Carlo balance simulations the bots are ported from (`sim2.py` has the final config). |
 | `test/` | Node scripts: `balance.js` plays bot-only games at every table size, and `human-actions.js` drives the human seat through 900 games. |
 

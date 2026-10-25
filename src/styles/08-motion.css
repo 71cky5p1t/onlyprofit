@@ -1,0 +1,17 @@
+/* ---------- stripe wipe between phases ---------- */
+.wipe { position: fixed; inset: 0; z-index: 40; pointer-events: none; display: grid; place-items: center; transform: translateX(-101%);
+  background: linear-gradient(90deg, var(--gold) 0 25%, var(--sunset) 25% 50%, var(--rust) 50% 75%, var(--teak) 75%);
+  animation: wipe 1.25s cubic-bezier(.7,0,.3,1) both }
+.wipe span { display: inline-flex; font: 900 clamp(28px, 6vw, 64px)/1 var(--f-body); letter-spacing: -.03em; border-radius: 4px; overflow: hidden; box-shadow: 0 10px 30px -10px rgba(0,0,0,.5); animation: wtxt 1.25s ease both }
+.wipe b { background: var(--red); color: #fff; padding: .18em .3em }
+.wipe i { font-style: normal; background: var(--stock); color: var(--ink); padding: .18em .35em }
+@keyframes wipe { 0% { transform: translateX(-101%) } 36%, 58% { transform: translateX(0) } 100% { transform: translateX(101%) } }
+@keyframes wtxt { 0%, 26% { opacity: 0; transform: scale(.85) } 38%, 56% { opacity: 1; transform: none } 66%, 100% { opacity: 0 } }
+.deal .card { animation: deal .55s var(--bounce) both }
+@keyframes deal { from { transform: translateY(-40px) rotate(-8deg); opacity: 0 } to { transform: none; opacity: 1 } }
+.deal .card.spare { animation-name: deal-spare }
+@keyframes deal-spare { from { transform: translateY(-40px) rotate(-8deg) scale(.94); opacity: 0 } to { transform: scale(.94); opacity: .82 } }
+@media (prefers-reduced-motion: reduce) {
+  .wipe { display: none } .big-stamp, .deal .card, table.ledger tr.new td { animation: none }
+  button.env:hover, .env.sel { transform: none } .meter-fill { transition: none }
+}

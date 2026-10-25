@@ -17,10 +17,12 @@ body { margin: 0; background: radial-gradient(80% 50% at 30% 0%, var(--felt-hi),
 .wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
 header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; padding-block: 12px 10px; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between; background: linear-gradient(var(--felt) 70%, rgba(40,67,56,0)) }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--felt) }
-.brands { display: flex; flex-wrap: wrap; gap: 6px; width: 100% }
+.brands { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 auto; min-width: 0 }
 .brands button { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--rule); background: rgba(0,0,0,.2); color: var(--paper); border-radius: 16px; padding: 6px 11px 6px 7px; font: 800 12px/1 var(--f-body); cursor: pointer }
 .brands button i { width: 14px; height: 14px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35) }
 .brands button[aria-pressed="true"] { background: var(--paper); color: var(--ink); border-color: var(--paper) }
+.brands.sets { width: auto; margin-left: auto } .sets button i { border-radius: 2px; width: 10px; height: 14px; background: var(--stock, #F1E9D4) }
+.sets button i.colour { background: linear-gradient(90deg, #4A6BB0 0 33%, #C29433 33% 66%, #8A6A9C 66%) ; width: 18px }
 .brands button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px }
 .brand { display: flex; align-items: center; gap: 12px }
 .seal { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, #8E160F); color: rgba(255,255,255,.82); font: 900 14px/1 var(--f-body); letter-spacing: -.04em; box-shadow: 0 2px 6px rgba(0,0,0,.5) }
@@ -70,6 +72,7 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     <div class="brand"><span class="seal" aria-hidden="true">OP</span><div><b>Only Profit</b><small>Every screen · build 0.3</small></div></div>
     <nav class="jump" id="jump" aria-label="Jump to a screen"></nav>
     <div class="brands" id="brands" role="group" aria-label="Company"></div>
+    <div class="brands sets" id="cardsets" role="group" aria-label="Card style"></div>
   </header>
   <main id="main"></main>
 </div>
@@ -100,13 +103,24 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     { id: 'exit', q: 'End', name: 'Exit interview', go: { ph: 'end' }, only: 'tv' },
   ];
   const BRANDS = [
-    { id: 'op', name: 'Only Profit', mono: 'OP', color: '#D9261C', hi: '#EF4A37', lo: '#8E160F', ink: '#fff' },
-    { id: 'granny', name: 'Family Granny Dating', mono: 'FG', color: '#9B7BB8', hi: '#BBA0D4', lo: '#5E4478', ink: '#fff' },
-    { id: 'clown', name: 'Ultra Clown Childcare', mono: 'UC', color: '#E8B81E', hi: '#F7D560', lo: '#9A7406', ink: '#1a1a1a' },
-    { id: 'widow', name: 'Eternal Widow', mono: 'EW', color: '#4A3E60', hi: '#6E5F8A', lo: '#211A2D', ink: '#fff' },
-    { id: 'kidney', name: 'Executive Kidney Destruction', mono: 'EK', color: '#2F5D8A', hi: '#4F7FB0', lo: '#18344F', ink: '#fff' },
-    { id: 'stepdad', name: 'Compassionate Stepdad Childcare', mono: 'CS', color: '#C2793A', hi: '#DC9C63', lo: '#7A4519', ink: '#fff' }];
-  let brandId = 'granny';
+    { id: 'op', name: 'Only Profit', mono: 'OP', color: '#D9261C', hi: '#EF4A37', lo: '#8E160F', ink: '#fff', mark: '<path class="s" d="M5 39 17 26l8 8L39 16" style="stroke-width:5"/><path d="M30 11h14v14z"/>' },
+    { id: 'granny', name: 'Family Granny Dating', mono: 'FG', color: '#9B7BB8', hi: '#BBA0D4', lo: '#5E4478', ink: '#fff', mark: '<circle class="s" cx="13" cy="27" r="8"/><circle class="s" cx="35" cy="27" r="8"/><path class="s" d="M21 26c2-3 4-3 6 0M5 25 2 18M43 25l3-7"/>' },
+    { id: 'clown', name: 'Ultra Clown Childcare', mono: 'UC', color: '#E8B81E', hi: '#F7D560', lo: '#9A7406', ink: '#1a1a1a', mark: '<circle cx="9" cy="22" r="6"/><circle cx="39" cy="22" r="6"/><path fill-rule="evenodd" d="M11 25a13 13 0 1 0 26 0a13 13 0 1 0-26 0zM21 26a3 3 0 1 0 6 0a3 3 0 1 0-6 0z"/><path d="M18 13 24 1l6 12z"/>' },
+    { id: 'widow', name: 'Eternal Widow', mono: 'EW', color: '#4A3E60', hi: '#6E5F8A', lo: '#211A2D', ink: '#fff', mark: '<path fill-rule="evenodd" d="M24 3c7 0 10 6 10 12v14H14V15c0-6 3-12 10-12zM20 15a4 4 0 1 0 8 0a4 4 0 1 0-8 0z"/><path d="M8 45v-9a10 10 0 0 1 10-10h12a10 10 0 0 1 10 10v9z"/>' },
+    { id: 'kidney', name: 'Executive Kidney Destruction', mono: 'EK', color: '#2F5D8A', hi: '#4F7FB0', lo: '#18344F', ink: '#fff', mark: '<path d="M27 5c9 0 15 8 15 19s-6 19-15 19c-8 0-11-4-11-8 0-5 5-6 5-11s-5-6-5-11c0-4 3-8 11-8z"/><path d="M14 20c-4 1-8 4-8 9" class="s" style="stroke-width:3"/>' },
+    { id: 'stepdad', name: 'Compassionate Stepdad Childcare', mono: 'CS', color: '#C2793A', hi: '#DC9C63', lo: '#7A4519', ink: '#fff', mark: '<circle cx="15" cy="10" r="5.5"/><path d="M6 38V26a9 9 0 0 1 18 0v12z"/><path d="M26 45v-8h7v-8h7v-8h6v24z"/>' }];
+  let brandId = 'granny', cardSet = 'paper';
+  try { cardSet = localStorage.getItem('op-viewer-cards') || cardSet; } catch (e) {}
+  const $cards = document.getElementById('cardsets');
+  const drawCards = () => { $cards.innerHTML = [['paper', 'Paper cards'], ['colour', 'Colour cards']].map(([v, l]) => `<button data-cards="${v}" aria-pressed="${v === cardSet}"><i class="${v}"></i>${l}</button>`).join(''); };
+  drawCards();
+  $cards.addEventListener('click', ev => {
+    const btn = ev.target.closest('[data-cards]'); if (!btn) return;
+    cardSet = btn.dataset.cards; drawCards();
+    try { localStorage.setItem('op-viewer-cards', cardSet); } catch (e) {}
+    document.querySelectorAll('.vp iframe').forEach(f => { try { f.contentWindow.__op.cards(cardSet); } catch (e) {} });
+    kitBrand();
+  });
   try { brandId = localStorage.getItem('op-viewer-brand') || brandId; } catch (e) {}
   const $brands = document.getElementById('brands');
   const drawBrands = () => { $brands.innerHTML = BRANDS.map(b => `<button data-brand="${b.id}" aria-pressed="${b.id === brandId}" style="--c:${b.color}"><i></i>${b.name}</button>`).join(''); };
@@ -115,7 +129,10 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     const d = document.getElementById('kit').contentDocument; if (!d || !d.documentElement) return;
     const b = BRANDS.find(x => x.id === brandId), r = d.documentElement.style;
     r.setProperty('--brand', b.color); r.setProperty('--brand-hi', b.hi); r.setProperty('--brand-lo', b.lo); r.setProperty('--brand-ink', b.ink); r.setProperty('--mono', `"${b.mono}"`);
-    d.querySelectorAll('.kmono').forEach(el => { el.textContent = b.mono; });
+    const svg = `<svg class="mk" viewBox="0 0 48 48" aria-hidden="true">${b.mark}</svg>`;
+    const img = `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='${b.ink}'><style>.s{fill:none;stroke:${b.ink};stroke-width:4;stroke-linecap:round;stroke-linejoin:round}</style>${b.mark.replace(/"/g, "'")}</svg>`)}")`;
+    r.setProperty('--mark', img); d.documentElement.dataset.cards = cardSet;
+    d.querySelectorAll('.kmono').forEach(el => { el.innerHTML = svg; });
   }
   $brands.addEventListener('click', ev => {
     const btn = ev.target.closest('[data-brand]'); if (!btn) return;
@@ -172,7 +189,7 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
       try { await drive(f, s.go); } catch (e) { console.log('drive', e); }
       vp.classList.add('live');
     }, { once: true });
-    f.srcdoc = `<script>window.__opFreeze = true; window.__opBrand = ${JSON.stringify(brandId)}<\/script>` + PROTO + `<style>${tv ? TV_CSS : PHONE_CSS}</style>`;
+    f.srcdoc = `<script>window.__opFreeze = true; window.__opBrand = ${JSON.stringify(brandId)}; window.__opCards = ${JSON.stringify(cardSet)}<\/script>` + PROTO + `<style>${tv ? TV_CSS : PHONE_CSS}</style>`;
     vp.appendChild(f);
   }
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); mount(e.target); } }), { rootMargin: '400px 0px' });
@@ -198,7 +215,7 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     .note{font:600 12px/1.3 var(--f-body);color:var(--on-table-2);max-width:12ch;margin-top:6px}
     .sw{display:grid;grid-template-columns:34px auto;column-gap:10px;align-items:center;min-width:150px} .sw i{grid-row:span 2;width:34px;height:34px;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.2),0 2px 4px rgba(0,0,0,.4)} .sw b{font:800 13px/1.1 var(--f-body)} .sw span{font:400 11px/1.2 var(--f-seg);color:var(--on-table-2)}
     .type{display:grid;gap:10px;background:var(--stock);color:var(--ink);border-radius:4px;padding:18px 20px;box-shadow:var(--lift)} .type .a{font:900 34px/1 var(--f-body);letter-spacing:-.03em} .type .b{font:400 15px/1.5 var(--f-body);max-width:60ch} .type .c{font:400 30px/1 var(--f-seg);background:var(--lcd);color:var(--lcd-ink);padding:6px 10px;border-radius:4px;width:max-content}
-    .piece{display:grid;justify-items:center;gap:6px} .kback{width:88px;height:124px;border-radius:7px;display:grid;place-items:center;background:radial-gradient(circle,transparent 0 22px,var(--brand) 22.5px 26px,transparent 26.5px),repeating-linear-gradient(45deg,rgba(255,255,255,.12) 0 4px,transparent 4px 9px),var(--brand);box-shadow:inset 0 0 0 5px var(--stock),inset 0 0 0 6px rgba(0,0,0,.2),var(--lift);color:var(--brand-ink);font:900 17px/1 var(--f-body);letter-spacing:-.04em} .kback.r{transform:rotate(6deg)} .slot{animation:none!important} .slot::after{display:none}
+    .piece{display:grid;justify-items:center;gap:6px} .kback{width:88px;height:124px;border-radius:7px;display:grid;place-items:center;background:radial-gradient(circle,transparent 0 22px,var(--brand) 22.5px 26px,transparent 26.5px),repeating-linear-gradient(45deg,rgba(255,255,255,.12) 0 4px,transparent 4px 9px),var(--brand);box-shadow:inset 0 0 0 5px var(--stock),inset 0 0 0 6px rgba(0,0,0,.2),var(--lift);color:var(--brand-ink);font:900 17px/1 var(--f-body);letter-spacing:-.04em} .kback.r{transform:rotate(6deg)} .kback b{display:grid;place-items:center;width:36px;height:36px} .kback .mk{width:100%;height:100%} .kmono{display:grid;place-items:center;width:100%;height:100%} .logo-mark .kmono .mk{width:58%;height:58%} .slot{animation:none!important} .slot::after{display:none}
   </style>
   <div class="kit">
     <section><h4>Values</h4><div class="play"><div class="row">${card(0, 2, '', 'Liquidate')}${card(1, 1, '', 'Interns')}${card(2, 0, '', 'Quietly')}${card(0, -1, '', 'Rightsize')}${card(1, -2, '', 'Union Relations')}${card(2, 'V', '', 'Allegedly')}</div></div></section>

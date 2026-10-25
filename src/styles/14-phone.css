@@ -1,0 +1,4 @@
+/* on a phone the desk is the whole screen: header pinned top, footer pinned bottom */
+.desk { display: flex; flex-direction: column }
+.desk-body { flex: 1 0 auto; align-content: start }
+@media (max-width: 980px) { .desk { min-height: calc(100dvh - 24px) } }

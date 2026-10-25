@@ -40,7 +40,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 h1, h2, h3 { text-wrap: balance; margin: 0 }
 h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .muted { color: var(--ink-2) }
-
 /* ---------- masthead: black band, phase tab, profit calculator ---------- */
 .mast { background: var(--ink); color: var(--stock); position: relative; z-index: 2 }
 .mast .wrap { display: flex; align-items: center; gap: 18px 22px; padding-block: 10px; flex-wrap: wrap }
@@ -80,7 +79,6 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--table-rule); margin-bottom: 14px; color: var(--on-table) }
 .section-head .label { color: var(--on-table-2) }
 @media (max-width: 980px) { .layout { grid-template-columns: minmax(0, 1fr) } .desk { position: static; max-height: none; order: -1; width: 100%; max-width: 440px; justify-self: center } }
-
 /* ---------- desk: your phone. No paper box: objects lie on the same felt as the TV ---------- */
 .desk { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); max-height: calc(100vh - 32px); overflow: auto; color: var(--on-table); overscroll-behavior: contain; scrollbar-width: thin }
 .desk-head { position: sticky; top: 0; z-index: 5; display: grid; gap: 0; margin-bottom: 14px; border-radius: 10px 10px 4px 4px; overflow: hidden;
@@ -205,7 +203,6 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .key:active:not(:disabled), .swap:active:not(:disabled), .reveal-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #1C1D1B }
 .key:disabled, .swap:disabled, .reveal-btn:disabled { opacity: .35; cursor: not-allowed }
 .row-label { font: 700 10px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3) }
-
 /* the card: suit mark, value glyph, flavour words */
 .card { position: relative; background: var(--stock); color: var(--ink); border-radius: 7px; padding: 8px 8px 9px; aspect-ratio: 64 / 90; display: flex; flex-direction: column; min-width: 0;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.09), 0 1px 0 rgba(0,0,0,.18), 0 7px 14px -7px rgba(0,0,0,.55) }
@@ -300,7 +297,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .play .card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: 3; opacity: 0; pointer-events: none;
   background: radial-gradient(circle at 50% 50%, transparent 0 16px, var(--brand) 16.5px 19px, transparent 19.5px), repeating-linear-gradient(45deg, rgba(255,255,255,.12) 0 4px, transparent 4px 9px), var(--brand);
   box-shadow: inset 0 0 0 4px var(--stock), inset 0 0 0 5px rgba(0,0,0,.2) }
-.play .card::after { content: var(--mono); position: absolute; inset: 0; display: grid; place-items: center; z-index: 4; opacity: 0; pointer-events: none; font: 900 15px/1 var(--f-body); letter-spacing: -.04em; color: var(--brand-ink) }
+.play .card::after { content: ''; position: absolute; inset: 0; z-index: 4; opacity: 0; pointer-events: none; background: var(--mark) center / 40% no-repeat }
 .play.deal .slot { --d: 0s }
 .play.deal .policy .slot:nth-child(2) { --d: .09s } .play.deal .policy .slot:nth-child(3) { --d: .18s }
 .play.deal .fan .slot:nth-child(1) { --d: .34s } .play.deal .fan .slot:nth-child(2) { --d: .43s } .play.deal .fan .slot:nth-child(3) { --d: .52s }
@@ -371,7 +368,6 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .letter .role.sab { color: var(--red) }
 .letter .role.loyal { color: var(--good) }
 .sig { font: italic 500 14px/1.3 var(--f-body); color: var(--ink-2) }
-
 /* ---------- envelopes ---------- */
 .envs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px }
 .env { --c: var(--env-manila); position: relative; background: var(--c); color: var(--ink); border-radius: 5px; padding: 12px 14px 14px; box-shadow: var(--lift); display: grid; gap: 9px; align-content: start; min-height: 200px; text-align: left; border: 0; width: 100%; min-width: 0; overflow: hidden; transition: transform .25s var(--bounce) }
@@ -389,7 +385,7 @@ button.env:hover { transform: translateY(-3px) rotate(-.4deg) }
 .env-id { font: 900 26px/1 var(--f-body); letter-spacing: -.03em }
 .env-kind { font: 800 9px/1.15 var(--f-body); letter-spacing: .12em; text-transform: uppercase; opacity: .55; margin-top: 3px }
 .clasp { position: absolute !important; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
-.clasp::after { content: var(--mono); position: absolute; inset: 0; display: grid; place-items: center; font: 900 11px/1 var(--f-body); color: var(--brand-ink); opacity: .8; letter-spacing: -.04em }
+.clasp::after { content: ''; position: absolute; inset: 0; opacity: .85; background: var(--mark) center / 58% no-repeat }
 .env.approved .clasp, .env.audited .clasp { background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); clip-path: polygon(0 0, 46% 0, 54% 40%, 44% 60%, 52% 100%, 0 100%); transform: translateX(-3px) rotate(-8deg) }
 .env-subj { font: 800 15px/1.2 var(--f-body); letter-spacing: -.015em; min-height: 36px; overflow-wrap: anywhere; margin-top: 30px }
 .env-route { display: grid; gap: 4px; font: 600 11px/1.2 var(--f-body) }
@@ -417,8 +413,7 @@ button.env:hover { transform: translateY(-3px) rotate(-.4deg) }
 @media (max-width: 720px) { .placeholder { min-height: 64px } .placeholder.sealed { min-height: 112px; padding-top: 70px } .stamp-btn { font-size: 10px; letter-spacing: .02em } }
 .placeholder.sealed { border: 0; background: var(--env-manila); color: var(--ink); box-shadow: var(--lift); position: relative; overflow: hidden }
 .placeholder.sealed::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 74px; background: rgba(0,0,0,.07); clip-path: polygon(0 0, 100% 0, 50% 100%) }
-.placeholder.sealed::after { content: var(--mono); position: absolute; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); display: grid; place-items: center; font: 900 11px/1 var(--f-body); color: var(--brand-ink); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
-
+.placeholder.sealed::after { content: ''; position: absolute; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: var(--mark) center / 56% no-repeat, radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
 /* ---------- paper on the table: bulletin board, ledger tape, staff ---------- */
 .feed { display: grid; background: var(--stock); color: var(--ink); border-radius: 4px; box-shadow: var(--lift); position: relative }
 .feed-item { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding: 10px 16px; border-top: 1px solid var(--stock-3); font-size: 14px }
@@ -499,7 +494,6 @@ table.exit-t th { font: 800 10px/1 var(--f-body); letter-spacing: .1em; text-tra
 table.exit-t tr.win td { background: #FBF6EA }
 table.exit-t .sub-mono { font-family: var(--f-body); font-weight: 700 }
 .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); transform: translateX(-50%); background: var(--ink); color: var(--stock); padding: 11px 16px; border-radius: 6px; font: 700 13.5px/1.2 var(--f-body); z-index: 30; box-shadow: 0 10px 24px -10px rgba(0,0,0,.6) }
-
 /* ---------- stripe wipe between phases ---------- */
 .wipe { position: fixed; inset: 0; z-index: 40; pointer-events: none; display: grid; place-items: center; transform: translateX(-101%);
   background: linear-gradient(90deg, var(--gold) 0 25%, var(--sunset) 25% 50%, var(--rust) 50% 75%, var(--teak) 75%);
@@ -517,9 +511,6 @@ table.exit-t .sub-mono { font-family: var(--f-body); font-weight: 700 }
   .wipe { display: none } .big-stamp, .deal .card, table.ledger tr.new td { animation: none }
   button.env:hover, .env.sel { transform: none } .meter-fill { transition: none }
 }
-</style>
-
-<style>
 /* ---------- depth: felt nap, a pool of lamp light, and the phone's own surface ---------- */
 body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .22; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E") }
@@ -607,14 +598,10 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 @keyframes badge-in { from { transform: translateY(-60px) rotate(-14deg) scale(.6); opacity: 0 } }
 .ink-name { height: 20px; vertical-align: middle }
 @media (prefers-reduced-motion: reduce) { .play > .stuff, .preview.arrive .env, .badge-hold.reveal .nametag { animation: none } }
-</style>
-<style>
 /* on a phone the desk is the whole screen: header pinned top, footer pinned bottom */
 .desk { display: flex; flex-direction: column }
 .desk-body { flex: 1 0 auto; align-content: start }
 @media (max-width: 980px) { .desk { min-height: calc(100dvh - 24px) } }
-</style>
-<style>
 /* employment letter: a typed memo on letterhead with one rubber stamp */
 .memo-sheet { position: relative; display: grid; gap: 9px; background: #F7F1E1; color: var(--ink); padding: 16px 18px 18px; border-radius: 2px; box-shadow: var(--lift); transform: rotate(-.6deg); font: 400 14px/1.35 var(--f-seg);
   background-image: linear-gradient(transparent 0 calc(100% - 1px), rgba(0,0,0,.04) 0); background-size: 100% 26px }
@@ -638,8 +625,6 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .memo-fine { font-size: 12px; color: var(--ink-2); text-align: center }
 .memo-sig { width: 120px; justify-self: end; margin-top: -4px; fill: none; stroke: #2C46B8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: .8 }
 @media (prefers-reduced-motion: reduce) { .memo-stamp { animation: none } }
-</style>
-<style>
 /* brand type: the superlative decides how the company name is set */
 .logo-mark .ico { width: 20px; height: 20px; stroke-width: 2.2 }
 .mast { box-shadow: inset 0 -3px 0 var(--brand) }
@@ -649,8 +634,6 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 [data-brand-font="wide"] .brand-name { text-transform: uppercase; font-weight: 800; letter-spacing: .14em; font-size: .78em }
 [data-brand-font="script"] .brand-name { font-family: "Caveat", "Brush Script MT", cursive; font-weight: 700; font-size: 1.3em; letter-spacing: 0 }
 .lh-name .brand-name { font-size: inherit }
-</style>
-<style>
 /* suits are colours, not symbols: Action cobalt, Target mustard, Modifier plum (red and green stay for profit) */
 :root { --suit-0: #2C46B8; --suit-1: #C98A10; --suit-2: #7A4A8C }
 .s-0 { --suit: var(--suit-0) } .s-1 { --suit: var(--suit-1) } .s-2 { --suit: var(--suit-2) }
@@ -664,8 +647,6 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .dymo .m0, .dymo .m1 { width: 11px; height: 14px; border-radius: 2px; clip-path: none; box-shadow: 0 0 0 1.5px rgba(255,255,255,.85) }
 .dymo .m0 { background: var(--suit-0) } .dymo .m1 { background: var(--suit-1); margin-left: 2px }
 .mini .peek > * { box-shadow: inset 0 3px 0 var(--suit, transparent), 0 1px 2px rgba(0,0,0,.4) }
-</style>
-<style>
 /* ---------- Work screen, one material: cream paper on felt, brass coins, red only for ink and the main key ---------- */
 :root { --suit-0: #4A6BB0; --suit-1: #C29433; --suit-2: #8A6A9C }
 /* suit is a small colour tab, not a header band */
@@ -710,10 +691,55 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .bar3 button[aria-pressed="true"] span { border-style: solid; border-color: currentColor; transform: rotate(-4deg); mix-blend-mode: multiply }
 /* the header keeps its rail; nothing else on the screen is dark */
 .desk-head .purse { background: rgba(0,0,0,.35) }
-</style>
-<style>
 /* phones: the desk scrolls with the page (this has to come after the desk's own sticky rule) */
 @media (max-width: 980px) { .desk { position: static; max-height: none; overflow: visible } }
+/* company logo marks */
+.mk { width: 60%; height: 60%; display: block; fill: currentColor }
+.mk .s { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round }
+.logo-mark .mk { width: 62%; height: 62% }
+.env-card.hidden b { display: grid; place-items: center; height: 20px; opacity: .7 } .env-card.hidden .mk { width: 20px; height: 20px }
+.mini .peek i { display: grid; place-items: center; padding: 0 } .mini .peek i .mk { width: 16px; height: 16px; color: var(--brand-ink); opacity: .85 }
+/* phone: picked envelope lifts, cards rise out */
+.minis.picking .mini:not(.chosen) { animation: miniAway .45s ease both }
+.mini.chosen { z-index: 5; animation: miniLift .55s var(--bounce) both }
+.mini.chosen::before { transform-origin: 50% 0; animation: flapOpen .35s ease .3s both }
+.mini .pull { position: absolute; left: 50%; top: 18%; width: 30px; height: 42px; margin-left: -15px; border-radius: 3px; z-index: -1; pointer-events: none;
+  background: var(--mark) center / 58% no-repeat, var(--brand); box-shadow: inset 0 0 0 2px var(--stock), 0 2px 5px rgba(0,0,0,.45);
+  animation: pullOut .5s var(--bounce) calc(.45s + var(--k) * .1s) both }
+.mini .pull[style*="--k:0"] { --x: -34px; --r: -14deg } .mini .pull[style*="--k:1"] { --x: 0px; --r: 0deg } .mini .pull[style*="--k:2"] { --x: 34px; --r: 14deg }
+@keyframes miniAway { to { transform: translateY(14px) scale(.94); opacity: .2; filter: saturate(.4) } }
+@keyframes miniLift { from { transform: translateY(-5px) rotate(-1.2deg) } to { transform: translateY(-16px) rotate(-2.5deg) scale(1.08) } }
+@keyframes flapOpen { to { transform: scaleY(.12); opacity: .6 } }
+@keyframes pullOut { from { transform: translateY(14px); opacity: 0 } to { transform: translate(var(--x), -62px) rotate(var(--r)); opacity: 1 } }
+/* TV: nominee lifts; approved one opens (after the wipe) */
+.env.pick { z-index: 2; animation: envPick .7s var(--bounce) 1.15s both }
+.env.fall { animation: envFall .5s ease 1.1s both }
+.env.pull::before { transform-origin: 50% 0; animation: flapOpen .4s ease 1.15s both }
+.env.pull .env-card { animation: cardOut .5s var(--bounce) both }
+.env.pull .env-card:nth-child(1) { animation-delay: 1.45s } .env.pull .env-card:nth-child(2) { animation-delay: 1.57s } .env.pull .env-card:nth-child(3) { animation-delay: 1.69s }
+.env.pull .big-stamp { animation-delay: 2.1s }
+@keyframes envPick { 0% { transform: none } 45% { transform: translateY(-18px) rotate(-2deg) scale(1.04) } 100% { transform: translateY(-4px) rotate(-.6deg) } }
+@keyframes envFall { from { opacity: 1; filter: none; transform: none } to { transform: translateY(6px) } }
+@keyframes cardOut { from { transform: translateY(-46px) scale(.7) rotate(-6deg); opacity: 0 } to { transform: none; opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .env.pick, .env.fall, .env.pull::before, .env.pull .env-card { animation: none } }
+/* colour cards variant */
+[data-cards="colour"] .card { background: var(--suit); color: var(--suit-on, #FBF6EA);
+  background-image: linear-gradient(rgba(255,255,255,.1), rgba(0,0,0,.08)), repeating-linear-gradient(-45deg, transparent 0 7px, rgba(255,255,255,.035) 7px 9px);
+  box-shadow: inset 0 0 0 3px rgba(251,246,234,.9), inset 0 0 0 4px rgba(0,0,0,.12), 0 1px 0 rgba(0,0,0,.12), 0 8px 16px -10px rgba(0,0,0,.6) }
+[data-cards="colour"] .s-1 { --suit-on: #241A06 }
+[data-cards="colour"] .card .hd, [data-cards="colour"] .card .amt { display: none }
+[data-cards="colour"] .card .word { order: -1; border: 0; padding: 3px 2px 0; min-height: 0; color: inherit; text-wrap: balance }
+[data-cards="colour"] .card .fx { gap: 6px }
+[data-cards="colour"] .play .card .word { font-size: calc(var(--cw) * .135); line-height: 1 }
+[data-cards="colour"] .card .glyph { display: grid; place-items: center; min-width: 58%; aspect-ratio: 1.3; padding: 0 6px; border-radius: 50%; background: #FBF6EA; box-shadow: inset 0 -2px 0 rgba(0,0,0,.12), 0 2px 3px rgba(0,0,0,.25); transform: rotate(-4deg) }
+[data-cards="colour"] .card .glyph.v-v { width: auto; height: auto; border: 0; aspect-ratio: 1.3; font-size: inherit }
+[data-cards="colour"] .play .card .glyph.v-v { font-size: calc(var(--cw) * .3) }
+[data-cards="colour"] .card .dymo .m0, [data-cards="colour"] .card .dymo .m1 { box-shadow: 0 0 0 1.5px #FBF6EA }
+[data-cards="colour"] .card.spare { opacity: .7 }
+[data-cards="colour"] .env-card:not(.hidden) { background: var(--suit); color: var(--suit-on, #FBF6EA); box-shadow: inset 0 0 0 2px rgba(251,246,234,.9), 0 1px 0 rgba(0,0,0,.15); display: flex; flex-direction: column-reverse; gap: 4px }
+[data-cards="colour"] .env-card:not(.hidden) .w { color: inherit; font-weight: 800 }
+[data-cards="colour"] .env-card:not(.hidden) b { align-self: center; background: #FBF6EA; border-radius: 50%; padding: 3px 9px 2px; box-shadow: 0 1px 2px rgba(0,0,0,.25) }
+[data-cards="colour"] .mini .peek b { box-shadow: inset 0 0 0 4px var(--suit), 0 1px 2px rgba(0,0,0,.4); padding-top: 6px }
 </style>
 <div id="app"></div>
 <script>
@@ -1276,12 +1302,11 @@ const OP = (() => {
 })();
 </script>
 <script>
-// Only Profit — browser UI. Renders from engine state; every change goes through OP.apply.
 (() => {
   const $app = document.getElementById('app');
   const ME = 0;
   let S = null, draft = null, err = '', toastT = null;
-  let setup = { players: 4, loyalTier: 'smart', sabTier: 'smart', easy: false, spectate: false, seed: '', brand: window.__opBrand || 'op' };
+  let setup = { players: 4, loyalTier: 'smart', sabTier: 'smart', easy: false, spectate: false, seed: '', brand: window.__opBrand || 'op', cards: window.__opCards || 'paper' };
   const ui = { debug: false, sel: null, deal: false, land: null, printed: 0, stamped: '', lastKey: null, shown: null, tick: null };
   try { ui.debug = localStorage.getItem('op-debug') === '1'; } catch (e) {}
 
@@ -1298,24 +1323,66 @@ const OP = (() => {
   const me = () => S.P[ME];
   // the company brand lives on objects only: logo, wax seals, card backs, letterhead. Never on card faces, never red or green
   // (Only Profit itself is the placeholder house brand)
+  // logo marks, one per opener noun (48×48; .s = stroke)
+  const MARKS = {
+    op: '<path class="s" d="M5 39 17 26l8 8L39 16" style="stroke-width:5"/><path d="M30 11h14v14z"/>',
+    baby: '<circle class="s" cx="24" cy="10" r="6"/><rect x="7" y="18" width="34" height="9" rx="4.5"/><circle cx="24" cy="35" r="9"/>',
+    granny: '<circle class="s" cx="13" cy="27" r="8"/><circle class="s" cx="35" cy="27" r="8"/><path class="s" d="M21 26c2-3 4-3 6 0M5 25 2 18M43 25l3-7"/>',
+    orphan: '<circle cx="18" cy="14" r="5.5"/><path d="M9 44V32a9 9 0 0 1 18 0v12z"/><path class="s" d="M26 30 41 11" style="stroke-width:3"/><circle cx="40" cy="9" r="5.5"/>',
+    widow: '<path fill-rule="evenodd" d="M24 3c7 0 10 6 10 12v14H14V15c0-6 3-12 10-12zM20 15a4 4 0 1 0 8 0a4 4 0 1 0-8 0z"/><path d="M8 45v-9a10 10 0 0 1 10-10h12a10 10 0 0 1 10 10v9z"/>',
+    intern: '<circle cx="24" cy="10" r="6"/><path fill-rule="evenodd" d="M10 45V30a10 10 0 0 1 10-10h8a10 10 0 0 1 10 10v15zM20 30h8v8h-8z"/>',
+    clown: '<circle cx="9" cy="22" r="6"/><circle cx="39" cy="22" r="6"/><path fill-rule="evenodd" d="M11 25a13 13 0 1 0 26 0a13 13 0 1 0-26 0zM21 26a3 3 0 1 0 6 0a3 3 0 1 0-6 0z"/><path d="M18 13 24 1l6 12z"/>',
+    stepdad: '<circle cx="15" cy="10" r="5.5"/><path d="M6 38V26a9 9 0 0 1 18 0v12z"/><path d="M26 45v-8h7v-8h7v-8h6v24z"/>',
+    uncle: '<path fill-rule="evenodd" d="M10 19a14 14 0 1 0 28 0a14 14 0 1 0-28 0zM15 24c3-3 6-3 9 0 3-3 6-3 9 0-3 3-6 2-9 0-3 2-6 3-9 0z"/><path d="M8 46c0-7 6-11 16-11s16 4 16 11z"/>',
+    ghost: '<path fill-rule="evenodd" d="M8 22a16 16 0 0 1 32 0v22l-5-4-5 4-6-4-6 4-5-4-5 4zM16 20a2.5 3.5 0 1 0 5 0a2.5 3.5 0 1 0-5 0zM27 20a2.5 3.5 0 1 0 5 0a2.5 3.5 0 1 0-5 0z"/>',
+    semen: '<ellipse cx="12" cy="13" rx="8" ry="6" transform="rotate(35 12 13)"/><path class="s" d="M17 18c7 6 1 12 9 15s6 9 15 10" style="stroke-width:3.5"/>',
+    foreskin: '<circle class="s" cx="12" cy="37" r="6" style="stroke-width:3.5"/><circle class="s" cx="36" cy="37" r="6" style="stroke-width:3.5"/><path d="M15 32 33 3l3 2-18 29zM33 32 15 3l-3 2 18 29z"/>',
+    placenta: '<path d="M7 21C7 11 15 5 24 5s17 6 17 16-8 14-17 14S7 31 7 21z"/><path class="s" d="M24 34c0 6-9 3-9 9s9 2 9 4" style="stroke-width:3"/>',
+    nipple: '<path fill-rule="evenodd" d="M4 24a20 20 0 1 0 40 0a20 20 0 1 0-40 0zM13 24a11 11 0 1 0 22 0a11 11 0 1 0-22 0z"/><circle cx="24" cy="24" r="5.5"/>',
+    pubes: '<path class="s" d="M10 42c-6-6 6-10 0-17s6-10 0-17M24 44c-6-6 6-10 0-17s6-10 0-17M38 42c-6-6 6-10 0-17s6-10 0-17" style="stroke-width:3.5"/>',
+    earwax: '<rect x="8" y="22" width="32" height="4" rx="2" transform="rotate(-35 24 24)"/><ellipse cx="9" cy="35" rx="7" ry="4.5" transform="rotate(-35 9 35)"/><ellipse cx="39" cy="13" rx="7" ry="4.5" transform="rotate(-35 39 13)"/>',
+    toenail: '<path fill-rule="evenodd" d="M14 45V18a10 10 0 0 1 20 0v27zM18 16a6 6 0 0 1 12 0v5H18z"/>',
+    kidney: '<path d="M27 5c9 0 15 8 15 19s-6 19-15 19c-8 0-11-4-11-8 0-5 5-6 5-11s-5-6-5-11c0-4 3-8 11-8z"/><path d="M14 20c-4 1-8 4-8 9" class="s" style="stroke-width:3"/>',
+    tooth: '<path d="M9 13c0-6 7-8 15-4 8-4 15-2 15 4 0 9-3 12-4 20-1 7-2 11-5 11s-3-10-6-10-3 10-6 10-4-4-5-11C12 25 9 22 9 13z"/>',
+    blood: '<path fill-rule="evenodd" d="M12 9a5 5 0 0 1 5-5h14a5 5 0 0 1 5 5v20a5 5 0 0 1-5 5H17a5 5 0 0 1-5-5zM22 11h4v6h6v4h-6v6h-4v-6h-6v-4h6z"/><path class="s" d="M24 34v11"/>',
+    eyeball: '<path fill-rule="evenodd" d="M3 20a17 17 0 1 0 34 0a17 17 0 1 0-34 0zM14 17a7 7 0 1 0 14 0a7 7 0 1 0-14 0z"/><circle cx="21" cy="17" r="3"/><path class="s" d="M32 33c4 4 2 8 7 9s4 4 6 4" style="stroke-width:3.5"/>',
+    nudes: '<path fill-rule="evenodd" d="M14 3h20a3 3 0 0 1 3 3v36a3 3 0 0 1-3 3H14a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM15 8v30h18V8z"/><rect x="15" y="19" width="18" height="7"/>',
+    dildo: '<path d="M17 40V14a7 7 0 0 1 14 0v26z"/><rect x="11" y="39" width="26" height="6" rx="3"/>',
+    hamster: '<circle cx="13" cy="15" r="5.5"/><circle cx="35" cy="15" r="5.5"/><circle cx="24" cy="29" r="15"/>',
+    pony: '<path d="M13 45V30c0-8 2-14 6-19l2-8 4 6c6 1 12 5 16 12l-3 5-8-3-3 4v18z"/>',
+    goldfish: '<ellipse cx="20" cy="24" rx="15" ry="10"/><path d="M31 24 45 13v22z"/>',
+    pigeon: '<circle cx="14" cy="14" r="7"/><path d="M7 12 1 16l6 1z"/><path d="M10 20c4 10 14 16 30 14l6-4-10-2c-6-6-14-10-26-8z"/><path class="s" d="M22 36v8M28 36v8" style="stroke-width:2.5"/>',
+    rat: '<path d="M4 33c0-9 9-15 20-15s15 6 17 15z"/><circle cx="13" cy="19" r="4.5"/><path class="s" d="M40 32c6 0 8 4 4 8s-9 3-11 6" style="stroke-width:2.5"/>',
+    dog: '<rect x="12" y="20" width="24" height="8"/><circle cx="11" cy="18" r="6"/><circle cx="11" cy="30" r="6"/><circle cx="37" cy="18" r="6"/><circle cx="37" cy="30" r="6"/>',
+    feelings: '<path d="M24 43 7 26a10 10 0 0 1 17-14 10 10 0 0 1 17 14z"/>',
+    regret: '<path class="s" d="M12 14a16 16 0 1 1-4 14"/><path d="M4 5v15h15z"/>',
+    grief: '<path d="M5 23h38v20H5z"/><path d="M18 23c0-8 4-14 8-17 2 4 4 9 4 17z"/>',
+    soul: '<ellipse class="s" cx="24" cy="7" rx="11" ry="3.5" style="stroke-width:3"/><path d="M24 15c9 0 13 7 13 14 0 8-6 12-11 14 2-4 1-7-2-8-6 2-12-2-12-8 0-7 4-12 12-12z"/>',
+    secret: '<path fill-rule="evenodd" d="M4 24a20 20 0 1 0 40 0a20 20 0 1 0-40 0zM24 13a5 5 0 0 0-3 9l-2 12h10l-2-12a5 5 0 0 0-3-9z"/>',
+    ashes: '<path d="M4 43c4-10 10-16 20-16s16 6 20 16z"/><circle cx="17" cy="17" r="2.2"/><circle cx="27" cy="10" r="2.2"/><circle cx="33" cy="19" r="1.8"/>',
+    toilet: '<rect x="8" y="5" width="12" height="20" rx="2"/><path d="M8 25h34c0 8-5 12-11 13l2 7H17l1-7C12 37 8 32 8 25z"/>',
+    mattress: '<path fill-rule="evenodd" d="M6 15h36a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V19a4 4 0 0 1 4-4zM8 23v2.5h32V23z"/><rect x="5" y="33" width="4" height="7"/><rect x="39" y="33" width="4" height="7"/>',
+    coffin: '<path d="M17 3h14l7 12-5 30H15L10 15z"/>',
+    urn: '<path d="M16 4h16v4h-3c0 4 9 8 9 18 0 10-6 15-14 15S10 36 10 26c0-10 9-14 9-18h-3z"/><rect x="14" y="41" width="20" height="4" rx="1"/>',
+    wig: '<path fill-rule="evenodd" d="M24 4c11 0 18 8 18 20 0 8-2 16-6 20H12C8 40 6 32 6 24 6 12 13 4 24 4zM16 22c0-4 4-6 8-6s8 2 8 6v14H16z"/>',
+    nappy: '<path d="M4 10h40c0 18-8 30-20 30S4 28 4 10z"/><circle class="s" cx="9" cy="15" r="2" style="stroke-width:2"/><circle class="s" cx="39" cy="15" r="2" style="stroke-width:2"/>'
+  };
   const BRANDS = [
-    { id: 'op', name: 'Only Profit', suffix: 'Inc.', mono: 'OP', color: '#D9261C', hi: '#EF4A37', lo: '#8E160F', ink: '#fff', font: 'house' },
-    { id: 'granny', name: 'Family Granny Dating', suffix: 'Pty Ltd', mono: 'FG', color: '#9B7BB8', hi: '#BBA0D4', lo: '#5E4478', ink: '#fff', font: 'round',
-      icon: '<circle cx="7" cy="13" r="3.5"/><circle cx="17" cy="13" r="3.5"/><path d="M10.5 13h3M3.5 12 2.5 9M20.5 12l1-3"/>' },
-    { id: 'clown', name: 'Ultra Clown Childcare', suffix: '& Co.', mono: 'UC', color: '#E8B81E', hi: '#F7D560', lo: '#9A7406', ink: '#1a1a1a', font: 'heavy',
-      icon: '<circle cx="12" cy="13" r="6.5"/><circle cx="9.8" cy="10.6" r="1.6"/>' },
-    { id: 'widow', name: 'Eternal Widow', suffix: 'Holdings', mono: 'EW', color: '#4A3E60', hi: '#6E5F8A', lo: '#211A2D', ink: '#fff', font: 'serif',
-      icon: '<path d="M12 3c-5 0-7 5-7 9v8l3-2 2 2 2-2 2 2 2-2 3 2v-8c0-4-2-9-7-9z"/>' },
-    { id: 'kidney', name: 'Executive Kidney Destruction', suffix: 'Group', mono: 'EK', color: '#2F5D8A', hi: '#4F7FB0', lo: '#18344F', ink: '#fff', font: 'wide',
-      icon: '<path d="M15 4c4 0 6 4 5 9s-5 8-9 7-6-4-3-6 3-4 1-6 1-4 6-4z"/>' },
-    { id: 'stepdad', name: 'Compassionate Stepdad Childcare', suffix: 'Ltd', mono: 'CS', color: '#C2793A', hi: '#DC9C63', lo: '#7A4519', ink: '#fff', font: 'script',
-      icon: '<path d="M12 12c-2-3-6-3-8 0 1 2 4 3 8 0 4 3 7 2 8 0-2-3-6-3-8 0z"/>' }];
+    { id: 'op', mark: 'op', name: 'Only Profit', suffix: 'Inc.', mono: 'OP', color: '#D9261C', hi: '#EF4A37', lo: '#8E160F', ink: '#fff', font: 'house' },
+    { id: 'granny', mark: 'granny', name: 'Family Granny Dating', suffix: 'Pty Ltd', mono: 'FG', color: '#9B7BB8', hi: '#BBA0D4', lo: '#5E4478', ink: '#fff', font: 'round' },
+    { id: 'clown', mark: 'clown', name: 'Ultra Clown Childcare', suffix: '& Co.', mono: 'UC', color: '#E8B81E', hi: '#F7D560', lo: '#9A7406', ink: '#1a1a1a', font: 'heavy' },
+    { id: 'widow', mark: 'widow', name: 'Eternal Widow', suffix: 'Holdings', mono: 'EW', color: '#4A3E60', hi: '#6E5F8A', lo: '#211A2D', ink: '#fff', font: 'serif' },
+    { id: 'kidney', mark: 'kidney', name: 'Executive Kidney Destruction', suffix: 'Group', mono: 'EK', color: '#2F5D8A', hi: '#4F7FB0', lo: '#18344F', ink: '#fff', font: 'wide' },
+    { id: 'stepdad', mark: 'stepdad', name: 'Compassionate Stepdad Childcare', suffix: 'Ltd', mono: 'CS', color: '#C2793A', hi: '#DC9C63', lo: '#7A4519', ink: '#fff', font: 'script' }];
   const brand = () => BRANDS.find(b => b.id === setup.brand) || BRANDS[0];
-  const brandMark = () => { const b = brand(); return b.icon ? `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${b.icon}</svg>` : b.mono; };
+  const markSVG = id => `<svg class="mk" viewBox="0 0 48 48" aria-hidden="true">${MARKS[id] || MARKS.op}</svg>`;
+  const brandMark = () => markSVG(brand().mark);
+  // mark as a CSS image
+  const markURL = (id, c = '#000') => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='${c}'><style>.s{fill:none;stroke:${c};stroke-width:4;stroke-linecap:round;stroke-linejoin:round}</style>${(MARKS[id] || MARKS.op).replace(/"/g, "'")}</svg>`)}")`;
   function applyBrand() {
     const b = brand(), r = document.documentElement;
     r.style.setProperty('--brand', b.color); r.style.setProperty('--brand-hi', b.hi); r.style.setProperty('--brand-lo', b.lo); r.style.setProperty('--brand-ink', b.ink);
-    r.style.setProperty('--mono', `"${b.mono}"`); r.dataset.brandFont = b.font;
+    r.style.setProperty('--mono', `"${b.mono}"`); r.style.setProperty('--mark', markURL(b.mark, b.ink)); r.dataset.brandFont = b.font; r.dataset.cards = setup.cards;
   }
   // envelopes are told apart by an office object, not a letter; same icon on the TV and the phone
   const ICONS = [
@@ -1347,7 +1414,6 @@ const OP = (() => {
   const STAMP = OP.STAMP_LABEL;
   const TIER = { smart: 'Smart', basic: 'Basic', naive: 'Gullible', patient: 'Patient', blatant: 'Blatant' };
   const PHASE = { brief: 'Onboarding', work: 'Work', pitch: 'Pitch + audit', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Reveal', whistle: 'Whistleblower', end: 'Exit interview' };
-
   // ---------- actions ----------
   function dispatch(a) {
     const r = OP.apply(S, S.spectate ? -1 : ME, a);
@@ -1365,7 +1431,6 @@ const OP = (() => {
   const subjectOf = d => (d.useCustom && d.custom.trim() ? d.custom.trim() : d.words.map((k, i) => (S.subj || OP.SUBJ)[i][k]).join(' '));
   function costWith(ch) { return OP.workCost(Object.assign({}, draft, ch)); }
   function toast(t) { let el = document.querySelector('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); } el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, 2200); }
-
   // ---------- pieces ----------
   function meter() {
     const lo = Math.min(-6, S.profit), hi = Math.max(S.target + 4, S.profit + 1), pct = v => ((v - lo) / (hi - lo)) * 100;
@@ -1400,7 +1465,7 @@ const OP = (() => {
     const vis = su => showAll || e.revealed.includes(su);
     const anyVis = [0, 1, 2].some(vis);
     const cards = anyVis ? `<div class="env-cards">${e.cards.map((c, su) => {
-      if (!vis(su)) return `<div class="env-card hidden"><b>${brand().mono}</b><span class="w">${OP.SUITS[su]}</span></div>`;
+      if (!vis(su)) return `<div class="env-card hidden"><b>${brandMark()}</b><span class="w">${OP.SUITS[su]}</span></div>`;
       const v = e.resolved ? e.resolved[su] : c.v;
       return `<div class="env-card s-${su}" title="${esc(c.w)}: ${fmt(v)}"><b class="${tone(v)}">${GLYPH[v]}${e.resolved && c.v === 'V' ? '*' : ''}${c.fx ? `<i class="eff fx-${c.fx}">${FXSYM[c.fx]}</i>` : ''}</b><span class="w">${esc(c.w)}</span></div>`;
     }).join('')}</div>` : '';
@@ -1417,7 +1482,7 @@ const OP = (() => {
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
     if (fresh) ui.stamped = `${S.r}${e.id}`;
-    return `<${tag} class="env c-${e.style.color} t-${e.style.trim} ${ui.sel === e.id ? 'sel' : ''} ${e.approved ? 'approved' : ''} ${e.audited ? 'audited' : ''} ${opt.faded ? 'faded' : ''}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}"` : ''}>
+    return `<${tag} class="env c-${e.style.color} t-${e.style.trim} ${ui.sel === e.id ? 'sel' : ''} ${e.approved ? 'approved' : ''} ${e.audited ? 'audited' : ''} ${opt.faded ? 'faded' : ''} ${opt.motion || ''}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}"` : ''}>
       <div class="env-top"><span class="env-id">${e.id.length === 1 && S && S.envs.some(x => x.id === e.id) ? icon(e.id) : e.id}</span><span class="env-kind">Inter-office<br>mail</span><span class="clasp" aria-hidden="true"></span></div>
       <div class="env-subj">${esc(e.subject)}</div>
       <div class="env-route"><div><span>From</span>${who ? `<b>${esc(who)}</b>` : '<i class="redact"></i>'}</div><div><span>Dept</span>${dept ? esc(dept) : '<i class="redact"></i>'}</div></div>
@@ -1487,9 +1552,12 @@ const OP = (() => {
     if (!['pitch', 'decide', 'board', 'reveal', 'review'].includes(ph)) return '';
     const click = ph === 'pitch' && mine() ? 'sel' : ph === 'decide' && isCEO() ? 'sel' : null;
     const envs = S.envs.slice().sort((a, b) => a.id.localeCompare(b.id));
+    const animKey = `${S.r}|${ph}`, anim = ui.envAnim !== animKey && !still();
+    ui.envAnim = animKey;
+    const motion = e => !anim ? '' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
     const hint = ph === 'pitch' ? 'Shuffled. No authors, no departments.' : ph === 'decide' ? (isCEO() ? 'You are CEO. Nominate one.' : 'Awaiting the CEO') : ph === 'board' ? `The Board is voting on ${icon(S.nominee)}` : 'Approved policy unmasked';
     return `<section><div class="section-head"><h2>Envelopes on the table</h2><span class="label">${hint}</span></div>
-      <div class="envs">${envs.map(e => envHTML(e, { click: click && !(ph === 'pitch' && e.autopilot) ? click : null, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
+      <div class="envs">${envs.map(e => envHTML(e, { motion: motion(e), click: click && !(ph === 'pitch' && e.autopilot) ? click : null, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
   function exitHTML() {
     const rounds = S.history.map(h => {
@@ -1508,7 +1576,6 @@ const OP = (() => {
     }).join('');
     return `<section><div class="section-head"><h2>Exit interview</h2><span class="label">Every envelope, unmasked. * = volatile</span></div><div class="exit">${rounds}</div></section>`;
   }
-
   // ---------- desk: your phone. Objects on the felt, same as the TV; almost no prose ----------
   // a bakelite header bar (nameplate, coins, timer tape) and a footer bar that holds the one key that matters
   function deskWrap(title, body, o) {
@@ -1615,7 +1682,7 @@ const OP = (() => {
   // pick-one grids: envelopes as small envelopes, people as name tags
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
-      const peek = e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brand().mono}</i>`).join('')}</span>` : '';
+      const peek = e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
       return `<button class="mini c-${e.style.color} t-${e.style.trim}" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="Envelope ${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
         ${peek}<span class="mid">${icon(e.id)}</span>${stampMark(e.stamp)}<span class="ms">${esc(e.subject)}</span>${mine() && e.author === ME ? '<i class="yours">You</i>' : ''}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
@@ -1697,7 +1764,6 @@ const OP = (() => {
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');
   }
-
   // ---------- clocking in: type a name, trace it one letter at a time, get a name badge ----------
   // A letter passes as soon as every part of it is at least half inked and no more than 30% of the ink spills outside,
   // however many strokes that took. The stroke budget only decides when a failed letter starts again.
@@ -1798,7 +1864,6 @@ const OP = (() => {
     naming = null;
     S = OP.newGame(Object.assign({}, setup, { seed })); draft = null; err = ''; ui.sel = null; ui.shown = null; ui.lastKey = null; ui.printed = 0; render(); window.scrollTo(0, 0);
   }
-
   // ---------- setup ----------
   function seg(key, opts) { return `<div class="seg">${opts.map(([v, l]) => `<button data-a="set" data-k="${key}" data-v="${v}" aria-pressed="${String(setup[key]) === String(v)}">${l}</button>`).join('')}</div>`; }
   function setupHTML() {
@@ -1811,6 +1876,7 @@ const OP = (() => {
         <div class="field"><span class="label">Loyal bots</span>${seg('loyalTier', [['smart', 'Smart'], ['basic', 'Basic'], ['naive', 'Gullible']])}</div>
         <div class="field"><span class="label">Saboteur bots</span>${seg('sabTier', [['smart', 'Smart'], ['patient', 'Patient'], ['blatant', 'Blatant']])}</div>
         <div class="field"><span class="label">Company</span>${seg('brand', BRANDS.map(b => [b.id, b.name]))}</div>
+        <div class="field"><span class="label">Cards</span>${seg('cards', [['paper', 'Paper'], ['colour', 'Colour']])}</div>
         <div class="field"><span class="label">Target</span>${seg('easy', [[false, 'Standard'], [true, 'Easy mode (−3)']])}</div>
         <div class="field"><label class="label" for="seed">Seed (optional, to replay a deal)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}" style="max-width:200px"></div>
         <details class="rules"><summary>The quarter, in brief</summary><ol>
@@ -1822,7 +1888,6 @@ const OP = (() => {
         <div class="setup-foot"><button class="btn primary" data-a="start">Start the game</button><span class="hint">About 10 minutes against bots.</span></div>
       </div></div></div>`;
   }
-
   // ---------- render ----------
   function render() {
     applyBrand();
@@ -1855,7 +1920,6 @@ const OP = (() => {
     };
     ui.tick = setTimeout(step, 700);
   }
-
   // ---------- events ----------
   $app.addEventListener('click', ev => {
     const b = ev.target.closest('[data-a]'); if (!b || b.disabled) return;
@@ -1887,7 +1951,15 @@ const OP = (() => {
       case 'seal': seal(); break;
       case 'sel': ui.sel = d.id; render(); break;
       case 'audit': dispatch({ type: 'auditVote', target: ui.sel }); break;
-      case 'approve': dispatch({ type: 'approve', id: ui.sel }); break;
+      case 'approve': {
+        const id = ui.sel, el = document.querySelector(`.desk .mini[data-id="${id}"]`);
+        if (!el || still()) { dispatch({ type: 'approve', id }); break; }
+        el.closest('.minis').classList.add('picking'); el.classList.add('chosen');
+        el.insertAdjacentHTML('beforeend', [0, 1, 2].map(k => `<i class="pull" style="--k:${k}"></i>`).join(''));
+        document.querySelectorAll('.desk [data-a]').forEach(b => { b.disabled = true; });
+        setTimeout(() => dispatch({ type: 'approve', id }), 1150);
+        break;
+      }
       case 'board': dispatch({ type: 'boardVote', vote: ui.sel }); break;
       case 'warn': dispatch({ type: 'warnVote', target: ui.sel }); break;
       case 'whistle': dispatch({ type: 'whistleVote', target: ui.sel }); break;
@@ -1971,6 +2043,6 @@ const OP = (() => {
   if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => ({ S, draft, setup, debug: ui.debug }));
   const start = data => { if (data && data.S) { S = data.S; draft = data.draft; setup = data.setup || setup; } render(); };
   if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(start); else start((window.claude && window.claude.hot && window.claude.hot.data) || {});
-  window.__op = { get S() { return S; }, dispatch, brand: id => { setup.brand = id; render(); }, BRANDS };
+  window.__op = { get S() { return S; }, dispatch, brand: id => { setup.brand = id; render(); }, cards: m => { setup.cards = m; render(); }, BRANDS, markSVG, markURL };
 })();
 </script>

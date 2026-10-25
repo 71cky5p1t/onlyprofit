@@ -1,0 +1,6 @@
+/* company logo marks */
+.mk { width: 60%; height: 60%; display: block; fill: currentColor }
+.mk .s { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round }
+.logo-mark .mk { width: 62%; height: 62% }
+.env-card.hidden b { display: grid; place-items: center; height: 20px; opacity: .7 } .env-card.hidden .mk { width: 20px; height: 20px }
+.mini .peek i { display: grid; place-items: center; padding: 0 } .mini .peek i .mk { width: 16px; height: 16px; color: var(--brand-ink); opacity: .85 }

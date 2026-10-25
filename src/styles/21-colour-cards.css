@@ -1,0 +1,18 @@
+/* colour cards variant */
+[data-cards="colour"] .card { background: var(--suit); color: var(--suit-on, #FBF6EA);
+  background-image: linear-gradient(rgba(255,255,255,.1), rgba(0,0,0,.08)), repeating-linear-gradient(-45deg, transparent 0 7px, rgba(255,255,255,.035) 7px 9px);
+  box-shadow: inset 0 0 0 3px rgba(251,246,234,.9), inset 0 0 0 4px rgba(0,0,0,.12), 0 1px 0 rgba(0,0,0,.12), 0 8px 16px -10px rgba(0,0,0,.6) }
+[data-cards="colour"] .s-1 { --suit-on: #241A06 }
+[data-cards="colour"] .card .hd, [data-cards="colour"] .card .amt { display: none }
+[data-cards="colour"] .card .word { order: -1; border: 0; padding: 3px 2px 0; min-height: 0; color: inherit; text-wrap: balance }
+[data-cards="colour"] .card .fx { gap: 6px }
+[data-cards="colour"] .play .card .word { font-size: calc(var(--cw) * .135); line-height: 1 }
+[data-cards="colour"] .card .glyph { display: grid; place-items: center; min-width: 58%; aspect-ratio: 1.3; padding: 0 6px; border-radius: 50%; background: #FBF6EA; box-shadow: inset 0 -2px 0 rgba(0,0,0,.12), 0 2px 3px rgba(0,0,0,.25); transform: rotate(-4deg) }
+[data-cards="colour"] .card .glyph.v-v { width: auto; height: auto; border: 0; aspect-ratio: 1.3; font-size: inherit }
+[data-cards="colour"] .play .card .glyph.v-v { font-size: calc(var(--cw) * .3) }
+[data-cards="colour"] .card .dymo .m0, [data-cards="colour"] .card .dymo .m1 { box-shadow: 0 0 0 1.5px #FBF6EA }
+[data-cards="colour"] .card.spare { opacity: .7 }
+[data-cards="colour"] .env-card:not(.hidden) { background: var(--suit); color: var(--suit-on, #FBF6EA); box-shadow: inset 0 0 0 2px rgba(251,246,234,.9), 0 1px 0 rgba(0,0,0,.15); display: flex; flex-direction: column-reverse; gap: 4px }
+[data-cards="colour"] .env-card:not(.hidden) .w { color: inherit; font-weight: 800 }
+[data-cards="colour"] .env-card:not(.hidden) b { align-self: center; background: #FBF6EA; border-radius: 50%; padding: 3px 9px 2px; box-shadow: 0 1px 2px rgba(0,0,0,.25) }
+[data-cards="colour"] .mini .peek b { box-shadow: inset 0 0 0 4px var(--suit), 0 1px 2px rgba(0,0,0,.4); padding-top: 6px }

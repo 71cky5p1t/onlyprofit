@@ -1,0 +1,17 @@
+  // ---------- actions ----------
+  function dispatch(a) {
+    const r = OP.apply(S, S.spectate ? -1 : ME, a);
+    if (r.error) { err = r.error; render(); return; }
+    err = ''; S = r.state; ui.sel = null;
+    draft = S.phase === 'work' && S.work[ME] ? newDraft() : null;
+    if (draft) ui.deal = true;
+    render();
+  }
+  function newDraft() {
+    const p = me(), inh = p.inh;
+    return { redeal: false, swaps: [], reveals: [], stamp: null, words: (S.subj || OP.SUBJ).map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
+      style: Object.assign({}, S.reqStyle || p.fav), claim: { kind: 'none', val: evs(inh.cards), stamp: inh.stamp || 'Rec' }, nextStyle: null };
+  }
+  const subjectOf = d => (d.useCustom && d.custom.trim() ? d.custom.trim() : d.words.map((k, i) => (S.subj || OP.SUBJ)[i][k]).join(' '));
+  function costWith(ch) { return OP.workCost(Object.assign({}, draft, ch)); }
+  function toast(t) { let el = document.querySelector('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); } el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, 2200); }
