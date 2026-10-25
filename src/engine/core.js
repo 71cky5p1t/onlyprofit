@@ -3,7 +3,7 @@
 const OP = (() => {
   const C = typeof OP_CONTENT !== 'undefined' ? OP_CONTENT : require('./content.js');
   const B = typeof OP_BOTS !== 'undefined' ? OP_BOTS : require('./bots.js');
-  const { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, COLORS, TRIMS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
+  const { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, TEMPLATES, FONTS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
   const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
@@ -90,7 +90,7 @@ const OP = (() => {
   }
   const subjLists = s => SUBJ.map((l, i) => (i === 1 ? l.concat(lexOf(s).subj, lexOf(s).subj) : l));
   const randomSubject = s => subjLists(s).map(l => pickOne(s, l)).join(' ');
-  const randomStyle = s => ({ color: pickOne(s, COLORS), trim: pickOne(s, TRIMS) });
+  const randomStyle = s => ({ tpl: pickOne(s, TEMPLATES), font: pickOne(s, FONTS) });
 
   // ---------- setup ----------
   function newGame(opts) {
@@ -182,7 +182,7 @@ const OP = (() => {
       const [e, h] = botWork(s, i, inh.cards, D); e.dept = d; s.envs.push(e); s.left[d] = h;
     }
     log(s, E, 'system', `Q${s.r} begins. ${who(s, s.ceo, 1)} ${isAre(s, s.ceo)} CEO this quarter.`);
-    if (s.reqStyle) log(s, E, 'system', `The Designer has mandated ${s.reqStyle.color} envelopes with ${s.reqStyle.trim} trim this quarter.`);
+    if (s.reqStyle) log(s, E, 'system', `The Designer has mandated ${s.reqStyle.tpl} cover pages in ${s.reqStyle.font} this quarter.`);
     s.phase = 'work';
     if (!Object.keys(s.work).length) toPitch(s, E);
   }
@@ -197,11 +197,14 @@ const OP = (() => {
   function submitWork(s, i, a, E) {
     const w = { redeal: !!a.redeal, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3) };
     if (workCost(w) > TOKENS) return 'Not enough work tokens.';
-    if (!STAMP_LABEL[a.stamp]) return 'Stamp the envelope first.';
+    if (!STAMP_LABEL[a.stamp]) return 'Stamp the cover page first.';
     const p = s.P[i], wk = s.work[i], { prop, aside } = workResult(s, i, w);
     discard(s, w.redeal ? p.inh.cards : wk.R);
     const subject = String(a.subject || '').trim().slice(0, 80) || randomSubject(s);
-    const style = s.reqStyle ? Object.assign({}, s.reqStyle) : { color: COLORS.includes(a.style && a.style.color) ? a.style.color : 'manila', trim: TRIMS.includes(a.style && a.style.trim) ? a.style.trim : 'plain' };
+    const st = a.style || {}, style = s.reqStyle ? Object.assign({}, s.reqStyle) : { tpl: TEMPLATES.includes(st.tpl) ? st.tpl : 'memo', font: FONTS.includes(st.font) ? st.font : 'grotesk' };
+    // alignment and clip-art are cosmetic
+    if (['left', 'center', 'right'].includes(st.align)) style.align = st.align;
+    if (typeof st.art === 'string') style.art = st.art.slice(0, 24);
     const e = { author: i, cards: prop, stamp: a.stamp, revealed: w.reveals, subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), redeal: w.redeal, dept: p.dept };
     s.envs.push(e); s.left[p.dept] = aside;
     const inh = p.inh;
@@ -212,7 +215,7 @@ const OP = (() => {
         accuse(s, i, inh.author, st, val, val === evs(inh.cards) && st === inh.stamp);
       } else if (a.claim.kind === 'vouch') s.memos.push({ by: i, target: inh.author, kind: 'vouch', truthful: evs(inh.cards) >= 0 });
     }
-    if (p.spec === 'Designer' && a.nextStyle && COLORS.includes(a.nextStyle.color)) s.nextStyle = { color: a.nextStyle.color, trim: TRIMS.includes(a.nextStyle.trim) ? a.nextStyle.trim : 'plain' };
+    if (p.spec === 'Designer' && a.nextStyle && TEMPLATES.includes(a.nextStyle.tpl)) s.nextStyle = { tpl: a.nextStyle.tpl, font: FONTS.includes(a.nextStyle.font) ? a.nextStyle.font : 'grotesk' };
     delete s.work[i];
     if (!Object.keys(s.work).length) toPitch(s, E);
     return null;
@@ -224,7 +227,7 @@ const OP = (() => {
     s.envs.forEach((e, k) => { e.id = ids[k]; });
     for (const m of shuffle(s, s.memos)) {
       const t = who(s, m.target);
-      if (m.kind === 'report') log(s, E, 'memo', `Inherited a ${STAMP_LABEL[m.stamp]} envelope from ${t}. It was worth ${fmt(m.val)}.`, { by: m.by, target: m.target, truthful: m.truthful });
+      if (m.kind === 'report') log(s, E, 'memo', `Inherited a ${STAMP_LABEL[m.stamp]} proposal from ${t}. It was worth ${fmt(m.val)}.`, { by: m.by, target: m.target, truthful: m.truthful });
       else log(s, E, 'memo', `${s.P[m.target].human ? 'Your' : s.P[m.target].name + "'s"} handover checked out. No complaints.`, { by: m.by, target: m.target, truthful: m.truthful, vouch: true });
     }
     for (const d of botDisputes(s)) log(s, E, 'memo', pickOne(s, DISPUTE).replace('{n}', who(s, d.target)), { by: d.by, target: d.target, truthful: d.truthful, dispute: true });
@@ -241,9 +244,9 @@ const OP = (() => {
   }
   // CEO nominates; the Board ratifies or opens it, and overrules if it disappoints.
   function nominate(s, id, E) {
-    const e = s.envs.find(x => x.id === id); if (!e) return 'No such envelope.';
+    const e = s.envs.find(x => x.id === id); if (!e) return 'No such proposal.';
     s.nominee = id; s.bvotes = {};
-    log(s, E, 'event', `${who(s, s.ceo, 1)} nominated envelope ${id}. The Board is voting.`);
+    log(s, E, 'event', `${who(s, s.ceo, 1)} nominated proposal ${id}. The Board is voting.`);
     for (const p of s.P) if (p.id !== s.ceo && !isHuman(s, p.id)) s.bvotes[p.id] = botBoardVote(s, p.id);
     s.phase = 'board';
     if (s.spectate || s.ceo === humanSeat(s)) resolveBoard(s, E);
@@ -252,20 +255,20 @@ const OP = (() => {
   function resolveBoard(s, E) {
     const voters = s.n - 1, no = Object.values(s.bvotes).filter(v => v === 'open').length;
     const nom = s.envs.find(x => x.id === s.nominee), opened = no > voters / 2;
-    if (opened) { nom.audited = true; s.audit = { winner: nom.id }; log(s, E, 'event', `The Board opened envelope ${nom.id}: worth ${fmt(evs(nom.cards))}${nom.cards.some(c => c.v === 'V') ? ' plus volatility' : ''}.`); }
+    if (opened) { nom.audited = true; s.audit = { winner: nom.id }; log(s, E, 'event', `The Board opened proposal ${nom.id}: worth ${fmt(evs(nom.cards))}${nom.cards.some(c => c.v === 'V') ? ' plus volatility' : ''}.`); }
     const best = argmax(s.envs, x => [pubEst(s, x)]);
     const overruled = opened && best.id !== nom.id && pubEst(s, nom) < pubEst(s, best) - 1;
     s.board = { nominee: nom.id, votes: s.bvotes, no, opened, overruled };
-    if (!overruled) { log(s, E, 'event', opened ? `It stands. Envelope ${nom.id} goes through.` : `The Board ratified envelope ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
+    if (!overruled) { log(s, E, 'event', opened ? `It stands. Proposal ${nom.id} goes through.` : `The Board ratified proposal ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
     const own = nom.author === s.ceo && !nom.autopilot;
     nom.unmasked = true; s.board.own = own; s.board.author = nom.autopilot ? null : nom.author;
-    log(s, E, 'event', `The Board overruled ${who(s, s.ceo)}. Envelope ${nom.id} was written by ${nom.autopilot ? 'interim management' : own ? 'the CEO' : who(s, nom.author)}. Envelope ${best.id} goes through instead.`, { target: s.ceo });
+    log(s, E, 'event', `The Board overruled ${who(s, s.ceo)}. Proposal ${nom.id} was written by ${nom.autopilot ? 'interim management' : own ? 'the CEO' : who(s, nom.author)}. Proposal ${best.id} goes through instead.`, { target: s.ceo });
     (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++;
-    if (own) { s.P[s.ceo].skipCEO = true; log(s, E, 'event', `${who(s, s.ceo, 1)} tried to push ${s.P[s.ceo].human ? 'your' : 'their'} own envelope and will sit out ${s.P[s.ceo].human ? 'your' : 'their'} next turn as CEO.`, { target: s.ceo }); }
+    if (own) { s.P[s.ceo].skipCEO = true; log(s, E, 'event', `${who(s, s.ceo, 1)} tried to push ${s.P[s.ceo].human ? 'your' : 'their'} own proposal and will sit out ${s.P[s.ceo].human ? 'your' : 'their'} next turn as CEO.`, { target: s.ceo }); }
     return approve(s, best.id, E);
   }
   function approve(s, id, E) {
-    const e = s.envs.find(x => x.id === id); if (!e) return 'No such envelope.';
+    const e = s.envs.find(x => x.id === id); if (!e) return 'No such proposal.';
     e.approved = true;
     e.resolved = e.cards.map(c => (c.v === 'V' ? (rand(s) < 0.5 ? 2 : -2) : c.v));
     const actual = total(e.resolved, e.cards);
@@ -275,12 +278,12 @@ const OP = (() => {
     if (!e.autopilot) { author.approved.push({ r: s.r, stamp: e.stamp, actual }); author.claims += STAMP_CLAIM[e.stamp] - actual; }
     s.pick = id; s.result = { id, actual, author: e.author, ceo: s.ceo, own: e.author === s.ceo };
     s.ledger.push({ r: s.r, id, subject: e.subject, author: e.author, ceo: s.ceo, actual, stamp: e.stamp, autopilot: !!e.autopilot });
-    log(s, E, 'event', `${who(s, s.ceo, 1)} approved envelope ${id}. Profit ${actual >= 0 ? 'up' : 'down'} ${Math.abs(actual)}. Author: ${e.autopilot ? 'interim management (' + whose(s, e.author) + ' department)' : who(s, e.author, 1)}.`);
-    if (e.author === s.ceo && !e.autopilot) log(s, E, 'event', 'The CEO approved their own envelope. This has been noted.');
+    log(s, E, 'event', `${who(s, s.ceo, 1)} approved proposal ${id}. Profit ${actual >= 0 ? 'up' : 'down'} ${Math.abs(actual)}. Author: ${e.autopilot ? 'interim management (' + whose(s, e.author) + ' department)' : who(s, e.author, 1)}.`);
+    if (e.author === s.ceo && !e.autopilot) log(s, E, 'event', 'The CEO approved their own proposal. This has been noted.');
     if (s.loyalTier === 'smart') {
-      if (!e.autopilot && e.stamp === 'Rec' && actual <= -1) { (s.accused[e.author] = s.accused[e.author] || []).push('table'); author.accusations++; log(s, E, 'event', `A Recommended envelope lost money. Questions are being asked of ${who(s, e.author)}.`, { target: e.author }); }
-      if (e.author === s.ceo && !e.autopilot && actual <= -1 && e.stamp !== 'Rec') { (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; log(s, E, 'event', `${who(s, s.ceo, 1)} approved ${s.P[s.ceo].human ? 'your' : 'their'} own envelope and it lost money.`, { target: s.ceo }); }
-      if (estimate(e, s.loyalTier, false) <= pubBest - 3 && !(s.board && s.board.overruled)) { (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; log(s, E, 'event', `${who(s, s.ceo, 1)} passed over a far better-looking envelope.`, { target: s.ceo }); }
+      if (!e.autopilot && e.stamp === 'Rec' && actual <= -1) { (s.accused[e.author] = s.accused[e.author] || []).push('table'); author.accusations++; log(s, E, 'event', `A Recommended proposal lost money. Questions are being asked of ${who(s, e.author)}.`, { target: e.author }); }
+      if (e.author === s.ceo && !e.autopilot && actual <= -1 && e.stamp !== 'Rec') { (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; log(s, E, 'event', `${who(s, s.ceo, 1)} approved ${s.P[s.ceo].human ? 'your' : 'their'} own proposal and it lost money.`, { target: s.ceo }); }
+      if (estimate(e, s.loyalTier, false) <= pubBest - 3 && !(s.board && s.board.overruled)) { (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; log(s, E, 'event', `${who(s, s.ceo, 1)} passed over a far better-looking proposal.`, { target: s.ceo }); }
     }
     s.phase = 'reveal'; s.wvotes = {};
     for (const p of s.P) if (!isHuman(s, p.id)) s.wvotes[p.id] = botWarnVote(s, p.id);
@@ -378,6 +381,6 @@ const OP = (() => {
   }
 
   return { PERS_SAY, apply, newGame, workResult, workCost, estimate, evs, ev, total, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
-    SUITS, SUBJ, LEX, COLORS, TRIMS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
+    SUITS, SUBJ, LEX, TEMPLATES, FONTS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
 })();
 if (typeof module !== 'undefined') module.exports = OP;

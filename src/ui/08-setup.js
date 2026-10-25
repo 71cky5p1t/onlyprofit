@@ -3,7 +3,7 @@
   function setupHTML() {
     return `<div class="wrap"><div class="setup">
       <div class="setup-hero"><span class="label">One human, the rest bots</span><h1>Only Profit</h1>
-        <p>Inherit someone else's mess, seal it in an anonymous envelope, and find out whose name was on it only once it's approved. Hit the profit target in five quarters, or quietly make sure nobody does.</p></div>
+        <p>Inherit someone else's mess, hand it in under an anonymous cover page, and find out whose name was on it only once it's approved. Hit the profit target in five quarters, or quietly make sure nobody does.</p></div>
       <div class="setup-body">
         <div class="field"><span class="label">Employees</span>${seg('players', [[4, '4'], [5, '5'], [6, '6'], [7, '7'], [8, '8']])}</div>
         <div class="field"><span class="label">Your seat</span>${seg('spectate', [[false, 'Play'], [true, 'Watch the bots']])}</div>
@@ -14,9 +14,9 @@
         <div class="field"><span class="label">Target</span>${seg('easy', [[false, 'Standard'], [true, 'Easy mode (−3)']])}</div>
         <div class="field"><label class="label" for="seed">Seed (optional, to replay a deal)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}" style="max-width:200px"></div>
         <details class="rules"><summary>The quarter, in brief</summary><ol>
-          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 tokens: swap a card in (1, then 2), re-deal all three (2), or show one card to the table (1). Stamp it, write a subject line, style the envelope.</li>
-          <li><b>Pitch.</b> Envelopes appear shuffled and anonymous. Memos on the bulletin board say who left whom a mess. Nobody can check them. The table votes to audit one envelope.</li>
-          <li><b>Decide + Reveal.</b> The CEO nominates one; the Board (everyone else) ratifies it or overrules it, and a majority Overrule puts the best-looking envelope through instead. An overruled nominee is unmasked, and a CEO caught pushing their own sits out their next turn as CEO. Profit moves and the approved author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
+          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 hours of overtime: swap a card in (1, then 2), re-deal all three (2), or show one card to the table (1). Stamp it, then make a cover page: template, subject line, font, clip-art.</li>
+          <li><b>Pitch.</b> Proposals appear shuffled and anonymous. Memos on the bulletin board say who left whom a mess. Nobody can check them. The table votes to audit one proposal.</li>
+          <li><b>Decide + Reveal.</b> The CEO nominates one; the Board (everyone else) ratifies it or overrules it, and a majority Overrule puts the best-looking proposal through instead. An overruled nominee is unmasked, and a CEO caught pushing their own sits out their next turn as CEO. Profit moves and the approved author is unmasked. Rejected proposals pass, unopened, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
           <li><b>Effect Modifiers.</b> Four Modifiers rewrite the other two cards: ∅ cancels them, ×2 doubles them, ≥0 stops them losing, ⇅ flips them. Each also has its own value.</li>
           <li><b>After Q5.</b> The table may name a saboteur. Right, and Clawback reverses every losing policy they wrote (at least +3). Wrong costs −3. Audit and Whistleblower ties are drawn at random (a tied Whistleblower names nobody).</li></ol></details>
         <div class="setup-foot"><button class="btn primary" data-a="start">Start the game</button><span class="hint">About 10 minutes against bots.</span></div>

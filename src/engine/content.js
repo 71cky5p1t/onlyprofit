@@ -10,8 +10,9 @@ const OP_CONTENT = (() => {
   const FX = [['With Thoughts and Prayers', 'null', -1], ['Retroactively', 'x2', -2], ["Per Legal's Advice", 'shield', -1], ['Without Consultation', 'flip', 0]];
   const NAMES = ['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'Pam', 'Keith', 'Linda'];
   const DEPTS = ['Finance', 'Marketing', 'Human Resources', 'Legal', 'Operations', 'Compliance', 'R&D', 'Facilities'];
-  const COLORS = ['manila', 'salmon', 'carbon', 'mint', 'gold'];
-  const TRIMS = ['plain', 'airmail', 'confidential'];
+  // cover pages: template + typeface is the look people learn to recognise
+  const TEMPLATES = ['fax', 'memo', 'wordart', 'clipart', 'report', 'dossier', 'overhead', 'certificate'];
+  const FONTS = ['grotesk', 'typewriter', 'comic', 'serif', 'poster'];
   const SUBJ = [
     ['Re:', 'Fwd:', 'Action Required:', 'Quick Win:', 'Exciting News:', 'Per My Last Memo:', 'Circling Back:', 'Low-Hanging Fruit:', 'Confidential:', 'FYI:', 'Synergy Alert:', 'Town Hall Follow-Up:'],
     ['Wellness Optimisation', 'Pension Agility', 'Break Room Monetisation', 'Synergy Roadmap', 'Headcount Harmony', 'Customer Delight', 'Mandatory Fun Week', 'Coffee Rationalisation', 'The Paperless Paper Drive', 'Cultural Realignment', 'Stakeholder Journey', 'Vision 2000', 'Right-Sizing Our Family', 'Morale Recovery', 'Lean Lunch Hours'],
@@ -27,7 +28,7 @@ const OP_CONTENT = (() => {
     stepdad: { t: ['the Stepdads', 'Custody Weekends', 'the Child Support', 'the Dad Jokes', 'the Barbecue', 'the Real Dad'], m: ['Every Second Weekend', 'Without Telling Mum', 'Per the Custody Agreement'], subj: ['Stepdad Onboarding', 'Custody Weekend Synergies', 'Barbecue Compliance'] },
   };
   // a bot answering a memo about them; {n} is the accuser
-  const DISPUTE = ["That is not what I sent.", "That envelope left my desk in perfect health.", "I'd like it minuted that {n} is lying.", "Interesting that it's {n} saying this.", "Check {n}'s desk, not mine.", "I have receipts. Not on me."];
-  return { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, COLORS, TRIMS, SUBJ, LEX };
+  const DISPUTE = ["That is not what I sent.", "That proposal left my desk in perfect health.", "I'd like it minuted that {n} is lying.", "Interesting that it's {n} saying this.", "Check {n}'s desk, not mine.", "I have receipts. Not on me."];
+  return { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, TEMPLATES, FONTS, SUBJ, LEX };
 })();
 if (typeof module !== 'undefined') module.exports = OP_CONTENT;
