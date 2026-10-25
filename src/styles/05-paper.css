@@ -12,11 +12,6 @@
 .subj-word:hover { border-color: var(--ink) }
 .input { width: 100%; border: 1.5px solid var(--stock-3); background: #FBF6EA; border-radius: 5px; padding: 9px 11px; font: 600 14px/1.3 var(--f-body); color: var(--ink) }
 .input::placeholder { color: var(--ink-3) }
-.styles { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
-.swatch { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--stock); outline: 1.5px solid var(--stock-3); padding: 0 }
-.swatch[aria-pressed="true"] { outline: 2.5px solid var(--ink) }
-.trim-btn { border: 1.5px solid var(--stock-3); background: transparent; border-radius: 999px; padding: 6px 11px; font: 700 12px/1 var(--f-body) }
-.trim-btn[aria-pressed="true"] { background: var(--ink); color: var(--stock); border-color: var(--ink) }
 .radio-list { display: grid; gap: 6px }
 .radio { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border: 1.5px solid var(--stock-3); border-radius: 6px; background: #FBF6EA; text-align: left; width: 100%; font-weight: 700 }
 .radio:hover { border-color: var(--ink-3) }

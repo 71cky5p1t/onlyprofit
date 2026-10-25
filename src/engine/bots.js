@@ -4,13 +4,13 @@ const OP_BOTS = (() => {
   const PERS = { trusting: [1, 0.5, 0.2, 0.2, 1.5], sceptic: [0.5, 1, -0.3, -0.5, 0.5], gossip: [1, 0.5, 0.1, 0, 1], beancounter: [0.75, 0.75, -0.2, -0.3, 0.75], yesman: [1, 1, 0, 0.1, 1.25] };
   const PERS_SAY = { trusting: 'believes a memo', sceptic: 'wants hard evidence', gossip: 'reports small losses', beancounter: 'trusts audited numbers', yesman: 'votes with the CEO' };
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
-  const styleKey = st => st ? st.color + '/' + st.trim : '';
+  const styleKey = st => st ? st.tpl + '/' + st.font : '';
   const make = K => {
     const { rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
     const pers = p => PERS[p.pers] || PERS.trusting;
 
     // ---------- memory ----------
-    // t: trust per seat (negative = suspect), st: envelope style -> authors seen, risk: appetite
+    // t: trust per seat (negative = suspect), st: cover-page look -> authors seen, risk: appetite
     function initMind(s) {
       for (const p of s.P) p.mind = { t: {}, st: {}, risk: +(pers(p)[2] + (rand(s) - 0.5) * 0.6).toFixed(2) };
     }
@@ -20,7 +20,7 @@ const OP_BOTS = (() => {
       if (e.autopilot || e.author === i || s.reqStyle) return;
       const m = s.P[i].mind.st, k = styleKey(e.style); m[k] = m[k] || {}; m[k][e.author] = (m[k][e.author] || 0) + 1;
     }
-    // best guess at an anonymous envelope's author, from styles seen before
+    // best guess at an anonymous proposal's author, from styles seen before
     function guess(s, i, e) {
       if (e.autopilot || s.reqStyle) return null;
       if (e.author === i) return i;
@@ -112,13 +112,13 @@ const OP_BOTS = (() => {
         stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : revealPositive(prop, left);
       } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.5 ? 'Rec' : 'Risky'; rev = revealPositive(prop, left); }
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
-      // a smart saboteur sends bad envelopes in someone else's colours
+      // a smart saboteur sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
       return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, redeal }, hand];
     }
     function autopilot(s, i, I, D) {
       const cards = draw3(s); discard(s, I);
-      return [{ author: i, cards, stamp: 'Risky', revealed: [], autopilot: true, subject: 'Interim Management Update', style: { color: 'manila', trim: 'plain' }, mode: 'autopilot', cost: 0 }, D];
+      return [{ author: i, cards, stamp: 'Risky', revealed: [], autopilot: true, subject: 'Interim Management Update', style: { tpl: 'memo', font: 'typewriter' }, mode: 'autopilot', cost: 0 }, D];
     }
     function botInheritMemo(s, i, inh) {
       const p = s.P[i];
@@ -137,9 +137,9 @@ const OP_BOTS = (() => {
       }
     }
 
-    // ---------- judging envelopes ----------
+    // ---------- judging proposals ----------
     function viewValue(s, i, e) { return e.author === i ? evs(e.cards) : estimate(e, s.loyalTier, i === s.ceo); }
-    // what this bot thinks an envelope is worth: public read, plus who it looks like, plus nerve
+    // what this bot thinks an proposal is worth: public read, plus who it looks like, plus nerve
     function feel(s, i, e) {
       if (e.author === i || e.audited || e.autopilot) return viewValue(s, i, e);
       const g = guess(s, i, e), unk = 3 - e.revealed.length;

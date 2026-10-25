@@ -42,13 +42,14 @@
     wig: '<path fill-rule="evenodd" d="M24 4c11 0 18 8 18 20 0 8-2 16-6 20H12C8 40 6 32 6 24 6 12 13 4 24 4zM16 22c0-4 4-6 8-6s8 2 8 6v14H16z"/>',
     nappy: '<path d="M4 10h40c0 18-8 30-20 30S4 28 4 10z"/><circle class="s" cx="9" cy="15" r="2" style="stroke-width:2"/><circle class="s" cx="39" cy="15" r="2" style="stroke-width:2"/>'
   };
+  // brand colours never use the suit hues (blue, mustard, violet) or profit red/green
   const BRANDS = [
     { id: 'op', mark: 'op', name: 'Only Profit', suffix: 'Inc.', mono: 'OP', color: '#D9261C', hi: '#EF4A37', lo: '#8E160F', ink: '#fff', font: 'house' },
-    { id: 'granny', mark: 'granny', name: 'Family Granny Dating', suffix: 'Pty Ltd', mono: 'FG', color: '#9B7BB8', hi: '#BBA0D4', lo: '#5E4478', ink: '#fff', font: 'round' },
-    { id: 'clown', mark: 'clown', name: 'Ultra Clown Childcare', suffix: '& Co.', mono: 'UC', color: '#E8B81E', hi: '#F7D560', lo: '#9A7406', ink: '#1a1a1a', font: 'heavy' },
-    { id: 'widow', mark: 'widow', name: 'Eternal Widow', suffix: 'Holdings', mono: 'EW', color: '#4A3E60', hi: '#6E5F8A', lo: '#211A2D', ink: '#fff', font: 'serif' },
-    { id: 'kidney', mark: 'kidney', name: 'Executive Kidney Destruction', suffix: 'Group', mono: 'EK', color: '#2F5D8A', hi: '#4F7FB0', lo: '#18344F', ink: '#fff', font: 'wide' },
-    { id: 'stepdad', mark: 'stepdad', name: 'Compassionate Stepdad Childcare', suffix: 'Ltd', mono: 'CS', color: '#C2793A', hi: '#DC9C63', lo: '#7A4519', ink: '#fff', font: 'script' }];
+    { id: 'granny', mark: 'granny', name: 'Family Granny Dating', suffix: 'Pty Ltd', mono: 'FG', color: '#C9577A', hi: '#E07D9C', lo: '#82304B', ink: '#fff', font: 'round' },
+    { id: 'clown', mark: 'clown', name: 'Ultra Clown Childcare', suffix: '& Co.', mono: 'UC', color: '#E8641E', hi: '#F68A4C', lo: '#9A3C0B', ink: '#fff', font: 'heavy' },
+    { id: 'widow', mark: 'widow', name: 'Eternal Widow', suffix: 'Holdings', mono: 'EW', color: '#5E1A2B', hi: '#84324A', lo: '#330B16', ink: '#fff', font: 'serif' },
+    { id: 'kidney', mark: 'kidney', name: 'Executive Kidney Destruction', suffix: 'Group', mono: 'EK', color: '#13807A', hi: '#3AA39C', lo: '#08504C', ink: '#fff', font: 'wide' },
+    { id: 'stepdad', mark: 'stepdad', name: 'Compassionate Stepdad Childcare', suffix: 'Ltd', mono: 'CS', color: '#7A5232', hi: '#9C7252', lo: '#4A2F19', ink: '#fff', font: 'script' }];
   const brand = () => BRANDS.find(b => b.id === setup.brand) || BRANDS[0];
   const markSVG = id => `<svg class="mk" viewBox="0 0 48 48" aria-hidden="true">${MARKS[id] || MARKS.op}</svg>`;
   const brandMark = () => markSVG(brand().mark);

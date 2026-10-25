@@ -1,4 +1,4 @@
-  // ---------- cards: drag between envelope and hand, or tap ----------
+  // ---------- cards: drag between the policy and the hand, or tap ----------
   function swapSuit(su) {
     const next = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su);
     if (costWith({ swaps: next }) > 3) return refuse(su);
@@ -10,7 +10,7 @@
     draft.reveals = next; render();
   }
   function refuse(su) {
-    toast('Not enough tokens.');
+    toast('Not enough overtime.');
     document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
   }
   const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : revealSuit(su));
@@ -65,12 +65,13 @@
     if (k === 'custom') {
       draft.custom = el.value; const was = draft.useCustom; draft.useCustom = !!el.value.trim();
       if (was !== draft.useCustom) document.querySelectorAll('.subj-word').forEach(b => { b.disabled = draft.useCustom; });
-      const pv = document.querySelector('.preview .env-subj'); if (pv) pv.textContent = subjectOf(draft);
+      refreshPreview();
     }
     if (k === 'claimStamp') draft.claim.stamp = el.value;
     if (k === 'claimVal') draft.claim.val = +el.value;
-    if (k === 'nextStyle') { const [c, t] = el.value.split('/'); draft.nextStyle = el.value ? { color: c, trim: t } : null; }
+    if (k === 'nextStyle') { const [t, f] = el.value.split('/'); draft.nextStyle = el.value ? { tpl: t, font: f } : null; }
   });
 
   // keep a game in progress across page updates
   if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => ({ S, draft, setup, debug: ui.debug }));
+  $app.addEventListener('scroll', ev => { if (ev.target.dataset && 'wheel' in ev.target.dataset) onWheel(ev.target); }, true);

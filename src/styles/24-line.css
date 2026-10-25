@@ -1,0 +1,26 @@
+/* ---------- the policy as one sentence, highlighter in the suit colours ---------- */
+.line { margin: 0; max-width: 100%; padding: 9px 12px 8px; background: var(--stock); color: var(--ink); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6);
+  font: 800 15px/1.55 var(--f-body); letter-spacing: -.01em; text-align: center; text-wrap: balance; transform: rotate(-.6deg) }
+.line .ph { white-space: nowrap; position: relative }
+.line mark { color: inherit; padding: 0 3px; border-radius: 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; white-space: normal;
+  background: linear-gradient(100deg, transparent 0 2px, color-mix(in srgb, var(--suit) 42%, transparent) 4px calc(100% - 3px), transparent) }
+.line .hid mark { background: none; color: var(--ink); letter-spacing: -.12em; font-weight: 400 }
+.line .v { font: 900 .68em/1 var(--f-body); vertical-align: .55em; margin-left: 1px }
+.line .v.pos { color: var(--good) } .line .v.neg { color: var(--red) } .line .v.gold { color: var(--sunset) }
+.line .fxs { font: 400 .7em/1 var(--f-seg); font-style: normal; vertical-align: .5em; margin-left: 3px; background: #1B1C1B; color: #fff; padding: 2px 3px 1px; border-radius: 2px }
+.line .sum { font: 400 1.1em/1 var(--f-seg); margin-left: 8px; white-space: nowrap }
+.line .sum.pos { color: var(--good) } .line .sum.neg { color: var(--red) }
+.line .now { display: none }
+/* ratified: Action and Target land, the Modifier blinks in, makes its noise, rewrites the other two */
+.line.go .ph:nth-child(1) { animation: ph-in .3s ease .5s both } .line.go .ph:nth-child(2) { animation: ph-in .3s ease .75s both }
+.line.go .mod { animation: ph-blink .7s steps(1) 1.15s both }
+.line.go .sfx { position: absolute; left: 50%; bottom: 100%; z-index: 3; pointer-events: none; font: 400 26px/1 var(--f-poster); letter-spacing: .02em; color: #FFE14D; white-space: nowrap;
+  -webkit-text-stroke: 1.5px var(--ink); text-shadow: 2px 2px 0 var(--ink); font-style: normal; animation: sfx 1.1s cubic-bezier(.2,.9,.3,1.3) 1.85s both }
+.line.go .was { animation: was .25s ease 2s both } .line.go .now { display: inline; animation: now .35s var(--bounce) 2.15s both }
+.line.go .sum { animation: ph-in .3s ease 2.5s both }
+@keyframes ph-in { from { opacity: 0; transform: translateY(-6px) } }
+@keyframes ph-blink { 0% { opacity: 0 } 15% { opacity: 1 } 30% { opacity: 0 } 45% { opacity: 1 } 60% { opacity: 0 } 75%, 100% { opacity: 1 } }
+@keyframes sfx { 0% { opacity: 0; transform: translate(-50%, 10px) rotate(-14deg) scale(.3) } 30% { opacity: 1; transform: translate(-50%, -6px) rotate(-8deg) scale(1.15) } 70% { opacity: 1; transform: translate(-50%, -10px) rotate(-6deg) scale(1) } 100% { opacity: 0; transform: translate(-50%, -22px) rotate(-6deg) scale(.95) } }
+@keyframes was { to { opacity: .35; text-decoration: line-through } }
+@keyframes now { from { opacity: 0; transform: scale(2) } }
+@media (prefers-reduced-motion: reduce) { .line.go * { animation: none !important } .line.go .sfx { display: none } }

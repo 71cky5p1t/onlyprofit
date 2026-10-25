@@ -6,9 +6,10 @@
     if (!S) { $app.innerHTML = mast() + setupHTML(); return; }
     const board = S.phase === 'end' || S.phase === 'whistle'
       ? `${observerHTML()}${S.phase === 'end' ? exitHTML() : ''}<div class="two">${ledgerHTML()}${staffHTML()}</div>${feedHTML()}`
-      : `${observerHTML()}${envelopesHTML()}${feedHTML()}<div class="two">${ledgerHTML()}${staffHTML()}</div>`;
+      : `${observerHTML()}${pilesHTML()}${feedHTML()}<div class="two">${ledgerHTML()}${staffHTML()}</div>`;
     if (!(S.phase === 'work' && draft)) stopTimer();
     $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${board}</main>${desk()}</div></div>`;
+    syncWheel();
     transition();
   }
   // stripe wipe when the phase label changes; the profit calculator counts up to the new total

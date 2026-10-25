@@ -18,7 +18,7 @@ No dependencies. The page loads its fonts from Google Fonts and works offline wi
 | Path | What it is |
 | --- | --- |
 | `src/engine/` | Pure engine: `core.js` rules and state, `bots.js` bot players, `content.js` words. No DOM, no `Math.random`, no clock. |
-| `src/ui/*.js` | Browser UI, split by screen (core, brand, desk, clock-in, render, events, drag). Concatenated in order into one scope. |
+| `src/ui/*.js` | Browser UI, split by screen (core, brand, clip-art, cover pages, desk, clock-in, render, events, drag). Concatenated in order into one scope. |
 | `src/head.html` | Page title and fonts. |
 | `src/styles/*.css` | Styles, in cascade order (tokens in `01-base.css`). |
 | `build.sh` | Builds `dist/only-profit.html` from the files above. |
@@ -38,9 +38,9 @@ Seat 0 is the human. With `spectate: true` every seat is a bot and the game move
 
 ## Rule assumptions not yet in the rules doc
 
-- Whoever inherits a rejected envelope learns who wrote it. That is what makes complaint memos possible.
+- Whoever inherits a rejected proposal learns who wrote it. That is what makes complaint memos possible.
 - Complaints are public memos on a bulletin board. Nobody can check them, and the human may lie.
-- Cards revealed with work tokens are shown to the whole table, so the Board can judge the CEO's nominee.
+- Cards revealed with overtime hours (work tokens) are shown to the whole table, so the Board can judge the CEO's nominee.
 - Board vote, Clawback, ruthless saboteur bots, credibility-weighted warnings and loyal temperaments were added 2026-10-25 after the playtest review (https://claude.ai/artifact/66RMt61UfSLPKBWumRuCAd). Harness: `sim/playtest/`.
 - No phase timers yet.
 

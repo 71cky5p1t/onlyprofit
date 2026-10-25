@@ -5,9 +5,7 @@
 .bar-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 10px 9px }
 .plate { margin: 0; font: 800 12px/1 var(--f-body); letter-spacing: .16em; text-transform: uppercase; color: #E9C77B; padding: 8px 12px 7px; border-radius: 3px;
   background: linear-gradient(#2a2925, #0f0f0e); border: 1px solid #000; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 0 0 2px rgba(233,199,123,.2); text-shadow: 0 -1px 0 rgba(0,0,0,.6) }
-.desk-head .purse { background: rgba(0,0,0,.4) }
-.desk-head .purse .coin { width: 20px; height: 20px }
-.desk-body { padding: 0 4px 18px; display: grid; gap: 16px }
+.desk-body { padding: 0 4px 18px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px }
 .desk-foot { position: sticky; bottom: 0; z-index: 5; padding: 10px; border-radius: 4px 4px 10px 10px; background: linear-gradient(#2a2b27, #171816); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 -10px 18px -12px rgba(0,0,0,.8) }
 .desk-foot .btn.back { border-color: rgba(241,233,212,.25); color: var(--on-table) }
 .desk .label { color: var(--on-table-2) }
@@ -35,7 +33,7 @@
 .bar3 .s-Rec[aria-pressed="true"] { color: var(--good) } .bar3 .s-Risky[aria-pressed="true"] { color: #B4561C } .bar3 .s-Not[aria-pressed="true"] { color: var(--red) }
 .bar3.small button { font-size: 10px; padding: 8px 3px; letter-spacing: .03em }
 .bar3.two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 10px }
-.bar3 .b-ratify[aria-pressed="true"] { color: var(--good) } .bar3 .b-overrule[aria-pressed="true"] { color: var(--red) }
+.bar3 .b-ratify[aria-pressed="true"] { color: var(--good) } .bar3 .b-open[aria-pressed="true"] { color: var(--red) }
 .memo { display: grid; gap: 8px }
 .lie { display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
 .drop { position: relative; display: block }
@@ -45,34 +43,11 @@
 .two-keys { display: grid; grid-template-columns: auto 1fr; gap: 10px }
 .desk .btn.back { border-color: var(--table-rule); color: var(--on-table) }
 .desk .btn.back:hover { background: rgba(0,0,0,.2) }
-.styles .sep { width: 1px; height: 22px; background: var(--table-rule); margin-inline: 2px }
-.desk .swatch { border-color: var(--baize); outline-color: rgba(0,0,0,.3) }
-.desk .swatch[aria-pressed="true"] { outline: 2.5px solid var(--stock) }
-.desk .trim-btn { border-color: var(--table-rule); color: var(--on-table) }
-.desk .trim-btn[aria-pressed="true"] { background: var(--stock); color: var(--ink); border-color: var(--stock) }
 .desk .subj-word { color: var(--ink) }
 .desk .subj-word:disabled { opacity: .4 }
-.preview { display: grid; padding: 4px 6px 0 }
-.preview .env { min-height: 0; transform: rotate(-1deg) }
-/* envelopes to pick from */
-.minis { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 30px 12px; padding-top: 18px }
-.mini { --c: var(--env-manila); position: relative; aspect-ratio: 1.42; max-width: 100%; border: 0; border-radius: 4px; background: var(--c); color: var(--ink); padding: 9px 10px 8px; text-align: left; display: grid; grid-template-rows: auto 1fr auto; gap: 2px; overflow: hidden; box-shadow: var(--lift); transition: transform .2s var(--bounce), box-shadow .2s }
-.mini::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 52%; pointer-events: none;
-  background: linear-gradient(to top right, transparent calc(50% - .5px), rgba(0,0,0,.12) 50%, transparent calc(50% + 1px)) left / 50% 100% no-repeat, linear-gradient(to top left, transparent calc(50% - .5px), rgba(0,0,0,.12) 50%, transparent calc(50% + 1px)) right / 50% 100% no-repeat }
-.mini.c-salmon { --c: var(--env-salmon) } .mini.c-carbon { --c: var(--env-carbon) } .mini.c-mint { --c: var(--env-mint) } .mini.c-gold { --c: var(--env-gold) }
-.mini.t-confidential { box-shadow: inset 0 5px 0 var(--ink), var(--lift) }
-.mini.t-airmail { background-image: repeating-linear-gradient(135deg, var(--red) 0 8px, var(--c) 8px 16px, #2C46B8 16px 24px, var(--c) 24px 32px); background-size: 100% 5px; background-repeat: no-repeat; background-position: 0 100% }
-.mini .mid { font: 900 30px/1 var(--f-body); letter-spacing: -.04em; position: relative }
-.mini .env-stamp { position: absolute; right: 8px; top: 10px; font-size: 8.5px; padding: 3px 4px; border-width: 2px }
-.mini .ms { align-self: end; font: 800 11px/1.15 var(--f-body); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
-.mini .mg { display: flex; gap: 3px; position: absolute; left: 10px; top: 46px }
-.mini .mg b, .mini .mg i { font: 900 11px/16px var(--f-body); min-width: 16px; height: 16px; text-align: center; border-radius: 2px; background: var(--stock); box-shadow: 0 1px 0 rgba(0,0,0,.2) }
-.mini .mg i { background: var(--red); opacity: .55 }
-.mini .mg .pos { color: var(--good) } .mini .mg .neg { color: var(--red) } .mini .mg .gold { color: var(--sunset) }
 .mini .yours { position: absolute; left: 0; bottom: 0; font: 800 8.5px/1 var(--f-body); font-style: normal; letter-spacing: .1em; text-transform: uppercase; background: var(--ink); color: var(--stock); padding: 3px 6px 3px 10px; border-radius: 0 3px 0 0 }
 .mini[aria-pressed="true"], .nametag[aria-pressed="true"] { transform: translateY(-5px) rotate(-1.2deg); box-shadow: 0 0 0 3px var(--gold), 0 18px 26px -12px rgba(0,0,0,.75) }
 .mini.none, .nametag.none { background: transparent; box-shadow: inset 0 0 0 2px var(--table-rule); color: var(--on-table-2); display: grid; place-items: center; font: 800 12px/1.2 var(--f-body); text-transform: uppercase; letter-spacing: .08em }
-.mini.none::before { display: none }
 .mini.none[aria-pressed="true"], .nametag.none[aria-pressed="true"] { color: var(--on-table); box-shadow: inset 0 0 0 2px var(--gold) }
 /* people to pick from: conference name tags */
 .tags { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px }

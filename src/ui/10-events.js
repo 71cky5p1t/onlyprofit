@@ -21,14 +21,15 @@
       case 'redeal': draft.redeal = true; ui.deal = 'redeal'; toast('Inherited cards shredded. Three fresh ones dealt.'); render(); break;
       case 'stamp': draft.stamp = d.v; render(); break;
       case 'finalise': finalise(); break;
-      case 'back': draft.page = 1; render(); break;
+      case 'back': draft.page = draft.page === 3 && !S.reqStyle ? 2 : 1; render(); break;
       case 'reroll': { const i = +d.i, l = (S.subj || OP.SUBJ)[i].length; let k; do { k = Math.floor(Math.random() * l); } while (k === draft.words[i] && l > 1); draft.words[i] = k; render(); break; }
-      case 'color': draft.style.color = d.v; render(); break;
-      case 'trim': draft.style.trim = d.v; render(); break;
+      case 'tpl': Object.assign(draft.style, { tpl: d.v, font: TPL[d.v].font, align: TPL[d.v].align }); if (!draft.artSet) draft.style.art = TPL[d.v].art; draft.page = 3; ui.arrive = true; render(); break;
+      case 'font': draft.style.font = d.v; render(); break;
+      case 'align': draft.style.align = d.v; render(); break;
+      case 'art': { const w = b.closest('[data-wheel]'); if (w) w.scrollTo({ left: ART.indexOf(d.v) * WHEEL, behavior: still() ? 'auto' : 'smooth' }); break; }
       case 'claim': draft.claim.kind = d.k; render(); break;
       case 'seal': seal(); break;
       case 'sel': ui.sel = d.id; render(); break;
-      case 'audit': dispatch({ type: 'auditVote', target: ui.sel }); break;
       case 'approve': {
         const id = ui.sel, el = document.querySelector(`.desk .mini[data-id="${id}"]`);
         if (!el || still()) { dispatch({ type: 'approve', id }); break; }
