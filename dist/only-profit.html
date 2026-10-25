@@ -875,8 +875,9 @@ const OP_BOTS = (() => {
         [cost, prop, hand] = argmax(plans(I, D), x => [-evs(x[1]), -x[0]]);
       } else {
         [cost, prop, hand] = argmax(plans(I, D), ([c, pr]) => {
-          const env = { cards: pr, revealed: revealPositive(pr, tok - c), stamp: 'Risky' };
-          return [evs(pr) <= -1 ? 1 : 0, estimate(env, L, true) - evs(pr)];
+          // a trap: looks good on the cards shown, loses money
+          const shown = revealPositive(pr, tok - c).reduce((a, su) => a + ev(pr[su]), 0);
+          return [evs(pr) <= -1 ? 1 : 0, 1.5 * shown - evs(pr)];
         });
       }
       const left = tok - cost, v = evs(prop);
@@ -886,7 +887,7 @@ const OP_BOTS = (() => {
         rev = tier === 'naive' ? [] : v >= 1 ? revealPositive(prop, left, tier === 'smart') : [];
       } else if (mode === 'bad') {
         stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : revealPositive(prop, left);
-      } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.3 ? 'Rec' : 'Risky'; rev = revealPositive(prop, left); }
+      } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.5 ? 'Rec' : 'Risky'; rev = revealPositive(prop, left); }
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
       // a smart saboteur sends bad envelopes in someone else's colours
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
