@@ -14,7 +14,7 @@ Writing the script meant finding a picture for every rule. Where there was no cl
 
 6. **Saboteurs have nothing to watch.** Loyal players watch the calculator crawl to the target. Saboteurs now score their approved losses (PR #24) but no object shows that score to them. Their role memo, or the back of their name tag on their phone, should keep a private tally they can glance at. Without it the end-game shot is explaining a number nobody saw all game.
 
-7. **Written Warnings aren't in the reel.** The warning vote happens every quarter, but there's no room for it in 95 seconds and it's still under review alongside the end vote. It's a stinger for now (`vo-j-warning`). If warnings stay, the reveal phone screen needs to read as a vote without its "Written Warning" heading doing the explaining.
+7. **Written Warnings aren't in the reel.** The warning vote happens every quarter, but there's no room for it in 95 seconds and it's still under review alongside the end vote. It's a stinger for now (`j-warning`). If warnings stay, the reveal phone screen needs to read as a vote without its "Written Warning" heading doing the explaining.
 
 8. **The pace isn't readable.** A target of +21 over five quarters means about +4 a quarter, but the calculator only shows the total. A notch per quarter on the meter (where you should be by now) would let the goal shot say "hit the target" and the table see if it's on track, without a number.
 
