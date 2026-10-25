@@ -282,7 +282,7 @@ const OP = (() => {
   ];
   const VALUES = [2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, 'V', 'V'];
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 17, 5: 19, 6: 19, 7: 20, 8: 21 };
+  const TARGETS = { 4: 18, 5: 20, 6: 20, 7: 21, 8: 21 }; // +1 over sim2 at 4–7p: the prototype's bots win ~5 points more often than the sim's
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
