@@ -8,7 +8,9 @@ while(s.phase!=='end'){
  else if(s.phase==='decide') { if(s.ceo===0) go({type:'approve',id:s.envs[0].id}); else go({type:'advance'}); }
  else if(s.phase==='board') go(seed%4?{type:'boardVote',vote:seed%3?'open':'ratify'}:{type:'advance'});
  else if(s.phase==='reveal') go({type:'warnVote',target:String(1+seed%(n-1))});
- else if(s.phase==='review') go({type:'advance'});
+ else if(s.phase==='review') { if(s.ceo===0&&seed%2){const t=s.envs.find(e=>e.author!==0&&!e.autopilot&&!s.P[e.author].pip); if(t) go({type:'investigate',target:String(t.author)});} go({type:'advance'}); }
  else if(s.phase==='whistle') go({type:'whistleVote',target:'none'});
-}}}
+}
+ if(s.investigations.some(q=>q.guilty&&!s.P[q.t].pip)) throw new Error('guilty but not on a PIP');
+}}
 console.log('ok');

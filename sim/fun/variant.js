@@ -8,6 +8,15 @@ const V = {
   reveal1: [['core.js', '.slice(0, Math.max(0, tokens));', '.slice(0, Math.min(1, Math.max(0, tokens)));']],
   // the Modifier (fine print) can never be shown
   fineprint: [['core.js', 'const order = [0, 1, 2]', 'const order = [0, 1]'], ['core.js', 'reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3)', 'reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 2)']],
+  // no end-game Whistleblower
+  nowhistle: [['core.js', "named: winner === 'none' ? null : +winner };", "named: null };"]],
+  // no Written Warning votes; only the CEO acts
+  nowarn: [['core.js', 'passed = mx > s.n / 2;', 'passed = false;']],
+  // targets without the whistle
+  lowtgt: [['core.js', 'const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };', 'const TARGETS = { 4: 17, 5: 19, 6: 20, 7: 21, 8: 21 };']],
+  // only the final CEO names a saboteur at the end
+  ceowhistle: [['core.js', "const { winner, count } = tally(s, s.wb, { noneWinsTies: true });", "const { winner, count } = tally(s, { [s.ceo]: s.wb[s.ceo] ?? 'none' }, { noneWinsTies: true });"]],
+  ceotgt: [['core.js', 'const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };', 'const TARGETS = { 4: 19, 5: 21, 6: 21, 7: 22, 8: 23 };']],
 };
 function load(names) {
   const dir = path.join(OUT, names.join('+') || 'base'); fs.mkdirSync(dir, { recursive: true });
