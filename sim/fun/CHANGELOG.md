@@ -57,3 +57,13 @@ Bots open the nominee when it trails their own read, wears the CEO's or a suspec
 
 The table is now very good at finding the saboteur. Humans will lie better than these bots, so this needs a live playtest before anything is softened.
 The `tamper` and `openNom` experiments were removed from `variant.js` (one is now the rule, and the other hooked into the old Audit).
+
+## Round 4 (2026-10-25): UI and language continuity
+
+Full review with screenshots: `/mnt/project-files/only-profit/refinement/ui-review-round4.md`. Fixed in this round:
+- The TV no longer shows "From You · Legal" or your department before approval. The shared screen only names authors once their proposal is approved. The Auditor's sight moved to the phone.
+- Explanatory labels are gone ("Memos are unverifiable", "Awaiting the CEO", "Approved policy unmasked", "Your desk is open", "Playtest build 0.4"). "Clawback" jargon on the Whistleblower phone became `+ · −3`.
+- The TV says "Quarter closed" when the phone does. Pages sit in one row at 4–8 players.
+- The calculator's unlit segments are dimmer, so "8+5.0" no longer reads as eight plus five.
+- The end screen is now an Annual report: the five approved cover pages with their sentences, saboteur pages stamped, the total against the target, and everyone's name tag stamped Loyal or Saboteur. The old table is still there in Observer mode.
+Handed to the UI thread: TV panels as objects, phone downtime screens, squiggle-to-sign on the votes.

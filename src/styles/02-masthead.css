@@ -17,7 +17,7 @@
 .meter-lcd .ann { font-size: 9.5px; letter-spacing: .12em; display: flex; justify-content: space-between; gap: 8px }
 .meter-lcd .ann .off { opacity: .25 }
 .meter-lcd .v { font-size: 25px; line-height: 1; text-align: right; font-variant-numeric: tabular-nums }
-.meter-lcd .v .ghost { opacity: .13 }
+.meter-lcd .v .ghost { opacity: .06 }
 .meter-lcd .v small { font-size: 13px; opacity: .7 }
 .meter-track { position: relative; width: 92px; height: 32px; display: grid; align-content: center }
 .meter-track .bar { position: relative; height: 8px; background: #1C1D1B; border-radius: 4px; overflow: hidden }

@@ -59,7 +59,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .meter-lcd .ann { font-size: 9.5px; letter-spacing: .12em; display: flex; justify-content: space-between; gap: 8px }
 .meter-lcd .ann .off { opacity: .25 }
 .meter-lcd .v { font-size: 25px; line-height: 1; text-align: right; font-variant-numeric: tabular-nums }
-.meter-lcd .v .ghost { opacity: .13 }
+.meter-lcd .v .ghost { opacity: .06 }
 .meter-lcd .v small { font-size: 13px; opacity: .7 }
 .meter-track { position: relative; width: 92px; height: 32px; display: grid; align-content: center }
 .meter-track .bar { position: relative; height: 8px; background: #1C1D1B; border-radius: 4px; overflow: hidden }
@@ -339,6 +339,11 @@ button.pg { cursor: pointer } button.pg:hover .cp-w { transform: translateY(-4px
 .placeholder.sealed { border: 0; color: transparent; position: relative; background: var(--mark) center / 30% no-repeat, radial-gradient(circle at 50% 50%, var(--brand) 0 34px, transparent 35px), repeating-linear-gradient(45deg, rgba(255,255,255,.12) 0 4px, transparent 4px 9px), var(--brand);
   box-shadow: inset 0 0 0 6px var(--stock), inset 0 0 0 7px rgba(0,0,0,.2), 3px 3px 0 -1px #EAE3D2, 0 16px 24px -14px rgba(0,0,0,.8); transform: rotate(-1deg) }
 .placeholder.sealed:nth-child(even) { transform: rotate(1.2deg) }
+/* one row on the TV, however many pages */
+@media (min-width: 721px) { .pages { flex-wrap: nowrap; gap: 22px }
+  .pages.n6 .pg { width: 168px } .pages.n6 .cp-w { --k: .58 } .pages.n6 .placeholder { width: 162px; height: 229px }
+  .pages.n7 .pg { width: 148px } .pages.n7 .cp-w { --k: .51 } .pages.n7 .placeholder { width: 143px; height: 202px }
+  .pages.n8 .pg { width: 130px } .pages.n8 .cp-w { --k: .45 } .pages.n8 .placeholder { width: 126px; height: 178px } }
 @media (max-width: 720px) { .pg { width: 150px } .pg .cp-w { --k: .52 } .placeholder { width: 146px; height: 206px } }
 /* ---------- paper on the table: bulletin board, ledger tape, staff ---------- */
 .feed { display: grid; background: var(--stock); color: var(--ink); border-radius: 4px; box-shadow: var(--lift); position: relative }
@@ -768,6 +773,23 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .mini .peek { z-index: 0 } .mini .cp-w { z-index: 1 }
 .board-nom { display: grid; justify-items: center; gap: 12px; padding: 4px 0 2px }
 .desk .line { font-size: 14px; margin-bottom: 4px }
+/* ---------- annual report ---------- */
+.report { display: grid; gap: 34px; justify-items: center; padding: 8px 0 18px }
+.rp-pages { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap }
+.rp-pg { margin: 0; display: grid; gap: 10px; justify-items: center; width: 160px }
+.rp-q { font: 700 11px/1 var(--f-seg); letter-spacing: .14em; color: var(--on-table-2) }
+.rp-cover { position: relative }
+.rp-pg figcaption { font: 800 13px/1 var(--f-body); color: var(--on-table) }
+.rp-stamp { font: 900 15px/1 var(--f-body); font-style: normal; text-transform: uppercase; letter-spacing: .04em; padding: 6px 9px 5px; border: 3.5px solid currentColor; border-radius: 4px; transform: rotate(-9deg); mix-blend-mode: multiply; background: rgba(251,248,241,.55) }
+.rp-cover .rp-stamp { position: absolute; left: 50%; top: 82%; font-size: 18px; box-shadow: 0 0 0 3px rgba(251,248,241,.7); translate: -50% -50%; animation: thump .5s cubic-bezier(.2,.9,.3,1.3) .4s both }
+.rp-cover .rp-stamp.back { top: 64%; transform: rotate(6deg) }
+.rp-stamp.sab { color: var(--red) } .rp-stamp.ok { color: var(--good) } .rp-stamp.back { color: #B4561C }
+.rp-total { display: flex; align-items: center; gap: 22px }
+.rp-total .num { font-size: 56px; line-height: 1; color: var(--on-table) } .rp-total small { font-size: 20px; color: var(--on-table-2); margin-left: 6px }
+.rp-stamp.big { font-size: 22px; padding: 9px 14px 7px; mix-blend-mode: normal; background: transparent }
+.rp-staff { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center }
+.rp-tag { width: 128px; padding-bottom: 14px } .rp-tag .stk { justify-self: center; margin-top: 6px } .rp-tag .rp-stamp { justify-self: center; margin-top: 4px; font-size: 11px; border-width: 2.5px }
+@media (prefers-reduced-motion: reduce) { .rp-cover .rp-stamp { animation: none } }
 </style>
 <div id="app"></div>
 <script>
@@ -1391,8 +1413,7 @@ const OP = (() => {
       case 'approve': if (s.phase !== 'decide' || seat !== s.ceo || !humanTurn) err = 'Only the CEO can nominate.'; else err = nominate(s, a.id, E); break;
       case 'boardVote':
         if (s.phase !== 'board' || !humanTurn || seat === s.ceo) { err = 'No Board vote open.'; break; }
-        // 'overrule' is the old UI's word for 'open'
-        s.bvotes[seat] = a.vote === 'open' || a.vote === 'overrule' ? 'open' : 'ratify'; resolveBoard(s, E); break;
+        s.bvotes[seat] = a.vote === 'open' ? 'open' : 'ratify'; resolveBoard(s, E); break;
       case 'warnVote':
         if (s.phase !== 'reveal' || !humanTurn) { err = 'No warning vote open.'; break; }
         s.wvotes[seat] = a.target === 'none' ? 'none' : +a.target; resolveWarn(s, E); break;
@@ -1528,7 +1549,7 @@ const OP = (() => {
   const isCEO = () => mine() && S.ceo === ME;
   const STAMP = OP.STAMP_LABEL;
   const TIER = { smart: 'Smart', basic: 'Basic', naive: 'Gullible', patient: 'Patient', blatant: 'Blatant' };
-  const PHASE = { brief: 'Onboarding', work: 'Work', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Reveal', whistle: 'Whistleblower', end: 'Exit interview' };
+  const PHASE = { brief: 'Onboarding', work: 'Work', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Quarter closed', whistle: 'Whistleblower', end: 'Annual report' };
   // ---------- actions ----------
   function dispatch(a) {
     const r = OP.apply(S, S.spectate ? -1 : ME, a);
@@ -1676,7 +1697,7 @@ const OP = (() => {
     const stats = S ? `<span class="tab"><b>Q${Math.max(1, S.r)}</b><span>${PHASE[S.phase]}</span></span>
       <div class="stat"><span class="label">CEO</span><b>${S.r ? esc(nm(S.ceo)) : '—'}</b></div>${meter()}` : '';
     return `<header class="mast"><div class="wrap">
-      <div class="logo"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="logo-type"><span class="brand-name">${esc(brand().name)}</span><small>${esc(brand().suffix)} · Playtest build 0.4</small></span></div>
+      <div class="logo"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="logo-type"><span class="brand-name">${esc(brand().name)}</span><small>${esc(brand().suffix)}</small></span></div>
       <div class="mast-stats">${stats}<div class="tools">
         <button class="chip-btn" data-a="debug" aria-pressed="${ui.debug}" title="Show hidden roles, proposal contents and bot reasoning">Observer</button>
         ${S ? '<button class="chip-btn" data-a="quit">New game</button>' : ''}</div></div></div></header>`;
@@ -1687,22 +1708,17 @@ const OP = (() => {
     const face = c.fx ? `${glyph(c.v)}<span class="dymo" title="${FXSAY[c.fx]}"><i class="m0"></i><i class="m1"></i><b>${FXSYM[c.fx]}</b></span>` : glyph(c.v);
     return `<div class="card s-${c.s} ${c.fx ? 'has-fx' : ''} ${cls || ''}" ${attrs || ''}><div class="cf" style="--fit:${fit(c.w)}"><span class="word">${esc(c.w)}</span><div class="fx">${face}</div></div>${extra || ''}</div>`;
   }
-  function authorVisible(e) {
-    if (e.approved || ui.debug) return true;
-    if (!mine()) return false;
-    if (e.author === ME) return true;
-    return me().spec === 'Auditor' && !me().leave;
-  }
+  // the table is a shared screen: authors appear only once approved
+  const authorVisible = e => e.approved || ui.debug;
   // one proposal on the TV: the cover page, its sentence once anything is shown, then the paperwork
   function pageHTML(e, opt) {
     opt = opt || {};
     const who = authorVisible(e) ? (e.autopilot ? 'Autopilot' : (mine() && e.author === ME ? 'You' : nm(e.author))) : null;
-    const dept = (ui.debug || e.approved || (mine() && e.author === ME)) ? OP.DEPTS[e.dept] : null;
+    const dept = authorVisible(e) ? OP.DEPTS[e.dept] : null;
     const tags = [];
     if (e.audited) tags.push('<span class="pill blue">Audited</span>');
     if (e.autopilot) tags.push('<span class="pill grey">Autopilot</span>');
     if (e.unmasked && !e.approved) tags.push(`<span class="pill red">Overruled · ${e.author === S.ceo ? 'the CEO’s own' : esc(nm(e.author))}</span>`);
-    if (mine() && !ui.debug && me().spec === 'Auditor' && e.author !== ME && !e.approved) tags.push('<span class="pill gold">Auditor sight</span>');
     const dbg = ui.debug ? `<div class="env-dbg">${S.P[e.author].sab ? 'SAB' : 'LOYAL'} · ${esc(e.mode)} · true ${fmt(evs(e.cards))} · table est ${OP.estimate(e, S.loyalTier, false).toFixed(1)} · spent ${e.cost}${e.redeal ? ' · re-dealt' : ''}</div>` : '';
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
@@ -1721,7 +1737,7 @@ const OP = (() => {
       return `<div class="feed-item ${f.kind}">${q}<div>${esc(f.text)}</div></div>`;
     };
     const cur = S.feed.filter(f => f.r === S.r), old = S.feed.filter(f => f.r !== S.r && f.r > 0);
-    return `<section><div class="section-head"><h2>Bulletin board</h2><span class="label">Memos are unverifiable</span></div>
+    return `<section><div class="section-head"><h2>Bulletin board</h2></div>
       <div class="feed">${cur.length ? cur.map(item).join('') : '<div class="feed-empty">Nothing posted this quarter yet.</div>'}</div>
       ${old.length ? `<details class="rules" style="margin-top:10px"><summary>Earlier quarters (${old.length})</summary><div class="feed" style="margin-top:8px">${old.map(item).join('')}</div></details>` : ''}</section>`;
   }
@@ -1744,10 +1760,10 @@ const OP = (() => {
       const meta = [];
       if (S.r && S.ceo === p.id && S.phase !== 'end' && S.phase !== 'whistle') meta.push('<span class="pill">CEO</span>');
       if (p.leave) meta.push('<span class="pill grey">Stood down</span>');
-      if (p.spec && (ui.debug || (mine() && p.id === ME))) meta.push(`<span class="pill gold">${p.spec}</span>`);
+      if (p.spec && ui.debug) meta.push(`<span class="pill gold">${p.spec}</span>`);
       if (ui.debug || S.phase === 'end') meta.push(p.sab ? '<span class="pill red">Saboteur</span>' : '<span class="pill green">Loyal</span>');
       meta.push(stickers(p));
-      const dept = (S.r && (ui.debug || (mine() && p.id === ME))) ? `<span class="muted" style="font-size:12px"> · ${OP.DEPTS[p.dept]}</span>` : '';
+      const dept = S.r && ui.debug ? `<span class="muted" style="font-size:12px"> · ${OP.DEPTS[p.dept]}</span>` : '';
       return `<div class="staff-row"><div><span class="staff-name">${p.id === ME && mine() && ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : esc(p.name)}</span>${dept}</div><div class="staff-meta">${meta.join('')}</div></div>`;
     }).join('');
     const sched = OP.ceoSchedule(S).map(c => `<div class="${c.r === S.r && S.phase !== 'end' && S.phase !== 'whistle' ? 'now' : ''}"><span class="label">Q${c.r}</span><span class="nm">${c.who == null ? esc(c.note) : esc(nm(c.who))}</span></div>`).join('');
@@ -1767,8 +1783,8 @@ const OP = (() => {
     const ph = S.phase;
     if (ph === 'work') {
       const sealed = S.envs.length;
-      const cells = S.P.map((p, i) => i < sealed ? '<div class="placeholder sealed">Handed in</div>' : `<div class="placeholder">${mine() && S.work[ME] && i === sealed ? 'Your desk is open' : 'Working…'}</div>`).join('');
-      return `<section><div class="section-head"><h2>Proposals</h2><span class="label">${sealed} of ${S.n} handed in</span></div><div class="pages">${cells}</div></section>`;
+      const cells = S.P.map((p, i) => i < sealed ? '<div class="placeholder sealed">Handed in</div>' : '<div class="placeholder"></div>').join('');
+      return `<section><div class="pages n${S.n}">${cells}</div></section>`;
     }
     if (!['decide', 'board', 'reveal', 'review'].includes(ph)) return '';
     const click = ph === 'decide' && isCEO() ? 'sel' : null;
@@ -1776,9 +1792,7 @@ const OP = (() => {
     const animKey = `${S.r}|${ph}`, anim = ui.envAnim !== animKey && !still();
     ui.envAnim = animKey;
     const motion = e => !anim ? '' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
-    const hint = ph === 'decide' ? (isCEO() ? 'You are CEO. Nominate one.' : 'Awaiting the CEO') : ph === 'board' ? `The Board is voting on ${icon(S.nominee)}` : 'Approved policy unmasked';
-    return `<section><div class="section-head"><h2>Proposals on the table</h2><span class="label">${hint}</span></div>
-      <div class="pages">${envs.map(e => pageHTML(e, { motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
+    return `<section><div class="pages n${envs.length}">${envs.map(e => pageHTML(e, { motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
   function exitHTML() {
     const rounds = S.history.map(h => {
@@ -1795,7 +1809,7 @@ const OP = (() => {
         <div class="scroll-x"><table class="exit-t"><thead><tr><th>Page</th><th>Author</th><th>Dept</th><th>Subject</th><th>Stamp</th><th>Cards</th><th>Value</th></tr></thead><tbody>${rows}</tbody></table></div>
         ${memos ? `<div class="hint">${memos}</div>` : ''}</div>`;
     }).join('');
-    return `<section><div class="section-head"><h2>Exit interview</h2><span class="label">Every proposal, unmasked. * = volatile</span></div><div class="exit">${rounds}</div></section>`;
+    return `<section><div class="section-head"><h2>Exit interview</h2></div><div class="exit">${rounds}</div></section>`;
   }
   // ---------- desk: your phone. Objects on the felt, same as the TV; almost no prose ----------
   // a bakelite header bar (nameplate, time card, timer tape) and a footer bar that holds the one key that matters
@@ -1926,11 +1940,14 @@ const OP = (() => {
     refreshPreview();
   }
   // pick-one grids: proposals as small cover pages, people as name tags
+  // your own page, and every author for the Auditor; phone only
+  const auditor = () => mine() && me().spec === 'Auditor' && !me().leave;
+  const tagFor = e => !mine() || e.autopilot ? '' : e.author === ME ? '<i class="yours">You</i>' : auditor() ? `<i class="yours">${esc(nm(e.author))}</i>` : '';
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
       const peek = e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
       return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
-        ${coverHTML(e, { k: .35 })}${peek}${mine() && e.author === ME ? '<i class="yours">You</i>' : ''}</button>`;
+        ${coverHTML(e, { k: .35 })}${peek}${tagFor(e)}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
   }
   function nameTags(list, current, none) {
@@ -1983,11 +2000,11 @@ const OP = (() => {
     const leave = p.leave ? slip('Stood down') : '';
     if (ph === 'decide') {
       if (isCEO()) return deskWrap('You are CEO', `${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Nominate ${icon(ui.sel)}` : 'Nominate', !!ui.sel) });
-      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}`, { foot: key('advance', 'See the decision') });
+      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}${auditor() ? minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), null) : ''}`, { foot: key('advance', 'See the decision') });
     }
     if (ph === 'board') {
       const nom = S.envs.find(e => e.id === S.nominee);
-      const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom)}</div>
+      const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}${auditor() && !nom.autopilot ? ` · by <b>${nom.author === ME ? 'you' : esc(nm(nom.author))}</b>` : ''}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom)}</div>
         <div class="bar3 two" role="radiogroup" aria-label="Board vote">${['ratify', 'open'].map(v => `<button class="b-${v}" role="radio" data-a="sel" data-id="${v}" aria-checked="${ui.sel === v}" aria-pressed="${ui.sel === v}"><span>${v === 'ratify' ? 'Ratify' : 'Open it'}</span></button>`).join('')}</div>`;
       return deskWrap('Board vote', `${leave}${body}`, { foot: key('board', 'Sign', ui.sel === 'ratify' || ui.sel === 'open') });
     }
@@ -2002,7 +2019,7 @@ const OP = (() => {
       return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
-      return deskWrap('Name a saboteur', `<div class="slips">${slip(`Right: <b class="pos">Clawback</b> · wrong <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
+      return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
     }
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');
@@ -2137,7 +2154,7 @@ const OP = (() => {
     if (!S && naming) { $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${namingBoard()}</main>${deskNaming()}</div></div>`; if (naming.phase === 'trace') mountTrace(); return; }
     if (!S) { $app.innerHTML = mast() + setupHTML(); return; }
     const board = S.phase === 'end' || S.phase === 'whistle'
-      ? `${observerHTML()}${S.phase === 'end' ? exitHTML() : ''}<div class="two">${ledgerHTML()}${staffHTML()}</div>${feedHTML()}`
+      ? S.phase === 'end' ? `${observerHTML()}${reportHTML()}${ui.debug ? exitHTML() : ''}` : `${observerHTML()}<div class="two">${ledgerHTML()}${staffHTML()}</div>${feedHTML()}`
       : `${observerHTML()}${pilesHTML()}${feedHTML()}<div class="two">${ledgerHTML()}${staffHTML()}</div>`;
     if (!(S.phase === 'work' && draft)) stopTimer();
     $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${board}</main>${desk()}</div></div>`;
@@ -2290,5 +2307,21 @@ const OP = (() => {
   if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(start); else start((window.claude && window.claude.hot && window.claude.hot.data) || {});
   window.__op = { get S() { return S; }, dispatch, brand: id => { setup.brand = id; render(); }, cards: m => { setup.cards = m; render(); }, BRANDS, markSVG, markURL,
     cardHTML, coverHTML, lineHTML, artSVG, ART, brandMark, look: (b, c) => { setup.brand = b; setup.cards = c; applyBrand(); } };
+  // ---------- annual report: the five approved pages, then who was who ----------
+  function reportHTML() {
+    const claw = new Set(S.whistle && S.whistle.clawed ? S.whistle.clawed.map(c => c.r) : []);
+    const pages = S.history.map(h => {
+      const e = h.envs.find(x => x.id === h.pick); if (!e) return '';
+      const q = S.P[e.author], sab = !e.autopilot && q.sab;
+      return `<figure class="rp-pg"><span class="rp-q">Q${h.r}</span><div class="rp-cover">${coverHTML(e, { k: .5, list: h.envs })}
+        ${sab ? '<i class="rp-stamp sab">Saboteur</i>' : ''}${claw.has(h.r) ? '<i class="rp-stamp back">Reversed</i>' : ''}</div>
+        ${lineHTML(e)}<figcaption>${e.autopilot ? 'Autopilot' : esc(q.name)}</figcaption></figure>`;
+    }).join('');
+    const named = q => S.whistle && S.whistle.named === q.id ? `<span class="stickers"><i class="stk ${S.whistle.correct ? 'gold' : 'red'}">Named ${fmt(S.whistle.swing)}</i></span>` : '';
+    const staff = S.P.map(q => `<div class="nametag rp-tag"><span class="hello">Hello<small>my name is</small></span><b>${esc(q.name)}</b><i class="rp-stamp ${q.sab ? 'sab' : 'ok'}">${q.sab ? 'Saboteur' : 'Loyal'}</i>${named(q)}</div>`).join('');
+    return `<section class="report"><div class="rp-pages">${pages}</div>
+      <div class="rp-total"><span class="num">${fmt(S.profit)}<small>/ +${S.target}</small></span><i class="rp-stamp big ${S.win ? 'ok' : 'sab'}">${S.win ? 'Target met' : 'Target missed'}</i></div>
+      <div class="rp-staff">${staff}</div></section>`;
+  }
 })();
 </script>
