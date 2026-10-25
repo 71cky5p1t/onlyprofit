@@ -23,6 +23,7 @@ No dependencies. The page loads its fonts from Google Fonts and works offline wi
 | `src/styles/*.css` | Styles, in cascade order (tokens in `01-base.css`). |
 | `build.sh` | Builds `dist/only-profit.html` from the files above. |
 | `sim/` | The Python Monte Carlo balance simulations the bots are ported from (`sim2.py` has the final config). |
+| `docs/how-to-play/` | The Staff Induction (how-to-play video): voiceover script, build brief, UI findings. |
 | `test/` | Node scripts: `balance.js` plays bot-only games at every table size, and `human-actions.js` drives the human seat through 900 games. |
 
 ## Engine API
