@@ -8,7 +8,7 @@ The how-to-play video, framed as a mandatory staff induction tape. One narrator,
 
 Timings assume about 2.6 words a second with a beat after each joke. The build advances on the end of each audio clip, so these are estimates for captions-only playback.
 
-Chapter ids match the induction player's (`src/explainer/00-lessons.js`) and double as audio file names: `assets/audio/induction/<id>.mp3`. Stingers use `assets/audio/induction/<stinger-id>.mp3`.
+Chapter ids match the induction player's (`src/explainer/00-lessons.js`), whose captions are these lines word for word. Audio: `assets/audio/induction/vo-NN-<id>.mp3` (`vo-01-welcome.mp3` … `vo-13-signoff.mp3`); stingers `assets/audio/induction/<stinger-id>.mp3`.
 
 ## Writing for the voice
 
@@ -27,12 +27,12 @@ Chapter ids match the induction player's (`src/explainer/00-lessons.js`) and dou
 | 3 | `saboteurs` | 8s | Six name tags in a row. A typed role memo slides under each, face down. One corner lifts on "quietly": a red SABOTEUR stamp edge shows, the corner drops. On "maybe nobody", every memo flips: all LOYAL. | Your role memo, face down, then face up: LOYAL. | `paper-shuffle`, `desk-card-flip` on the corner. |
 | 4 | `inherit` | 7s | Someone else's name tag slides off the left edge. | Three cards slide in from where it went, face down, and flip: Monetise · the Break Room · Off the Books. | `desk-card-deal` ×3, `desk-card-flip` ×3. |
 | 5 | `policy` | 8s | The three cards rise into the one-sentence line, suit colours highlighted. Value marks pop above each: ++ · − · +. On "coin toss" an orange ? card spins in beside them and wobbles. | Same cards, same marks. | `desk-ding` per mark. |
-| 6 | `overtime` | 6s | — (hold the line). | Spares fan below. A pointer drags the Interns onto the Break Room. One hole punches in the punch card. | `desk-card-drop`, punch: `desk-stamp` at low gain. |
-| 7 | `reveal` | 7s | The TV cover page's sentence shows █████ █████ █████. On "the whole table", the first block flips to Monetise ++. | One more hole. Then the inherited three sweep off and three new ones deal in; two holes. | `desk-card-flip`, `desk-card-deal` ×3. |
-| 8 | `stamp` | 8s | — (hold the page). | The stamp bar: Recommended · Risky · Not recommended. The pencil tick appears beside Risky. The stamp lands on Recommended anyway. On "Plan", a PIP sticker slaps onto the corner, holds, peels off. | `desk-stamp`, `desk-sticker`. |
-| 9 | `cover` | 6s | — | Templates riffle: Memo, Fax, WordArt, Certificate. Lands on Memo. Subject types on: "Quick Win: Break Room Monetisation (Pilot)". Squiggle signature, page seals and slides up off the phone. | `paper-typing`, `desk-sign`, `paper-pull`. |
-| 10 | `ceo` | 8s | Six cover pages scatter onto the felt. The CEO nameplate slides onto Denise's name tag. One page pulls up. Five squiggles draw across the Board's name tags. | CEO phone: the fanned stack. Board phone: Ratify · Open. | `paper-shuffle`, `paper-pull`, `desk-sign` ×5. |
-| 11 | `approved` | 9s | Tally 3–2 OPEN. The nominee's sentence shows; it's bad. A gavel. A different page slides up in its place. APPROVED thumps onto it; the sentence plays with its comic words. Calculator ticks +2. "From Trevor · Facilities" types under the page. | Phones dim to the TV. | `sting-overruled`, `desk-stamp`, `sting-approved`, `calc-key` ×2, `paper-type-key`. |
+| 6 | `overtime` | 9s | The TV cover page's sentence shows █████ █████ █████. On "the whole table", the first block flips to Monetise ++. | Spares fan below. A pointer drags the Interns onto the Break Room. One hole punches in the punch card. Then the reveal: one more hole. | `desk-card-drop`, `desk-card-flip`, punch: `desk-stamp` at low gain. |
+| 7 | `stamp` | 8s | — (hold the page). | The stamp bar: Recommended · Risky · Not recommended. The pencil tick appears beside Risky. The stamp lands on Recommended anyway. On "Plan", a PIP sticker slaps onto the corner, holds, peels off. | `desk-stamp`, `desk-sticker`. |
+| 8 | `cover` | 6s | — | Templates riffle: Memo, Fax, WordArt, Certificate. Lands on Memo. Subject types on: "Quick Win: Break Room Monetisation (Pilot)". Squiggle signature, page seals and slides up off the phone. | `paper-typing`, `desk-sign`, `paper-pull`. |
+| 9 | `ceo` | 6s | Six cover pages scatter onto the felt. The CEO nameplate slides onto Denise's name tag. | CEO phone: the fanned stack. One page pulls up. | `paper-shuffle`, `paper-pull`. |
+| 10 | `board` | 10s | Five squiggles draw across the Board's name tags. Tally 3–2 OPEN. The nominee's sentence shows; it's bad. A gavel. The nominee's sticky note peels to show "the CEO's own". A different page slides up in its place. | Board phone: Ratify · Open. A squiggle under Open. | `desk-sign` ×5, `sting-overruled`. |
+| 11 | `approved` | 7s | APPROVED thumps onto the page. The sentence plays with its comic words. Calculator ticks +2. "From Trevor · Facilities" types under the page. | Phones dim to the TV. | `desk-stamp`, `sting-approved`, `calc-key` ×2, `paper-type-key`. |
 | 12 | `endgame` | 11s | See the end-game module. | Your role memo again, with your record clipped to it. | `sting-saboteur` at low gain. |
 | 13 | `signoff` | 5s | READ & UNDERSTOOD stamps the binder; it snaps shut and slides away. The Time & Attendance clock drops in on its chain at 08:59, flips to 09:00. Stripe wipe into Q1 Work. | Phone wipes into the Work desk. | `desk-stamp`, `clock-flip`, `clock-bell`, `06-stripe-wipe`, then Water Cooler. |
 
@@ -43,14 +43,14 @@ Chapter ids match the induction player's (`src/explainer/00-lessons.js`) and dou
 3. **saboteurs** — Some of your colleagues may be quietly sinking the company. Maybe one. Maybe two. Maybe nobody, and we're just like this.
 4. **inherit** — Each quarter, you run a department. You inherit the last manager's work. It's yours now. Congratulations.
 5. **policy** — One Action. One Target. One Modifier. Read together, that's a policy. Add up the marks. A question mark is a coin toss.
-6. **overtime** — You'll draw some spares. Swapping one in costs overtime. You get three hours. They're unpaid.
-7. **reveal** — An hour shows a card to the whole table. Two hours bins the lot and starts again. Nobody gets those hours back.
-8. **stamp** — Then stamp it. The pencil tick marks the honest answer. You can lie. You can also be put on a Performance Improvement Plan.
-9. **cover** — Dress it up with a cover page. Nobody knows who wrote what. That's the whole point.
-10. **ceo** — Each quarter, someone has a go as CEO, and picks one proposal. Everyone else is the Board. Ratify it, or open it up.
-11. **approved** — If it's dodgy, the Board puts a better one through. Only the approved policy gets a name on it. Everyone acts like they saw it coming.
+6. **overtime** — You'll draw some spares. Overtime hours buy you swaps, or show a card to the whole table. You get three hours. They're unpaid.
+7. **stamp** — Then stamp it. The pencil tick marks the honest answer. You can lie. You can also be put on a Performance Improvement Plan.
+8. **cover** — Dress it up with a cover page. Nobody knows who wrote what. That's the whole point.
+9. **ceo** — Each quarter, someone has a go as CEO, and picks one proposal from the pile.
+10. **board** — Everyone else is the Board. Ratify it, or open it up. If it's dodgy, a better one goes through instead. The CEO has some explaining to do.
+11. **approved** — Only the approved policy gets a name on it. Profit moves. Everyone acts like they saw it coming.
 12. **endgame** — *(module, below)*
-13. **signoff** — That concludes your induction. Read your role memo. Clock in. Please look busy.
+13. **signoff** — That concludes your induction. The clock starts now. Please look busy.
 
 ### End-game module (shot 12)
 
@@ -92,7 +92,7 @@ One voice for everything: warm, brisk, mid-range, Australian, a little too pleas
 
 ### Qwen3-TTS (local, Mac mini)
 
-Runs on the mini with MLX; nothing leaves the machine. Samples and settings: `assets/audio/induction/samples/`.
+Runs on the mini with MLX; nothing leaves the machine. Chosen voice: take C ("Slow and grave"), cloned with the Base model from `samples/C-welcome.mp3`, about 12% quicker. Clean takes in `assets/audio/induction/clean/`; the shipped files add a light tape and low-bit texture (`tools/vo/tape.sh`).
 
 - **Voice design prompt** (VoiceDesign model): "A middle-aged Australian man narrating a 1980s corporate training video. Warm, brisk, mid-range, relentlessly cheerful but completely deadpan. Clear studio recording, close mic, no music."
 - **One request per line**, so each chapter gets its own clip and the build can advance on clip end.
