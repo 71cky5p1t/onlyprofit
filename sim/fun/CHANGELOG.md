@@ -84,3 +84,12 @@ Bots: a loyal bot always stamps right. A disguised saboteur stamps a trap with a
 | scripted human saboteur (exploit / subtle) | 52–51% / 56–57% | 52–51% / 58–59% |
 
 No retune was needed. Experiments kept in `variant.js`: `nowhistle` (saboteurs win 63–70% even with lower targets in `lowtgt`), `nowarn`, and `ceowhistle` + `ceotgt` (only the Q5 CEO names the saboteur; that version is balanced).
+
+## Round 6 (2026-10-25): personal records, and whether to replace the end vote
+
+Personal records are now in the game (PR #24, Joel's option A). Bots don't play for them yet.
+I re-ran the same five temperaments on main, 1,500 games per size. Compared with round 4, nothing important moved: the company wins 45–54%, the whistle names the right person 90–91%, and warnings hit a loyal player 9–12% of the time. The new CEO investigation is 1 or 2 per game.
+
+Option B (no end vote; saboteurs also win if their approved losses reach 3) was tested with targets lowered to 4p 17, 5p 19, 6p 20, 7p 21, 8p 21:
+- The damage threshold almost never decides a game. A saboteur's own losing policy gets approved in only 3–14% of saboteur games, and reaches 3 or more in 1–5%. A saboteur's real damage comes from denying the best page as CEO and handing over junk, not from getting their own pages through.
+- Without the end vote, nothing at the finish punishes a saboteur. Scripted human saboteurs win 63–69% (49–59% on main), comebacks drop from 3–8% to 0–1%, and Q5 is close more often (56–67% against 26–44%).
