@@ -1,0 +1,29 @@
+/* ---------- Staff Induction props, second half: the CEO, the Board, approval, year end ---------- */
+/* the CEO's pile */
+.i-pile { display: grid; grid-template-columns: repeat(3, auto); gap: 0 4px; justify-content: center; margin-bottom: -20px }
+.i-pile .leaf { margin: -14px -10px; rotate: calc((var(--k) - 2.5) * 3deg) } .b.scatter { animation-name: scatter; animation-duration: .6s; animation-timing-function: cubic-bezier(.2, .8, .3, 1.1) }
+.i-pile .pull .cp-w { animation: lift .4s var(--bounce) both; animation-delay: calc(var(--dur) * .8 - var(--played)) }
+.i-ceo .nametag { width: 150px; overflow: visible } .i-ceo .plate { position: absolute; left: 50%; bottom: -14px; translate: -50% 0; font-size: 11px } .b.slide-plate { animation-name: slide-plate }
+
+/* the Board: signatures under each side, then the opened nominee loses to a rival */
+.i-votes { display: flex; gap: clamp(18px, 5vw, 60px); justify-content: center; align-items: flex-start }
+.i-vote { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; justify-content: center; max-width: 360px }
+.vote-word { flex-basis: 100%; justify-self: center; text-align: center; font: 900 15px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--on-table); animation-name: thump }
+.i-signer { position: relative; width: clamp(66px, 9vw, 100px) } .i-signer .squig { position: static; width: 100%; height: 22px; stroke: var(--on-table) }
+.i-signer .nametag b { font-size: clamp(12px, 1.7vw, 19px) } .i-signer .nametag .hello { font-size: 10px; padding: 5px 2px 4px } .i-signer .nametag .hello small { font-size: 6px }
+.i-duel { display: flex; gap: clamp(16px, 4vw, 44px); align-items: flex-start; justify-content: center }
+.i-duel .leaf { position: relative; display: grid; justify-items: center; gap: 10px } .i-duel .line { font-size: 12px; max-width: 260px }
+.i-duel .nominee > .rubber { position: absolute; top: 34%; left: 50%; translate: -50% 0; font-size: clamp(14px, 2vw, 20px) }
+.i-duel .rival .cp-w { animation: lift .4s var(--bounce) both; animation-delay: calc(var(--dur) * .8 - var(--played)) }
+
+/* approved */
+.lesson-approved .line { font-size: clamp(14px, 1.8vw, 18px) } .i-from { font-size: 14px } .b.type { animation-name: type-on; animation-duration: .8s; animation-timing-function: steps(24) }
+
+/* year end */
+.i-staff.year { grid-template-columns: repeat(4, minmax(0, 150px)); align-items: start; gap: clamp(12px, 3vw, 34px) }
+.i-year { position: relative } .i-year .nametag { overflow: visible } .i-year .stickers { margin-top: 4px; min-height: 22px }
+.i-year .rubber { position: absolute; left: 50%; top: 66%; translate: -50% -50%; font-size: clamp(12px, 1.6vw, 16px) }
+.eoty { position: absolute; inset: -14px -14px -40px; border: 7px solid #B98E35; border-radius: 3px; box-shadow: inset 0 0 0 2px #E4C77A, inset 0 0 0 4px #7C5A1C, 0 14px 20px -10px rgba(0,0,0,.6); pointer-events: none; display: flex; align-items: flex-end; justify-content: center }
+.eoty span { translate: 0 50%; font: 800 8px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; white-space: nowrap; color: #3A2A0C; padding: 5px 8px 4px; border-radius: 2px; background: linear-gradient(#F0D58A, #C29A46); box-shadow: 0 1px 2px rgba(0,0,0,.4) }
+.b.frame-in { animation-name: frame-drop; animation-duration: .7s } .b.slap { animation-name: slap; animation-duration: .35s }
+@media (max-width: 740px) { .i-staff.year { grid-template-columns: repeat(2, minmax(0, 140px)); row-gap: 48px } }

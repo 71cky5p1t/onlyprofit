@@ -19,5 +19,5 @@
     if (S.phase === 'review' && isCEO()) offer('investigate', 'As CEO, you may pull one file and sign to investigate its stamp. A dishonest stamp can mean a PIP next quarter.');
     if (S.P.some(p => p.pip)) offer('pip', 'A Performance Improvement Plan makes that person’s future proposals visible to the CEO. Everyone else still sees a sealed page.');
   }
-  const teachingHTML = () => TEACH.line ? `<div class="training-tip" role="status"><span>FROM YOUR INDUCTION</span><p>${esc(TEACH.line)}</p><button data-a="dismiss-tip" aria-label="Dismiss tip">×</button></div>` : '';
+  const teachingHTML = () => TEACH.line ? `<div class="training-tip" role="status"><p>${esc(TEACH.line)}</p><button data-a="dismiss-tip" aria-label="Dismiss tip">×</button></div>` : '';
   $app.addEventListener('click', e => { if (e.target.closest('[data-a="dismiss-tip"]')) { TEACH.line = ''; const tip = document.querySelector('.training-tip'); if (tip) tip.remove(); } });
