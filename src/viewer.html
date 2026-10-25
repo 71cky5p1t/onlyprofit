@@ -83,7 +83,8 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
   const SPREADS = [
     { id: 'lobby', q: 'Q0', name: 'Lobby', say: 'Pick a table size and the bots. Seeded games replay exactly.', go: { ph: 'setup' }, only: 'tv' },
     { id: 'onboarding', q: 'Q0', name: 'Onboarding', say: 'Your employment letter tells you which side you are on. The TV shows the staff and the empty ledger.', go: { ph: 'brief' } },
-    { id: 'work', q: 'Q1', name: 'Work', say: 'Your inherited policy floats on top. Drag a card up from your hand to swap it, tap one to show the CEO. Each costs coins.', go: { ph: 'work', r: 1 } },
+    { id: 'work', q: 'Q1', name: 'Work', say: 'Strategy first, on a timer. Drag a card up to swap it in, tap one to show the CEO, stamp it. Every move costs coins.', go: { ph: 'work', r: 1 } },
+    { id: 'dress', q: 'Q1', name: 'Dress it up', say: 'Then the fun bit: subject line, colour and trim. Seals itself when the tape runs out.', go: { ph: 'work', r: 1, page: 2 }, only: 'phone' },
     { id: 'pitch', q: 'Q1', name: 'Pitch + audit', say: 'Anonymous envelopes land on the board. The table votes to open one.', go: { ph: 'pitch', r: 1 } },
     { id: 'decide', q: 'Q1', name: 'Decide', say: 'You are CEO this quarter. Approve one envelope.', go: { ph: 'decide', r: 1 } },
     { id: 'reveal', q: 'Q1', name: 'Reveal', say: 'The approved policy is opened and stamped. The table may vote a Written Warning.', go: { ph: 'reveal', r: 1 } },
@@ -113,10 +114,10 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     click('[data-a=start]');
     for (let i = 0; i < 500; i++) {
       const S = w.__op && w.__op.S; if (!S) return;
-      if (S.phase === go.ph && (go.r == null || S.r === go.r)) return;
+      if (S.phase === go.ph && (go.r == null || S.r === go.r) && !go.page) return;
       if (S.phase === 'brief') click('[data-a=begin]');
-      else if (S.phase === 'work') { click('[data-a=stamp][data-v=Rec]'); click('[data-a=seal]'); }
-      else if (!click('.desk [data-a=advance]')) { click('.desk .radio[data-a=sel]'); click('.desk .btn.primary'); }
+      else if (S.phase === 'work') { if (go.page === 2 && S.r === go.r) { click('[data-a=next]'); return; } click('[data-a=stamp][data-v=Rec]'); click('[data-a=next]'); click('[data-a=seal]'); }
+      else if (!click('.desk [data-a=advance]')) { click('.desk [data-a=sel]'); click('.desk .btn.primary'); }
       await sleep(12);
     }
   }
@@ -133,7 +134,7 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
       try { await drive(f, s.go); } catch (e) { console.log('drive', e); }
       vp.classList.add('live');
     }, { once: true });
-    f.srcdoc = PROTO + `<style>${tv ? TV_CSS : PHONE_CSS}</style>`;
+    f.srcdoc = '<script>window.__opFreeze = true<\/script>' + PROTO + `<style>${tv ? TV_CSS : PHONE_CSS}</style>`;
     vp.appendChild(f);
   }
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); mount(e.target); } }), { rootMargin: '400px 0px' });
@@ -147,8 +148,8 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
   const card = (s, v, cls, word, fx) => {
     const SU = ['Action', 'Target', 'Modifier'], G = { 2: '++', 1: '+', 0: '0', '-1': '−', '-2': '−−', V: '?' };
     const tone = v === 'V' ? 'v-v' : v > 0 ? 'pos' : v < 0 ? 'neg' : 'zero';
-    const FS = { null: ['∅', 'Cancels the rest'], x2: ['×2', 'Doubles the rest'], shield: ['≥0', "Rest can't lose"], flip: ['⇅', 'Flips the rest'] };
-    const face = fx ? `<div class="split"><b class="glyph ${tone}">${G[v]}</b><b class="eff fx-${fx}">${FS[fx][0]}</b></div><span class="amt">${FS[fx][1]}</span>` : `<b class="glyph ${tone}">${G[v]}</b>`;
+    const FS = { null: '×0', x2: '×2', shield: '≥0', flip: '×−1' };
+    const face = `<b class="glyph ${tone}">${G[v]}</b>` + (fx ? `<span class="dymo fx-${fx}"><i class="m0"></i><i class="m1"></i><b>${FS[fx]}</b></span>` : '');
     return `<div class="card s-${s} ${fx ? 'has-fx' : ''} ${cls}"><div class="hd"><i class="sp"></i>${SU[s]}</div><div class="fx">${face}</div><span class="word">${word}</span></div>`;
   };
   const coins = n => '<i class="coin"></i>'.repeat(n);
@@ -163,7 +164,7 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
   </style>
   <div class="kit">
     <section><h4>Values</h4><div class="play"><div class="row">${card(0, 2, '', 'Liquidate')}${card(1, 1, '', 'Interns')}${card(2, 0, '', 'Quietly')}${card(0, -1, '', 'Rightsize')}${card(1, -2, '', 'Union Relations')}${card(2, 'V', '', 'Allegedly')}</div></div></section>
-    <section><h4>Effect Modifiers · own value left, effect right</h4><div class="play"><div class="row">${card(2, -1, '', 'With Thoughts and Prayers', 'null')}${card(2, -2, '', 'Retroactively', 'x2')}${card(2, -1, '', "Per Legal's Advice", 'shield')}${card(2, 0, '', 'Without Consultation', 'flip')}</div></div></section>
+    <section><h4>Effect Modifiers · the tape is what it does to ● and ▲</h4><div class="play"><div class="row">${card(2, -1, '', 'With Thoughts and Prayers', 'null')}${card(2, -2, '', 'Retroactively', 'x2')}${card(2, -1, '', "Per Legal's Advice", 'shield')}${card(2, 0, '', 'Without Consultation', 'flip')}</div></div></section>
     <section><h4>Coins</h4><div class="play"><div class="row" style="align-items:center;gap:26px">
       <div class="piece"><span class="purse">${coins(3)}</span><span class="note">Full purse</span></div>
       <div class="piece"><span class="purse">${coins(1)}<i class="coin spent"></i><i class="coin spent"></i></span><span class="note">Two spent</span></div>
