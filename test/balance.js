@@ -1,4 +1,4 @@
-const OP=require('../src/engine.js');
+const OP=require('../src/engine/core.js');
 function play(n,seed,o={}){let s=OP.newGame(Object.assign({players:n,seed,spectate:true},o));let k=0;
  while(s.phase!=='end'){const r=OP.apply(s,-1,{type:'advance'}); if(r.error) throw new Error(r.error+' '+s.phase); s=r.state; if(++k>100) throw 'loop';}
  return s;}
