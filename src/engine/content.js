@@ -26,6 +26,8 @@ const OP_CONTENT = (() => {
     kidney: { t: ['the Kidneys', 'the Organ Donors', 'the Ice Baths', 'the Spare Kidney', 'Donor Consent Forms', 'the Bathtub Fleet'], m: ['Under Local Anaesthetic', 'While the Donor Sleeps', 'On Ice'], subj: ['Kidney Throughput Review', 'Organ Velocity', 'Bathtub Expansion'] },
     stepdad: { t: ['the Stepdads', 'Custody Weekends', 'the Child Support', 'the Dad Jokes', 'the Barbecue', 'the Real Dad'], m: ['Every Second Weekend', 'Without Telling Mum', 'Per the Custody Agreement'], subj: ['Stepdad Onboarding', 'Custody Weekend Synergies', 'Barbecue Compliance'] },
   };
-  return { SUITS, WORDS, VALUES, FX, NAMES, DEPTS, COLORS, TRIMS, SUBJ, LEX };
+  // a bot answering a memo about them; {n} is the accuser
+  const DISPUTE = ["That is not what I sent.", "That envelope left my desk in perfect health.", "I'd like it minuted that {n} is lying.", "Interesting that it's {n} saying this.", "Check {n}'s desk, not mine.", "I have receipts. Not on me."];
+  return { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, COLORS, TRIMS, SUBJ, LEX };
 })();
 if (typeof module !== 'undefined') module.exports = OP_CONTENT;

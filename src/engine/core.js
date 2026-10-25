@@ -3,9 +3,9 @@
 const OP = (() => {
   const C = typeof OP_CONTENT !== 'undefined' ? OP_CONTENT : require('./content.js');
   const B = typeof OP_BOTS !== 'undefined' ? OP_BOTS : require('./bots.js');
-  const { SUITS, WORDS, VALUES, FX, NAMES, DEPTS, COLORS, TRIMS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
+  const { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, COLORS, TRIMS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 18, 5: 20, 6: 21, 7: 21, 8: 22 };
+  const TARGETS = { 4: 19, 5: 21, 6: 21, 7: 22, 8: 23 };
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
@@ -117,6 +117,7 @@ const OP = (() => {
     }));
     const pers = shuffle(s, Object.keys(PERS).concat(Object.keys(PERS)));
     s.P.forEach((p, k) => { p.pers = pers[k]; p.ruthless = p.sab && s.sabTier === 'smart' && rand(s) < 0.5; });
+    initMind(s);
     if (n >= 6) { const [a, b] = shuffle(s, range(n)); s.P[a].spec = 'Auditor'; s.P[b].spec = 'Designer'; }
     s.ceoOrder = shuffle(s, range(n));
     s.hands = range(n).map(() => ({ cards: draw3(s), author: null, kind: 'legacy' }));
@@ -162,7 +163,7 @@ const OP = (() => {
   }
 
   const pubEst = (s, e) => estimate(e, s.loyalTier, false);
-  const { botWork, autopilot, botInheritMemo, botAuditVote, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, evs, estimate, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
+  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botAuditVote, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, estimate, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
 
   // ---------- round flow ----------
   function startRound(s, E) {
@@ -226,6 +227,7 @@ const OP = (() => {
       if (m.kind === 'report') log(s, E, 'memo', `Inherited a ${STAMP_LABEL[m.stamp]} envelope from ${t}. It was worth ${fmt(m.val)}.`, { by: m.by, target: m.target, truthful: m.truthful });
       else log(s, E, 'memo', `${s.P[m.target].human ? 'Your' : s.P[m.target].name + "'s"} handover checked out. No complaints.`, { by: m.by, target: m.target, truthful: m.truthful, vouch: true });
     }
+    for (const d of botDisputes(s)) log(s, E, 'memo', pickOne(s, DISPUTE).replace('{n}', who(s, d.target)), { by: d.by, target: d.target, truthful: d.truthful, dispute: true });
     s.phase = 'pitch'; s.votes = {};
     for (const p of s.P) if (!isHuman(s, p.id)) s.votes[p.id] = botAuditVote(s, p.id);
     if (s.spectate) resolveAudit(s, E);
@@ -322,6 +324,7 @@ const OP = (() => {
         nh[d] = e.autopilot ? { cards: e.cards, author: null, kind: 'autopilot' } : { cards: e.cards, author: e.author, kind: 'rejected', stamp: e.stamp, subject: e.subject, style: e.style, id: e.id };
       }
     }
+    observe(s);
     s.history.push({ r: s.r, ceo: s.ceo, envs: JSON.parse(JSON.stringify(s.envs)), pick: s.pick, audit: s.audit ? s.audit.winner : 'none', memos: s.memos.slice(), warn: s.warn });
     s.hands = nh;
   }
