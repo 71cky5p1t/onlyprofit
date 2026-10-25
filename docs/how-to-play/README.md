@@ -20,11 +20,11 @@ src/explainer/
   03-player.js    play / next / skip, VO clip loading, captions, the seen flag
   04-stingers.js  first-time stingers, diffed from state like 00-cues.js
 src/styles/31-explainer.css
-assets/audio/vo/  one mp3 per id in script.md
-tools/vo/gen.mjs  reads script.md, calls ElevenLabs, writes assets/audio/vo/
+assets/audio/induction/  one mp3 per id in script.md
+tools/vo/gen.mjs  reads script.md, calls the TTS, writes assets/audio/induction/
 ```
 
-- `build.sh`: concatenate `src/explainer/*.js` after `src/ui/*.js` inside the same IIFE, so the explainer can call `cardHTML`, `coverHTML`, `lineHTML`, `stickers`, `artSVG`, `brandMark`, `sfx`, `music`, `hold` and `duck` directly. Copy `assets/audio/vo/` to `dist/audio/vo/`.
+- `build.sh`: concatenate `src/explainer/*.js` after `src/ui/*.js` inside the same IIFE, so the explainer can call `cardHTML`, `coverHTML`, `lineHTML`, `stickers`, `artSVG`, `brandMark`, `sfx`, `music`, `hold` and `duck` directly. Copy `assets/audio/induction/` to `dist/audio/induction/`.
 - **The engine is not touched.** The explainer is UI only; it never calls `OP.apply` except to `begin` when it ends.
 - Build every visual from the real piece functions with demo data, never from screenshots, so the reel restyles itself when a piece changes and when the brand changes.
 
@@ -68,9 +68,9 @@ tools/vo/gen.mjs  reads script.md, calls ElevenLabs, writes assets/audio/vo/
 
 `tools/vo/gen.mjs`, Node 18+, no dependencies:
 
-1. Parse the `**vo-…** — line` entries and the stinger table in `script.md`.
+1. Parse the `**<id>** — line` entries and the stinger table in `script.md`.
 2. For each id, POST to `https://api.elevenlabs.io/v1/text-to-speech/{voice_id}` with the line, `model_id`, and the voice settings in `script.md`. Key from `ELEVENLABS_API_KEY`, voice from `ELEVENLABS_VOICE_ID`.
-3. Write `assets/audio/vo/<id>.mp3`. Skip ids that already exist unless `--force` or the id is named on the command line, so one line can be re-recorded alone.
+3. Write `assets/audio/induction/<id>.mp3`. Skip ids that already exist unless `--force` or the id is named on the command line, so one line can be re-recorded alone.
 4. Trim and normalise with ffmpeg if it's installed (`silenceremove`, `loudnorm=I=-16`); otherwise write the raw clip.
 
 Until the voice exists, the reel runs on captions and `est`.
@@ -85,7 +85,7 @@ Until the voice exists, the reel runs on captions and `est`.
 - A new game plays the induction after clocking in, then Q1 begins.
 - Skip works by tag and `Esc`, plays the stamp-and-shut, and appears early on a second game.
 - With no VO files the reel still runs, captioned, at about 95 s.
-- Dropping a VO file into `assets/audio/vo/` and rebuilding makes that shot speak and time itself to the clip.
+- Dropping a VO file into `assets/audio/induction/` and rebuilding makes that shot speak and time itself to the clip.
 - At least the rejected-inheritance, effect-Modifier and PIP stingers fire once each in a real game.
 - The phone column and TV column of every shot share the same look; no shot uses a text box, a callout or an arrow to explain itself.
 - `dist/` rebuilt, tests pass, `dist/viewer.html` gets an Induction entry so the shots can be stepped through.
