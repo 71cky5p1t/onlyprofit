@@ -31,7 +31,7 @@ const s0 = OP.newGame({ players: 4, seed: 123, loyalTier: 'smart', sabTier: 'sma
 const { state, events } = OP.apply(s0, seat, { type: 'begin' });   // or { error }
 ```
 
-Actions: `begin`, `submitWork` (`redeal`, `swaps`, `reveals`, `stamp`, `subject`, `style`, `claim`, `nextStyle`), `auditVote`, `approve`, `warnVote`, `whistleVote`, `advance`. `apply` never mutates the state it is given.
+Actions: `begin`, `submitWork` (`redeal`, `swaps`, `reveals`, `stamp`, `subject`, `style`, `claim`, `nextStyle`), `auditVote`, `approve` (the CEO nominates), `boardVote` (`vote`: `ratify` or `overrule`), `warnVote`, `whistleVote`, `advance`. `apply` never mutates the state it is given.
 
 Seat 0 is the human. With `spectate: true` every seat is a bot and the game moves on `advance`.
 
@@ -39,7 +39,8 @@ Seat 0 is the human. With `spectate: true` every seat is a bot and the game move
 
 - Whoever inherits a rejected envelope learns who wrote it. That is what makes complaint memos possible.
 - Complaints are public memos on a bulletin board. Nobody can check them, and the human may lie.
-- Cards revealed with work tokens are shown to the CEO only.
+- Cards revealed with work tokens are shown to the whole table, so the Board can judge the CEO's nominee.
+- Board vote, Clawback, ruthless saboteur bots, credibility-weighted warnings and loyal temperaments were added 2026-10-25 after the playtest review (https://claude.ai/artifact/66RMt61UfSLPKBWumRuCAd). Harness: `sim/playtest/`.
 - No phase timers yet.
 
 ## Tests
