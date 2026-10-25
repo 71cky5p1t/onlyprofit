@@ -273,7 +273,7 @@ const OP = (() => {
     if (opened) { nom.audited = true; s.audit = { winner: nom.id }; log(s, E, 'event', `The Board opened proposal ${nom.id}: worth ${fmt(evs(nom.cards))}${nom.cards.some(c => c.v === 'V') ? ' plus volatility' : ''}.`); }
     const best = argmax(s.envs, x => [pubEst(s, x)]);
     const overruled = opened && best.id !== nom.id && pubEst(s, nom) < pubEst(s, best) - 1;
-    s.board = { nominee: nom.id, votes: s.bvotes, no, opened, overruled };
+    s.board = { nominee: nom.id, votes: s.bvotes, no, opened, overruled, best: best.id, est: [pubEst(s, nom), pubEst(s, best)] };
     if (!overruled) { log(s, E, 'event', opened ? `It stands. Proposal ${nom.id} goes through.` : `The Board ratified proposal ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
     const own = nom.author === s.ceo && !nom.autopilot;
     nom.unmasked = true; s.board.own = own; s.board.author = nom.autopilot ? null : nom.author;

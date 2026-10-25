@@ -30,4 +30,4 @@
   const isCEO = () => mine() && S.ceo === ME;
   const STAMP = OP.STAMP_LABEL;
   const TIER = { smart: 'Smart', basic: 'Basic', naive: 'Gullible', patient: 'Patient', blatant: 'Blatant' };
-  const PHASE = { brief: 'Onboarding', work: 'Work', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Quarter closed', whistle: 'Whistleblower', end: 'Annual report' };
+  const PHASE = { brief: 'Induction', work: 'Work', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Quarter closed', whistle: 'Whistleblower', end: 'Annual report' };

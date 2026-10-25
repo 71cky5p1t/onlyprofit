@@ -58,10 +58,14 @@
     const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
     // tokens are overtime hours: chits on the hand, punched chits pinned to the policy cards they bought
     const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.reveals.includes(su) ? 1 : 0);
+    // an effect Modifier rewrites the other two right here, before you commit
+    const fx = wr.prop[2].fx, blink = fx && ui.fxw !== wr.prop[2].w;
+    ui.fxw = fx ? wr.prop[2].w : null;
     const env = [0, 1, 2].map(su => {
-      const c = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
+      const c0 = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
+      const hit = su < 2 && fx && c0.v !== 'V' && after(fx, c0.v) !== c0.v, c = hit ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0;
       const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
-      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, n ? `<span class="paid">${hrs(n)}</span>` : '',
+      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
         `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 hour of overtime'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
@@ -187,7 +191,7 @@
         <div class="memo-row"><span>Re</span><b>Your allegiance</b></div>
         <div class="memo-row"><span>Target</span><b>+${S.target}</b> by Q5</div>
         <div class="memo-stamp ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Saboteur' : 'Loyal'}</div>
-        ${p.spec ? `<div class="memo-spec">${p.spec}<small>${p.spec === 'Auditor' ? 'you see who wrote every proposal' : 'you choose next quarter’s cover page'}</small></div>` : ''}
+        ${p.spec ? `<div class="memo-spec">${p.spec}</div>` : ''}
         <div class="memo-fine">${fine}</div>
         <svg class="memo-sig" viewBox="0 0 160 40" aria-hidden="true"><path d="M4 30c10-18 18-24 22-16s-8 18 2 12 14-22 20-16-6 20 4 14 10-14 16-10 2 12 10 8 12-10 20-8 6 8 14 4 14-6 20-4"/></svg>
       </div>`;
