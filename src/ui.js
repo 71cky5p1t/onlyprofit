@@ -119,7 +119,7 @@
     const rows = S.P.map(p => {
       const meta = [];
       if (S.r && S.ceo === p.id && S.phase !== 'end' && S.phase !== 'whistle') meta.push('<span class="pill">CEO</span>');
-      if (p.leave) meta.push('<span class="pill grey">Garden leave</span>');
+      if (p.leave) meta.push('<span class="pill grey">Stood down</span>');
       if (p.spec && (ui.debug || (mine() && p.id === ME))) meta.push(`<span class="pill gold">${p.spec}</span>`);
       if (ui.debug || S.phase === 'end') meta.push(p.sab ? '<span class="pill red">Saboteur</span>' : '<span class="pill green">Loyal</span>');
       if (p.accusations) meta.push(`<span class="muted" style="font-size:12px">${p.accusations} complaint${p.accusations > 1 ? 's' : ''}</span>`);
@@ -273,7 +273,7 @@
       return deskWrap('Onboarding', '', body);
     }
     if (ph === 'work' && draft) return deskWork();
-    const leave = p.leave ? '<div class="prov">You are on <b>garden leave</b>. Your department runs itself. You can still talk and vote.</div>' : '';
+    const leave = p.leave ? '<div class="prov">You have been <b>stood down</b>. Your department runs itself. You can still talk and vote.</div>' : '';
     if (ph === 'pitch') {
       const opts = S.envs.filter(e => !e.autopilot).sort((a, b) => a.id.localeCompare(b.id)).map(e => ({ id: e.id, label: `Envelope ${e.id}`, sub: esc(e.subject), tag: `<span class="env-stamp ${e.stamp}" style="transform:none">${STAMP[e.stamp]}</span>` }));
       opts.push({ id: 'none', label: 'Audit nothing' });
@@ -296,7 +296,7 @@
         return { id: q.id, label: `Warn ${esc(q.name)}`, sub: c ? `${c} complaint${c > 1 ? 's' : ''} this quarter` : `${q.accusations} complaint${q.accusations === 1 ? '' : 's'} so far`, tag: pips(q.warnings) };
       });
       opts.push({ id: 'none', label: 'No warning this quarter' });
-      return deskWrap(`Q${S.r} · Reveal`, '', `${res}<p class="hint" style="margin:0">The table may issue one Written Warning by majority (more than ${Math.floor(S.n / 2)} votes). A second warning sends someone on garden leave.</p>${voteList('sel', opts, ui.sel)}<button class="btn primary wide" data-a="warn" ${ui.sel != null ? '' : 'disabled'}>Cast vote</button>`);
+      return deskWrap(`Q${S.r} · Reveal`, '', `${res}<p class="hint" style="margin:0">The table may issue one Written Warning by majority (more than ${Math.floor(S.n / 2)} votes). A second warning stands someone down.</p>${voteList('sel', opts, ui.sel)}<button class="btn primary wide" data-a="warn" ${ui.sel != null ? '' : 'disabled'}>Cast vote</button>`);
     }
     if (ph === 'review') {
       const w = S.warn;
@@ -328,7 +328,7 @@
         <details class="rules"><summary>The quarter, in brief</summary><ol>
           <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 tokens: swap a card in (1, then 2), re-deal all three (2), or show one card to the CEO (1). Stamp it, write a subject line, style the envelope.</li>
           <li><b>Pitch.</b> Envelopes appear shuffled and anonymous. Memos on the bulletin board say who left whom a mess. Nobody can check them. The table votes to audit one envelope.</li>
-          <li><b>Decide + Reveal.</b> The CEO approves one. Profit moves and its author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means garden leave.</li>
+          <li><b>Decide + Reveal.</b> The CEO approves one. Profit moves and its author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
           <li><b>After Q5.</b> The table may name a saboteur: +3 if right, −3 if wrong.</li></ol></details>
         <div class="setup-foot"><button class="btn primary" data-a="start">Start the game</button><span class="hint">About 10 minutes against bots.</span></div>
       </div></div></div>`;

@@ -272,7 +272,7 @@ table.exit-t tr.win td { background: var(--paper) }
 <script>
 // Only Profit — game engine (no DOM, no Math.random, no clock).
 // apply(state, seat, action) -> { state, events } | { error }
-// Bot logic is ported from sim2.py (FINAL config: smart vs smart, Garden Leave at 2 warnings, Whistleblower ±3).
+// Bot logic is ported from sim2.py (FINAL config: smart vs smart, stood down at 2 warnings, Whistleblower ±3).
 const OP = (() => {
   const SUITS = ['Action', 'Target', 'Modifier'];
   const WORDS = [
@@ -282,7 +282,7 @@ const OP = (() => {
   ];
   const VALUES = [2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, 'V', 'V'];
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 17, 5: 19, 6: 19, 7: 20, 8: 21 };
+  const TARGETS = { 4: 18, 5: 20, 6: 20, 7: 21, 8: 21 }; // +1 over sim2 at 4–7p: the prototype's bots win ~5 points more often than the sim's
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
@@ -637,7 +637,7 @@ const OP = (() => {
     s.warn = { votes, count, target, passed };
     if (target != null && passed) {
       const t = s.P[target]; t.warnings++;
-      if (t.warnings >= 2 && !t.leave) { t.leave = true; log(s, E, 'event', `${who(s, target, 1)} received a second Written Warning and ${t.human ? 'are' : 'has been'} placed on garden leave. ${t.human ? 'Your' : 'Their'} department is now on autopilot.`); }
+      if (t.warnings >= 2 && !t.leave) { t.leave = true; log(s, E, 'event', `${who(s, target, 1)} received a second Written Warning and ${t.human ? 'have been' : 'has been'} stood down. ${t.human ? 'Your' : 'Their'} department is now on autopilot.`); }
       else log(s, E, 'event', `${who(s, target, 1)} received a Written Warning.`);
     } else if (target != null) log(s, E, 'event', `A motion to warn ${who(s, target)} did not reach a majority.`);
     s.phase = 'review';
@@ -833,7 +833,7 @@ const OP = (() => {
     const rows = S.P.map(p => {
       const meta = [];
       if (S.r && S.ceo === p.id && S.phase !== 'end' && S.phase !== 'whistle') meta.push('<span class="pill">CEO</span>');
-      if (p.leave) meta.push('<span class="pill grey">Garden leave</span>');
+      if (p.leave) meta.push('<span class="pill grey">Stood down</span>');
       if (p.spec && (ui.debug || (mine() && p.id === ME))) meta.push(`<span class="pill gold">${p.spec}</span>`);
       if (ui.debug || S.phase === 'end') meta.push(p.sab ? '<span class="pill red">Saboteur</span>' : '<span class="pill green">Loyal</span>');
       if (p.accusations) meta.push(`<span class="muted" style="font-size:12px">${p.accusations} complaint${p.accusations > 1 ? 's' : ''}</span>`);
@@ -987,7 +987,7 @@ const OP = (() => {
       return deskWrap('Onboarding', '', body);
     }
     if (ph === 'work' && draft) return deskWork();
-    const leave = p.leave ? '<div class="prov">You are on <b>garden leave</b>. Your department runs itself. You can still talk and vote.</div>' : '';
+    const leave = p.leave ? '<div class="prov">You have been <b>stood down</b>. Your department runs itself. You can still talk and vote.</div>' : '';
     if (ph === 'pitch') {
       const opts = S.envs.filter(e => !e.autopilot).sort((a, b) => a.id.localeCompare(b.id)).map(e => ({ id: e.id, label: `Envelope ${e.id}`, sub: esc(e.subject), tag: `<span class="env-stamp ${e.stamp}" style="transform:none">${STAMP[e.stamp]}</span>` }));
       opts.push({ id: 'none', label: 'Audit nothing' });
@@ -1010,7 +1010,7 @@ const OP = (() => {
         return { id: q.id, label: `Warn ${esc(q.name)}`, sub: c ? `${c} complaint${c > 1 ? 's' : ''} this quarter` : `${q.accusations} complaint${q.accusations === 1 ? '' : 's'} so far`, tag: pips(q.warnings) };
       });
       opts.push({ id: 'none', label: 'No warning this quarter' });
-      return deskWrap(`Q${S.r} · Reveal`, '', `${res}<p class="hint" style="margin:0">The table may issue one Written Warning by majority (more than ${Math.floor(S.n / 2)} votes). A second warning sends someone on garden leave.</p>${voteList('sel', opts, ui.sel)}<button class="btn primary wide" data-a="warn" ${ui.sel != null ? '' : 'disabled'}>Cast vote</button>`);
+      return deskWrap(`Q${S.r} · Reveal`, '', `${res}<p class="hint" style="margin:0">The table may issue one Written Warning by majority (more than ${Math.floor(S.n / 2)} votes). A second warning stands someone down.</p>${voteList('sel', opts, ui.sel)}<button class="btn primary wide" data-a="warn" ${ui.sel != null ? '' : 'disabled'}>Cast vote</button>`);
     }
     if (ph === 'review') {
       const w = S.warn;
@@ -1042,7 +1042,7 @@ const OP = (() => {
         <details class="rules"><summary>The quarter, in brief</summary><ol>
           <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 tokens: swap a card in (1, then 2), re-deal all three (2), or show one card to the CEO (1). Stamp it, write a subject line, style the envelope.</li>
           <li><b>Pitch.</b> Envelopes appear shuffled and anonymous. Memos on the bulletin board say who left whom a mess. Nobody can check them. The table votes to audit one envelope.</li>
-          <li><b>Decide + Reveal.</b> The CEO approves one. Profit moves and its author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means garden leave.</li>
+          <li><b>Decide + Reveal.</b> The CEO approves one. Profit moves and its author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
           <li><b>After Q5.</b> The table may name a saboteur: +3 if right, −3 if wrong.</li></ol></details>
         <div class="setup-foot"><button class="btn primary" data-a="start">Start the game</button><span class="hint">About 10 minutes against bots.</span></div>
       </div></div></div>`;
