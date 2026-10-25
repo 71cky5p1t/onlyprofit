@@ -121,7 +121,8 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     const btn = ev.target.closest('[data-brand]'); if (!btn) return;
     brandId = btn.dataset.brand; drawBrands();
     try { localStorage.setItem('op-viewer-brand', brandId); } catch (e) {}
-    document.querySelectorAll('.vp iframe').forEach(f => { try { f.contentWindow.__op.brand(brandId); } catch (e) {} });
+    // the deal itself uses the company's words, so frames already printed are dealt again
+    document.querySelectorAll('.vp').forEach(vp => { if (vp.querySelector('iframe')) mount(vp); });
     kitBrand();
   });
   const $main = document.getElementById('main'), $jump = document.getElementById('jump');
