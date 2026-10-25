@@ -43,16 +43,21 @@
     clearInterval(TRAIN.tick); if (TRAIN.audio) TRAIN.audio.pause(); TRAIN.audio = null;
     TRAIN.i = Math.max(0, i); TRAIN.demo = {}; TRAIN.touched = false; TRAIN.fired = 0; TRAIN.elapsed = 0; TRAIN.duration = LESSONS[TRAIN.i][3];
     music('music/05-hold-music-clean'); hold(true); sfx('paper-pull', 0, .4);
-    const clip = voiceClip(TRAIN.i);
-    if ((window.__opVoiceFiles || []).includes(clip)) {
+    const files = window.__opVoiceFiles || [], clip = [LESSONS[TRAIN.i][0], voiceClip(TRAIN.i)].find(n => files.includes(n));
+    voDuck(false);
+    if (clip) {
       const a = TRAIN.audio = new Audio(AU_BASE + 'induction/' + clip + '.mp3'); a.muted = !AU.on;
       a.onloadedmetadata = () => { if (TRAIN.audio === a && Number.isFinite(a.duration)) setDuration(a.duration + .6); };
-      a.onerror = () => { if (TRAIN.audio === a) { a.pause(); TRAIN.audio = null; } };
+      a.onerror = () => { if (TRAIN.audio === a) { a.pause(); TRAIN.audio = null; voDuck(false); } };
+      a.onplay = () => voDuck(true); a.onpause = a.onended = () => voDuck(false);
       if (!TRAIN.pause) a.play().catch(() => { if (TRAIN.audio === a) TRAIN.audio = null; });
-      duck(TRAIN.duration);
     }
     TRAIN.last = performance.now(); render();
     TRAIN.tick = setInterval(step, 100);
+  }
+  // the music bed sits about 7 dB under the narrator, and comes back when the line ends
+  function voDuck(on) {
+    const c = auCtx(); if (c) AU.mus.gain.setTargetAtTime(on ? .22 : .5, c.currentTime, on ? .08 : .2);
   }
   function setDuration(d) {
     TRAIN.duration = d; const m = document.querySelector('.induction'); if (m) m.style.setProperty('--dur', d + 's');
@@ -83,7 +88,7 @@
   }
   function inductionDone() {
     clearTimeout(TRAIN.tick); clearInterval(TRAIN.tick);
-    TRAIN.active = false; TRAIN.outro = 0; ui.inducted = true; hold(false);
+    TRAIN.active = false; TRAIN.outro = 0; ui.inducted = true; hold(false); voDuck(false);
     try { localStorage.setItem('op-induction-seen', '1'); } catch (e) {}
     render(); window.scrollTo(0, 0);
   }
