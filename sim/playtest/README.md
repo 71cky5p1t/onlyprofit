@@ -1,5 +1,7 @@
 # Scripted playtests (2026-10-25)
 
+Historical. This runs the PR #2 engine (envelopes, Audit vote, old targets); the flags it tested that were adopted are now rules. Use `sim/fun/` for current balance.
+
 A scripted "human" in seat 0 plays against the prototype bots, over 1,000 seeds per line, to check what Codex's
 LLM playtest found. `engine-pr2.js` is a snapshot of `src/engine.js` from PR #2 (commit e753a3e).
 `patch.js` writes `engine-x.js`: the same engine with experiment flags read from `s.x`. Nothing here changes the game.
