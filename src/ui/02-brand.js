@@ -1,4 +1,4 @@
-  // company logo marks, one per noun in the opener's pool (48×48, .s paths are strokes); the house brand gets a rising line
+  // logo marks, one per opener noun (48×48; .s = stroke)
   const MARKS = {
     op: '<path class="s" d="M5 39 17 26l8 8L39 16" style="stroke-width:5"/><path d="M30 11h14v14z"/>',
     baby: '<circle class="s" cx="24" cy="10" r="6"/><rect x="7" y="18" width="34" height="9" rx="4.5"/><circle cx="24" cy="35" r="9"/>',
@@ -52,7 +52,7 @@
   const brand = () => BRANDS.find(b => b.id === setup.brand) || BRANDS[0];
   const markSVG = id => `<svg class="mk" viewBox="0 0 48 48" aria-hidden="true">${MARKS[id] || MARKS.op}</svg>`;
   const brandMark = () => markSVG(brand().mark);
-  // the same mark as a mask image, for seals and card backs drawn in CSS
+  // mark as a CSS image
   const markURL = (id, c = '#000') => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='${c}'><style>.s{fill:none;stroke:${c};stroke-width:4;stroke-linecap:round;stroke-linejoin:round}</style>${(MARKS[id] || MARKS.op).replace(/"/g, "'")}</svg>`)}")`;
   function applyBrand() {
     const b = brand(), r = document.documentElement;

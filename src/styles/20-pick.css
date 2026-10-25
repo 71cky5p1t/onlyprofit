@@ -1,4 +1,4 @@
-/* picking an envelope. Phone: the chosen one lifts, the rest fall away, three sealed cards rise out of it */
+/* phone: picked envelope lifts, cards rise out */
 .minis.picking .mini:not(.chosen) { animation: miniAway .45s ease both }
 .mini.chosen { z-index: 5; animation: miniLift .55s var(--bounce) both }
 .mini.chosen::before { transform-origin: 50% 0; animation: flapOpen .35s ease .3s both }
@@ -10,7 +10,7 @@
 @keyframes miniLift { from { transform: translateY(-5px) rotate(-1.2deg) } to { transform: translateY(-16px) rotate(-2.5deg) scale(1.08) } }
 @keyframes flapOpen { to { transform: scaleY(.12); opacity: .6 } }
 @keyframes pullOut { from { transform: translateY(14px); opacity: 0 } to { transform: translate(var(--x), -62px) rotate(var(--r)); opacity: 1 } }
-/* TV: the nominee is pulled from the pile; the approved one opens and its cards slide out. Both wait for the stripe wipe */
+/* TV: nominee lifts; approved one opens (after the wipe) */
 .env.pick { z-index: 2; animation: envPick .7s var(--bounce) 1.15s both }
 .env.fall { animation: envFall .5s ease 1.1s both }
 .env.pull::before { transform-origin: 50% 0; animation: flapOpen .4s ease 1.15s both }
