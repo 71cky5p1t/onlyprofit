@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Only Profit</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,6 +117,8 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .bar3 button[aria-pressed="true"] span { border-color: currentColor; transform: rotate(-3deg) }
 .bar3 .s-Rec[aria-pressed="true"] { color: var(--good) } .bar3 .s-Risky[aria-pressed="true"] { color: #B4561C } .bar3 .s-Not[aria-pressed="true"] { color: var(--red) }
 .bar3.small button { font-size: 10px; padding: 8px 3px; letter-spacing: .03em }
+.bar3.two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 10px }
+.bar3 .b-ratify[aria-pressed="true"] { color: var(--good) } .bar3 .b-overrule[aria-pressed="true"] { color: var(--red) }
 .memo { display: grid; gap: 8px }
 .lie { display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
 .drop { position: relative; display: block }
@@ -666,7 +669,8 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 <script>
 // Only Profit — game engine (no DOM, no Math.random, no clock).
 // apply(state, seat, action) -> { state, events } | { error }
-// Bot logic is ported from sim2.py (FINAL config: smart vs smart, stood down at 2 warnings, Whistleblower ±3).
+// Bot logic started from sim2.py (FINAL config). Since 2026-10-25: Clawback, the Board vote, public reveals,
+// fair judging of human CEOs, ruthless saboteurs, credibility-weighted warnings and loyal temperaments (sim/playtest/).
 const OP = (() => {
   const SUITS = ['Action', 'Target', 'Modifier'];
   const WORDS = [
@@ -676,7 +680,7 @@ const OP = (() => {
   ];
   const VALUES = [2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, 'V', 'V'];
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 18, 5: 20, 6: 20, 7: 21, 8: 21 }; // +1 over sim2 at 4–7p: the prototype's bots win ~5 points more often than the sim's
+  const TARGETS = { 4: 18, 5: 20, 6: 21, 7: 21, 8: 22 }; // retuned 2026-10-25 for Clawback + Board vote against a mix of smart and ruthless saboteurs
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
@@ -687,6 +691,9 @@ const OP = (() => {
   const FX = [['With Thoughts and Prayers', 'null', -1], ['Retroactively', 'x2', -2], ["Per Legal's Advice", 'shield', -1], ['Without Consultation', 'flip', 0]];
   const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);
   const TOKENS = 3, ROUNDS = 5, SLACK = 2;
+  // Loyal bot temperaments: how readily they believe a memo, and how much it takes to vote for a warning.
+  const PERS = { trusting: [1, 0.5], sceptic: [0.5, 1], gossip: [1, 0.5], beancounter: [0.75, 0.75], yesman: [1, 1] };
+  const PERS_SAY = { trusting: 'believes a memo', sceptic: 'wants hard evidence', gossip: 'reports small losses', beancounter: 'trusts audited numbers', yesman: 'votes with the CEO' };
   const NAMES = ['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'Pam', 'Keith', 'Linda'];
   const DEPTS = ['Finance', 'Marketing', 'Human Resources', 'Legal', 'Operations', 'Compliance', 'R&D', 'Facilities'];
   const COLORS = ['manila', 'salmon', 'carbon', 'mint', 'gold'];
@@ -755,7 +762,7 @@ const OP = (() => {
   // What a player believes an envelope is worth. seeRev: the CEO sees cards revealed to them.
   function estimate(e, tier, seeRev) {
     if (e.audited || e.autopilot) return evs(e.cards);
-    const rv = seeRev ? e.revealed : [];
+    const rv = e.revealed;
     const known = rv.reduce((a, su) => a + ev(e.cards[su]), 0);
     const mu = MU - (tier === 'smart' ? 0.4 : 0);
     return known + (3 - rv.length) * mu + STAMP_W[tier] * STAMP_ADJ[e.stamp];
@@ -786,8 +793,10 @@ const OP = (() => {
     s.P = range(n).map(i => ({
       id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate,
       sab: sabs.includes(i), spec: null, fav: randomStyle(s),
-      warnings: 0, leave: false, accusations: 0, claims: 0, approved: [], ceoTurns: 0,
+      warnings: 0, leave: false, accusations: 0, claims: 0, approved: [], ceoTurns: 0, skipCEO: false,
     }));
+    const pers = shuffle(s, Object.keys(PERS).concat(Object.keys(PERS)));
+    s.P.forEach((p, k) => { p.pers = pers[k]; p.ruthless = p.sab && s.sabTier === 'smart' && rand(s) < 0.5; });
     if (n >= 6) { const [a, b] = shuffle(s, range(n)); s.P[a].spec = 'Auditor'; s.P[b].spec = 'Designer'; }
     s.ceoOrder = shuffle(s, range(n));
     s.hands = range(n).map(() => ({ cards: draw3(s), author: null, kind: 'legacy' }));
@@ -805,11 +814,15 @@ const OP = (() => {
   function chooseCEO(s) {
     const n = s.n;
     if (n === 4 && s.r === 5) {
-      const act = s.P.filter(p => !p.leave); const mx = Math.max(...act.map(p => p.approved.length));
+      const act0 = s.P.filter(p => !p.leave && !p.skipCEO), act = act0.length ? act0 : s.P.filter(p => !p.leave); const mx = Math.max(...act.map(p => p.approved.length));
       return pickOne(s, act.filter(p => p.approved.length === mx)).id;
     }
     const base = (s.r - 1) % n;
-    for (let k = 0; k < n; k++) { const c = s.ceoOrder[(base + k) % n]; if (!s.P[c].leave) return c; }
+    for (let k = 0; k < n; k++) {
+      const c = s.ceoOrder[(base + k) % n];
+      if (s.P[c].skipCEO) { s.P[c].skipCEO = false; continue; }
+      if (!s.P[c].leave) return c;
+    }
     return s.ceoOrder[base];
   }
   function ceoSchedule(s) {
@@ -832,7 +845,7 @@ const OP = (() => {
   }
   function botWork(s, i, I, D) {
     const p = s.P[i], L = s.loyalTier, tok = TOKENS;
-    const mode = p.sab ? sabMode(s) : 'loyal';
+    const mode = p.sab ? (p.ruthless && s.ceo === i ? 'bad' : sabMode(s)) : 'loyal';
     const tier = p.sab ? (s.sabTier === 'smart' ? 'smart' : 'basic') : L;
     let cost, prop, hand, redeal = false;
     if (mode === 'loyal' || mode === 'good') {
@@ -874,7 +887,7 @@ const OP = (() => {
     if (p.leave || inh.kind !== 'rejected' || inh.author == null || inh.author === i) return;
     const v = evs(inh.cards), a = inh.author;
     if (!p.sab && s.loyalTier === 'smart') {
-      if ((inh.stamp === 'Rec' && v <= -1) || (inh.stamp === 'Risky' && v <= -2)) accuse(s, i, a, inh.stamp, v, true);
+      if ((inh.stamp === 'Rec' && v <= -1) || (inh.stamp === 'Risky' && v <= (p.pers === 'sceptic' ? -3 : -2)) || (p.pers === 'gossip' && v <= -1)) accuse(s, i, a, inh.stamp, v, true);
       else if (v >= 2 && rand(s) < 0.5) s.memos.push({ by: i, target: a, kind: 'vouch', truthful: true });
     } else if (p.sab && s.sabTier === 'smart' && !s.P[a].leave) {
       const lie = !(inh.stamp === 'Rec' && v <= -1);
@@ -900,6 +913,7 @@ const OP = (() => {
   function botPick(s) {
     const ceo = s.ceo, L = s.loyalTier, envs = s.envs;
     const est = e => estimate(e, L, true);
+    if (s.P[ceo].sab && s.P[ceo].ruthless) { const own = envs.find(e => e.author === ceo && !e.autopilot); if (own) return own.id; }
     if (s.P[ceo].sab) {
       const top = Math.max(...envs.map(est));
       const deny = envs.filter(e => est(e) >= top - SLACK);
@@ -911,10 +925,27 @@ const OP = (() => {
     }
     return argmax(envs, e => [e.author === ceo ? evs(e.cards) : est(e)]).id;
   }
+  // A memo counts for less when its author is under a cloud; the table's own evidence counts double.
+  function credibility(s, i, by) {
+    if (by === 'table') return 2;
+    if (by === i) return 0;
+    const a = s.P[by];
+    return Math.max(0.25, 1 - 0.5 * a.warnings - (s.accused[by] ? 0.5 : 0) - (a.claims > 2 ? 0.5 : 0));
+  }
+  function warnScore(s, i, t) {
+    const w = s.P[i].sab ? PERS.trusting : PERS[s.P[i].pers] || PERS.trusting;
+    return s.accused[t].reduce((a, by) => a + (by === 'table' ? 2 : w[0] * credibility(s, i, by)), 0) + 0.25 * s.P[t].warnings;
+  }
   function botWarnVote(s, i) {
+    const p = s.P[i];
+    if (!p.sab && p.pers === 'yesman' && s.ceo !== i && !isHuman(s, s.ceo) && s.P[s.ceo].pers !== 'yesman') {
+      const v = botWarnVote(s, s.ceo); if (v !== 'none' && v !== i) return v;
+    }
     const c = Object.keys(s.accused).map(Number).filter(t => t !== i && !s.P[t].leave);
     if (!c.length) return 'none';
-    return argmax(c, t => [s.accused[t].length, s.P[t].accusations, s.P[t].warnings]);
+    const t = argmax(c, t => [warnScore(s, i, t), s.P[t].accusations, s.P[t].warnings]);
+    const need = p.sab ? 1 : (PERS[p.pers] || PERS.trusting)[1];
+    return warnScore(s, i, t) >= need ? t : 'none';
   }
   const suspicion = (s, q) => q.claims + 4 * Math.min(q.accusations, 2);
   function botWhistle(s, i) {
@@ -932,7 +963,7 @@ const OP = (() => {
 
   // ---------- round flow ----------
   function startRound(s, E) {
-    s.r++; s.memos = []; s.accused = {}; s.audit = null; s.pick = null; s.warn = null; s.result = null;
+    s.r++; s.memos = []; s.accused = {}; s.audit = null; s.pick = null; s.warn = null; s.result = null; s.nominee = null; s.bvotes = {}; s.board = null;
     s.reqStyle = s.nextStyle; s.nextStyle = null;
     s.assign = shuffle(s, range(s.n));
     s.ceo = chooseCEO(s); s.P[s.ceo].ceoTurns++;
@@ -1013,6 +1044,37 @@ const OP = (() => {
     else log(s, E, 'event', 'The table declined to audit anything.');
     s.phase = 'decide';
   }
+  // The CEO nominates; the Board (everyone else) ratifies or overrules on what the table can see.
+  const pubEst = (s, e) => estimate(e, s.loyalTier, false);
+  function botBoardVote(s, i) {
+    const p = s.P[i], nom = s.envs.find(x => x.id === s.nominee);
+    if (p.sab || !nom) return 'ratify';
+    const best = Math.max(...s.envs.map(x => pubEst(s, x)));
+    return pubEst(s, nom) <= best - 2 ? 'overrule' : 'ratify';
+  }
+  function nominate(s, id, E) {
+    const e = s.envs.find(x => x.id === id); if (!e) return 'No such envelope.';
+    s.nominee = id; s.bvotes = {};
+    log(s, E, 'event', `${who(s, s.ceo, 1)} nominated envelope ${id}. The Board is voting.`);
+    for (const p of s.P) if (p.id !== s.ceo && !isHuman(s, p.id)) s.bvotes[p.id] = botBoardVote(s, p.id);
+    s.phase = 'board';
+    if (s.spectate || s.ceo === humanSeat(s)) resolveBoard(s, E);
+    return null;
+  }
+  function resolveBoard(s, E) {
+    const voters = s.n - 1, no = Object.values(s.bvotes).filter(v => v === 'overrule').length;
+    const nom = s.envs.find(x => x.id === s.nominee);
+    const best = argmax(s.envs, x => [pubEst(s, x)]);
+    const overruled = no > voters / 2 && best.id !== nom.id;
+    s.board = { nominee: nom.id, votes: s.bvotes, no, overruled };
+    if (!overruled) { log(s, E, 'event', `The Board ratified envelope ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
+    const own = nom.author === s.ceo && !nom.autopilot;
+    nom.unmasked = true; s.board.own = own; s.board.author = nom.autopilot ? null : nom.author;
+    log(s, E, 'event', `The Board overruled ${who(s, s.ceo)} (${no}–${voters - no}). Envelope ${nom.id} was written by ${nom.autopilot ? 'interim management' : own ? 'the CEO' : who(s, nom.author)}. Envelope ${best.id} goes through instead.`, { target: s.ceo });
+    (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++;
+    if (own) { s.P[s.ceo].skipCEO = true; log(s, E, 'event', `${who(s, s.ceo, 1)} tried to push ${s.P[s.ceo].human ? 'your' : 'their'} own envelope and will sit out ${s.P[s.ceo].human ? 'your' : 'their'} next turn as CEO.`, { target: s.ceo }); }
+    return approve(s, best.id, E);
+  }
   function approve(s, id, E) {
     const e = s.envs.find(x => x.id === id); if (!e) return 'No such envelope.';
     e.approved = true;
@@ -1028,7 +1090,8 @@ const OP = (() => {
     if (e.author === s.ceo && !e.autopilot) log(s, E, 'event', 'The CEO approved their own envelope. This has been noted.');
     if (s.loyalTier === 'smart') {
       if (!e.autopilot && e.stamp === 'Rec' && actual <= -1) { (s.accused[e.author] = s.accused[e.author] || []).push('table'); author.accusations++; log(s, E, 'event', `A Recommended envelope lost money. Questions are being asked of ${who(s, e.author)}.`, { target: e.author }); }
-      if (estimate(e, s.loyalTier, false) <= pubBest - 3 && !s.P[s.ceo].human) { (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; log(s, E, 'event', `${who(s, s.ceo, 1)} passed over a far better-looking envelope.`, { target: s.ceo }); }
+      if (e.author === s.ceo && !e.autopilot && actual <= -1 && e.stamp !== 'Rec') { (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; log(s, E, 'event', `${who(s, s.ceo, 1)} approved ${s.P[s.ceo].human ? 'your' : 'their'} own envelope and it lost money.`, { target: s.ceo }); }
+      if (estimate(e, s.loyalTier, false) <= pubBest - 3 && !(s.board && s.board.overruled)) { (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; log(s, E, 'event', `${who(s, s.ceo, 1)} passed over a far better-looking envelope.`, { target: s.ceo }); }
     }
     s.phase = 'reveal'; s.wvotes = {};
     for (const p of s.P) if (!isHuman(s, p.id)) s.wvotes[p.id] = botWarnVote(s, p.id);
@@ -1080,8 +1143,13 @@ const OP = (() => {
     s.whistle = { votes: s.wb, count, named: winner === 'none' ? null : +winner };
     if (s.whistle.named != null) {
       const q = s.P[s.whistle.named];
-      s.whistle.correct = q.sab; s.profit += q.sab ? 3 : -3;
-      log(s, E, 'event', q.sab ? `The table named ${who(s, q.id)}. Correctly. Whistleblower settlement received: +3.` : `The table named ${who(s, q.id)}, who ${q.human ? 'were' : 'was'} loyal. Wrongful dismissal claim settled out of court: −3.`);
+      // Clawback: catching a saboteur reverses every losing policy they wrote (at least +3). Naming a loyal costs 3.
+      const lost = s.ledger.filter(l => l.author === q.id && !l.autopilot && l.actual < 0);
+      const back = lost.reduce((a, l) => a - 2 * l.actual, 0);
+      const swing = q.sab ? Math.max(3, back) : -3;
+      s.whistle.correct = q.sab; s.whistle.swing = swing; s.whistle.clawed = q.sab ? lost.map(l => ({ r: l.r, id: l.id, actual: l.actual })) : [];
+      s.profit += swing;
+      log(s, E, 'event', q.sab ? (lost.length ? `The table named ${who(s, q.id)}. Correctly. Clawback: ${lost.length === 1 ? 'their losing policy is' : `all ${lost.length} of their losing policies are`} reversed, ${fmt(swing)}.` : `The table named ${who(s, q.id)}. Correctly. Whistleblower settlement received: +3.`) : `The table named ${who(s, q.id)}, who ${q.human ? 'were' : 'was'} loyal. Wrongful dismissal claim settled out of court: −3.`);
     } else log(s, E, 'event', 'The table declined to name anyone.');
     s.win = s.profit >= s.target; s.phase = 'end';
     log(s, E, 'system', s.win ? `Final profit ${fmt(s.profit)} against a target of +${s.target}. Target met.` : `Final profit ${fmt(s.profit)} against a target of +${s.target}. Target missed.`);
@@ -1100,7 +1168,10 @@ const OP = (() => {
         if (s.phase !== 'pitch' || !humanTurn) { err = 'No audit vote open.'; break; }
         if (a.target !== 'none' && !s.envs.some(e => e.id === a.target && !e.autopilot)) { err = 'Pick an envelope or none.'; break; }
         s.votes[seat] = a.target; resolveAudit(s, E); break;
-      case 'approve': if (s.phase !== 'decide' || seat !== s.ceo || !humanTurn) err = 'Only the CEO can approve.'; else err = approve(s, a.id, E); break;
+      case 'approve': if (s.phase !== 'decide' || seat !== s.ceo || !humanTurn) err = 'Only the CEO can nominate.'; else err = nominate(s, a.id, E); break;
+      case 'boardVote':
+        if (s.phase !== 'board' || !humanTurn || seat === s.ceo) { err = 'No Board vote open.'; break; }
+        s.bvotes[seat] = a.vote === 'overrule' ? 'overrule' : 'ratify'; resolveBoard(s, E); break;
       case 'warnVote':
         if (s.phase !== 'reveal' || !humanTurn) { err = 'No warning vote open.'; break; }
         s.wvotes[seat] = a.target === 'none' ? 'none' : +a.target; resolveWarn(s, E); break;
@@ -1108,7 +1179,8 @@ const OP = (() => {
         if (s.phase !== 'whistle' || !humanTurn) { err = 'No vote open.'; break; }
         s.wb[seat] = a.target === 'none' ? 'none' : +a.target; resolveWhistle(s, E); break;
       case 'advance':
-        if (s.phase === 'decide' && (s.spectate || s.ceo !== seat)) approve(s, botPick(s), E);
+        if (s.phase === 'decide' && (s.spectate || s.ceo !== seat)) nominate(s, botPick(s), E);
+        else if (s.phase === 'board') { if (humanSeat(s) >= 0 && !(humanSeat(s) in s.bvotes)) s.bvotes[humanSeat(s)] = 'ratify'; resolveBoard(s, E); }
         else if (s.phase === 'review') next(s, E);
         else if (s.phase === 'brief') startRound(s, E);
         else err = 'Nothing to advance.';
@@ -1118,7 +1190,7 @@ const OP = (() => {
     return err ? { error: err } : { state: s, events: E };
   }
 
-  return { apply, newGame, workResult, workCost, estimate, evs, ev, total, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
+  return { PERS_SAY, apply, newGame, workResult, workCost, estimate, evs, ev, total, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
     SUITS, SUBJ, COLORS, TRIMS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
 })();
 </script>
@@ -1193,7 +1265,7 @@ const OP = (() => {
   const isCEO = () => mine() && S.ceo === ME;
   const STAMP = OP.STAMP_LABEL;
   const TIER = { smart: 'Smart', basic: 'Basic', naive: 'Gullible', patient: 'Patient', blatant: 'Blatant' };
-  const PHASE = { brief: 'Onboarding', work: 'Work', pitch: 'Pitch + audit', decide: 'Decide', reveal: 'Reveal', review: 'Reveal', whistle: 'Whistleblower', end: 'Exit interview' };
+  const PHASE = { brief: 'Onboarding', work: 'Work', pitch: 'Pitch + audit', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Reveal', whistle: 'Whistleblower', end: 'Exit interview' };
 
   // ---------- actions ----------
   function dispatch(a) {
@@ -1225,7 +1297,7 @@ const OP = (() => {
     const stats = S ? `<span class="tab"><b>Q${Math.max(1, S.r)}</b><span>${PHASE[S.phase]}</span></span>
       <div class="stat"><span class="label">CEO</span><b>${S.r ? esc(nm(S.ceo)) : '—'}</b></div>${meter()}` : '';
     return `<header class="mast"><div class="wrap">
-      <div class="logo"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="logo-type"><span class="brand-name">${esc(brand().name)}</span><small>${esc(brand().suffix)} · Playtest build 0.3</small></span></div>
+      <div class="logo"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="logo-type"><span class="brand-name">${esc(brand().name)}</span><small>${esc(brand().suffix)} · Playtest build 0.4</small></span></div>
       <div class="mast-stats">${stats}<div class="tools">
         <button class="chip-btn" data-a="debug" aria-pressed="${ui.debug}" title="Show hidden roles, envelope contents and bot reasoning">Observer</button>
         ${S ? '<button class="chip-btn" data-a="quit">New game</button>' : ''}</div></div></div></header>`;
@@ -1244,7 +1316,7 @@ const OP = (() => {
   function envHTML(e, opt) {
     opt = opt || {};
     const showAll = e.audited || e.autopilot || e.approved || ui.debug || (mine() && e.author === ME);
-    const vis = su => showAll || (isCEO() && e.revealed.includes(su));
+    const vis = su => showAll || e.revealed.includes(su);
     const anyVis = [0, 1, 2].some(vis);
     const cards = anyVis ? `<div class="env-cards">${e.cards.map((c, su) => {
       if (!vis(su)) return `<div class="env-card hidden"><b>${brand().mono}</b><span class="w">${OP.SUITS[su]}</span></div>`;
@@ -1256,10 +1328,11 @@ const OP = (() => {
     const tags = [];
     if (e.audited) tags.push('<span class="pill blue">Audited</span>');
     if (e.autopilot) tags.push('<span class="pill grey">Autopilot</span>');
-    if (isCEO() && e.revealed.length && !showAll) tags.push(`<span class="pill blue">${e.revealed.length} shown to you</span>`);
+    if (e.revealed.length && !showAll) tags.push(`<span class="pill blue">${e.revealed.length} shown</span>`);
+    if (e.unmasked && !e.approved) tags.push(`<span class="pill red">Overruled · ${e.author === S.ceo ? 'the CEO’s own' : esc(nm(e.author))}</span>`);
     if (mine() && e.author === ME && !e.approved) tags.push('<span class="pill grey">Yours</span>');
     if (mine() && !ui.debug && me().spec === 'Auditor' && e.author !== ME && !e.approved) tags.push('<span class="pill gold">Auditor sight</span>');
-    const dbg = ui.debug ? `<div class="env-dbg">${S.P[e.author].sab ? 'SAB' : 'LOYAL'} · ${esc(e.mode)} · true ${fmt(evs(e.cards))} · table est ${OP.estimate(e, S.loyalTier, false).toFixed(1)} · spent ${e.cost}${e.redeal ? ' · re-dealt' : ''}${e.revealed.length ? ' · showed CEO ' + e.revealed.map(s => OP.SUITS[s][0]).join('') : ''}</div>` : '';
+    const dbg = ui.debug ? `<div class="env-dbg">${S.P[e.author].sab ? 'SAB' : 'LOYAL'} · ${esc(e.mode)} · true ${fmt(evs(e.cards))} · table est ${OP.estimate(e, S.loyalTier, false).toFixed(1)} · spent ${e.cost}${e.redeal ? ' · re-dealt' : ''}${e.revealed.length ? ' · showed ' + e.revealed.map(s => OP.SUITS[s][0]).join('') : ''}</div>` : '';
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
     if (fresh) ui.stamped = `${S.r}${e.id}`;
@@ -1293,7 +1366,7 @@ const OP = (() => {
       if (fresh) ui.printed = r;
       return `<tr class="${fresh ? 'new' : ''}"><td class="num">Q${r}</td><td><div class="sub-mono">${esc(l.subject)}</div><span class="muted" style="font-size:12px">${STAMP[l.stamp]} · approved by ${esc(nm(l.ceo))}</span></td><td>${l.autopilot ? 'Autopilot' : esc(nm(l.author))}</td><td class="n ${tone(l.actual)}">${fmt(l.actual)}</td></tr>`;
     }).join('');
-    const wb = S.whistle && S.whistle.named != null ? `<tr><td class="num">WB</td><td colspan="2">Whistleblower: ${esc(nm(S.whistle.named))}</td><td class="n ${S.whistle.correct ? 'pos' : 'neg'}">${S.whistle.correct ? '+3' : '−3'}</td></tr>` : '';
+    const wb = S.whistle && S.whistle.named != null ? `<tr><td class="num">WB</td><td colspan="2">${S.whistle.correct && S.whistle.clawed.length ? `Clawback: ${esc(nm(S.whistle.named))}, ${S.whistle.clawed.map(c => 'Q' + c.r).join(', ')} reversed` : `Whistleblower: ${esc(nm(S.whistle.named))}`}</td><td class="n ${S.whistle.correct ? 'pos' : 'neg'}">${fmt(S.whistle.swing)}</td></tr>` : '';
     return `<section><div class="section-head"><h2>Quarterly ledger</h2><span class="label">Target +${S.target}${S.easy ? ' (easy)' : ''}</span></div>
       <table class="ledger"><thead><tr><th>Qtr</th><th>Approved policy</th><th>Author</th><th style="text-align:right">Δ</th></tr></thead><tbody>${rows}${wb}</tbody>
       <tfoot><tr><td colspan="3">Total</td><td class="n ${S.profit < 0 ? 'neg' : ''}">${fmt(S.profit)}</td></tr></tfoot></table></section>`;
@@ -1316,7 +1389,7 @@ const OP = (() => {
   }
   function observerHTML() {
     if (!ui.debug) return '';
-    const sus = S.P.map(p => `<span class="pill ${p.sab ? 'red' : 'green'}">${esc(p.name)} · ${p.sab ? 'SAB' : 'LOYAL'} · sus ${OP.suspicion(S, p).toFixed(1)}</span>`).join('');
+    const sus = S.P.map(p => `<span class="pill ${p.sab ? 'red' : 'green'}">${esc(p.name)} · ${p.sab ? (p.ruthless ? 'SAB · ruthless' : 'SAB') : `LOYAL · ${OP.PERS_SAY[p.pers]}`} · sus ${OP.suspicion(S, p).toFixed(1)}</span>`).join('');
     return `<section class="observer"><div class="section-head" style="margin:0;border-bottom-width:1px"><h2>Observer view</h2><span class="label">Hidden from players</span></div>
       <div style="font-size:13.5px">Headcount Memo: <b>${S.nSab} saboteur${S.nSab === 1 ? '' : 's'}</b>. Loyal bots play <b>${TIER[S.loyalTier]}</b>; saboteur bots play <b>${TIER[S.sabTier]}</b>. Seed <span class="mono">${S.seed}</span>.
       ${S.nextStyle ? ` Designer has set next quarter: ${S.nextStyle.color}/${S.nextStyle.trim}.` : ''}</div>
@@ -1330,12 +1403,12 @@ const OP = (() => {
       const cells = S.P.map((p, i) => i < sealed ? '<div class="placeholder sealed">Sealed</div>' : `<div class="placeholder">${mine() && S.work[ME] && i === sealed ? 'Your desk is open' : 'Working…'}</div>`).join('');
       return `<section><div class="section-head"><h2>Envelopes</h2><span class="label">${sealed} of ${S.n} sealed</span></div><div class="envs">${cells}</div></section>`;
     }
-    if (!['pitch', 'decide', 'reveal', 'review'].includes(ph)) return '';
+    if (!['pitch', 'decide', 'board', 'reveal', 'review'].includes(ph)) return '';
     const click = ph === 'pitch' && mine() ? 'sel' : ph === 'decide' && isCEO() ? 'sel' : null;
     const envs = S.envs.slice().sort((a, b) => a.id.localeCompare(b.id));
-    const hint = ph === 'pitch' ? 'Shuffled. No authors, no departments.' : ph === 'decide' ? (isCEO() ? 'You are CEO. Pick one.' : 'Awaiting the CEO') : 'Approved policy unmasked';
+    const hint = ph === 'pitch' ? 'Shuffled. No authors, no departments.' : ph === 'decide' ? (isCEO() ? 'You are CEO. Nominate one.' : 'Awaiting the CEO') : ph === 'board' ? `The Board is voting on ${icon(S.nominee)}` : 'Approved policy unmasked';
     return `<section><div class="section-head"><h2>Envelopes on the table</h2><span class="label">${hint}</span></div>
-      <div class="envs">${envs.map(e => envHTML(e, { click: click && !(ph === 'pitch' && e.autopilot) ? click : null, faded: (ph === 'reveal' || ph === 'review') && !e.approved })).join('')}</div></section>`;
+      <div class="envs">${envs.map(e => envHTML(e, { click: click && !(ph === 'pitch' && e.autopilot) ? click : null, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
   function exitHTML() {
     const rounds = S.history.map(h => {
@@ -1419,7 +1492,7 @@ const OP = (() => {
       const c = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
       const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
       return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, `<i class="eye" aria-hidden="true"></i>${n ? `<span class="coins paid">${coins(n)}</span>` : ''}`,
-        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the CEO' : 'Show to the CEO for 1 token'}"`));
+        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 token'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
       const c = wr.aside[su], on = draft.swaps.includes(su);
@@ -1460,7 +1533,7 @@ const OP = (() => {
   // pick-one grids: envelopes as small envelopes, people as name tags
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
-      const peek = e.audited || (isCEO() && e.revealed.length) ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brand().mono}</i>`).join('')}</span>` : '';
+      const peek = e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brand().mono}</i>`).join('')}</span>` : '';
       return `<button class="mini c-${e.style.color} t-${e.style.trim}" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="Envelope ${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
         ${peek}<span class="mid">${icon(e.id)}</span>${stampMark(e.stamp)}<span class="ms">${esc(e.subject)}</span>${mine() && e.author === ME ? '<i class="yours">You</i>' : ''}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
@@ -1469,6 +1542,7 @@ const OP = (() => {
     return `<div class="tags">${list.map(q => `<button class="nametag" data-a="sel" data-id="${q.id}" aria-pressed="${String(current) === String(q.id)}"><span class="hello">Hello<small>my name is</small></span><b>${esc(q.name)}</b>${stickers(q)}</button>`).join('')}
       ${none ? `<button class="nametag none" data-a="sel" data-id="none" aria-pressed="${String(current) === 'none'}"><b>${none}</b></button>` : ''}</div>`;
   }
+  const boardSlip = () => S.board ? slip(S.board.overruled ? `Board overruled ${icon(S.board.nominee)} · ${S.board.own ? 'the CEO’s own' : S.board.author == null ? 'autopilot' : esc(nm(S.board.author))}` : `Board ratified ${icon(S.board.nominee)}`) : '';
   const auditSlip = () => S.audit ? slip(S.audit.winner === 'none' ? 'Nothing audited' : `Audited ${icon(S.audit.winner)}`) : '';
   function resultSlip() {
     if (!S.result) return '';
@@ -1480,7 +1554,7 @@ const OP = (() => {
     if (ph === 'end') return deskEnd();
     const label = { decide: 'See the decision', review: S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower' }[ph];
     const bits = [auditSlip()];
-    if (ph === 'review') bits.push(resultSlip());
+    if (ph === 'review') bits.push(boardSlip(), resultSlip());
     if (S.warn && ph === 'review') bits.push(slip(S.warn.target == null ? 'No warning' : `Warning · <b>${esc(nm(S.warn.target))}</b> ${S.warn.passed ? 'passed' : 'failed'}`));
     return deskWrap('Observing', `<div class="slips">${bits.join('')}</div>`, { foot: label ? key('advance', label) : '' });
   }
@@ -1518,19 +1592,25 @@ const OP = (() => {
       return deskWrap('Audit vote', `${leave}${minis(list, ui.sel, 'Open nothing')}`, { foot: key('audit', ui.sel && ui.sel !== 'none' ? `Open ${icon(ui.sel)}` : 'Vote', !!ui.sel) });
     }
     if (ph === 'decide') {
-      if (isCEO()) return deskWrap('You are CEO', `<div class="slips">${auditSlip()}</div>${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Approve ${icon(ui.sel)}` : 'Approve', !!ui.sel) });
+      if (isCEO()) return deskWrap('You are CEO', `<div class="slips">${auditSlip()}</div>${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Nominate ${icon(ui.sel)}` : 'Nominate', !!ui.sel) });
       return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}<div class="slips">${auditSlip()}</div>`, { foot: key('advance', 'See the decision') });
+    }
+    if (ph === 'board') {
+      const nom = S.envs.find(e => e.id === S.nominee);
+      const body = `<div class="slips">${auditSlip()}${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}`)}</div><div class="board-nom">${envHTML(nom, {})}</div>
+        <div class="bar3 two" role="radiogroup" aria-label="Board vote">${['ratify', 'overrule'].map(v => `<button class="b-${v}" role="radio" data-a="sel" data-id="${v}" aria-checked="${ui.sel === v}" aria-pressed="${ui.sel === v}"><span>${v === 'ratify' ? 'Ratify' : 'Overrule'}</span></button>`).join('')}</div>`;
+      return deskWrap('Board vote', `${leave}${body}`, { foot: key('board', 'Sign', ui.sel === 'ratify' || ui.sel === 'overrule') });
     }
     if (ph === 'reveal') {
       const list = S.P.filter(q => q.id !== ME && !q.leave);
-      return deskWrap('Written Warning', `<div class="slips">${resultSlip()}</div>${nameTags(list, ui.sel, 'Nobody')}`, { foot: key('warn', 'Vote', ui.sel != null) });
+      return deskWrap('Written Warning', `<div class="slips">${boardSlip()}${resultSlip()}</div>${nameTags(list, ui.sel, 'Nobody')}`, { foot: key('warn', 'Vote', ui.sel != null) });
     }
     if (ph === 'review') {
       const w = S.warn;
       return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
-      return deskWrap('Name a saboteur', `<div class="slips">${slip(`Right <b class="pos">+3</b> · wrong <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
+      return deskWrap('Name a saboteur', `<div class="slips">${slip(`Right: <b class="pos">Clawback</b> · wrong <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
     }
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');
@@ -1652,11 +1732,11 @@ const OP = (() => {
         <div class="field"><span class="label">Target</span>${seg('easy', [[false, 'Standard'], [true, 'Easy mode (−3)']])}</div>
         <div class="field"><label class="label" for="seed">Seed (optional, to replay a deal)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}" style="max-width:200px"></div>
         <details class="rules"><summary>The quarter, in brief</summary><ol>
-          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 tokens: swap a card in (1, then 2), re-deal all three (2), or show one card to the CEO (1). Stamp it, write a subject line, style the envelope.</li>
+          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 tokens: swap a card in (1, then 2), re-deal all three (2), or show one card to the table (1). Stamp it, write a subject line, style the envelope.</li>
           <li><b>Pitch.</b> Envelopes appear shuffled and anonymous. Memos on the bulletin board say who left whom a mess. Nobody can check them. The table votes to audit one envelope.</li>
-          <li><b>Decide + Reveal.</b> The CEO approves one. Profit moves and its author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
+          <li><b>Decide + Reveal.</b> The CEO nominates one; the Board (everyone else) ratifies it or overrules it, and a majority Overrule puts the best-looking envelope through instead. An overruled nominee is unmasked, and a CEO caught pushing their own sits out their next turn as CEO. Profit moves and the approved author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
           <li><b>Effect Modifiers.</b> Four Modifiers rewrite the other two cards: ∅ cancels them, ×2 doubles them, ≥0 stops them losing, ⇅ flips them. Each also has its own value.</li>
-          <li><b>After Q5.</b> The table may name a saboteur: +3 if right, −3 if wrong.</li></ol></details>
+          <li><b>After Q5.</b> The table may name a saboteur. Right, and Clawback reverses every losing policy they wrote (at least +3). Wrong costs −3. Audit and Whistleblower ties are drawn at random (a tied Whistleblower names nobody).</li></ol></details>
         <div class="setup-foot"><button class="btn primary" data-a="start">Start the game</button><span class="hint">About 10 minutes against bots.</span></div>
       </div></div></div>`;
   }
@@ -1726,6 +1806,7 @@ const OP = (() => {
       case 'sel': ui.sel = d.id; render(); break;
       case 'audit': dispatch({ type: 'auditVote', target: ui.sel }); break;
       case 'approve': dispatch({ type: 'approve', id: ui.sel }); break;
+      case 'board': dispatch({ type: 'boardVote', vote: ui.sel }); break;
       case 'warn': dispatch({ type: 'warnVote', target: ui.sel }); break;
       case 'whistle': dispatch({ type: 'whistleVote', target: ui.sel }); break;
     }

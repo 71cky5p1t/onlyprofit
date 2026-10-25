@@ -92,6 +92,7 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     { id: 'dress', q: 'Q1', name: 'Dress it up', go: { ph: 'work', r: 1, page: 2 }, only: 'phone' },
     { id: 'pitch', q: 'Q1', name: 'Pitch + audit', go: { ph: 'pitch', r: 1 } },
     { id: 'decide', q: 'Q1', name: 'Decide', go: { ph: 'decide', r: 1 } },
+    { id: 'board', q: 'Q2', name: 'Board vote', go: { ph: 'board' } },
     { id: 'reveal', q: 'Q1', name: 'Reveal', go: { ph: 'reveal', r: 1 } },
     { id: 'closed', q: 'Q1', name: 'Quarter closed', go: { ph: 'review', r: 1 } },
     { id: 'deal', q: 'Q2', name: 'Next quarter', go: { ph: 'work', r: 2 }, only: 'phone' },
@@ -205,7 +206,7 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
       <div class="piece"><span class="purse">${coins(3)}</span><span class="note">Full purse</span></div>
       <div class="piece"><span class="purse">${coins(1)}<i class="coin spent"></i><i class="coin spent"></i></span><span class="note">Two spent</span></div>
       <div class="piece"><div class="slot">${card(1, 1, '', 'Interns').replace('<div class="hd">', '<span class="tag">' + coins(2) + '</span><div class="hd">')}</div><span class="note">Price to swap in</span></div>
-      <div class="piece"><div class="slot">${card(0, 2, 'shown', 'Liquidate').replace('<div class="hd">', '<i class="eye"></i><span class="coins paid">' + coins(2) + '</span><div class="hd">')}</div><span class="note">Paid, and shown to the CEO</span></div>
+      <div class="piece"><div class="slot">${card(0, 2, 'shown', 'Liquidate').replace('<div class="hd">', '<i class="eye"></i><span class="coins paid">' + coins(2) + '</span><div class="hd">')}</div><span class="note">Paid, and shown to the table</span></div>
       <div class="piece"><div class="slot">${card(2, 2, 'broke', 'In Perpetuity').replace('<div class="hd">', '<span class="tag">' + coins(3) + '</span><div class="hd">')}</div><span class="note">Can't afford</span></div>
     </div></div></section>
     <section><h4>Brand objects</h4><div class="row" style="align-items:center;gap:22px">
