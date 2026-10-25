@@ -67,3 +67,20 @@ Full review with screenshots: `/mnt/project-files/only-profit/refinement/ui-revi
 - The calculator's unlit segments are dimmer, so "8+5.0" no longer reads as eight plus five.
 - The end screen is now an Annual report: the five approved cover pages with their sentences, saboteur pages stamped, the total against the target, and everyone's name tag stamped Loyal or Saboteur. The old table is still there in Observer mode.
 Handed to the UI thread: TV panels as objects, phone downtime screens, squiggle-to-sign on the votes.
+
+## Round 5 (2026-10-25): investigations and the PIP (Joel: yes)
+
+The stamps now have a right answer. Any wildcard means Risky, a sure gain means Recommended, and a sure loss (or zero without a wildcard) means Not recommended. Lying is still allowed.
+Each quarter, once the reveal is done, the CEO may investigate one person. The check is private, and it looks at the stamp on that person's proposal from that quarter. If the stamp was wrong, the person goes on a Performance Improvement Plan. That is announced at the start of next quarter, but not why. A cleared player is never announced. From then on, a PIP player's proposal is open to the CEO only, and the TV still shows it sealed.
+Bots: a loyal bot always stamps right. A disguised saboteur stamps a trap with a wildcard Risky, which is honest. A saboteur on a PIP plays straight unless the CEO is a fellow saboteur. A bot CEO investigates whoever it would warn.
+
+| | round 4 | round 5 |
+|---|---|---|
+| company wins (bots) | 44–54% | 45–54% |
+| investigations per game | — | 0.8–1.4 |
+| investigated players who are saboteurs | — | 82–86% |
+| loyal players put on a PIP | — | 0% |
+| investigated saboteurs put on a PIP | — | 39–42% |
+| scripted human saboteur (exploit / subtle) | 52–51% / 56–57% | 52–51% / 58–59% |
+
+No retune was needed. Experiments kept in `variant.js`: `nowhistle` (saboteurs win 63–70% even with lower targets in `lowtgt`), `nowarn`, and `ceowhistle` + `ceotgt` (only the Q5 CEO names the saboteur; that version is balanced).

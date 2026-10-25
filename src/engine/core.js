@@ -40,6 +40,7 @@ const OP = (() => {
     return a + b + own;
   }
   const evs = cs => total(cs.map(ev), cs);
+  const rightStamp = cs => (cs.some(c => c.v === 'V') ? 'Risky' : evs(cs) > 0 ? 'Rec' : evs(cs) < 0 ? 'Not' : 'Risky');
   function cmp(a, b) { for (let i = 0; i < a.length; i++) { if (a[i] !== b[i]) return a[i] - b[i]; } return 0; }
   function argmax(xs, key) { let best = null, bk = null; for (const x of xs) { const k = key(x); if (best === null || cmp(k, bk) > 0) { best = x; bk = k; } } return best; }
 
@@ -100,7 +101,7 @@ const OP = (() => {
       brand: LEX[opts.brand] ? opts.brand : 'op',
       loyalTier: opts.loyalTier || 'smart', sabTier: opts.sabTier || 'smart', easy: !!opts.easy,
       target: TARGETS[n] - (opts.easy ? 3 : 0), profit: 0, r: 0, phase: 'brief',
-      feed: [], ledger: [], history: [], memos: [], accused: {}, envs: [], left: {}, work: {},
+      feed: [], ledger: [], history: [], investigations: [], memos: [], accused: {}, envs: [], left: {}, work: {},
     };
     s.subj = subjLists(s);
     s.deck = newDeck(s);
@@ -113,7 +114,7 @@ const OP = (() => {
     s.P = range(n).map(i => ({
       id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate,
       sab: sabs.includes(i), spec: null, fav: randomStyle(s),
-      warnings: 0, leave: false, accusations: 0, claims: 0, approved: [], ceoTurns: 0, skipCEO: false,
+      warnings: 0, leave: false, pip: false, accusations: 0, claims: 0, approved: [], ceoTurns: 0, skipCEO: false,
     }));
     const pers = shuffle(s, Object.keys(PERS).concat(Object.keys(PERS)));
     s.P.forEach((p, k) => { p.pers = pers[k]; p.ruthless = p.sab && s.sabTier === 'smart' && rand(s) < 0.5; });
@@ -163,7 +164,7 @@ const OP = (() => {
   }
 
   const pubEst = (s, e) => estimate(e, s.loyalTier, false);
-  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, estimate, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
+  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
 
   // ---------- round flow ----------
   function startRound(s, E) {
@@ -185,6 +186,18 @@ const OP = (() => {
     if (s.reqStyle) log(s, E, 'system', `The Designer has mandated ${s.reqStyle.tpl} cover pages in ${s.reqStyle.font} this quarter.`);
     s.phase = 'work';
     if (!Object.keys(s.work).length) toPitch(s, E);
+  }
+  // CEO investigations: one per quarter, checked in private; only a PIP is announced
+  function investigate(s, t) {
+    const e = t != null && t !== s.ceo && !s.P[t].pip && s.envs.find(x => x.author === t && !x.autopilot);
+    if (!e) return 'Nobody to investigate.';
+    s.invq = { r: s.r, t, guilty: e.stamp !== rightStamp(e.cards) };
+    return null;
+  }
+  function pipVerdict(s, E) {
+    const q = s.invq; s.invq = null; if (!q) return;
+    const p = s.P[q.t]; s.investigations.push(q);
+    if (q.guilty) { p.pip = true; (s.accused[p.id] = s.accused[p.id] || []).push('table'); p.accusations++; log(s, E, 'event', `${who(s, p.id, 1)} ${p.human ? 'have' : 'has'} been placed on a Performance Improvement Plan.`, { target: p.id }); }
   }
   function workCost(w) { return (w.redeal ? 2 : 0) + SWAP_COST[w.swaps.length] + w.reveals.length; }
   function workResult(s, i, w) {
@@ -222,6 +235,8 @@ const OP = (() => {
   }
   function toPitch(s, E) {
     botDesign(s);
+    // PIP: open to the CEO only
+    for (const e of s.envs) if (!e.autopilot && s.P[e.author].pip) e.openTo = [s.ceo];
     s.envs = shuffle(s, s.envs);
     const ids = shuffle(s, range(26).map(k => String.fromCharCode(65 + k))).slice(0, s.envs.length).sort();
     s.envs.forEach((e, k) => { e.id = ids[k]; });
@@ -287,6 +302,8 @@ const OP = (() => {
     }
     s.phase = 'reveal'; s.wvotes = {};
     for (const p of s.P) if (!isHuman(s, p.id)) s.wvotes[p.id] = botWarnVote(s, p.id);
+    s.invq = null;
+    if (!isHuman(s, s.ceo) && s.wvotes[s.ceo] !== 'none') investigate(s, s.wvotes[s.ceo]);
     if (s.spectate) resolveWarn(s, E);
     return null;
   }
@@ -323,6 +340,7 @@ const OP = (() => {
     s.hands = nh;
   }
   function next(s, E) {
+    pipVerdict(s, E);
     handovers(s);
     if (s.r < ROUNDS) startRound(s, E);
     else {
@@ -364,6 +382,9 @@ const OP = (() => {
       case 'warnVote':
         if (s.phase !== 'reveal' || !humanTurn) { err = 'No warning vote open.'; break; }
         s.wvotes[seat] = a.target === 'none' ? 'none' : +a.target; resolveWarn(s, E); break;
+      case 'investigate':
+        if ((s.phase !== 'reveal' && s.phase !== 'review') || seat !== s.ceo || !humanTurn || s.invq) { err = 'Only the CEO can investigate, once a quarter.'; break; }
+        err = investigate(s, +a.target); break;
       case 'whistleVote':
         if (s.phase !== 'whistle' || !humanTurn) { err = 'No vote open.'; break; }
         s.wb[seat] = a.target === 'none' ? 'none' : +a.target; resolveWhistle(s, E); break;
@@ -379,7 +400,7 @@ const OP = (() => {
     return err ? { error: err } : { state: s, events: E };
   }
 
-  return { PERS_SAY, apply, newGame, workResult, workCost, estimate, evs, ev, total, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
+  return { PERS_SAY, apply, newGame, workResult, workCost, estimate, evs, ev, total, rightStamp, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
     SUITS, SUBJ, LEX, TEMPLATES, FONTS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
 })();
 if (typeof module !== 'undefined') module.exports = OP;

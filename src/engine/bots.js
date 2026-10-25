@@ -6,7 +6,7 @@ const OP_BOTS = (() => {
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const styleKey = st => st ? st.tpl + '/' + st.font : '';
   const make = K => {
-    const { rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
+    const { rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
     const pers = p => PERS[p.pers] || PERS.trusting;
 
     // ---------- memory ----------
@@ -79,6 +79,7 @@ const OP_BOTS = (() => {
       if (S === 'naive' || S === 'blatant') return 'bad';
       if (S === 'patient') return r >= 3 ? 'bad' : 'good';
       // lie low for a quarter when the heat is on
+      if (p.pip && !s.P[s.ceo].sab) return 'good';
       if (S === 'smart' && r < 5 && (p.warnings >= 1 || p.accusations >= 2) && !p.lowDone) { p.lowDone = true; return 'good'; }
       const pace = r > 1 ? s.profit / (r - 1) * 5 : 99;
       return (r >= 3 || pace >= s.target) ? 'disguised' : 'good';
@@ -106,11 +107,11 @@ const OP_BOTS = (() => {
       const left = tok - cost, v = evs(prop);
       let stamp, rev;
       if (mode === 'loyal' || mode === 'good') {
-        stamp = v >= 2 ? 'Rec' : v >= 0 ? 'Risky' : 'Not';
+        stamp = rightStamp(prop);
         rev = tier === 'naive' ? [] : v >= 1 ? revealPositive(prop, left, tier === 'smart') : [];
       } else if (mode === 'bad') {
         stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : revealPositive(prop, left);
-      } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.5 ? 'Rec' : 'Risky'; rev = revealPositive(prop, left); }
+      } else if (prop.some(c => c.v === 'V')) { stamp = 'Risky'; rev = revealPositive(prop, left); } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.5 ? 'Rec' : 'Risky'; rev = revealPositive(prop, left); }
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
       // a smart saboteur sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
@@ -141,6 +142,7 @@ const OP_BOTS = (() => {
     function viewValue(s, i, e) { return e.author === i ? evs(e.cards) : estimate(e, s.loyalTier, i === s.ceo); }
     // what this bot thinks an proposal is worth: public read, plus who it looks like, plus nerve
     function feel(s, i, e) {
+      if (e.openTo && e.openTo.includes(i)) return evs(e.cards);
       if (e.author === i || e.audited || e.autopilot) return viewValue(s, i, e);
       const g = guess(s, i, e), unk = 3 - e.revealed.length;
       const behind = s.r > 1 ? s.profit / (s.r - 1) * 5 < s.target - 2 : false;
@@ -155,7 +157,7 @@ const OP_BOTS = (() => {
       if (s.P[ceo].sab) {
         const top = Math.max(...envs.map(est));
         const deny = envs.filter(e => est(e) >= top - SLACK);
-        return argmax(deny, e => [-(e.author === ceo || e.audited || e.autopilot ? evs(e.cards) : est(e))]).id;
+        return argmax(deny, e => [-(e.author === ceo || e.audited || e.autopilot || e.openTo ? evs(e.cards) : est(e))]).id;
       }
       if (L === 'naive') {
         const rank = { Rec: 2, Risky: 1, Not: 0 }; const top = Math.max(...envs.map(e => rank[e.stamp]));
