@@ -1,5 +1,6 @@
   // ---------- render ----------
   function render() {
+    cueSync();
     applyBrand();
     document.documentElement.dataset.phase = S ? S.phase : 'setup';
     if (!S && naming) { $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${namingBoard()}</main>${deskNaming()}</div></div>`; if (naming.phase === 'trace') mountTrace(); return; }
