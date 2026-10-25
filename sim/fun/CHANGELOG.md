@@ -93,3 +93,21 @@ I re-ran the same five temperaments on main, 1,500 games per size. Compared with
 Option B (no end vote; saboteurs also win if their approved losses reach 3) was tested with targets lowered to 4p 17, 5p 19, 6p 20, 7p 21, 8p 21:
 - The damage threshold almost never decides a game. A saboteur's own losing policy gets approved in only 3–14% of saboteur games, and reaches 3 or more in 1–5%. A saboteur's real damage comes from denying the best page as CEO and handing over junk, not from getting their own pages through.
 - Without the end vote, nothing at the finish punishes a saboteur. Scripted human saboteurs win 63–69% (49–59% on main), comebacks drop from 3–8% to 0–1%, and Q5 is close more often (56–67% against 26–44%).
+
+## Checking Codex's six spare cards (2026-10-25)
+
+`compare.js` runs engines side by side on the same seeds (bot fun table, scripted human saboteurs from `human.js`, win rate at any target). Codex's engine from `codex/phone-first-multiplayer` (d185b43) against main, 1,500 games per size:
+
+| | main (19/21/22/23/23) | six spares (24/25/26/26/27) |
+|---|---|---|
+| company wins (bots) | 45–54% | 47–56% |
+| scripted human saboteur (exploit / subtle) | 41–53% / 48–58% | 41–61% / 43–66% |
+| six spares at main's targets | — | 87–93% |
+| right saboteur named | 90–91% | 93–95% |
+| warnings on loyal players | 9–12% | 6–8% |
+| losing policy approved | 1–3% | 1–2% |
+| end vote flips the result | 24–32% | 29–38% |
+| live going into Q5 (20–80% either way) | 43–56% | 42–62% |
+| legal proposals per desk (before re-deal) | 7 | 19 |
+
+Codex's targets are right for bots. 4p is one too high for a human saboteur (61–66%); 23 gives bots 60%, scripted saboteurs 50–54%. With the hand rule reverted, Codex's multiplayer engine changes play identical games to main on 300 seeds per size.

@@ -17,11 +17,12 @@ function measure(n, G, o) {
   const m = { games: G, win: 0, close5: 0, closeW: 0, whistleFlip: 0, comeback: 0, collapse: 0, cross: 0, blowout: 0,
     overrule: 0, ownOverrule: 0, auditHit: 0, recLoss: 0, warns: 0, wrongWarns: 0, standDown: 0, wrongStand: 0,
     audits: 0, bust: 0, claw: 0, named: 0, correct: 0, cleanNamed: 0, clean: 0, choice: 0, rounds: 0, lies: 0, lieWarn: 0,
-    sabGames: 0, sabWinLied: 0, sabLied: 0, sabWinHonest: 0, sabHonest: 0, liarNamed: 0, margin: [] };
+    sabGames: 0, sabWinLied: 0, sabLied: 0, sabWinHonest: 0, sabHonest: 0, liarNamed: 0, margin: [], profit: [], q4: [], eoty: 0, recL: 0, recS: 0, nL: 0, nS: 0 };
   for (let g = 1; g <= G; g++) {
     const { s, R } = play(n, g * 7919 + n, o), T = s.target;
     const before = s.profit - (s.whistle.swing || 0), sabs = s.P.filter(p => p.sab).map(p => p.id);
-    m.win += s.win; m.margin.push(s.profit - T);
+    m.win += s.win; m.margin.push(s.profit - T); m.profit.push(s.profit); m.q4.push(R[3].profit);
+    m.eoty += s.eoty != null; for (const p of s.P) { if (p.sab) { m.recS += s.scores[p.id]; m.nS++; } else { m.recL += s.scores[p.id]; m.nL++; } }
     const p4 = R[3].profit; if (T - p4 >= -1 && T - p4 <= 5) m.close5++;
     if (Math.abs(before - T) <= 3) m.closeW++;
     if ((before >= T) !== s.win) m.whistleFlip++;
@@ -69,7 +70,8 @@ function row(n, m) {
     named: pc(m.named), correct: (m.correct / Math.max(1, m.named) * 100).toFixed(0) + '%', cleanParanoia: (m.cleanNamed / Math.max(1, m.clean) * 100).toFixed(0) + '%',
     liesPerG: (m.lies / G).toFixed(2), lieWarnLoyal: (m.lieWarn / Math.max(1, m.lies) * 100).toFixed(0) + '%',
     sabWinIfLied: (m.sabWinLied / Math.max(1, m.sabLied) * 100).toFixed(0) + '%', sabWinIfHonest: (m.sabWinHonest / Math.max(1, m.sabHonest) * 100).toFixed(0) + '%',
-    liarCaught: (m.liarNamed / Math.max(1, m.sabLied) * 100).toFixed(0) + '%' };
+    liarCaught: (m.liarNamed / Math.max(1, m.sabLied) * 100).toFixed(0) + '%',
+    eoty: pc(m.eoty), loyalRecord: (m.recL / Math.max(1, m.nL)).toFixed(2), sabRecord: (m.recS / Math.max(1, m.nS)).toFixed(2) };
 }
 
 if (require.main === module) {
