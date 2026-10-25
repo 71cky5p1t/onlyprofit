@@ -4,7 +4,7 @@
     const z = pct(0), p = pct(S.profit), left = Math.min(z, p), w = Math.abs(p - z);
     return `<div class="meter" aria-label="Profit ${fmt(S.profit)} of target ${S.target}">
       <div class="meter-lcd"><span class="ann"><span>PROFIT</span><span>TARGET +${S.target}</span></span><span class="v" id="lcd-profit">${lcd(ui.shown == null ? S.profit : ui.shown)}</span></div>
-      <div class="meter-track"><div class="bar"><div class="meter-zero" style="left:${z}%"></div><div class="meter-fill ${S.profit < 0 ? 'neg' : ''}" style="left:${left}%;width:${w}%"></div><div class="meter-tick" style="left:calc(${pct(S.target)}% - 1px)"></div></div><div class="lbl"><span>Q${Math.max(1, S.r)}/5</span><span>Target</span></div></div></div>`;
+      <div class="meter-track"><div class="bar"><div class="meter-zero" style="left:${z}%"></div><div class="meter-fill ${S.profit < 0 ? 'neg' : ''}" style="left:${left}%;width:${w}%"></div><div class="meter-tick" style="left:calc(${pct(S.target)}% - 1px)"></div>${S.r ? `<div class="meter-pace" style="left:calc(${pct(S.target * Math.min(5, S.r) / 5)}% - 1px)"></div>` : ''}</div><div class="lbl"><span>Q${Math.max(1, S.r)}/5</span><span>Target</span></div></div></div>`;
   }
   function mast() {
     const stats = S ? `<span class="tab"><b>Q${Math.max(1, S.r)}</b><span>${PHASE[S.phase]}</span></span>
@@ -106,6 +106,11 @@
     const animKey = `${S.r}|${ph}`, anim = ui.envAnim !== animKey && !still();
     ui.envAnim = animKey;
     const motion = e => !anim ? '' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
+    const b = S.board;
+    if (ph === 'reveal' && b && b.opened && b.best !== b.nominee) {
+      const side = (id, k) => { const e = envs.find(x => x.id === id); return `<div class="vs-side">${pageHTML(e, { motion: e.approved && anim ? 'pull' : '', faded: !e.approved })}<span class="vs-est ${tone(Math.round(b.est[k]))}">≈ ${fmt(Math.round(b.est[k]))}</span></div>`; };
+      return `<section><div class="vs">${side(b.nominee, 0)}<i class="vs-x ${b.overruled ? 'over' : ''}">${b.overruled ? (b.own ? 'Overruled · CEO’s own' : 'Overruled') : 'It stands'}</i>${side(b.best, 1)}</div></section>`;
+    }
     return `<section><div class="pages n${envs.length}">${envs.map(e => pageHTML(e, { motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
   function exitHTML() {

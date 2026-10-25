@@ -825,8 +825,8 @@ section > .label { color: var(--on-table-2) }
 .plate-n.now { background: linear-gradient(#E6CB86, #C49A45 55%, #9C7630); color: #241B0B; box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 10px 0 -4px #5A3E26, 0 0 22px -2px rgba(230,203,134,.45), 0 12px 12px -4px rgba(0,0,0,.6) }
 /* ---------- the honest stamp gets a pencil tick; PIP sticker; the CEO's file drawer ---------- */
 .stampstrip button { position: relative }
-.stampstrip button.right::after { content: ""; position: absolute; top: 3px; right: 6px; width: 14px; height: 12px; opacity: .55; pointer-events: none;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 12'%3E%3Cpath d='M1.5 6.5c1.4 1 2.3 2.2 3 3.6C6.6 6 9 3 12.6 1.2' fill='none' stroke='%23C9C3B0' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / contain }
+.stampstrip button.right::after { content: ""; position: absolute; top: 3px; right: 5px; width: 17px; height: 14px; opacity: .95; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 12'%3E%3Cpath d='M1.5 6.5c1.4 1 2.3 2.2 3 3.6C6.6 6 9 3 12.6 1.2' fill='none' stroke='%239A9482' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / contain }
 .stampstrip button.right[aria-pressed="true"]::after { filter: brightness(.45) }
 
 .stk.pip { --c: #1C1B19; --k: #F3C94E; letter-spacing: .16em }
@@ -839,6 +839,27 @@ section > .label { color: var(--on-table-2) }
 .files:has(.pulled) { grid-template-columns: 160px; justify-content: center }
 .file.pulled { transform: rotate(-2deg) }
 .file-stamp { position: absolute; inset: auto 0 14px; margin: auto; width: max-content; font: 900 14px/1 var(--f-body); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: var(--red); border: 2px solid currentColor; border-radius: 3px; padding: 4px 8px 3px; transform: rotate(-7deg); opacity: .85 }
+
+/* the Modifier at work on the desk: new mark, old one struck in the corner */
+.card.fxd .was { position: absolute; right: 6%; top: 27%; z-index: 3; min-width: 22px; padding: 3px 4px 2px; border-radius: 3px; background: rgba(251,248,241,.92); font: 400 13px/1 var(--f-seg); text-decoration: none; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,.3) }
+.card.fxd .was.pos { color: var(--good) } .card.fxd .was.neg { color: var(--red) } .card.fxd .was.zero { color: var(--ink-2) }
+.card.fxd .was::after { content: ""; position: absolute; left: 1px; right: 1px; top: 48%; height: 1.5px; background: var(--ink); transform: rotate(-24deg) }
+.vs .pg-tags { display: none }
+.card.fxd.fx-null .glyph { opacity: .35 }
+.card.fxd.blink .glyph { animation: fx-blink .5s steps(2) 3 }
+@keyframes fx-blink { 50% { opacity: .1 } }
+@media (prefers-reduced-motion: reduce) { .card.fxd.blink .glyph { animation: none } }
+
+/* pace: where the profit should be by the end of this quarter */
+.meter-pace { position: absolute; top: 9px; bottom: 9px; width: 2px; background: var(--stock); opacity: .45; border-radius: 1px }
+
+/* an opened nominee, side by side with the best-looking rival */
+.vs { display: flex; justify-content: center; align-items: center; gap: 34px }
+.vs-side { display: grid; justify-items: center; gap: 10px }
+.vs-est { font: 400 22px/1 var(--f-seg); color: var(--on-table) }
+.vs-est.pos { color: #8FD3A0 } .vs-est.neg { color: #F38A7C }
+.vs-x { font: 900 18px/1 var(--f-body); font-style: normal; text-transform: uppercase; letter-spacing: .06em; color: var(--good); border: 3px solid currentColor; border-radius: 4px; padding: 7px 10px 5px; transform: rotate(-8deg); background: rgba(251,248,241,.9) }
+.vs-x.over { color: var(--red) }
 /* sound toggle: a small card-stock disc in the corner of the felt */
 .au-btn { position: fixed; z-index: 40; left: calc(14px + env(safe-area-inset-left, 0px)); bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--stock); color: var(--ink); box-shadow: var(--lift); display: grid; place-items: center; opacity: .85 }
@@ -1384,7 +1405,7 @@ const OP = (() => {
     if (opened) { nom.audited = true; s.audit = { winner: nom.id }; log(s, E, 'event', `The Board opened proposal ${nom.id}: worth ${fmt(evs(nom.cards))}${nom.cards.some(c => c.v === 'V') ? ' plus volatility' : ''}.`); }
     const best = argmax(s.envs, x => [pubEst(s, x)]);
     const overruled = opened && best.id !== nom.id && pubEst(s, nom) < pubEst(s, best) - 1;
-    s.board = { nominee: nom.id, votes: s.bvotes, no, opened, overruled };
+    s.board = { nominee: nom.id, votes: s.bvotes, no, opened, overruled, best: best.id, est: [pubEst(s, nom), pubEst(s, best)] };
     if (!overruled) { log(s, E, 'event', opened ? `It stands. Proposal ${nom.id} goes through.` : `The Board ratified proposal ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
     const own = nom.author === s.ceo && !nom.autopilot;
     nom.unmasked = true; s.board.own = own; s.board.author = nom.autopilot ? null : nom.author;
@@ -1699,7 +1720,7 @@ const OP = (() => {
   const fmt = OP.fmt, evs = OP.evs;
   const tone = v => (v === 'V' ? 'gold' : v > 0 ? 'pos' : v < 0 ? 'neg' : 'zero');
   const GLYPH = { 2: '++', 1: '+', 0: '0', '-1': '−', '-2': '−−', V: '?' };
-  const glyph = v => `<b class="glyph ${v === 'V' ? 'v-v' : tone(v)}">${GLYPH[v]}</b>`;
+  const glyph = v => `<b class="glyph ${v === 'V' ? 'v-v' : tone(v)}">${GLYPH[v] || (v > 0 ? '+' : '−') + Math.abs(v)}</b>`;
   const FXSYM = { null: '×0', x2: '×2', shield: '≥0', flip: '×−1' };
   const FXSAY = { null: 'Cancels the rest', x2: 'Doubles the rest', shield: "Rest can't lose", flip: 'Flips the rest' };
   const lcd = n => { const t = (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n) + '.0'; return `<span class="ghost">${'8'.repeat(Math.max(0, 5 - t.length))}</span>${t}`; };
@@ -1802,7 +1823,7 @@ const OP = (() => {
   const isCEO = () => mine() && S.ceo === ME;
   const STAMP = OP.STAMP_LABEL;
   const TIER = { smart: 'Smart', basic: 'Basic', naive: 'Gullible', patient: 'Patient', blatant: 'Blatant' };
-  const PHASE = { brief: 'Onboarding', work: 'Work', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Quarter closed', whistle: 'Whistleblower', end: 'Annual report' };
+  const PHASE = { brief: 'Induction', work: 'Work', decide: 'Decide', board: 'Board vote', reveal: 'Reveal', review: 'Quarter closed', whistle: 'Whistleblower', end: 'Annual report' };
   // ---------- actions ----------
   function dispatch(a) {
     const r = OP.apply(S, S.spectate ? -1 : ME, a);
@@ -1948,7 +1969,7 @@ const OP = (() => {
     const z = pct(0), p = pct(S.profit), left = Math.min(z, p), w = Math.abs(p - z);
     return `<div class="meter" aria-label="Profit ${fmt(S.profit)} of target ${S.target}">
       <div class="meter-lcd"><span class="ann"><span>PROFIT</span><span>TARGET +${S.target}</span></span><span class="v" id="lcd-profit">${lcd(ui.shown == null ? S.profit : ui.shown)}</span></div>
-      <div class="meter-track"><div class="bar"><div class="meter-zero" style="left:${z}%"></div><div class="meter-fill ${S.profit < 0 ? 'neg' : ''}" style="left:${left}%;width:${w}%"></div><div class="meter-tick" style="left:calc(${pct(S.target)}% - 1px)"></div></div><div class="lbl"><span>Q${Math.max(1, S.r)}/5</span><span>Target</span></div></div></div>`;
+      <div class="meter-track"><div class="bar"><div class="meter-zero" style="left:${z}%"></div><div class="meter-fill ${S.profit < 0 ? 'neg' : ''}" style="left:${left}%;width:${w}%"></div><div class="meter-tick" style="left:calc(${pct(S.target)}% - 1px)"></div>${S.r ? `<div class="meter-pace" style="left:calc(${pct(S.target * Math.min(5, S.r) / 5)}% - 1px)"></div>` : ''}</div><div class="lbl"><span>Q${Math.max(1, S.r)}/5</span><span>Target</span></div></div></div>`;
   }
   function mast() {
     const stats = S ? `<span class="tab"><b>Q${Math.max(1, S.r)}</b><span>${PHASE[S.phase]}</span></span>
@@ -2050,6 +2071,11 @@ const OP = (() => {
     const animKey = `${S.r}|${ph}`, anim = ui.envAnim !== animKey && !still();
     ui.envAnim = animKey;
     const motion = e => !anim ? '' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
+    const b = S.board;
+    if (ph === 'reveal' && b && b.opened && b.best !== b.nominee) {
+      const side = (id, k) => { const e = envs.find(x => x.id === id); return `<div class="vs-side">${pageHTML(e, { motion: e.approved && anim ? 'pull' : '', faded: !e.approved })}<span class="vs-est ${tone(Math.round(b.est[k]))}">≈ ${fmt(Math.round(b.est[k]))}</span></div>`; };
+      return `<section><div class="vs">${side(b.nominee, 0)}<i class="vs-x ${b.overruled ? 'over' : ''}">${b.overruled ? (b.own ? 'Overruled · CEO’s own' : 'Overruled') : 'It stands'}</i>${side(b.best, 1)}</div></section>`;
+    }
     return `<section><div class="pages n${envs.length}">${envs.map(e => pageHTML(e, { motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
   function exitHTML() {
@@ -2129,10 +2155,14 @@ const OP = (() => {
     const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
     // tokens are overtime hours: chits on the hand, punched chits pinned to the policy cards they bought
     const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.reveals.includes(su) ? 1 : 0);
+    // an effect Modifier rewrites the other two right here, before you commit
+    const fx = wr.prop[2].fx, blink = fx && ui.fxw !== wr.prop[2].w;
+    ui.fxw = fx ? wr.prop[2].w : null;
     const env = [0, 1, 2].map(su => {
-      const c = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
+      const c0 = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
+      const hit = su < 2 && fx && c0.v !== 'V' && after(fx, c0.v) !== c0.v, c = hit ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0;
       const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
-      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, n ? `<span class="paid">${hrs(n)}</span>` : '',
+      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
         `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 hour of overtime'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
@@ -2258,7 +2288,7 @@ const OP = (() => {
         <div class="memo-row"><span>Re</span><b>Your allegiance</b></div>
         <div class="memo-row"><span>Target</span><b>+${S.target}</b> by Q5</div>
         <div class="memo-stamp ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Saboteur' : 'Loyal'}</div>
-        ${p.spec ? `<div class="memo-spec">${p.spec}<small>${p.spec === 'Auditor' ? 'you see who wrote every proposal' : 'you choose next quarter’s cover page'}</small></div>` : ''}
+        ${p.spec ? `<div class="memo-spec">${p.spec}</div>` : ''}
         <div class="memo-fine">${fine}</div>
         <svg class="memo-sig" viewBox="0 0 160 40" aria-hidden="true"><path d="M4 30c10-18 18-24 22-16s-8 18 2 12 14-22 20-16-6 20 4 14 10-14 16-10 2 12 10 8 12-10 20-8 6 8 14 4 14-6 20-4"/></svg>
       </div>`;
