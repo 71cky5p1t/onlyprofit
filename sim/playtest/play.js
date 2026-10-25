@@ -65,7 +65,6 @@ function play(n, seed, x, strat) {
     if (++k > 400) throw new Error('loop');
     if (!strat) { go(-1, { type: 'advance' }); }
     else if (s.phase === 'work') go(0, humanWork(s, st));
-    else if (s.phase === 'pitch') go(0, { type: 'auditVote', target: 'none' });
     else if (s.phase === 'decide') { if (s.ceo === 0) go(0, { type: 'approve', id: humanPick(s, st) }); else go(0, { type: 'advance' }); }
     else if (s.phase === 'board') go(0, { type: 'boardVote', vote: 'ratify' });
     else if (s.phase === 'reveal') go(0, { type: 'warnVote', target: humanWarn(s, st) });

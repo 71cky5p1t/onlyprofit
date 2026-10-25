@@ -39,3 +39,21 @@ The rule experiments are in `variant.js`, run at 800 games per player count:
   This is one vote fewer per quarter. The Board opens the nominee in 11–21% of quarters, and about half of those catch a losing envelope (6–9% of quarters, up from 1–4%).
   Warnings that hit loyal players fall to 8–10%. The company gains 4–7 points of win rate, so it needs targets about 1 higher (4p 20, 5p 22, 6p 22, 7p 23, 8p 24).
   This one needs Joel's call.
+
+## Round 3 (2026-10-25): the Board opens the pick (Joel: yes)
+
+The separate Audit vote is gone. After the CEO nominates, the Board votes Ratify or Open it. If the opened envelope trails the best-looking one by more than 1, the Board overrules: the author is named, and a CEO caught on their own envelope sits out a turn, as before.
+Bots open the nominee when it trails their own read, wears the CEO's or a suspect's colours, or is Recommended with little shown. Targets: 4p 19, 5p 21, 6p 22, 7p 23, 8p 23.
+
+| | round 2 | round 3 |
+|---|---|---|
+| votes per quarter | 3 | 2 |
+| company wins (bots) | 48–53% | 44–54% |
+| quarters where an opened envelope is a loser | 1–4% | 6–8% |
+| warnings that hit a loyal player | 17–27% | 7–9% |
+| no-saboteur games where someone is named anyway | 9–20% | 3–6% |
+| whistle names the right person | 81–87% | 88–92% |
+| scripted human saboteur (exploit / subtle) | 46–42% / 58–46% | 54–43% / 58–44% |
+
+The table is now very good at finding the saboteur. Humans will lie better than these bots, so this needs a live playtest before anything is softened.
+The `tamper` and `openNom` experiments were removed from `variant.js` (one is now the rule, and the other hooked into the old Audit).
