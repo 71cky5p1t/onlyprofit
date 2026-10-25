@@ -12,6 +12,8 @@
   const tone = v => (v === 'V' ? 'gold' : v > 0 ? 'pos' : v < 0 ? 'neg' : 'zero');
   const GLYPH = { 2: '++', 1: '+', 0: '0', '-1': '−', '-2': '−−', V: '?' };
   const glyph = v => `<b class="glyph ${v === 'V' ? 'v-v' : tone(v)}">${GLYPH[v]}</b>`;
+  const FXSYM = { null: '∅', x2: '×2', shield: '≥0', flip: '⇅' };
+  const FXSAY = { null: 'Cancels the rest', x2: 'Doubles the rest', shield: "Rest can't lose", flip: 'Flips the rest' };
   const lcd = n => { const t = (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n) + '.0'; return `<span class="ghost">${'8'.repeat(Math.max(0, 5 - t.length))}</span>${t}`; };
   const nm = i => (i === 'table' ? 'The table' : S.P[i].name);
   const mine = () => S && !S.spectate;
@@ -57,8 +59,9 @@
         ${S ? '<button class="chip-btn" data-a="quit">New game</button>' : ''}</div></div></div></header>`;
   }
   function cardHTML(c, cls, extra, attrs) {
-    const amt = c.v === 'V' ? '+2 or −2' : c.v === 0 ? 'No effect' : `${fmt(c.v)} profit`;
-    return `<div class="card s-${c.s} ${cls || ''}" ${attrs || ''}>${extra || ''}<div class="hd"><i class="sp"></i>${OP.SUITS[c.s]}</div><div class="fx">${glyph(c.v)}<span class="amt">${amt}</span></div><span class="word">${esc(c.w)}</span></div>`;
+    const amt = c.fx ? FXSAY[c.fx] : c.v === 'V' ? '+2 or −2' : c.v === 0 ? 'No effect' : `${fmt(c.v)} profit`;
+    const face = c.fx ? `<div class="split">${glyph(c.v)}<b class="eff fx-${c.fx}">${FXSYM[c.fx]}</b></div>` : glyph(c.v);
+    return `<div class="card s-${c.s} ${c.fx ? 'has-fx' : ''} ${cls || ''}" ${attrs || ''}>${extra || ''}<div class="hd"><i class="sp"></i>${OP.SUITS[c.s]}</div><div class="fx">${face}<span class="amt">${amt}</span></div><span class="word">${esc(c.w)}</span></div>`;
   }
   function authorVisible(e) {
     if (e.approved || ui.debug) return true;
@@ -74,7 +77,7 @@
     const cards = anyVis ? `<div class="env-cards">${e.cards.map((c, su) => {
       if (!vis(su)) return `<div class="env-card hidden"><b>OP</b><span class="w">${OP.SUITS[su]}</span></div>`;
       const v = e.resolved ? e.resolved[su] : c.v;
-      return `<div class="env-card" title="${esc(c.w)}: ${fmt(v)}"><b class="${tone(v)}">${GLYPH[v]}${e.resolved && c.v === 'V' ? '*' : ''}</b><span class="w">${esc(c.w)}</span></div>`;
+      return `<div class="env-card" title="${esc(c.w)}: ${fmt(v)}"><b class="${tone(v)}">${GLYPH[v]}${e.resolved && c.v === 'V' ? '*' : ''}${c.fx ? `<i class="eff fx-${c.fx}">${FXSYM[c.fx]}</i>` : ''}</b><span class="w">${esc(c.w)}</span></div>`;
     }).join('')}</div>` : '';
     const who = authorVisible(e) ? (e.autopilot ? 'Autopilot' : (mine() && e.author === ME ? 'You' : nm(e.author))) : null;
     const dept = (ui.debug || e.approved || (mine() && e.author === ME)) ? OP.DEPTS[e.dept] : null;
@@ -168,8 +171,8 @@
     const rounds = S.history.map(h => {
       const rows = h.envs.slice().sort((a, b) => a.id.localeCompare(b.id)).map(e => {
         const p = S.P[e.author];
-        const vals = e.cards.map((c, k) => `<span class="${tone(e.resolved ? e.resolved[k] : c.v)}">${fmt(e.resolved ? e.resolved[k] : c.v)}</span>`).join(' ');
-        const tot = e.resolved ? e.resolved.reduce((a, b) => a + b, 0) : evs(e.cards);
+        const vals = e.cards.map((c, k) => `<span class="${tone(e.resolved ? e.resolved[k] : c.v)}">${fmt(e.resolved ? e.resolved[k] : c.v)}${c.fx ? ' ' + FXSYM[c.fx] : ''}</span>`).join(' ');
+        const tot = e.resolved ? OP.total(e.resolved, e.cards) : evs(e.cards);
         return `<tr class="${e.id === h.pick ? 'win' : ''}"><td class="num nw"><b>${e.id}</b>${e.id === h.pick ? ' ✓' : ''}${e.id === h.audit ? ' <span class="pill blue">aud</span>' : ''}</td>
           <td class="nw">${e.autopilot ? 'Autopilot · ' : ''}${esc(p.name)} <span class="pill ${p.sab ? 'red' : 'green'}">${p.sab ? 'Sab' : 'Loyal'}</span></td>
           <td class="muted">${OP.DEPTS[e.dept]}</td><td class="sub-mono">${esc(e.subject)}</td><td>${STAMP[e.stamp]}</td><td class="num nw">${vals}</td><td class="num ${tone(tot)}"><b>${fmt(tot)}</b></td></tr>`;
@@ -346,6 +349,7 @@
           <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 tokens: swap a card in (1, then 2), re-deal all three (2), or show one card to the CEO (1). Stamp it, write a subject line, style the envelope.</li>
           <li><b>Pitch.</b> Envelopes appear shuffled and anonymous. Memos on the bulletin board say who left whom a mess. Nobody can check them. The table votes to audit one envelope.</li>
           <li><b>Decide + Reveal.</b> The CEO approves one. Profit moves and its author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
+          <li><b>Effect Modifiers.</b> Four Modifiers rewrite the other two cards: ∅ cancels them, ×2 doubles them, ≥0 stops them losing, ⇅ flips them. Each also has its own value.</li>
           <li><b>After Q5.</b> The table may name a saboteur: +3 if right, −3 if wrong.</li></ol></details>
         <div class="setup-foot"><button class="btn primary" data-a="start">Start the game</button><span class="hint">About 10 minutes against bots.</span></div>
       </div></div></div>`;

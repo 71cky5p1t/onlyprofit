@@ -17,6 +17,9 @@ const OP = (() => {
   const STAMP_CLAIM = { Rec: 2.5, Risky: 0.5, Not: -1 };
   const STAMP_LABEL = { Rec: 'Recommended', Risky: 'Risky', Not: 'Not Recommended' };
   const SWAP_COST = [0, 1, 3, 6];
+  // Effect Modifiers replace the four 0-value Modifiers in the deck: [word, effect, own value]
+  const FX = [['With Thoughts and Prayers', 'null', -1], ['Retroactively', 'x2', -2], ["Per Legal's Advice", 'shield', -1], ['Without Consultation', 'flip', 0]];
+  const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);
   const TOKENS = 3, ROUNDS = 5, SLACK = 2;
   const NAMES = ['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'Pam', 'Keith', 'Linda'];
   const DEPTS = ['Finance', 'Marketing', 'Human Resources', 'Legal', 'Operations', 'Compliance', 'R&D', 'Facilities'];
@@ -41,15 +44,29 @@ const OP = (() => {
   const range = n => [...Array(n).keys()];
 
   const ev = c => (c.v === 'V' ? 0 : c.v);
-  const evs = cs => cs.reduce((a, c) => a + ev(c), 0);
+  // An effect Modifier keeps its own value and rewrites what the Action and Target add up to.
+  function total(vals, cards) {
+    const fx = cards[2] && cards[2].fx, a = vals[0], b = vals[1], own = vals[2];
+    if (fx === 'null') return own;
+    if (fx === 'x2') return own + 2 * (a + b);
+    if (fx === 'shield') return own + Math.max(0, a) + Math.max(0, b);
+    if (fx === 'flip') return own - (a + b);
+    return a + b + own;
+  }
+  const evs = cs => total(cs.map(ev), cs);
   function cmp(a, b) { for (let i = 0; i < a.length; i++) { if (a[i] !== b[i]) return a[i] - b[i]; } return 0; }
   function argmax(xs, key) { let best = null, bk = null; for (const x of xs) { const k = key(x); if (best === null || cmp(k, bk) > 0) { best = x; bk = k; } } return best; }
 
   // ---------- deck ----------
   function newDeck(s) {
     const piles = SUITS.map((_, su) => {
-      const words = shuffle(s, WORDS[su].concat(WORDS[su]));
-      return shuffle(s, VALUES.map((v, k) => ({ id: `${su}.${k}`, s: su, v, w: words[k] })));
+      if (su !== 2) { const words = shuffle(s, WORDS[su].concat(WORDS[su])); return shuffle(s, VALUES.map((v, k) => ({ id: `${su}.${k}`, s: su, v, w: words[k] }))); }
+      const plain = WORDS[2].filter(w => !FX.some(f => f[0] === w)), words = shuffle(s, plain.concat(plain, plain));
+      let n = 0;
+      return shuffle(s, VALUES.map((v, k) => {
+        const f = FX[FX_SLOTS.indexOf(k)];
+        return f ? { id: `2.${k}`, s: 2, v: f[2], w: f[0], fx: f[1] } : { id: `2.${k}`, s: 2, v, w: words[n++] };
+      }));
     });
     return { piles, disc: [[], [], []] };
   }
@@ -334,7 +351,7 @@ const OP = (() => {
     const e = s.envs.find(x => x.id === id); if (!e) return 'No such envelope.';
     e.approved = true;
     e.resolved = e.cards.map(c => (c.v === 'V' ? (rand(s) < 0.5 ? 2 : -2) : c.v));
-    const actual = e.resolved.reduce((a, b) => a + b, 0);
+    const actual = total(e.resolved, e.cards);
     const pubBest = Math.max(...s.envs.map(x => estimate(x, s.loyalTier, false)));
     s.profit += actual;
     const author = s.P[e.author];
@@ -435,7 +452,7 @@ const OP = (() => {
     return err ? { error: err } : { state: s, events: E };
   }
 
-  return { apply, newGame, workResult, workCost, estimate, evs, ev, fmt, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
+  return { apply, newGame, workResult, workCost, estimate, evs, ev, total, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
     SUITS, SUBJ, COLORS, TRIMS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
 })();
 if (typeof module !== 'undefined') module.exports = OP;

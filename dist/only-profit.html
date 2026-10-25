@@ -183,6 +183,18 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .deal .slot:nth-child(2) .card { animation-delay: .06s } .deal .slot:nth-child(3) .card { animation-delay: .12s }
 .hand-zone .card { background: var(--stock) }
 @media (prefers-reduced-motion: reduce) { .card.land, .card.nope { animation: none } .card.drag:hover { transform: none } }
+
+/* effect Modifiers: own value on the left, what it does to the rest on the right */
+.split { display: flex; align-items: center; gap: 6px }
+.split .glyph { font-size: 24px }
+.split .eff { font: 900 24px/1 var(--f-body); letter-spacing: -.02em; border-left: 2px solid var(--ink); padding-left: 7px }
+.eff.fx-null { color: var(--red) } .eff.fx-x2 { color: var(--ink) } .eff.fx-shield { color: var(--good) } .eff.fx-flip { color: var(--sunset) }
+.card.has-fx { background-image: repeating-linear-gradient(-45deg, transparent 0 7px, rgba(0,0,0,.035) 7px 9px) }
+.play .card .split .glyph { font-size: calc(var(--cw) * .24) }
+.play .card .split .eff { font-size: calc(var(--cw) * .24) }
+.play .card.has-fx .amt { display: block; font-size: 8px; text-align: center; letter-spacing: .04em; line-height: 1.1; padding-inline: 2px }
+.card.has-fx .eye { bottom: auto; top: 24px }
+.env-card .eff { font-style: normal; font-size: 12px; margin-left: 3px; vertical-align: 3px }
 /* stamps */
 .stamps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
 .stamp-btn { border: 2px solid var(--ink-3); background: transparent; border-radius: 4px; padding: 9px 4px; font: 900 11px/1.15 var(--f-body); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3) }
@@ -387,6 +399,9 @@ const OP = (() => {
   const STAMP_CLAIM = { Rec: 2.5, Risky: 0.5, Not: -1 };
   const STAMP_LABEL = { Rec: 'Recommended', Risky: 'Risky', Not: 'Not Recommended' };
   const SWAP_COST = [0, 1, 3, 6];
+  // Effect Modifiers replace the four 0-value Modifiers in the deck: [word, effect, own value]
+  const FX = [['With Thoughts and Prayers', 'null', -1], ['Retroactively', 'x2', -2], ["Per Legal's Advice", 'shield', -1], ['Without Consultation', 'flip', 0]];
+  const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);
   const TOKENS = 3, ROUNDS = 5, SLACK = 2;
   const NAMES = ['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'Pam', 'Keith', 'Linda'];
   const DEPTS = ['Finance', 'Marketing', 'Human Resources', 'Legal', 'Operations', 'Compliance', 'R&D', 'Facilities'];
@@ -411,15 +426,29 @@ const OP = (() => {
   const range = n => [...Array(n).keys()];
 
   const ev = c => (c.v === 'V' ? 0 : c.v);
-  const evs = cs => cs.reduce((a, c) => a + ev(c), 0);
+  // An effect Modifier keeps its own value and rewrites what the Action and Target add up to.
+  function total(vals, cards) {
+    const fx = cards[2] && cards[2].fx, a = vals[0], b = vals[1], own = vals[2];
+    if (fx === 'null') return own;
+    if (fx === 'x2') return own + 2 * (a + b);
+    if (fx === 'shield') return own + Math.max(0, a) + Math.max(0, b);
+    if (fx === 'flip') return own - (a + b);
+    return a + b + own;
+  }
+  const evs = cs => total(cs.map(ev), cs);
   function cmp(a, b) { for (let i = 0; i < a.length; i++) { if (a[i] !== b[i]) return a[i] - b[i]; } return 0; }
   function argmax(xs, key) { let best = null, bk = null; for (const x of xs) { const k = key(x); if (best === null || cmp(k, bk) > 0) { best = x; bk = k; } } return best; }
 
   // ---------- deck ----------
   function newDeck(s) {
     const piles = SUITS.map((_, su) => {
-      const words = shuffle(s, WORDS[su].concat(WORDS[su]));
-      return shuffle(s, VALUES.map((v, k) => ({ id: `${su}.${k}`, s: su, v, w: words[k] })));
+      if (su !== 2) { const words = shuffle(s, WORDS[su].concat(WORDS[su])); return shuffle(s, VALUES.map((v, k) => ({ id: `${su}.${k}`, s: su, v, w: words[k] }))); }
+      const plain = WORDS[2].filter(w => !FX.some(f => f[0] === w)), words = shuffle(s, plain.concat(plain, plain));
+      let n = 0;
+      return shuffle(s, VALUES.map((v, k) => {
+        const f = FX[FX_SLOTS.indexOf(k)];
+        return f ? { id: `2.${k}`, s: 2, v: f[2], w: f[0], fx: f[1] } : { id: `2.${k}`, s: 2, v, w: words[n++] };
+      }));
     });
     return { piles, disc: [[], [], []] };
   }
@@ -704,7 +733,7 @@ const OP = (() => {
     const e = s.envs.find(x => x.id === id); if (!e) return 'No such envelope.';
     e.approved = true;
     e.resolved = e.cards.map(c => (c.v === 'V' ? (rand(s) < 0.5 ? 2 : -2) : c.v));
-    const actual = e.resolved.reduce((a, b) => a + b, 0);
+    const actual = total(e.resolved, e.cards);
     const pubBest = Math.max(...s.envs.map(x => estimate(x, s.loyalTier, false)));
     s.profit += actual;
     const author = s.P[e.author];
@@ -805,7 +834,7 @@ const OP = (() => {
     return err ? { error: err } : { state: s, events: E };
   }
 
-  return { apply, newGame, workResult, workCost, estimate, evs, ev, fmt, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
+  return { apply, newGame, workResult, workCost, estimate, evs, ev, total, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
     SUITS, SUBJ, COLORS, TRIMS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
 })();
 </script>
@@ -824,6 +853,8 @@ const OP = (() => {
   const tone = v => (v === 'V' ? 'gold' : v > 0 ? 'pos' : v < 0 ? 'neg' : 'zero');
   const GLYPH = { 2: '++', 1: '+', 0: '0', '-1': '−', '-2': '−−', V: '?' };
   const glyph = v => `<b class="glyph ${v === 'V' ? 'v-v' : tone(v)}">${GLYPH[v]}</b>`;
+  const FXSYM = { null: '∅', x2: '×2', shield: '≥0', flip: '⇅' };
+  const FXSAY = { null: 'Cancels the rest', x2: 'Doubles the rest', shield: "Rest can't lose", flip: 'Flips the rest' };
   const lcd = n => { const t = (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n) + '.0'; return `<span class="ghost">${'8'.repeat(Math.max(0, 5 - t.length))}</span>${t}`; };
   const nm = i => (i === 'table' ? 'The table' : S.P[i].name);
   const mine = () => S && !S.spectate;
@@ -869,8 +900,9 @@ const OP = (() => {
         ${S ? '<button class="chip-btn" data-a="quit">New game</button>' : ''}</div></div></div></header>`;
   }
   function cardHTML(c, cls, extra, attrs) {
-    const amt = c.v === 'V' ? '+2 or −2' : c.v === 0 ? 'No effect' : `${fmt(c.v)} profit`;
-    return `<div class="card s-${c.s} ${cls || ''}" ${attrs || ''}>${extra || ''}<div class="hd"><i class="sp"></i>${OP.SUITS[c.s]}</div><div class="fx">${glyph(c.v)}<span class="amt">${amt}</span></div><span class="word">${esc(c.w)}</span></div>`;
+    const amt = c.fx ? FXSAY[c.fx] : c.v === 'V' ? '+2 or −2' : c.v === 0 ? 'No effect' : `${fmt(c.v)} profit`;
+    const face = c.fx ? `<div class="split">${glyph(c.v)}<b class="eff fx-${c.fx}">${FXSYM[c.fx]}</b></div>` : glyph(c.v);
+    return `<div class="card s-${c.s} ${c.fx ? 'has-fx' : ''} ${cls || ''}" ${attrs || ''}>${extra || ''}<div class="hd"><i class="sp"></i>${OP.SUITS[c.s]}</div><div class="fx">${face}<span class="amt">${amt}</span></div><span class="word">${esc(c.w)}</span></div>`;
   }
   function authorVisible(e) {
     if (e.approved || ui.debug) return true;
@@ -886,7 +918,7 @@ const OP = (() => {
     const cards = anyVis ? `<div class="env-cards">${e.cards.map((c, su) => {
       if (!vis(su)) return `<div class="env-card hidden"><b>OP</b><span class="w">${OP.SUITS[su]}</span></div>`;
       const v = e.resolved ? e.resolved[su] : c.v;
-      return `<div class="env-card" title="${esc(c.w)}: ${fmt(v)}"><b class="${tone(v)}">${GLYPH[v]}${e.resolved && c.v === 'V' ? '*' : ''}</b><span class="w">${esc(c.w)}</span></div>`;
+      return `<div class="env-card" title="${esc(c.w)}: ${fmt(v)}"><b class="${tone(v)}">${GLYPH[v]}${e.resolved && c.v === 'V' ? '*' : ''}${c.fx ? `<i class="eff fx-${c.fx}">${FXSYM[c.fx]}</i>` : ''}</b><span class="w">${esc(c.w)}</span></div>`;
     }).join('')}</div>` : '';
     const who = authorVisible(e) ? (e.autopilot ? 'Autopilot' : (mine() && e.author === ME ? 'You' : nm(e.author))) : null;
     const dept = (ui.debug || e.approved || (mine() && e.author === ME)) ? OP.DEPTS[e.dept] : null;
@@ -980,8 +1012,8 @@ const OP = (() => {
     const rounds = S.history.map(h => {
       const rows = h.envs.slice().sort((a, b) => a.id.localeCompare(b.id)).map(e => {
         const p = S.P[e.author];
-        const vals = e.cards.map((c, k) => `<span class="${tone(e.resolved ? e.resolved[k] : c.v)}">${fmt(e.resolved ? e.resolved[k] : c.v)}</span>`).join(' ');
-        const tot = e.resolved ? e.resolved.reduce((a, b) => a + b, 0) : evs(e.cards);
+        const vals = e.cards.map((c, k) => `<span class="${tone(e.resolved ? e.resolved[k] : c.v)}">${fmt(e.resolved ? e.resolved[k] : c.v)}${c.fx ? ' ' + FXSYM[c.fx] : ''}</span>`).join(' ');
+        const tot = e.resolved ? OP.total(e.resolved, e.cards) : evs(e.cards);
         return `<tr class="${e.id === h.pick ? 'win' : ''}"><td class="num nw"><b>${e.id}</b>${e.id === h.pick ? ' ✓' : ''}${e.id === h.audit ? ' <span class="pill blue">aud</span>' : ''}</td>
           <td class="nw">${e.autopilot ? 'Autopilot · ' : ''}${esc(p.name)} <span class="pill ${p.sab ? 'red' : 'green'}">${p.sab ? 'Sab' : 'Loyal'}</span></td>
           <td class="muted">${OP.DEPTS[e.dept]}</td><td class="sub-mono">${esc(e.subject)}</td><td>${STAMP[e.stamp]}</td><td class="num nw">${vals}</td><td class="num ${tone(tot)}"><b>${fmt(tot)}</b></td></tr>`;
@@ -1158,6 +1190,7 @@ const OP = (() => {
           <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 tokens: swap a card in (1, then 2), re-deal all three (2), or show one card to the CEO (1). Stamp it, write a subject line, style the envelope.</li>
           <li><b>Pitch.</b> Envelopes appear shuffled and anonymous. Memos on the bulletin board say who left whom a mess. Nobody can check them. The table votes to audit one envelope.</li>
           <li><b>Decide + Reveal.</b> The CEO approves one. Profit moves and its author is unmasked. Rejected envelopes pass, sealed, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
+          <li><b>Effect Modifiers.</b> Four Modifiers rewrite the other two cards: ∅ cancels them, ×2 doubles them, ≥0 stops them losing, ⇅ flips them. Each also has its own value.</li>
           <li><b>After Q5.</b> The table may name a saboteur: +3 if right, −3 if wrong.</li></ol></details>
         <div class="setup-foot"><button class="btn primary" data-a="start">Start the game</button><span class="hint">About 10 minutes against bots.</span></div>
       </div></div></div>`;

@@ -183,6 +183,18 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .deal .slot:nth-child(2) .card { animation-delay: .06s } .deal .slot:nth-child(3) .card { animation-delay: .12s }
 .hand-zone .card { background: var(--stock) }
 @media (prefers-reduced-motion: reduce) { .card.land, .card.nope { animation: none } .card.drag:hover { transform: none } }
+
+/* effect Modifiers: own value on the left, what it does to the rest on the right */
+.split { display: flex; align-items: center; gap: 6px }
+.split .glyph { font-size: 24px }
+.split .eff { font: 900 24px/1 var(--f-body); letter-spacing: -.02em; border-left: 2px solid var(--ink); padding-left: 7px }
+.eff.fx-null { color: var(--red) } .eff.fx-x2 { color: var(--ink) } .eff.fx-shield { color: var(--good) } .eff.fx-flip { color: var(--sunset) }
+.card.has-fx { background-image: repeating-linear-gradient(-45deg, transparent 0 7px, rgba(0,0,0,.035) 7px 9px) }
+.play .card .split .glyph { font-size: calc(var(--cw) * .24) }
+.play .card .split .eff { font-size: calc(var(--cw) * .24) }
+.play .card.has-fx .amt { display: block; font-size: 8px; text-align: center; letter-spacing: .04em; line-height: 1.1; padding-inline: 2px }
+.card.has-fx .eye { bottom: auto; top: 24px }
+.env-card .eff { font-style: normal; font-size: 12px; margin-left: 3px; vertical-align: 3px }
 /* stamps */
 .stamps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
 .stamp-btn { border: 2px solid var(--ink-3); background: transparent; border-radius: 4px; padding: 9px 4px; font: 900 11px/1.15 var(--f-body); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3) }
