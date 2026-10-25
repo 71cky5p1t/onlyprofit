@@ -1,6 +1,6 @@
 // Only Profit — game engine (no DOM, no Math.random, no clock).
 // apply(state, seat, action) -> { state, events } | { error }
-// Bot logic is ported from sim2.py (FINAL config: smart vs smart, Garden Leave at 2 warnings, Whistleblower ±3).
+// Bot logic is ported from sim2.py (FINAL config: smart vs smart, stood down at 2 warnings, Whistleblower ±3).
 const OP = (() => {
   const SUITS = ['Action', 'Target', 'Modifier'];
   const WORDS = [
@@ -365,7 +365,7 @@ const OP = (() => {
     s.warn = { votes, count, target, passed };
     if (target != null && passed) {
       const t = s.P[target]; t.warnings++;
-      if (t.warnings >= 2 && !t.leave) { t.leave = true; log(s, E, 'event', `${who(s, target, 1)} received a second Written Warning and ${t.human ? 'are' : 'has been'} placed on garden leave. ${t.human ? 'Your' : 'Their'} department is now on autopilot.`); }
+      if (t.warnings >= 2 && !t.leave) { t.leave = true; log(s, E, 'event', `${who(s, target, 1)} received a second Written Warning and ${t.human ? 'have been' : 'has been'} stood down. ${t.human ? 'Your' : 'Their'} department is now on autopilot.`); }
       else log(s, E, 'event', `${who(s, target, 1)} received a Written Warning.`);
     } else if (target != null) log(s, E, 'event', `A motion to warn ${who(s, target)} did not reach a majority.`);
     s.phase = 'review';
