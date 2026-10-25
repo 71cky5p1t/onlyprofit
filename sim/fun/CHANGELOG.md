@@ -128,3 +128,14 @@ New `variant.js` keys: `wide` (one +3 and one −3 per suit), `wild4` (four wild
 Swingier cards widen the final spread but barely touch deduction or how often a loser gets through: bots simply avoid the bad cards. A second approval is the only change here that adds real noise. It also hands a saboteur CEO a free bad pick, so subtle saboteurs win 59–67% at 4–6p.
 
 Everyone submitting two pages from a six-spare hand (scratch engine, bots only) behaved like six spares: targets 23/25/26/27/27, saboteur named 93–94%.
+
+## Round (2026-10-25): words carry their value
+
+Card values used to be dealt at random onto words, so a sentence never predicted profit. Now each word has a fixed value: Actions by harm, Targets by how defenceless (watchdogs lowest), Modifiers by manner. Pools hold 42 Actions, 44 Targets and 31 Modifiers; each company adds 11 valued words. A deck still holds the same 24 values per suit, so bots see no change. `node tools/sentences.js granny` lists every sentence with its value.
+
+| bot company wins, 6,000 games | 4p | 5p | 6p | 7p | 8p |
+|---|---|---|---|---|---|
+| main | 55.2% | 53.0% | 45.9% | 45.2% | 52.8% |
+| words carry value | 55.4% | 53.3% | 46.0% | 44.7% | 52.1% |
+
+`compare.js 1500` against main: saboteur named 97–99% at 4–5p and 79–90% at 6–8p on both.

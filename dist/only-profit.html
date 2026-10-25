@@ -873,10 +873,32 @@ section > .label { color: var(--on-table-2) }
 // Card, subject-line and company words. Data only.
 const OP_CONTENT = (() => {
   const SUITS = ['Action', 'Target', 'Modifier'];
+  // words carry their value: the more monstrous, the more profitable. Pools are bigger than a deck.
+  // Action = harm, Target = how defenceless (watchdogs lowest), Modifier = manner. 'V' gambles ±2.
   const WORDS = [
-    ['Restructure', 'Outsource', 'Rightsize', 'Monetise', 'Gamify', 'Sunset', 'Offshore', 'Rebrand', 'Automate', 'Consolidate', 'Incentivise', 'Liquidate'],
-    ['the Pension Fund', 'Employee Wellness', 'the Break Room', 'Customer Trust', 'Middle Management', 'the Interns', 'Legacy Systems', 'Quality Assurance', 'the Regional Office', 'Union Relations', 'Environmental Compliance', 'the Mascot'],
-    ['Immediately', 'Without Consultation', 'Retroactively', 'At Scale', 'Going Forward', 'Off the Books', 'Pending Review', 'Indefinitely', 'With Thoughts and Prayers', "Per Legal's Advice", 'Ahead of Q4', 'In Perpetuity'],
+    {
+      2: ['Destroy', 'Harvest', 'Euthanise', 'Liquidate', 'Dissolve', 'Stuff and Mount'],
+      1: ['Cease and Desist', 'Monetise', 'Outsource', 'Rightsize', 'Offshore', 'Repossess', 'Sedate', 'Rent Out', 'Sunset'],
+      0: ['Restructure', 'Rebrand', 'Consolidate', 'Circle Back On', 'Laminate', 'Synergise', 'Onboard'],
+      '-1': ['Back-Pay', 'Pay Super to', 'Protect', 'Unionise', 'Upskill', 'Mentor', 'Check On', 'Listen to', 'Insure', 'Recall'],
+      '-2': ['Consult', 'Seek Consent from', 'Fact-Check', 'Apologise to', 'Audit', 'Self-Report to'],
+      V: ['Gamify', 'Tokenise', 'Pivot', 'Disrupt'],
+    },
+    {
+      2: ['the Orphans', 'the Babies', 'the Pension Fund', 'the Work Experience Kid', 'the Office Hamster', 'the Recently Bereaved'],
+      1: ['the Interns', 'the Casuals', 'the Night Shift', 'Employee Wellness', 'Sick Leave', 'Customer Trust', 'Long Service Leave', 'the Office Dog'],
+      0: ['the Break Room', 'the Mascot', 'the Photocopier', 'the Christmas Party', 'Casual Friday', 'Legacy Systems', 'the Fax Machine', 'the Regional Office'],
+      '-1': ['the Board', 'the Billionaires', 'the Lawyers', 'the Bank', 'Head Office', 'the Landlord', 'the Consultants', 'the Lobbyists', "the CEO's Nephew", 'Middle Management', 'the Real Estate Agents', 'the Golf Club'],
+      '-2': ['the Regulator', 'the Ombudsman', 'Fair Work', 'the Auditors', 'the Ethics Committee', 'the Tax Office'],
+      V: ['the Share Price', 'the Crypto Wallet', "the Founder's Ashes", 'the Christmas Raffle'],
+    },
+    {
+      2: ['With Expedience', 'Without Anaesthetic', 'Before Anyone Notices', 'In Front of Their Families', 'For Sport'],
+      1: ['Immediately', 'Off the Books', 'At Scale', 'Indefinitely', 'In Perpetuity', 'Over Christmas', 'By Text Message', 'Via Group Email'],
+      '-1': ['Pending Review', 'With Proper Notice', 'Under Supervision', 'In Triplicate', 'Gently', 'At Award Rates', 'After a Risk Assessment', 'With a Support Person'],
+      '-2': ['Ethically', 'With Full Disclosure', 'With Informed Consent', 'Transparently', 'Through Proper Channels', 'At a Loss'],
+      V: ['Allegedly', 'Live on Breakfast TV', 'On Margin', 'At the Casino'],
+    },
   ];
   const VALUES = [2, 2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, 'V', 'V'];
   const FX = [['With Thoughts and Prayers', 'null', -1], ['Retroactively', 'x2', -2], ["Per Legal's Advice", 'shield', -1], ['Without Consultation', 'flip', 0]];
@@ -890,14 +912,14 @@ const OP_CONTENT = (() => {
     ['Wellness Optimisation', 'Pension Agility', 'Break Room Monetisation', 'Synergy Roadmap', 'Headcount Harmony', 'Customer Delight', 'Mandatory Fun Week', 'Coffee Rationalisation', 'The Paperless Paper Drive', 'Cultural Realignment', 'Stakeholder Journey', 'Vision 2000', 'Right-Sizing Our Family', 'Morale Recovery', 'Lean Lunch Hours'],
     ['(Urgent)', '— Phase II', '— Revised', 'Going Forward', 'for Q3', '(Do Not Forward)', 'v2 FINAL', '— A Win-Win', 'Effective Immediately', '(Pilot)', '— Thoughts?', '(Mandatory)'],
   ];
-  // ~1 in 4 Targets, 3 Modifiers and some subject lines use the company's words
+  // company words, valued like the rest: a = Actions, t = Targets (~1 in 4), m = Modifiers
   const LEX = {
-    op: { t: ['the Shareholders', 'the Bonus Pool', 'the Profit Target', 'the Founders\' Portrait', 'the Golden Parachutes', 'the Boardroom Bar'], m: ['For the Shareholders', 'Before the AGM'], subj: ['Profit Maximisation', 'Shareholder Joy', 'Bonus Pool Refresh'] },
-    granny: { t: ['the Grannies', 'Bingo Night', 'the Mobility Scooters', 'Speed Dating (90+)', 'the Hip Replacements', 'Next of Kin'], m: ['Before the Will Is Read', 'After Bingo', 'With Mild Sedation'], subj: ['Granny Retention Drive', 'Inheritance Matchmaking', 'Bingo Night Synergies'] },
-    clown: { t: ['the Clown Cars', 'the Ball Pit', 'Nap Time', 'the Balloon Animals', 'the Pie Budget', 'Parent Pick-Up'], m: ['Before Nap Time', 'In Full Makeup', 'Without Telling the Parents'], subj: ['Ball Pit Deep Clean', 'Clown Car Capacity Review', 'Big Shoes Policy'] },
-    widow: { t: ['the Widows', 'the Life Insurance', 'the Casserole Fund', 'Grief Counselling', 'the Late Husbands', 'the Wake Catering'], m: ['Before the Funeral', 'In Lieu of Flowers', 'While Still Grieving'], subj: ['Widow Pipeline Growth', 'Grief Monetisation', 'Casserole Logistics'] },
-    kidney: { t: ['the Kidneys', 'the Organ Donors', 'the Ice Baths', 'the Spare Kidney', 'Donor Consent Forms', 'the Bathtub Fleet'], m: ['Under Local Anaesthetic', 'While the Donor Sleeps', 'On Ice'], subj: ['Kidney Throughput Review', 'Organ Velocity', 'Bathtub Expansion'] },
-    stepdad: { t: ['the Stepdads', 'Custody Weekends', 'the Child Support', 'the Dad Jokes', 'the Barbecue', 'the Real Dad'], m: ['Every Second Weekend', 'Without Telling Mum', 'Per the Custody Agreement'], subj: ['Stepdad Onboarding', 'Custody Weekend Synergies', 'Barbecue Compliance'] },
+    op: { a: [['Asset-Strip', 2], ['Pay Dividends to', -1]], t: [['the Shareholders', -1], ['the Bonus Pool', 0], ['the Boardroom Bar', -1], ['the Profit Target', 0], ["the Founders' Portrait", 0], ['the Golden Parachutes', -1]], m: [['Before the AGM', 2], ['For the Shareholders', 1]], subj: ['Profit Maximisation', 'Shareholder Joy', 'Bonus Pool Refresh'] },
+    granny: { a: [['Re-home', 1], ['Speed-Date', 0]], t: [['the Grannies', 2], ['the Hip Replacements', 1], ['the Mobility Scooters', 1], ['Bingo Night', 0], ['Speed Dating (90+)', 0], ['the Inheritance Lawyers', -2]], m: [['Before the Will Is Read', 2], ['With Mild Sedation', 1], ['After Bingo', -1]], subj: ['Granny Retention Drive', 'Inheritance Matchmaking', 'Bingo Night Synergies'] },
+    clown: { a: [['Honk at', 1], ['Juggle', 'V']], t: [['the Toddlers', 2], ['Nap Time', 1], ['the Ball Pit', 1], ['the Balloon Animals', 0], ['the Helicopter Parents', -1], ['the Childcare Inspector', -2]], m: [['Without Telling the Parents', 2], ['In Full Makeup', 1], ['Before Nap Time', -1]], subj: ['Ball Pit Deep Clean', 'Clown Car Capacity Review', 'Big Shoes Policy'] },
+    widow: { a: [['Remarry', 1], ['Console', -1]], t: [['the Widows', 2], ['Grief Counselling', 1], ['the Casserole Fund', 1], ['the Late Husbands', 1], ['the Wake Catering', 0], ['the Probate Lawyers', -2]], m: [['Before the Funeral', 2], ['In Lieu of Flowers', 1], ['After a Decent Interval', -2]], subj: ['Widow Pipeline Growth', 'Grief Monetisation', 'Casserole Logistics'] },
+    kidney: { a: [['Refrigerate', 1], ['Transplant', 'V']], t: [['the Kidneys', 2], ['the Spare Kidney', 2], ['the Organ Donors', 1], ['the Ice Baths', 0], ['the Organ Brokers', -1], ['the Coroner', -2]], m: [['While the Donor Sleeps', 2], ['On Ice', 1], ['Under Local Anaesthetic', -1]], subj: ['Kidney Throughput Review', 'Organ Velocity', 'Bathtub Expansion'] },
+    stepdad: { a: [['Ground', 1], ['Adopt', -2]], t: [['the Stepkids', 2], ['the Child Support', 1], ['Custody Weekends', 1], ['the Dad Jokes', 0], ['the Real Dad', -1], ["Mum's Lawyer", -2]], m: [['Without Telling Mum', 2], ['Every Second Weekend', -1], ['Per the Custody Agreement', -2]], subj: ['Stepdad Onboarding', 'Custody Weekend Synergies', 'Barbecue Compliance'] },
   };
   // a bot answering a memo about them; {n} is the accuser
   const DISPUTE = ["That is not what I sent.", "That proposal left my desk in perfect health.", "I'd like it minuted that {n} is lying.", "Interesting that it's {n} saying this.", "Check {n}'s desk, not mine.", "I have receipts. Not on me."];
@@ -1177,21 +1199,25 @@ const OP = (() => {
   function argmax(xs, key) { let best = null, bk = null; for (const x of xs) { const k = key(x); if (best === null || cmp(k, bk) > 0) { best = x; bk = k; } } return best; }
 
   // ---------- deck ----------
+  // each value slot takes a word of that value: company words first, then the pool
+  function suitDeck(s, su) {
+    const own = lexOf(s)['atm'[su]] || [], pool = WORDS[su], used = new Set(), q = {};
+    const tier = v => pool[v] || pool[v > 0 ? 2 : -2];
+    const next = v => {
+      const o = shuffle(s, own).find(x => x[1] === v && !used.has(x[0]));
+      if (o) return o[0];
+      if (!q[v] || !q[v].length) q[v] = shuffle(s, tier(v)).filter(x => !used.has(x));
+      return q[v].shift() || pickOne(s, tier(v));
+    };
+    return shuffle(s, VALUES.map((v, k) => {
+      const f = su === 2 && FX[FX_SLOTS.indexOf(k)];
+      if (f) return { id: `${su}.${k}`, s: su, v: f[2], w: f[0], fx: f[1] };
+      const w = next(v); used.add(w);
+      return { id: `${su}.${k}`, s: su, v, w };
+    }));
+  }
   function newDeck(s) {
-    const piles = SUITS.map((_, su) => {
-      const L = lexOf(s);
-      if (su !== 2) {
-        const own = su === 1 ? L.t : [], words = shuffle(s, shuffle(s, WORDS[su].concat(WORDS[su])).slice(own.length).concat(own));
-        return shuffle(s, VALUES.map((v, k) => ({ id: `${su}.${k}`, s: su, v, w: words[k] })));
-      }
-      const plain = WORDS[2].filter(w => !FX.some(f => f[0] === w)), words = shuffle(s, shuffle(s, plain.concat(plain, plain)).slice(L.m.length).concat(L.m));
-      let n = 0;
-      return shuffle(s, VALUES.map((v, k) => {
-        const f = FX[FX_SLOTS.indexOf(k)];
-        return f ? { id: `2.${k}`, s: 2, v: f[2], w: f[0], fx: f[1] } : { id: `2.${k}`, s: 2, v, w: words[n++] };
-      }));
-    });
-    return { piles, disc: [[], [], []] };
+    return { piles: SUITS.map((_, su) => suitDeck(s, su)), disc: [[], [], []] };
   }
   function draw(s, su) {
     const d = s.deck;
