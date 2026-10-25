@@ -77,7 +77,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .board { display: grid; gap: 30px; min-width: 0 }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--table-rule); margin-bottom: 14px; color: var(--on-table) }
 .section-head .label { color: var(--on-table-2) }
-@media (max-width: 980px) { .layout { grid-template-columns: minmax(0, 1fr) } .desk { position: static; max-height: none; order: -1 } }
+@media (max-width: 980px) { .layout { grid-template-columns: minmax(0, 1fr) } .desk { position: static; max-height: none; order: -1; width: 100%; max-width: 440px; justify-self: center } }
 
 /* ---------- desk: a stack of paper with a calculator underneath ---------- */
 .desk { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); max-height: calc(100vh - 32px); overflow: auto; background: var(--stock); color: var(--ink); border-radius: 10px; box-shadow: 0 0 0 5px var(--ink), 0 24px 40px -20px rgba(0,0,0,.8); overscroll-behavior: contain }
@@ -144,6 +144,45 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .sumline { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: var(--ink-2) }
 .sumline b { font: 500 18px/1 var(--f-seg) }
 
+
+/* ---------- the play area: envelope pocket above, felt hand below; cards are one fixed size everywhere ---------- */
+.desk { container-type: inline-size }
+.play { --cw: 100px; gap: 0 }
+@container (max-width: 370px) { .play { --cw: 90px } }
+.zone { position: relative; padding: 14px 10px }
+.cards3 { display: grid; grid-template-columns: repeat(3, var(--cw)); gap: 10px; justify-content: center }
+.env-zone { background: var(--env, var(--env-manila)); border-radius: 8px 8px 0 0; padding-top: 30px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08) }
+.env-zone::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 26px; background: rgba(0,0,0,.08); clip-path: polygon(0 0, 100% 0, 50% 100%) }
+.hand-zone { background: radial-gradient(120% 100% at 50% 0%, var(--baize-hi), var(--baize) 60%, var(--baize-lo)); border-radius: 0 0 8px 8px; box-shadow: inset 0 6px 10px -6px rgba(0,0,0,.5) }
+.slot { width: var(--cw); height: calc(var(--cw) * 1.4); border-radius: 8px; position: relative; transition: background .15s, box-shadow .15s }
+.env-zone .slot { background: rgba(0,0,0,.08) }
+.hand-zone .slot { background: rgba(0,0,0,.18) }
+.slot.ok { box-shadow: 0 0 0 2px var(--gold) }
+.slot.hot { box-shadow: 0 0 0 3px var(--gold), 0 0 24px rgba(233,162,59,.6); background: rgba(233,162,59,.25) }
+.play .card { width: var(--cw); height: calc(var(--cw) * 1.4); aspect-ratio: auto; padding: 7px 7px 8px }
+.play .card .hd { font-size: 8.5px; gap: 4px }
+.play .card .amt { display: none }
+.play .card .glyph { font-size: calc(var(--cw) * .34) }
+.play .card .glyph.v-v { width: calc(var(--cw) * .42); height: calc(var(--cw) * .42); font-size: calc(var(--cw) * .28) }
+.play .card .word { font-size: calc(var(--cw) * .118); min-height: 2.1em }
+.card.drag { cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; transition: transform .18s var(--bounce), box-shadow .18s }
+.card.drag:hover { transform: translateY(-4px) }
+.card.drag:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px }
+.card.lifted { opacity: .25; transform: none !important }
+.card.dragging { position: fixed; left: 0; top: 0; z-index: 50; pointer-events: none; cursor: grabbing; transition: none; box-shadow: 0 24px 40px -12px rgba(0,0,0,.7) }
+.card.land { animation: land .42s var(--bounce) both }
+@keyframes land { from { transform: translateY(-14px) scale(1.08) rotate(-3deg) } to { transform: none } }
+.card.nope { animation: nope .35s ease both }
+@keyframes nope { 20%, 60% { transform: translateX(-5px) } 40%, 80% { transform: translateX(5px) } }
+.card.broke .price { background: var(--red) }
+.price { position: absolute; right: -6px; top: -8px; min-width: 24px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--ink); color: var(--stock); font: 800 11px/20px var(--f-body); text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,.35) }
+.eye { position: absolute; right: 7px; bottom: calc(var(--cw) * .5);  width: 18px; height: 11px; border: 2px solid var(--ink); border-radius: 50% / 60%; opacity: .2; background: radial-gradient(circle, var(--ink) 0 2px, transparent 2.5px) }
+.card.shown { box-shadow: 0 0 0 3px var(--gold), 0 7px 14px -7px rgba(0,0,0,.55) }
+.card.shown .eye { opacity: 1; background: radial-gradient(circle, var(--ink) 0 2.5px, var(--gold) 3px) }
+.tip { margin: 8px 0 10px; font-size: 12px; color: var(--ink-3); text-align: center }
+.deal .slot:nth-child(2) .card { animation-delay: .06s } .deal .slot:nth-child(3) .card { animation-delay: .12s }
+.hand-zone .card { background: var(--stock) }
+@media (prefers-reduced-motion: reduce) { .card.land, .card.nope { animation: none } .card.drag:hover { transform: none } }
 /* stamps */
 .stamps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
 .stamp-btn { border: 2px solid var(--ink-3); background: transparent; border-radius: 4px; padding: 9px 4px; font: 900 11px/1.15 var(--f-body); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3) }
@@ -319,7 +358,6 @@ table.exit-t .sub-mono { font-family: var(--f-body); font-weight: 700 }
 @keyframes wipe { 0% { transform: translateX(-101%) } 36%, 58% { transform: translateX(0) } 100% { transform: translateX(101%) } }
 @keyframes wtxt { 0%, 26% { opacity: 0; transform: scale(.85) } 38%, 56% { opacity: 1; transform: none } 66%, 100% { opacity: 0 } }
 .deal .card { animation: deal .55s var(--bounce) both }
-.deal .suit-col:nth-child(2) .card { animation-delay: .06s } .deal .suit-col:nth-child(3) .card { animation-delay: .12s }
 @keyframes deal { from { transform: translateY(-40px) rotate(-8deg); opacity: 0 } to { transform: none; opacity: 1 } }
 .deal .card.spare { animation-name: deal-spare }
 @keyframes deal-spare { from { transform: translateY(-40px) rotate(-8deg) scale(.94); opacity: 0 } to { transform: scale(.94); opacity: .82 } }

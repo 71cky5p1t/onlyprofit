@@ -4,7 +4,7 @@
   const ME = 0;
   let S = null, draft = null, err = '', toastT = null;
   let setup = { players: 4, loyalTier: 'smart', sabTier: 'smart', easy: false, spectate: false, seed: '' };
-  const ui = { debug: false, sel: null, deal: false, printed: 0, stamped: '', lastKey: null, shown: null, tick: null };
+  const ui = { debug: false, sel: null, deal: false, land: null, printed: 0, stamped: '', lastKey: null, shown: null, tick: null };
   try { ui.debug = localStorage.getItem('op-debug') === '1'; } catch (e) {}
 
   const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -56,9 +56,9 @@
         <button class="chip-btn" data-a="debug" aria-pressed="${ui.debug}" title="Show hidden roles, envelope contents and bot reasoning">Observer</button>
         ${S ? '<button class="chip-btn" data-a="quit">New game</button>' : ''}</div></div></div></header>`;
   }
-  function cardHTML(c, cls, extra) {
+  function cardHTML(c, cls, extra, attrs) {
     const amt = c.v === 'V' ? '+2 or −2' : c.v === 0 ? 'No effect' : `${fmt(c.v)} profit`;
-    return `<div class="card s-${c.s} ${cls || ''}">${extra || ''}<div class="hd"><i class="sp"></i>${OP.SUITS[c.s]}</div><div class="fx">${glyph(c.v)}<span class="amt">${amt}</span></div><span class="word">${esc(c.w)}</span></div>`;
+    return `<div class="card s-${c.s} ${cls || ''}" ${attrs || ''}>${extra || ''}<div class="hd"><i class="sp"></i>${OP.SUITS[c.s]}</div><div class="fx">${glyph(c.v)}<span class="amt">${amt}</span></div><span class="word">${esc(c.w)}</span></div>`;
   }
   function authorVisible(e) {
     if (e.approved || ui.debug) return true;
@@ -194,19 +194,22 @@
   }
   function deskWork() {
     const p = me(), inh = p.inh, wr = OP.workResult(S, ME, draft), cost = OP.workCost(draft);
-    const cols = [0, 1, 2].map(su => {
-      const on = draft.swaps.includes(su);
-      const next = on ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su);
-      const cNext = costWith({ swaps: next });
-      const nth = on ? '' : `${OP.SWAP_COST[next.length] - OP.SWAP_COST[draft.swaps.length]}`;
-      const rv = draft.reveals.includes(su);
-      const rvNext = costWith({ reveals: rv ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su) });
-      return `<div class="suit-col"><span class="label">${OP.SUITS[su]}</span>
-        ${cardHTML(wr.prop[su], '', rv ? '<span class="rev-tag">SHOWN TO CEO</span>' : '')}
-        <button class="reveal-btn" data-a="reveal" data-su="${su}" aria-pressed="${rv}" ${!rv && rvNext > 3 ? 'disabled' : ''}>${rv ? 'Hide' : 'Show CEO ◆1'}</button>
-        <button class="swap" data-a="swap" data-su="${su}" aria-pressed="${on}" ${!on && cNext > 3 ? 'disabled' : ''}>${on ? 'Undo swap' : `⇅ Swap ◆${nth}`}</button>
-        ${cardHTML(wr.aside[su], 'spare')}</div>`;
+    const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
+    const env = [0, 1, 2].map(su => {
+      const c = wr.prop[su], rv = draft.reveals.includes(su);
+      const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
+      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, '<i class="eye" aria-hidden="true"></i>',
+        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the CEO' : 'Show to the CEO for 1 token'}"`));
     }).join('');
+    const hand = [0, 1, 2].map(su => {
+      const c = wr.aside[su], on = draft.swaps.includes(su);
+      const next = on ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su);
+      const price = on ? 0 : OP.SWAP_COST[next.length] - OP.SWAP_COST[draft.swaps.length];
+      const ok = costWith({ swaps: next }) <= 3;
+      return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, `<span class="price">${on ? '↺' : '◆' + price}</span>`,
+        `data-drag="hand" data-su="${su}" role="button" tabindex="0" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${on ? 'Swap back for free' : `Swap into the envelope for ${price} token${price === 1 ? '' : 's'}`}"`));
+    }).join('');
+    ui.land = null;
     const v = evs(wr.prop), vol = wr.prop.some(c => c.v === 'V');
     const canRedeal = !draft.redeal && costWith({ redeal: true }) <= 3;
     const left = Math.max(0, 3 - cost), dealCls = ui.deal ? ' deal' : '';
@@ -232,11 +235,13 @@
       <select class="input" id="next-style" data-in="nextStyle"><option value="">No mandate</option>${OP.COLORS.flatMap(c => OP.TRIMS.map(t => `<option value="${c}/${t}" ${draft.nextStyle && draft.nextStyle.color === c && draft.nextStyle.trim === t ? 'selected' : ''}>${c} · ${t}</option>`)).join('')}</select>
       <div class="hint">Wipe out everyone's signature, or make them all look like someone in particular.</div></div>` : '';
     const body = `<div class="prov">${provenance(inh)}</div>
-      <div class="block"><div class="sumline"><span>Top row goes in the envelope. Bottom row is set aside.</span></div>
-        <div class="suits${dealCls}">${cols}</div>
+      <div class="block play${dealCls}" style="--env:var(--env-${draft.style.color})">
+        <div class="zone env-zone"><div class="cards3">${env}</div></div>
+        <div class="zone hand-zone"><div class="cards3">${hand}</div></div>
+        <p class="tip">Drag a card up to swap it in. Tap one in the envelope to show the CEO.</p>
         ${calc}</div>
       <div class="block"><span class="label">Stamp</span><div class="stamps">${Object.keys(STAMP).map(k => `<button class="stamp-btn" data-a="stamp" data-v="${k}" aria-pressed="${draft.stamp === k}">${STAMP[k]}</button>`).join('')}</div></div>
-      <div class="block"><span class="label">Subject line · click a word to reroll</span>
+      <div class="block"><span class="label">Subject line · tap a word to reroll</span>
         <div class="subj">${draft.words.map((k, i) => `<button class="subj-word" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled style="opacity:.4"' : ''}>${esc(OP.SUBJ[i][k])}</button>`).join('')}</div>
         <input class="input" id="custom-subject" data-in="custom" maxlength="80" placeholder="Or write your own…" value="${esc(draft.custom)}"></div>
       ${styleBlock}${claim}${designer}
@@ -410,6 +415,65 @@
       case 'warn': dispatch({ type: 'warnVote', target: ui.sel }); break;
       case 'whistle': dispatch({ type: 'whistleVote', target: ui.sel }); break;
     }
+  });
+  // ---------- cards: drag between envelope and hand, or tap ----------
+  function swapSuit(su) {
+    const next = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su);
+    if (costWith({ swaps: next }) > 3) return refuse(su);
+    draft.swaps = next; ui.land = su; render();
+  }
+  function revealSuit(su) {
+    const next = draft.reveals.includes(su) ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su);
+    if (costWith({ reveals: next }) > 3) return refuse(su);
+    draft.reveals = next; render();
+  }
+  function refuse(su) {
+    toast('Not enough tokens.');
+    document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
+  }
+  const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : revealSuit(su));
+  let drag = null;
+  function endDrag() {
+    if (!drag) return;
+    if (drag.clone) drag.clone.remove();
+    drag.el.classList.remove('lifted');
+    document.querySelectorAll('.slot.ok, .slot.hot').forEach(x => x.classList.remove('ok', 'hot'));
+    drag = null;
+  }
+  const slotAt = (x, y) => { const el = document.elementFromPoint(x, y); return el && el.closest('.slot'); };
+  $app.addEventListener('pointerdown', ev => {
+    const el = ev.target.closest('.card[data-drag]'); if (!el || !draft || ev.button > 0) return;
+    const r = el.getBoundingClientRect();
+    drag = { el, zone: el.dataset.drag, su: +el.dataset.su, x: ev.clientX, y: ev.clientY, ox: ev.clientX - r.left, oy: ev.clientY - r.top, w: r.width, h: r.height, clone: null };
+  });
+  window.addEventListener('pointermove', ev => {
+    if (!drag) return;
+    if (!drag.clone) {
+      if (Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) < 6) return;
+      const c = drag.el.cloneNode(true); c.classList.add('dragging'); c.removeAttribute('data-drag');
+      c.style.width = drag.w + 'px'; c.style.height = drag.h + 'px';
+      document.body.appendChild(c); drag.clone = c; drag.el.classList.add('lifted');
+      const other = drag.zone === 'hand' ? 'env' : 'hand';
+      document.querySelectorAll(`.slot[data-drop="${other}"][data-su="${drag.su}"]`).forEach(x => x.classList.add('ok'));
+    }
+    ev.preventDefault();
+    drag.clone.style.transform = `translate(${ev.clientX - drag.ox}px, ${ev.clientY - drag.oy}px) rotate(${Math.max(-8, Math.min(8, (ev.clientX - drag.x) / 18))}deg) scale(1.06)`;
+    const t = slotAt(ev.clientX, ev.clientY);
+    document.querySelectorAll('.slot.hot').forEach(x => x !== t && x.classList.remove('hot'));
+    if (t && t.classList.contains('ok')) t.classList.add('hot');
+  }, { passive: false });
+  window.addEventListener('pointerup', ev => {
+    if (!drag) return;
+    const { zone, su, clone } = drag;
+    const t = clone && slotAt(ev.clientX, ev.clientY);
+    const hit = t && t.classList.contains('ok');
+    endDrag();
+    if (!clone) tapCard(zone, su); else if (hit) swapSuit(su);
+  });
+  window.addEventListener('pointercancel', endDrag);
+  $app.addEventListener('keydown', ev => {
+    const el = ev.target.closest && ev.target.closest('.card[data-drag]');
+    if (el && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); tapCard(el.dataset.drag, +el.dataset.su); }
   });
   $app.addEventListener('input', ev => {
     const el = ev.target, k = el.dataset && el.dataset.in; if (!k) return;
