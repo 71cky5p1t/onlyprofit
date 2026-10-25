@@ -359,34 +359,6 @@ button.pg { cursor: pointer } button.pg:hover .cp-w { transform: translateY(-4px
 .lie, .true { font: 800 10px/1 var(--f-body); color: #fff; background: var(--red); padding: 3px 5px; border-radius: 2px; margin-left: 6px; letter-spacing: .06em }
 .true { background: var(--good) }
 details.rules summary { color: var(--on-table) }
-.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 30px; align-items: start }
-@media (max-width: 760px) { .two { grid-template-columns: minmax(0, 1fr) } }
-table.ledger { width: 100%; border-collapse: collapse; font: 400 14px/1.35 var(--f-seg); background: #F6F3EA; color: #26261F; box-shadow: var(--lift); border-radius: 0 0 3px 3px;
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.35), #000 40px); mask-image: linear-gradient(to bottom, rgba(0,0,0,.35), #000 40px) }
-table.ledger td, table.ledger th { padding: 8px 12px; text-align: left; vertical-align: top; border-bottom: 1px dotted rgba(0,0,0,.2) }
-table.ledger th { font: 400 11px/1 var(--f-seg); letter-spacing: .12em; text-transform: uppercase; color: #77736A; padding-top: 16px }
-table.ledger td.n { text-align: right; white-space: nowrap }
-table.ledger tfoot td { border-bottom: 0; border-top: 2px dashed #26261F; font-size: 16px }
-table.ledger tr.new td { animation: print .5s steps(4) both }
-@keyframes print { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
-table.ledger .muted { color: #9B968A }
-.sub-mono { font: 400 13px/1.35 var(--f-seg); color: #26261F }
-table.ledger .sub-mono + .muted { font-family: var(--f-body); font-size: 11.5px !important }
-.staff { display: grid; background: var(--stock); color: var(--ink); border-radius: 4px; box-shadow: var(--lift); padding: 4px 14px }
-.staff-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 10px; padding: 9px 0; border-bottom: 1px solid var(--stock-3); align-items: center }
-.staff-row:last-child { border-bottom: 0 }
-.staff-name { font-weight: 800 }
-.staff-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end }
-.staff .pill:not(.red):not(.green):not(.grey):not(.gold):not(.blue) { background: var(--ink); color: var(--stock); border-color: var(--ink) }
-.warn-pips { display: inline-flex; gap: 3px }
-.warn-pips i { width: 9px; height: 12px; border: 2px solid var(--red); display: block; border-radius: 1px }
-.warn-pips i.on { background: var(--red) }
-.board > section > .label, section > .label { color: var(--on-table-2) }
-.sched { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 10px }
-.sched div { background: rgba(241,233,212,.08); border-radius: 4px; padding: 7px 8px; font-size: 12.5px; min-width: 0; color: var(--on-table) }
-.sched div.now { background: var(--stock); color: var(--ink) }
-.sched .label { font-size: 10px; color: inherit; opacity: .7 }
-.sched .nm { display: block; overflow-wrap: break-word; hyphens: auto; font-size: 12.5px; line-height: 1.2; font-weight: 800 }
 
 /* observer */
 .observer { background: repeating-linear-gradient(-45deg, var(--stock) 0 12px, #EADFC2 12px 24px); color: var(--ink); border-radius: 4px; padding: 12px 14px; display: grid; gap: 10px; box-shadow: var(--lift) }
@@ -441,7 +413,7 @@ table.exit-t .sub-mono { font-family: var(--f-body); font-weight: 700 }
 .deal .card.spare { animation-name: deal-spare }
 @keyframes deal-spare { from { transform: translateY(-40px) rotate(-8deg) scale(.94); opacity: 0 } to { transform: scale(.94); opacity: .82 } }
 @media (prefers-reduced-motion: reduce) {
-  .wipe { display: none } .big-stamp, .deal .card, table.ledger tr.new td { animation: none }
+  .wipe { display: none } .big-stamp, .deal .card, .tr-row.new { animation: none }
   button.env:hover, .env.sel { transform: none } .meter-fill { transition: none }
 }
 /* ---------- depth: felt nap, a pool of lamp light, and the phone's own surface ---------- */
@@ -803,6 +775,47 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .sign.done { animation: filed .35s ease-in both }
 @keyframes filed { to { transform: translateY(-30px) rotate(-4deg); opacity: 0 } }
 @media (prefers-reduced-motion: reduce) { .sign.done, .sign.nope { animation: none } }
+/* ---------- TV desk objects: till roll ledger, name-tag staff, CEO name plates ---------- */
+.objs { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 44px; align-items: start; margin-top: 8px }
+@media (max-width: 760px) { .objs { grid-template-columns: minmax(0, 1fr) } }
+section > .label { color: var(--on-table-2) }
+.sub-mono { font: 400 13px/1.35 var(--f-seg); color: #26261F }
+
+.till { justify-self: center; width: 100%; max-width: 320px; filter: drop-shadow(0 14px 14px rgba(0,0,0,.35)) drop-shadow(0 2px 2px rgba(0,0,0,.25)) }
+.tr-paper { background: linear-gradient(90deg, #EFEBE0, #F8F5EC 12% 88%, #EDE8DC); color: #2A2924; font: 400 13px/1.35 var(--f-seg); padding: 18px 18px 30px; transform: rotate(-.8deg);
+  -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 9px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 14px 9px repeat-x;
+  mask: linear-gradient(#000 0 0) top / 100% calc(100% - 9px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 14px 9px repeat-x }
+.tr-head { text-align: center; letter-spacing: .14em; font-size: 14px; padding-bottom: 10px; margin-bottom: 8px; border-bottom: 1px dashed #2A2924 }
+.tr-head small, .tr-row small { display: block; font-size: 10.5px; letter-spacing: .1em; color: #8A8578 }
+.tr-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; padding: 6px 0; align-items: baseline }
+.tr-row > span:nth-child(2) { text-transform: uppercase; overflow-wrap: anywhere }
+.tr-row b { font-weight: 400; font-size: 15px }
+.tr-row.muted { color: #B1AC9F }
+.tr-row.new { animation: print .6s steps(5) both }
+@keyframes print { from { clip-path: inset(0 0 100% 0) } to { clip-path: inset(0) } }
+.tr-total { display: flex; justify-content: space-between; border-top: 1px dashed #2A2924; border-bottom: 1px dashed #2A2924; margin-top: 8px; padding: 9px 0; font-size: 17px; letter-spacing: .12em }
+.tr-total b { font-weight: 400 }
+.tr-foot { text-align: center; font-size: 10.5px; letter-spacing: .12em; color: #8A8578; margin-top: 12px; line-height: 1.7 }
+
+.staff-desk { display: grid; gap: 34px }
+.staff-tags { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 18px 16px }
+.staff-tag { cursor: default; transform: rotate(var(--r)); padding-bottom: 10px }
+.staff-tag b { font-size: 21px }
+.staff-tag .ink-name { height: 30px; width: auto; justify-self: center }
+.staff-tag.down { filter: grayscale(.9) brightness(.82) }
+.tag-dept { font: 700 10px/1 var(--f-body); color: var(--ink-3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px }
+.tag-tapes { display: flex; justify-content: center; gap: 4px; margin: 0 0 5px }
+.tag-tape { --c: #151515; font: 800 9px/1 var(--f-body); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: #fff; background: var(--c); padding: 4px 6px 3px; border-radius: 2px; transform: rotate(-2.5deg); box-shadow: 0 1px 1px rgba(0,0,0,.3) }
+.tag-tape.grey { --c: #6E6B63 } .tag-tape.gold { --c: #A9852A } .tag-tape.red { --c: var(--red) } .tag-tape.green { --c: var(--good) }
+
+.plates { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; perspective: 600px }
+.plate-n { position: relative; display: grid; justify-items: center; padding: 9px 6px 8px; border-radius: 2px; text-align: center; min-width: 0;
+  background: linear-gradient(#34322E, #1D1C1A 60%, #141312); color: #D9C08A; transform: rotateX(16deg); transform-origin: bottom;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 0 0 1px rgba(217,192,138,.25), 0 10px 0 -4px #5A3E26, 0 12px 12px -4px rgba(0,0,0,.6) }
+.plate-n small { font: 700 9.5px/1 var(--f-body); letter-spacing: .18em; opacity: .7 }
+.plate-n b { font: 800 13px/1.15 var(--f-body); letter-spacing: .08em; text-transform: uppercase; overflow-wrap: anywhere; margin-top: 3px }
+.plate-n.past { color: #7D725A }
+.plate-n.now { background: linear-gradient(#E6CB86, #C49A45 55%, #9C7630); color: #241B0B; box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 10px 0 -4px #5A3E26, 0 0 22px -2px rgba(230,203,134,.45), 0 12px 12px -4px rgba(0,0,0,.6) }
 </style>
 <div id="app"></div>
 <script>
@@ -1761,34 +1774,35 @@ const OP = (() => {
       <div class="feed">${cur.length ? cur.map(item).join('') : '<div class="feed-empty">Nothing posted this quarter yet.</div>'}</div>
       ${old.length ? `<details class="rules" style="margin-top:10px"><summary>Earlier quarters (${old.length})</summary><div class="feed" style="margin-top:8px">${old.map(item).join('')}</div></details>` : ''}</section>`;
   }
+  // the ledger is a till roll: one line printed per quarter, torn off at the total
   function ledgerHTML() {
     const rows = [1, 2, 3, 4, 5].map(r => {
       const l = S.ledger.find(x => x.r === r);
-      if (!l) return `<tr><td class="num muted">Q${r}</td><td colspan="2" class="muted">${r === S.r ? 'In progress' : '—'}</td><td class="n muted">—</td></tr>`;
+      if (!l) return `<div class="tr-row muted"><span>Q${r}</span><span>${r === S.r ? '. . .' : ''}</span><b></b></div>`;
       const fresh = r === S.r && ui.printed !== r && (S.phase === 'reveal' || S.phase === 'review');
       if (fresh) ui.printed = r;
-      return `<tr class="${fresh ? 'new' : ''}"><td class="num">Q${r}</td><td><div class="sub-mono">${esc(l.subject)}</div><span class="muted" style="font-size:12px">${STAMP[l.stamp]} · approved by ${esc(nm(l.ceo))}</span></td><td>${l.autopilot ? 'Autopilot' : esc(nm(l.author))}</td><td class="n ${tone(l.actual)}">${fmt(l.actual)}</td></tr>`;
+      return `<div class="tr-row${fresh ? ' new' : ''}"><span>Q${r}</span><span>${esc(l.subject)}<small>${l.autopilot ? 'AUTOPILOT' : esc(nm(l.author)).toUpperCase()} · ${esc(STAMP[l.stamp]).toUpperCase()}</small></span><b class="${tone(l.actual)}">${fmt(l.actual)}</b></div>`;
     }).join('');
-    const wb = S.whistle && S.whistle.named != null ? `<tr><td class="num">WB</td><td colspan="2">${S.whistle.correct && S.whistle.clawed.length ? `Clawback: ${esc(nm(S.whistle.named))}, ${S.whistle.clawed.map(c => 'Q' + c.r).join(', ')} reversed` : `Whistleblower: ${esc(nm(S.whistle.named))}`}</td><td class="n ${S.whistle.correct ? 'pos' : 'neg'}">${fmt(S.whistle.swing)}</td></tr>` : '';
-    return `<section><div class="section-head"><h2>Quarterly ledger</h2><span class="label">Target +${S.target}${S.easy ? ' (easy)' : ''}</span></div>
-      <table class="ledger"><thead><tr><th>Qtr</th><th>Approved policy</th><th>Author</th><th style="text-align:right">Δ</th></tr></thead><tbody>${rows}${wb}</tbody>
-      <tfoot><tr><td colspan="3">Total</td><td class="n ${S.profit < 0 ? 'neg' : ''}">${fmt(S.profit)}</td></tr></tfoot></table></section>`;
+    const wb = S.whistle && S.whistle.named != null ? `<div class="tr-row"><span>WB</span><span>${S.whistle.correct && S.whistle.clawed.length ? `CLAWBACK ${S.whistle.clawed.map(c => 'Q' + c.r).join(' ')}` : 'WHISTLEBLOWER'}<small>${esc(nm(S.whistle.named)).toUpperCase()}</small></span><b class="${S.whistle.correct ? 'pos' : 'neg'}">${fmt(S.whistle.swing)}</b></div>` : '';
+    return `<section class="till" aria-label="Ledger"><div class="tr-paper"><div class="tr-head">${esc(brand().name).toUpperCase()}<small>${esc(brand().suffix).toUpperCase()} · LEDGER</small></div>
+      ${rows}${wb}<div class="tr-total"><span>TOTAL</span><b class="${S.profit < 0 ? 'neg' : ''}">${fmt(S.profit)}</b></div>
+      <div class="tr-foot">TARGET +${S.target}${S.easy ? ' (EASY)' : ''}<br>** THANK YOU FOR YOUR SERVICE **</div></div></section>`;
   }
-  function pips(n) { return `<span class="warn-pips" title="${n} written warning${n === 1 ? '' : 's'}"><i class="${n >= 1 ? 'on' : ''}"></i><i class="${n >= 2 ? 'on' : ''}"></i></span>`; }
+  // staff are the name tags from the phone; the CEO rotation is a row of desk name plates
   function staffHTML() {
-    const rows = S.P.map(p => {
+    const live = S.phase !== 'end' && S.phase !== 'whistle';
+    const tags = S.P.map(p => {
       const meta = [];
-      if (S.r && S.ceo === p.id && S.phase !== 'end' && S.phase !== 'whistle') meta.push('<span class="pill">CEO</span>');
-      if (p.leave) meta.push('<span class="pill grey">Stood down</span>');
-      if (p.spec && ui.debug) meta.push(`<span class="pill gold">${p.spec}</span>`);
-      if (ui.debug || S.phase === 'end') meta.push(p.sab ? '<span class="pill red">Saboteur</span>' : '<span class="pill green">Loyal</span>');
-      meta.push(stickers(p));
-      const dept = S.r && ui.debug ? `<span class="muted" style="font-size:12px"> · ${OP.DEPTS[p.dept]}</span>` : '';
-      return `<div class="staff-row"><div><span class="staff-name">${p.id === ME && mine() && ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : esc(p.name)}</span>${dept}</div><div class="staff-meta">${meta.join('')}</div></div>`;
+      if (S.r && S.ceo === p.id && live) meta.push('<i class="tag-tape">CEO</i>');
+      if (p.leave) meta.push('<i class="tag-tape grey">Stood down</i>');
+      if (p.spec && ui.debug) meta.push(`<i class="tag-tape gold">${p.spec}</i>`);
+      if (ui.debug || S.phase === 'end') meta.push(`<i class="tag-tape ${p.sab ? 'red' : 'green'}">${p.sab ? 'Saboteur' : 'Loyal'}</i>`);
+      const dept = S.r && ui.debug ? `<small class="tag-dept">${OP.DEPTS[p.dept]}</small>` : '';
+      return `<div class="nametag staff-tag${p.leave ? ' down' : ''}" style="--r:${((p.id * 5) % 7 - 3) * .7}deg"><span class="hello">Hello<small>my name is</small></span>
+        <b>${p.id === ME && mine() && ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : esc(p.name)}</b>${dept}${meta.length ? `<span class="tag-tapes">${meta.join('')}</span>` : ''}${stickers(p)}</div>`;
     }).join('');
-    const sched = OP.ceoSchedule(S).map(c => `<div class="${c.r === S.r && S.phase !== 'end' && S.phase !== 'whistle' ? 'now' : ''}"><span class="label">Q${c.r}</span><span class="nm">${c.who == null ? esc(c.note) : esc(nm(c.who))}</span></div>`).join('');
-    return `<section><div class="section-head"><h2>Staff directory</h2><span class="label">${S.n} employees</span></div><div class="staff">${rows}</div>
-      <div class="label" style="margin-top:16px">CEO rotation</div><div class="sched">${sched}</div></section>`;
+    const plates = OP.ceoSchedule(S).map(c => `<div class="plate-n${c.r === S.r && live ? ' now' : c.r < S.r ? ' past' : ''}"><small>Q${c.r}</small><b>${c.who == null ? esc(c.note) : esc(nm(c.who))}</b></div>`).join('');
+    return `<section class="staff-desk" aria-label="Staff"><div class="staff-tags">${tags}</div><div class="plates" aria-label="CEO rotation">${plates}</div></section>`;
   }
   function observerHTML() {
     if (!ui.debug) return '';
@@ -2199,8 +2213,8 @@ const OP = (() => {
     if (!S && naming) { $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${namingBoard()}</main>${deskNaming()}</div></div>`; if (naming.phase === 'trace') mountTrace(); return; }
     if (!S) { $app.innerHTML = mast() + setupHTML(); return; }
     const board = S.phase === 'end' || S.phase === 'whistle'
-      ? S.phase === 'end' ? `${observerHTML()}${reportHTML()}${ui.debug ? exitHTML() : ''}` : `${observerHTML()}<div class="two">${ledgerHTML()}${staffHTML()}</div>${feedHTML()}`
-      : `${observerHTML()}${pilesHTML()}${feedHTML()}<div class="two">${ledgerHTML()}${staffHTML()}</div>`;
+      ? S.phase === 'end' ? `${observerHTML()}${reportHTML()}${ui.debug ? exitHTML() : ''}` : `${observerHTML()}<div class="objs">${ledgerHTML()}${staffHTML()}</div>${feedHTML()}`
+      : `${observerHTML()}${pilesHTML()}${feedHTML()}<div class="objs">${ledgerHTML()}${staffHTML()}</div>`;
     if (!(S.phase === 'work' && draft)) stopTimer();
     $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${board}</main>${desk()}</div></div>`;
     syncWheel();

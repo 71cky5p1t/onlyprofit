@@ -12,6 +12,6 @@
 .deal .card.spare { animation-name: deal-spare }
 @keyframes deal-spare { from { transform: translateY(-40px) rotate(-8deg) scale(.94); opacity: 0 } to { transform: scale(.94); opacity: .82 } }
 @media (prefers-reduced-motion: reduce) {
-  .wipe { display: none } .big-stamp, .deal .card, table.ledger tr.new td { animation: none }
+  .wipe { display: none } .big-stamp, .deal .card, .tr-row.new { animation: none }
   button.env:hover, .env.sel { transform: none } .meter-fill { transition: none }
 }

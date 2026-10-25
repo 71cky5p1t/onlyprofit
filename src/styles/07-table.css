@@ -10,34 +10,6 @@
 .lie, .true { font: 800 10px/1 var(--f-body); color: #fff; background: var(--red); padding: 3px 5px; border-radius: 2px; margin-left: 6px; letter-spacing: .06em }
 .true { background: var(--good) }
 details.rules summary { color: var(--on-table) }
-.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 30px; align-items: start }
-@media (max-width: 760px) { .two { grid-template-columns: minmax(0, 1fr) } }
-table.ledger { width: 100%; border-collapse: collapse; font: 400 14px/1.35 var(--f-seg); background: #F6F3EA; color: #26261F; box-shadow: var(--lift); border-radius: 0 0 3px 3px;
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.35), #000 40px); mask-image: linear-gradient(to bottom, rgba(0,0,0,.35), #000 40px) }
-table.ledger td, table.ledger th { padding: 8px 12px; text-align: left; vertical-align: top; border-bottom: 1px dotted rgba(0,0,0,.2) }
-table.ledger th { font: 400 11px/1 var(--f-seg); letter-spacing: .12em; text-transform: uppercase; color: #77736A; padding-top: 16px }
-table.ledger td.n { text-align: right; white-space: nowrap }
-table.ledger tfoot td { border-bottom: 0; border-top: 2px dashed #26261F; font-size: 16px }
-table.ledger tr.new td { animation: print .5s steps(4) both }
-@keyframes print { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
-table.ledger .muted { color: #9B968A }
-.sub-mono { font: 400 13px/1.35 var(--f-seg); color: #26261F }
-table.ledger .sub-mono + .muted { font-family: var(--f-body); font-size: 11.5px !important }
-.staff { display: grid; background: var(--stock); color: var(--ink); border-radius: 4px; box-shadow: var(--lift); padding: 4px 14px }
-.staff-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 10px; padding: 9px 0; border-bottom: 1px solid var(--stock-3); align-items: center }
-.staff-row:last-child { border-bottom: 0 }
-.staff-name { font-weight: 800 }
-.staff-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end }
-.staff .pill:not(.red):not(.green):not(.grey):not(.gold):not(.blue) { background: var(--ink); color: var(--stock); border-color: var(--ink) }
-.warn-pips { display: inline-flex; gap: 3px }
-.warn-pips i { width: 9px; height: 12px; border: 2px solid var(--red); display: block; border-radius: 1px }
-.warn-pips i.on { background: var(--red) }
-.board > section > .label, section > .label { color: var(--on-table-2) }
-.sched { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 10px }
-.sched div { background: rgba(241,233,212,.08); border-radius: 4px; padding: 7px 8px; font-size: 12.5px; min-width: 0; color: var(--on-table) }
-.sched div.now { background: var(--stock); color: var(--ink) }
-.sched .label { font-size: 10px; color: inherit; opacity: .7 }
-.sched .nm { display: block; overflow-wrap: break-word; hyphens: auto; font-size: 12.5px; line-height: 1.2; font-weight: 800 }
 
 /* observer */
 .observer { background: repeating-linear-gradient(-45deg, var(--stock) 0 12px, #EADFC2 12px 24px); color: var(--ink); border-radius: 4px; padding: 12px 14px; display: grid; gap: 10px; box-shadow: var(--lift) }
