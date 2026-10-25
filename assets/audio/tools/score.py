@@ -66,7 +66,7 @@ class Song:
     return int(round(s.bars * 4 * 60 / s.bpm * SR))
 
 
-def render(song, base, loop=True, post=None, gain=0.45):
+def synth(song, base, gain=0.45):
   mid, raw = base + '.mid', base + '.raw.wav'
   song.midi(mid)
   subprocess.run(['fluidsynth', '-ni', '-q', '-g', str(gain), '-r', str(SR), '-R', '1', '-C', '1',
@@ -74,7 +74,28 @@ def render(song, base, loop=True, post=None, gain=0.45):
                   '-o', 'synth.reverb.width=0.8', '-F', raw, SF2, mid],
                  check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
   sr, y = wavfile.read(raw); os.remove(raw)
-  y = y.astype(np.float32) / 32768.0
+  return y.astype(np.float32) / 32768.0
+
+
+def trim(y, floor=0.01, fade=0.25):
+  nz = np.where(np.abs(y).max(1) > np.abs(y).max() * floor)[0]
+  y = y[:nz[-1] + 1]
+  f = min(len(y), int(fade * SR)); y[-f:] *= np.linspace(1, 0, f)[:, None]
+  return y
+
+
+def write(y, base, rms=0.2, peak=None):
+  # level-match by RMS (or peak for short SFX), soft-clip, write WAV + MP3
+  y = y * (rms / np.sqrt((y ** 2).mean())) if peak is None else y * (peak / np.abs(y).max())
+  y = 0.95 * np.tanh(y / 0.95)
+  wav = base + '.wav'
+  wavfile.write(wav, SR, (y * 32767).astype(np.int16))
+  subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav, '-codec:a', 'libmp3lame', '-b:a', '192k', base + '.mp3'], check=True)
+  return wav
+
+
+def render(song, base, loop=True, post=None, gain=0.45):
+  y = synth(song, base, gain)
   if loop:
     L = song.loop_len()
     y = np.pad(y, ((0, max(0, 2 * L - len(y))), (0, 0)))
@@ -82,13 +103,6 @@ def render(song, base, loop=True, post=None, gain=0.45):
     out[:len(tail)] += tail
     y = out
   else:
-    nz = np.where(np.abs(y).max(1) > np.abs(y).max() * 0.01)[0]
-    y = y[:nz[-1] + 1]
-    f = min(len(y), int(0.25 * SR)); y[-f:] *= np.linspace(1, 0, f)[:, None]
+    y = trim(y)
   if post: y = post(y, song)
-  # level-match by RMS, soft-clip the peaks
-  y = 0.95 * np.tanh(y * (0.2 / np.sqrt((y ** 2).mean())) / 0.95)
-  wav = base + '.wav'
-  wavfile.write(wav, SR, (y * 32767).astype(np.int16))
-  subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav, '-codec:a', 'libmp3lame', '-b:a', '192k', base + '.mp3'], check=True)
-  return wav
+  return write(y, base)
