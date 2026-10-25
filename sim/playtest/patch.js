@@ -42,6 +42,7 @@ R("    e.approved = true;\n", `    if (s.x.board && !s._ratified) {
       s.board = { pick: id, no, passed: no <= (s.n - 1) / 2 };
       if (!s.board.passed && best.id !== id) {
         log(s, E, 'event', 'The Board overruled the CEO.');
+        if (s.x.selfPen && e.author === s.ceo && !e.autopilot) { s.P[s.ceo].skipCEO = true; (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++; }
         (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++;
         s._ratified = true; const r = approve(s, best.id, E); s._ratified = false; return r;
       }
@@ -58,5 +59,6 @@ R("      if (s.x.bots2 && e.author === s.ceo", "      if ((s.x.bots2 || s.x.fair
 R("      if (p.leave) { const [e, h]", "      if (p.leave && !s.x.leaveOpen) { const [e, h]");
 R("      botInheritMemo(s, i, inh);\n      const [e, h] = botWork(s, i, inh.cards, D); e.dept = d;", "      botInheritMemo(s, i, inh);\n      const [e, h] = botWork(s, i, inh.cards, D); e.dept = d; if (p.leave) e.audited = true;");
 R("    s.envs.push(e); s.left[p.dept] = aside;", "    if (p.leave) e.audited = true;\n    s.envs.push(e); s.left[p.dept] = aside;");
+R("for (let k = 0; k < n; k++) { const c = s.ceoOrder[(base + k) % n]; if (!s.P[c].leave) return c; }", "for (let k = 0; k < n; k++) { const c = s.ceoOrder[(base + k) % n]; if (!s.P[c].leave && !s.P[c].skipCEO) return c; if (s.P[c].skipCEO) s.P[c].skipCEO = false; }");
 fs.writeFileSync(__dirname + '/engine-x.js', src);
 console.log('ok');

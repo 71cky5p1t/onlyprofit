@@ -15,6 +15,6 @@ Seat-0 strategies (`play.js`): `exploit` (worst envelope, show the good card, se
 Flags: `ruthless` (bot saboteurs self-approve as CEO, like humans did), `fair` (bots judge human CEOs like bot CEOs),
 `bots2` (credibility-weighted warning votes), `pers` (bot temperaments), `claw` (1 = restore losses, 2 = reverse every
 policy the named saboteur wrote), `board` (table can overrule the CEO's pick), `pubRev` (paid reveals are public),
-`leaveOpen` (stood-down staff keep working, envelope opened publicly), `noSelf`, `q5x2`, `rot4`, `noLeave`, `sabTier`.
+`leaveOpen` (stood-down staff keep working, envelope opened publicly), `selfPen` (with `board`: a CEO overruled on their own envelope is named and skips their next CEO turn), `noSelf`, `q5x2`, `rot4`, `noLeave`, `sabTier`.
 
 Results and recommendations: https://claude.ai/artifact/66RMt61UfSLPKBWumRuCAd
