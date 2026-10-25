@@ -14,5 +14,5 @@
     ['endgame', 'Year end', 'After quarter five, the table names a saboteur. Right, and their damage is reversed. Wrong, and it’s a wrongful dismissal claim. The best record on the winning side is Employee of the Year.', 12],
     ['signoff', 'Sign-off', 'That concludes your induction. The clock starts now. Please look busy.', 5]
   ];
-  // recorded lines drop in as assets/audio/induction/vo-01-welcome.mp3 and so on
+  // recorded lines drop in as assets/audio/induction/welcome.mp3 (or vo-01-welcome.mp3) and so on
   const voiceClip = i => 'vo-' + String(i + 1).padStart(2, '0') + '-' + LESSONS[i][0];
