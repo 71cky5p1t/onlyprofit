@@ -17,6 +17,6 @@
       if (!down) return; down = null;
       if (len < SIGN.ink) return;
       box.classList.add('ok');
-      wait = setTimeout(() => { box.classList.add('done'); setTimeout(() => dispatch(SIGNED[kind]()), 350); }, SIGN.hold);
+      wait = setTimeout(() => { box.classList.add('done'); cueSigned(); setTimeout(() => dispatch(SIGNED[kind]()), 350); }, SIGN.hold);
     };
   }

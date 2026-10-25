@@ -832,6 +832,13 @@ section > .label { color: var(--on-table-2) }
 .files:has(.pulled) { grid-template-columns: 160px; justify-content: center }
 .file.pulled { transform: rotate(-2deg) }
 .file-stamp { position: absolute; inset: auto 0 14px; margin: auto; width: max-content; font: 900 14px/1 var(--f-body); font-style: normal; letter-spacing: .14em; text-transform: uppercase; color: var(--red); border: 2px solid currentColor; border-radius: 3px; padding: 4px 8px 3px; transform: rotate(-7deg); opacity: .85 }
+/* sound toggle: a small card-stock disc in the corner of the felt */
+.au-btn { position: fixed; z-index: 40; left: calc(14px + env(safe-area-inset-left, 0px)); bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--stock); color: var(--ink); box-shadow: var(--lift); display: grid; place-items: center; opacity: .85 }
+.au-btn:hover { opacity: 1 }
+.au-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round }
+.au-btn svg path:first-child { fill: currentColor }
+.au-btn[aria-pressed="true"] .x, .au-btn[aria-pressed="false"] .w { display: none }
 </style>
 <div id="app"></div>
 <script>
@@ -1503,6 +1510,169 @@ const OP = (() => {
 </script>
 <script>
 (() => {
+  // ---------- audio: music bus with a phone-line filter, one-shot SFX (files in dist/audio) ----------
+  const AU = { ctx: null, buf: {}, on: true, want: null, cur: null };
+  try { AU.on = localStorage.getItem('op-sound') !== '0'; } catch (e) {}
+  const AU_BASE = window.__opAudio || 'audio/';
+  const MUSIC = { 'music/01-water-cooler': [152, 16], 'music/04-q5-overtime': [172, 16], 'music/05-hold-music-clean': [120, 16] };
+
+  function auCtx() {
+    if (AU.ctx) return AU.ctx;
+    const C = window.AudioContext || window.webkitAudioContext; if (!C) return null;
+    const c = AU.ctx = new C();
+    AU.master = c.createGain(); AU.master.gain.value = AU.on ? 1 : 0; AU.master.connect(c.destination);
+    AU.mus = c.createGain(); AU.mus.gain.value = .5;
+    AU.hp = c.createBiquadFilter(); AU.hp.type = 'highpass'; AU.hp.frequency.value = 20;
+    AU.lp = c.createBiquadFilter(); AU.lp.type = 'lowpass'; AU.lp.frequency.value = 20000;
+    AU.mus.connect(AU.hp).connect(AU.lp).connect(AU.master);
+    AU.fx = c.createGain(); AU.fx.gain.value = .8; AU.fx.connect(AU.master);
+    return c;
+  }
+  function auLoad(name) {
+    const c = auCtx(); if (!c) return Promise.reject(new Error('no audio'));
+    return AU.buf[name] || (AU.buf[name] = fetch(AU_BASE + name + '.mp3')
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+      .then(b => new Promise((ok, no) => c.decodeAudioData(b, ok, no))));
+  }
+  function sfx(name, delay = 0, gain = 1) {
+    const c = auCtx(); if (!c || !AU.on || c.state !== 'running') return;
+    auLoad(name.includes('/') ? name : 'sfx/' + name).then(b => {
+      const s = c.createBufferSource(), g = c.createGain();
+      g.gain.value = gain; s.buffer = b; s.connect(g).connect(AU.fx); s.start(c.currentTime + delay);
+    }).catch(() => {});
+  }
+  // stings sit on top of the music
+  function duck(sec, delay = 0) {
+    const c = auCtx(); if (!c) return; const t = c.currentTime + delay, g = AU.mus.gain;
+    g.cancelScheduledValues(t); g.setTargetAtTime(.12, t, .08); g.setTargetAtTime(.5, t + sec, .4);
+  }
+  // a looping track; crossfades from whatever is playing. null fades out
+  function music(name) {
+    if (AU.want === name) return; AU.want = name;
+    const c = auCtx(); if (!c) return;
+    const old = AU.cur; AU.cur = null;
+    if (old) { old.g.gain.setTargetAtTime(0, c.currentTime, .4); old.s.stop(c.currentTime + 2.5); }
+    if (!name) return;
+    auLoad(name).then(b => {
+      if (AU.want !== name) return;
+      const [bpm, bars] = MUSIC[name], len = Math.round(bars * 240 / bpm * b.sampleRate);
+      // some decoders keep the MP3 encoder delay; skip it so the loop is seamless
+      const off = Math.abs(b.length - len) > 64 ? 1105 / 44100 : 0;
+      const s = c.createBufferSource(), g = c.createGain();
+      s.buffer = b; s.loop = true; s.loopStart = off; s.loopEnd = off + len / b.sampleRate;
+      g.gain.value = 0; g.gain.setTargetAtTime(1, c.currentTime, .5);
+      s.connect(g).connect(AU.mus); s.start(0, off); AU.cur = { s, g };
+    }).catch(() => {});
+  }
+  // on hold: the music squeezed down a phone line
+  function hold(on) {
+    const c = auCtx(); if (!c) return; const t = c.currentTime;
+    AU.hp.frequency.setTargetAtTime(on ? 380 : 20, t, .12);
+    AU.lp.frequency.setTargetAtTime(on ? 3200 : 20000, t, .12);
+  }
+  function soundOn(on) {
+    AU.on = on; try { localStorage.setItem('op-sound', on ? '1' : '0'); } catch (e) {}
+    const c = auCtx(); if (c) AU.master.gain.setTargetAtTime(on ? 1 : 0, c.currentTime, .05);
+    const b = document.querySelector('.au-btn'); if (b) { b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Mute sound' : 'Turn sound on'); }
+  }
+  function auMount() {
+    if (document.querySelector('.au-btn')) return;
+    const b = document.createElement('button'); b.className = 'au-btn';
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/><path class="x" d="M16 9l6 6M22 9l-6 6"/></svg>';
+    b.onclick = () => soundOn(!AU.on);
+    document.body.appendChild(b); soundOn(AU.on);
+    // browsers start audio only after a gesture
+    const wake = () => { const c = auCtx(); if (c && c.state !== 'running') c.resume(); };
+    addEventListener('pointerdown', wake, true); addEventListener('keydown', wake, true);
+  }
+  // ---------- cues: which sound goes with which moment. Diffs state on every render ----------
+  const CUE = { prev: null, idle: null, bound: false };
+  const TAP = new Set(['set', 'debug', 'quit', 'begin', 'advance', 'sel', 'tpl', 'font', 'align', 'art', 'claim', 'back', 'start', 'again', 'name-skip', 'name-back', 'name-redo', 'board', 'warn', 'whistle']);
+
+  function cueSnap() {
+    if (!S) return { lobby: !naming };
+    const d = draft;
+    return {
+      phase: S.phase, r: S.r, key: `${S.r}|${S.phase}`, profit: S.profit,
+      result: S.result ? `${S.r}:${S.result.id}` : null, actual: S.result ? S.result.actual : 0,
+      over: S.board && S.board.overruled ? `${S.r}:${S.board.nominee}` : null,
+      inv: S.invq ? `${S.invq.r}:${S.invq.t}` : null,
+      pips: S.P.filter(p => p.pip).length, warns: S.P.reduce((a, p) => a + p.warnings, 0),
+      named: S.whistle ? S.whistle.named : undefined, correct: S.whistle && S.whistle.correct,
+      d: d ? { sw: d.swaps.length, rv: d.reveals.length, re: d.redeal, st: d.stamp, pg: d.page || 1 } : null,
+    };
+  }
+
+  function cueMusic(n) {
+    if (!S) { music('music/05-hold-music-clean'); if (naming) hold(false); else if (!CUE.idle) hold(true); return; }
+    hold(false);
+    music(n.phase === 'end' ? null : n.phase === 'whistle' || S.r >= 5 ? 'music/04-q5-overtime' : 'music/01-water-cooler');
+  }
+
+  function cueSync() {
+    if (!CUE.bound) cueBind();
+    const n = cueSnap(), p = CUE.prev; CUE.prev = n;
+    cueMusic(n);
+    if (!p) return;
+    if (!('phase' in p)) { if ('phase' in n) sfx('clock-bell', .1, .7); return; }
+    if (!('phase' in n)) return;
+    let wipe = p.key !== n.key, t = 0;
+    // verdicts
+    if (n.over && n.over !== p.over) { sfx('sting-overruled'); duck(2.6); t = 2.4; wipe = false; }
+    if (n.result && n.result !== p.result) {
+      sfx(n.actual >= 0 ? 'sting-approved' : 'sting-rejected', t); duck(n.actual >= 0 ? 2.2 : 4.5, t); wipe = false;
+    }
+    if (n.profit !== p.profit) {
+      const k = Math.abs(n.profit - p.profit);
+      for (let i = 0; i < k; i++) sfx('calc-key', .7 + i * .16, .5);
+      sfx('calc-total', .7 + k * .16, .6);
+    }
+    if (n.inv && n.inv !== p.inv) sfx('cabinet-drawer', .3);
+    if (n.pips > p.pips) { sfx('desk-stamp'); sfx('paper-type-bell', .4, .7); }
+    if (n.warns > p.warns) sfx('desk-stamp');
+    // the end of Q5 and the end of the year
+    if (n.phase === 'whistle' && p.phase !== 'whistle') { sfx('clock-quitting-time', 0, .8); duck(2.2); wipe = false; }
+    let end = 0;
+    if (n.named !== undefined && p.named === undefined && n.named != null) {
+      sfx(n.correct ? 'sting-saboteur' : 'sting-rejected'); duck(5.5); end = 5.6; wipe = false;
+    }
+    if (n.phase === 'end' && p.phase !== 'end') { sfx(S.win ? 'sting-quarter-won' : 'sting-company-lost', end); wipe = false; }
+    if (wipe) { sfx('music/06-stripe-wipe', 0, .8); duck(2.4); }
+    // the desk
+    const a = p.d, b = n.d;
+    if (b && (!a || (b.re && !a.re))) {
+      if (b.re && a) sfx('paper-shuffle');
+      [0, .12, .24].forEach((s, i) => { sfx('desk-card-deal', .45 + s, .8); sfx('desk-card-flip', .9 + i * .08, .7); });
+    }
+    if (a && b) {
+      if (b.sw > a.sw) { sfx('desk-stapler'); sfx('desk-card-drop', .12, .7); }
+      if (b.sw < a.sw || b.rv > a.rv) sfx('desk-card-flip');
+      if (b.st && b.st !== a.st) sfx('desk-stamp');
+      if (b.pg !== a.pg) sfx('paper-pull', 0, .8);
+    }
+    if (a && !b && p.phase === 'work') sfx('paper-shuffle', 0, .8);
+  }
+
+  function cueSigned() { sfx('desk-ding', 0, .7); }
+
+  function cueBind() {
+    CUE.bound = true; auMount();
+    document.addEventListener('click', ev => {
+      const b = ev.target.closest('[data-a]'); if (!b || b.disabled) return;
+      const a = b.dataset.a;
+      if (a === 'approve') sfx('paper-pull');
+      else if (a === 'reroll') sfx('paper-type-key');
+      else if (a === 'name-go') sfx('paper-type-bell', 0, .7);
+      else if (TAP.has(a)) sfx('desk-tap', 0, .7);
+      // the lobby comes off hold while you poke at the menu, and goes back on when you stop
+      if (!S && !naming) { hold(false); clearTimeout(CUE.idle); CUE.idle = setTimeout(() => { CUE.idle = null; if (!S && !naming) hold(true); }, 6000); }
+    }, true);
+    document.addEventListener('keydown', ev => {
+      if (!ev.target.matches || !ev.target.matches('input, textarea')) return;
+      if (ev.key === 'Enter') sfx('paper-type-bell', 0, .6);
+      else if (ev.key.length === 1 || ev.key === 'Backspace') sfx('paper-type-key', 0, .5);
+    }, true);
+  }
   const $app = document.getElementById('app');
   const ME = 0;
   let S = null, draft = null, err = '', toastT = null;
@@ -2229,7 +2399,7 @@ const OP = (() => {
       if (!down) return; down = null;
       if (len < SIGN.ink) return;
       box.classList.add('ok');
-      wait = setTimeout(() => { box.classList.add('done'); setTimeout(() => dispatch(SIGNED[kind]()), 350); }, SIGN.hold);
+      wait = setTimeout(() => { box.classList.add('done'); cueSigned(); setTimeout(() => dispatch(SIGNED[kind]()), 350); }, SIGN.hold);
     };
   }
   // ---------- setup ----------
@@ -2257,6 +2427,7 @@ const OP = (() => {
   }
   // ---------- render ----------
   function render() {
+    cueSync();
     applyBrand();
     document.documentElement.dataset.phase = S ? S.phase : 'setup';
     if (!S && naming) { $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${namingBoard()}</main>${deskNaming()}</div></div>`; if (naming.phase === 'trace') mountTrace(); return; }

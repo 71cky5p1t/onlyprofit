@@ -7,7 +7,7 @@ from stings import STINGS
 FOLEY = {
   'desk-tap': (F.tap, .45), 'desk-card-deal': (F.card_deal, .5), 'desk-card-flip': (F.card_flip, .5),
   'desk-card-drop': (F.card_drop, .65), 'desk-stapler': (F.stapler, .8), 'desk-sticker': (F.sticker, .6),
-  'desk-stamp': (F.stamp, .95), 'desk-sign': (F.sign, .6),
+  'desk-stamp': (F.stamp, .95), 'desk-sign': (F.sign, .6), 'desk-ding': (lambda: F.bell(1244.5, 1.1), .5),
   'paper-pull': (F.paper_pull, .45), 'paper-shuffle': (F.paper_shuffle, .5),
   'paper-type-key': (F.type_key, .55), 'paper-typing': (F.typing, .55), 'paper-type-bell': (F.type_bell, .6),
   'clock-tick': (F.clock_tick, .45), 'clock-flip': (F.clock_flip, .6), 'clock-bell': (F.office_bell, .7),

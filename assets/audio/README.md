@@ -21,3 +21,5 @@ Rebuild: `apt-get install fluidsynth fluid-soundfont-gm ffmpeg`, `pip install nu
 | 04-q5-overtime | 172 swing, minor | final quarter |
 | 05-hold-music | 120 bossa | lobby |
 | 06-stripe-wipe | stinger | phase transitions |
+
+In the game: `src/ui/00-audio.js` (music bus, phone-line filter, SFX player, mute button) and `src/ui/00-cues.js` (diffs state on each render and picks the sound). `build.sh` copies the files the game uses into `dist/audio/`, which is fetched relative to the page.
