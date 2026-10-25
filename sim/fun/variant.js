@@ -17,6 +17,8 @@ const V = {
   // only the final CEO names a saboteur at the end
   ceowhistle: [['core.js', "const { winner, count } = tally(s, s.wb, { noneWinsTies: true });", "const { winner, count } = tally(s, { [s.ceo]: s.wb[s.ceo] ?? 'none' }, { noneWinsTies: true });"]],
   ceotgt: [['core.js', 'const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };', 'const TARGETS = { 4: 19, 5: 21, 6: 21, 7: 22, 8: 23 };']],
+  // saboteurs also win if their approved losses reach DMG_X (env)
+  damage: [['core.js', 's.win = s.profit >= s.target;', 's.dmg = s.ledger.filter(l => !l.autopilot && s.P[l.author].sab && l.actual < 0).reduce((a, l) => a - l.actual, 0); s.win = s.profit >= s.target && !(s.dmg >= (+process.env.DMG_X || 99));']],
 };
 function load(names) {
   const dir = path.join(OUT, names.join('+') || 'base'); fs.mkdirSync(dir, { recursive: true });
