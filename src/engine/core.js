@@ -5,7 +5,7 @@ const OP = (() => {
   const B = typeof OP_BOTS !== 'undefined' ? OP_BOTS : require('./bots.js');
   const { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, COLORS, TRIMS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 19, 5: 21, 6: 21, 7: 22, 8: 23 };
+  const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
@@ -163,7 +163,7 @@ const OP = (() => {
   }
 
   const pubEst = (s, e) => estimate(e, s.loyalTier, false);
-  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botAuditVote, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, estimate, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
+  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, estimate, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
 
   // ---------- round flow ----------
   function startRound(s, E) {
@@ -228,9 +228,7 @@ const OP = (() => {
       else log(s, E, 'memo', `${s.P[m.target].human ? 'Your' : s.P[m.target].name + "'s"} handover checked out. No complaints.`, { by: m.by, target: m.target, truthful: m.truthful, vouch: true });
     }
     for (const d of botDisputes(s)) log(s, E, 'memo', pickOne(s, DISPUTE).replace('{n}', who(s, d.target)), { by: d.by, target: d.target, truthful: d.truthful, dispute: true });
-    s.phase = 'pitch'; s.votes = {};
-    for (const p of s.P) if (!isHuman(s, p.id)) s.votes[p.id] = botAuditVote(s, p.id);
-    if (s.spectate) resolveAudit(s, E);
+    s.phase = 'decide';
   }
   function tally(s, votes, opts) {
     const count = {};
@@ -241,15 +239,7 @@ const OP = (() => {
     if (opts && opts.noneWinsTies && tied.includes('none')) return { winner: 'none', count, top: mx };
     return { winner: pickOne(s, tied.sort()), count, top: mx };
   }
-  function resolveAudit(s, E) {
-    const { winner, count } = tally(s, s.votes);
-    s.audit = { votes: s.votes, count, winner };
-    const e = s.envs.find(x => x.id === winner);
-    if (e) { e.audited = true; log(s, E, 'event', `Audit opened envelope ${e.id}: worth ${fmt(evs(e.cards))}${e.cards.some(c => c.v === 'V') ? ' plus volatility' : ''}.`); }
-    else log(s, E, 'event', 'The table declined to audit anything.');
-    s.phase = 'decide';
-  }
-  // CEO nominates; the Board ratifies or overrules.
+  // CEO nominates; the Board ratifies or opens it, and overrules if it disappoints.
   function nominate(s, id, E) {
     const e = s.envs.find(x => x.id === id); if (!e) return 'No such envelope.';
     s.nominee = id; s.bvotes = {};
@@ -260,15 +250,16 @@ const OP = (() => {
     return null;
   }
   function resolveBoard(s, E) {
-    const voters = s.n - 1, no = Object.values(s.bvotes).filter(v => v === 'overrule').length;
-    const nom = s.envs.find(x => x.id === s.nominee);
+    const voters = s.n - 1, no = Object.values(s.bvotes).filter(v => v === 'open').length;
+    const nom = s.envs.find(x => x.id === s.nominee), opened = no > voters / 2;
+    if (opened) { nom.audited = true; s.audit = { winner: nom.id }; log(s, E, 'event', `The Board opened envelope ${nom.id}: worth ${fmt(evs(nom.cards))}${nom.cards.some(c => c.v === 'V') ? ' plus volatility' : ''}.`); }
     const best = argmax(s.envs, x => [pubEst(s, x)]);
-    const overruled = no > voters / 2 && best.id !== nom.id;
-    s.board = { nominee: nom.id, votes: s.bvotes, no, overruled };
-    if (!overruled) { log(s, E, 'event', `The Board ratified envelope ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
+    const overruled = opened && best.id !== nom.id && pubEst(s, nom) < pubEst(s, best) - 1;
+    s.board = { nominee: nom.id, votes: s.bvotes, no, opened, overruled };
+    if (!overruled) { log(s, E, 'event', opened ? `It stands. Envelope ${nom.id} goes through.` : `The Board ratified envelope ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
     const own = nom.author === s.ceo && !nom.autopilot;
     nom.unmasked = true; s.board.own = own; s.board.author = nom.autopilot ? null : nom.author;
-    log(s, E, 'event', `The Board overruled ${who(s, s.ceo)} (${no}–${voters - no}). Envelope ${nom.id} was written by ${nom.autopilot ? 'interim management' : own ? 'the CEO' : who(s, nom.author)}. Envelope ${best.id} goes through instead.`, { target: s.ceo });
+    log(s, E, 'event', `The Board overruled ${who(s, s.ceo)}. Envelope ${nom.id} was written by ${nom.autopilot ? 'interim management' : own ? 'the CEO' : who(s, nom.author)}. Envelope ${best.id} goes through instead.`, { target: s.ceo });
     (s.accused[s.ceo] = s.accused[s.ceo] || []).push('table'); s.P[s.ceo].accusations++;
     if (own) { s.P[s.ceo].skipCEO = true; log(s, E, 'event', `${who(s, s.ceo, 1)} tried to push ${s.P[s.ceo].human ? 'your' : 'their'} own envelope and will sit out ${s.P[s.ceo].human ? 'your' : 'their'} next turn as CEO.`, { target: s.ceo }); }
     return approve(s, best.id, E);
@@ -363,14 +354,11 @@ const OP = (() => {
     switch (a.type) {
       case 'begin': if (s.phase !== 'brief') err = 'Already started.'; else startRound(s, E); break;
       case 'submitWork': if (s.phase !== 'work' || !s.work[seat]) err = 'Not your turn to work.'; else err = submitWork(s, seat, a, E); break;
-      case 'auditVote':
-        if (s.phase !== 'pitch' || !humanTurn) { err = 'No audit vote open.'; break; }
-        if (a.target !== 'none' && !s.envs.some(e => e.id === a.target && !e.autopilot)) { err = 'Pick an envelope or none.'; break; }
-        s.votes[seat] = a.target; resolveAudit(s, E); break;
       case 'approve': if (s.phase !== 'decide' || seat !== s.ceo || !humanTurn) err = 'Only the CEO can nominate.'; else err = nominate(s, a.id, E); break;
       case 'boardVote':
         if (s.phase !== 'board' || !humanTurn || seat === s.ceo) { err = 'No Board vote open.'; break; }
-        s.bvotes[seat] = a.vote === 'overrule' ? 'overrule' : 'ratify'; resolveBoard(s, E); break;
+        // 'overrule' is the old UI's word for 'open'
+        s.bvotes[seat] = a.vote === 'open' || a.vote === 'overrule' ? 'open' : 'ratify'; resolveBoard(s, E); break;
       case 'warnVote':
         if (s.phase !== 'reveal' || !humanTurn) { err = 'No warning vote open.'; break; }
         s.wvotes[seat] = a.target === 'none' ? 'none' : +a.target; resolveWarn(s, E); break;

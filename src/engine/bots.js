@@ -148,25 +148,6 @@ const OP_BOTS = (() => {
       const w = pers(s.P[i]), read = e.revealed.reduce((a, su) => a + ev(e.cards[su]), 0) + unk * w[3] + w[4] * STAMP_ADJ[e.stamp];
       return read + (g == null ? 0 : 0.5 * clamp(trust(s, i, g), -3, 1) * unk / 3) + 0.35 * risk * unk + (rand(s) - 0.5) * 0.8;
     }
-    function botAuditVote(s, i) {
-      const c = s.envs.filter(e => !e.autopilot);
-      if (!c.length) return 'none';
-      const p = s.P[i];
-      if (p.sab) {
-        if (s.sabTier === 'naive' || s.sabTier === 'blatant') return 'none';
-        const sorted = c.slice().sort((a, b) => viewValue(s, i, b) - viewValue(s, i, a));
-        const top = sorted[0];
-        if (top.author === i && evs(top.cards) <= 0) return sorted[1] ? sorted[1].id : 'none';
-        return top.id;
-      }
-      if (s.loyalTier === 'naive') return pickOne(s, c).id;
-      // open the front-runner unless a contender smells off
-      const top = c.map(e => [e, feel(s, i, e)]).sort((a, b) => b[1] - a[1]).slice(0, 3);
-      return argmax(top, ([e, f]) => {
-        const g = guess(s, i, e), smell = (g != null && g !== i ? -Math.min(0, trust(s, i, g)) : 0) + (e.stamp === 'Rec' && !e.revealed.length ? 1 : 0);
-        return [e.author === i ? -9 : f - top[0][1] + 0.8 * smell];
-      })[0].id;
-    }
     function botPick(s) {
       const ceo = s.ceo, L = s.loyalTier, envs = s.envs;
       const est = e => estimate(e, L, true);
@@ -232,14 +213,13 @@ const OP_BOTS = (() => {
     }
     function botBoardVote(s, i) {
       const p = s.P[i], nom = s.envs.find(x => x.id === s.nominee);
-      if (p.sab || !nom) return 'ratify';
-      if (nom.author === i) return 'ratify';
+      if (p.sab || !nom || nom.author === i || nom.revealed.length === 3) return 'ratify';
       const f = new Map(s.envs.map(x => [x.id, feel(s, i, x)])), best = Math.max(...f.values());
-      // recognises the CEO's own colours, or a suspect's
+      // open it if it trails, wears the CEO's or a suspect's colours, or is Recommended with little shown
       const g = guess(s, i, nom), tell = g != null && (g === s.ceo || trust(s, i, g) <= -2);
-      return f.get(nom.id) <= best - (tell ? 1 : 2) ? 'overrule' : 'ratify';
+      return tell || f.get(nom.id) <= best - 1 || (nom.stamp === 'Rec' && nom.revealed.length < 2 && pers(p)[4] < 1.2) ? 'open' : 'ratify';
     }
-    return { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botAuditVote, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion };
+    return { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion };
   };
   return { PERS, PERS_SAY, make };
 })();
