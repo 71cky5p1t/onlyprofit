@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=Share+Tech+Mono&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=Share+Tech+Mono&family=Fraunces:opsz,wght@9..144,600..900&family=Nunito:wght@800..900&family=Caveat:wght@700&display=swap">
 <style>
 /* Layout: a green card table (public board, left) beside your desk (right, sticky), which ends in a desk calculator.
    Look: Draft A. Cards and baize from 7, grotesk + pictograms from 2, calculator from 4, stripe wipes from 5. One committed look, no dark variant. */
@@ -23,6 +23,7 @@
   --f-body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
   --f-seg: "Share Tech Mono", ui-monospace, Menlo, monospace;
   --bounce: cubic-bezier(.34, 1.56, .64, 1);
+  --brand: var(--red); --brand-hi: #EF4A37; --brand-lo: var(--red-lo); --brand-ink: #fff; --mono: "OP";
 }
 
 * { box-sizing: border-box }
@@ -43,7 +44,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .mast { background: var(--ink); color: var(--stock); position: relative; z-index: 2 }
 .mast .wrap { display: flex; align-items: center; gap: 18px 22px; padding-block: 10px; flex-wrap: wrap }
 .logo { display: flex; align-items: center; gap: 10px }
-.logo-mark { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, var(--red-lo)); display: grid; place-items: center; color: rgba(255,255,255,.8); font: 900 13px/1 var(--f-body); letter-spacing: -.04em; box-shadow: 0 2px 5px rgba(0,0,0,.5) }
+.logo-mark { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); display: grid; place-items: center; color: var(--brand-ink); opacity: 1; font: 900 13px/1 var(--f-body); letter-spacing: -.04em; box-shadow: 0 2px 5px rgba(0,0,0,.5) }
 .logo-type { font: 900 21px/1 var(--f-body); letter-spacing: -.03em }
 .logo-type small { display: block; font: 600 10.5px/1.3 var(--f-body); letter-spacing: .08em; color: rgba(241,233,212,.5); text-transform: uppercase; margin-top: 3px }
 .tab { display: inline-flex; align-items: stretch; font: 800 13px/1 var(--f-body); border-radius: 2px; overflow: hidden }
@@ -294,9 +295,9 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .shred:disabled { opacity: .45; cursor: not-allowed }
 /* deal-in: face-down cards fly from the deck, land, then flip. Policy slides out of the inbox above, hand from the deck bottom-right */
 .play .card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: 3; opacity: 0; pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, transparent 0 16px, var(--red) 16.5px 19px, transparent 19.5px), repeating-linear-gradient(45deg, rgba(255,255,255,.09) 0 4px, transparent 4px 9px), var(--red);
+  background: radial-gradient(circle at 50% 50%, transparent 0 16px, var(--brand) 16.5px 19px, transparent 19.5px), repeating-linear-gradient(45deg, rgba(255,255,255,.12) 0 4px, transparent 4px 9px), var(--brand);
   box-shadow: inset 0 0 0 4px var(--stock), inset 0 0 0 5px rgba(0,0,0,.2) }
-.play .card::after { content: "OP"; position: absolute; inset: 0; display: grid; place-items: center; z-index: 4; opacity: 0; pointer-events: none; font: 900 15px/1 var(--f-body); letter-spacing: -.04em; color: var(--stock) }
+.play .card::after { content: var(--mono); position: absolute; inset: 0; display: grid; place-items: center; z-index: 4; opacity: 0; pointer-events: none; font: 900 15px/1 var(--f-body); letter-spacing: -.04em; color: var(--brand-ink) }
 .play.deal .slot { --d: 0s }
 .play.deal .policy .slot:nth-child(2) { --d: .09s } .play.deal .policy .slot:nth-child(3) { --d: .18s }
 .play.deal .fan .slot:nth-child(1) { --d: .34s } .play.deal .fan .slot:nth-child(2) { --d: .43s } .play.deal .fan .slot:nth-child(3) { --d: .52s }
@@ -384,9 +385,9 @@ button.env:hover { transform: translateY(-3px) rotate(-.4deg) }
 .env-top { display: flex; align-items: flex-start; gap: 8px; min-height: 52px }
 .env-id { font: 900 26px/1 var(--f-body); letter-spacing: -.03em }
 .env-kind { font: 800 9px/1.15 var(--f-body); letter-spacing: .12em; text-transform: uppercase; opacity: .55; margin-top: 3px }
-.clasp { position: absolute !important; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, var(--red-lo)); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
-.clasp::after { content: "OP"; position: absolute; inset: 0; display: grid; place-items: center; font: 900 11px/1 var(--f-body); color: rgba(255,255,255,.75); letter-spacing: -.04em }
-.env.approved .clasp, .env.audited .clasp { background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, var(--red-lo)); clip-path: polygon(0 0, 46% 0, 54% 40%, 44% 60%, 52% 100%, 0 100%); transform: translateX(-3px) rotate(-8deg) }
+.clasp { position: absolute !important; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
+.clasp::after { content: var(--mono); position: absolute; inset: 0; display: grid; place-items: center; font: 900 11px/1 var(--f-body); color: var(--brand-ink); opacity: .8; letter-spacing: -.04em }
+.env.approved .clasp, .env.audited .clasp { background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); clip-path: polygon(0 0, 46% 0, 54% 40%, 44% 60%, 52% 100%, 0 100%); transform: translateX(-3px) rotate(-8deg) }
 .env-subj { font: 800 15px/1.2 var(--f-body); letter-spacing: -.015em; min-height: 36px; overflow-wrap: anywhere; margin-top: 30px }
 .env-route { display: grid; gap: 4px; font: 600 11px/1.2 var(--f-body) }
 .env-route div { display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 6px; border-bottom: 1px solid rgba(0,0,0,.35); padding-bottom: 3px }
@@ -400,7 +401,7 @@ button.env:hover { transform: translateY(-3px) rotate(-.4deg) }
 .env-card b { font: 900 20px/1 var(--f-body); letter-spacing: .04em }
 .env-card b.gold { color: var(--sunset) } .env-card b.zero { color: var(--ink) }
 .env-card .w { font: 700 9.5px/1.1 var(--f-body); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
-.env-card.hidden { background: var(--red); box-shadow: inset 0 0 0 2px #FBF6EA, 0 1px 0 rgba(0,0,0,.15); color: rgba(255,255,255,.85) }
+.env-card.hidden { background: var(--brand); box-shadow: inset 0 0 0 2px #FBF6EA, 0 1px 0 rgba(0,0,0,.15); color: var(--brand-ink) }
 .env-card.hidden .w { color: rgba(255,255,255,.8) }
 .env-card.hidden b { color: #fff; opacity: .5 }
 .env-tags { display: flex; gap: 5px; flex-wrap: wrap }
@@ -413,7 +414,7 @@ button.env:hover { transform: translateY(-3px) rotate(-.4deg) }
 @media (max-width: 720px) { .placeholder { min-height: 64px } .placeholder.sealed { min-height: 112px; padding-top: 70px } .stamp-btn { font-size: 10px; letter-spacing: .02em } }
 .placeholder.sealed { border: 0; background: var(--env-manila); color: var(--ink); box-shadow: var(--lift); position: relative; overflow: hidden }
 .placeholder.sealed::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 74px; background: rgba(0,0,0,.07); clip-path: polygon(0 0, 100% 0, 50% 100%) }
-.placeholder.sealed::after { content: "OP"; position: absolute; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, var(--red-lo)); display: grid; place-items: center; font: 900 11px/1 var(--f-body); color: rgba(255,255,255,.75); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
+.placeholder.sealed::after { content: var(--mono); position: absolute; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); display: grid; place-items: center; font: 900 11px/1 var(--f-body); color: var(--brand-ink); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
 
 /* ---------- paper on the table: bulletin board, ledger tape, staff ---------- */
 .feed { display: grid; background: var(--stock); color: var(--ink); border-radius: 4px; box-shadow: var(--lift); position: relative }
@@ -555,7 +556,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .mini .peek { position: absolute; left: 50%; top: -24px; display: flex; transform: translateX(-50%); z-index: 0 }
 .mini .peek b, .mini .peek i { width: 28px; height: 40px; margin: 0 -3px; border-radius: 3px; display: grid; place-items: start center; padding-top: 3px; font: 900 13px/1 var(--f-body); font-style: normal; background: var(--stock); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.4), inset 0 0 0 1px rgba(0,0,0,.08); letter-spacing: -.04em }
 .mini .peek > :nth-child(1) { transform: rotate(-9deg) } .mini .peek > :nth-child(3) { transform: rotate(9deg) } .mini .peek > :nth-child(2) { transform: translateY(-3px) }
-.mini .peek i { background: var(--red); color: rgba(255,255,255,.75); font-size: 7px; padding-top: 5px }
+.mini .peek i { background: var(--brand); color: var(--brand-ink); font-size: 7px; padding-top: 5px }
 .mini .peek .pos { color: var(--good) } .mini .peek .neg { color: var(--red) } .mini .peek .gold { color: var(--sunset) }
 .mini > .mid, .mini > .ms { position: relative; z-index: 1 }
 .mini .yours { z-index: 2 }
@@ -596,6 +597,8 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .pad canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none }
 .pad #ink { cursor: crosshair }
 .pad.nope { animation: nope .35s ease both }
+.pad { transition: box-shadow .3s }
+.pad.ok { box-shadow: 0 0 0 3px var(--good), var(--lift) }
 .badge-hold { display: grid; padding: 8px 0 4px }
 .badge-hold.reveal .nametag { animation: badge-in .7s var(--bounce) both }
 @keyframes badge-in { from { transform: translateY(-60px) rotate(-14deg) scale(.6); opacity: 0 } }
@@ -607,6 +610,57 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .desk { display: flex; flex-direction: column }
 .desk-body { flex: 1 0 auto; align-content: start }
 @media (max-width: 980px) { .desk { min-height: calc(100dvh - 24px) } }
+</style>
+<style>
+/* employment letter: a typed memo on letterhead with one rubber stamp */
+.memo-sheet { position: relative; display: grid; gap: 9px; background: #F7F1E1; color: var(--ink); padding: 16px 18px 18px; border-radius: 2px; box-shadow: var(--lift); transform: rotate(-.6deg); font: 400 14px/1.35 var(--f-seg);
+  background-image: linear-gradient(transparent 0 calc(100% - 1px), rgba(0,0,0,.04) 0); background-size: 100% 26px }
+.memo-sheet .lh { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 2px solid var(--ink); font-family: var(--f-body) }
+.memo-sheet .logo-mark { width: 30px; height: 30px; font-size: 11px }
+.lh-name { font: 900 15px/1.05 var(--f-body); letter-spacing: -.02em } .lh-name small { display: block; font: 700 9px/1.4 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3) }
+.lh-ref { font: 400 11px/1 var(--f-seg); color: var(--ink-3) }
+.memo-row { display: flex; align-items: center; gap: 10px; min-height: 22px }
+.memo-row span { width: 54px; flex: none; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3) }
+.memo-row b { font-weight: 400 }
+.memo-row .ink-name { height: 26px }
+.memo-stamp { justify-self: center; margin: 14px 0 8px; font: 900 44px/1 var(--f-body); letter-spacing: .02em; text-transform: uppercase; padding: 8px 16px 6px; border: 5px solid currentColor; border-radius: 6px;
+  box-shadow: inset 0 0 0 3px #F7F1E1, inset 0 0 0 5px currentColor; transform: rotate(-8deg); mix-blend-mode: multiply; opacity: .9;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.5 1.75'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.5 1.75'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: thump .45s cubic-bezier(.2,.9,.3,1.2) .5s both }
+.memo-stamp.loyal { color: var(--good) } .memo-stamp.sab { color: var(--red) }
+@keyframes thump { from { transform: rotate(-8deg) scale(2.2); opacity: 0 } 70% { transform: rotate(-8deg) scale(.96); opacity: .95 } to { transform: rotate(-8deg) scale(1); opacity: .9 } }
+.memo-spec { justify-self: center; font: 900 13px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: #2C46B8; border: 2px solid currentColor; border-radius: 3px; padding: 5px 8px 4px; transform: rotate(3deg); text-align: center; mix-blend-mode: multiply }
+.memo-spec small { display: block; font: 400 10px/1.3 var(--f-seg); letter-spacing: 0; text-transform: none; margin-top: 3px }
+.memo-fine { font-size: 12px; color: var(--ink-2); text-align: center }
+.memo-sig { width: 120px; justify-self: end; margin-top: -4px; fill: none; stroke: #2C46B8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: .8 }
+@media (prefers-reduced-motion: reduce) { .memo-stamp { animation: none } }
+</style>
+<style>
+/* brand type: the superlative decides how the company name is set */
+.logo-mark .ico { width: 20px; height: 20px; stroke-width: 2.2 }
+.mast { box-shadow: inset 0 -3px 0 var(--brand) }
+[data-brand-font="round"] .brand-name { font-family: "Nunito", var(--f-body); font-weight: 900; letter-spacing: -.01em }
+[data-brand-font="heavy"] .brand-name { font-style: italic; font-weight: 900; letter-spacing: -.05em }
+[data-brand-font="serif"] .brand-name { font-family: "Fraunces", Georgia, serif; font-weight: 800; letter-spacing: -.02em }
+[data-brand-font="wide"] .brand-name { text-transform: uppercase; font-weight: 800; letter-spacing: .14em; font-size: .78em }
+[data-brand-font="script"] .brand-name { font-family: "Caveat", "Brush Script MT", cursive; font-weight: 700; font-size: 1.3em; letter-spacing: 0 }
+.lh-name .brand-name { font-size: inherit }
+</style>
+<style>
+/* suits are colours, not symbols: Action cobalt, Target mustard, Modifier plum (red and green stay for profit) */
+:root { --suit-0: #2C46B8; --suit-1: #C98A10; --suit-2: #7A4A8C }
+.s-0 { --suit: var(--suit-0) } .s-1 { --suit: var(--suit-1) } .s-2 { --suit: var(--suit-2) }
+.card .hd { margin: -8px -8px 0; padding: 6px 8px 5px; background: var(--suit); color: #fff; border-radius: 7px 7px 0 0; box-shadow: inset 0 -2px 0 rgba(0,0,0,.15) }
+.play .card .hd { margin: -7px -7px 0; padding: 6px 7px 5px }
+.card .hd .sp { display: none }
+.card .word { border-top-color: var(--suit) }
+.env-card { box-shadow: inset 0 3px 0 var(--suit), 0 1px 0 rgba(0,0,0,.15); padding-top: 7px }
+.env-card.hidden { box-shadow: inset 0 0 0 2px #FBF6EA, inset 0 5px 0 var(--suit), 0 1px 0 rgba(0,0,0,.15) }
+/* effect tape: two chips in the colours of the cards it rewrites */
+.dymo .m0, .dymo .m1 { width: 11px; height: 14px; border-radius: 2px; clip-path: none; box-shadow: 0 0 0 1.5px rgba(255,255,255,.85) }
+.dymo .m0 { background: var(--suit-0) } .dymo .m1 { background: var(--suit-1); margin-left: 2px }
+.mini .peek > * { box-shadow: inset 0 3px 0 var(--suit, transparent), 0 1px 2px rgba(0,0,0,.4) }
 </style>
 <div id="app"></div>
 <script>
@@ -1074,7 +1128,7 @@ const OP = (() => {
   const $app = document.getElementById('app');
   const ME = 0;
   let S = null, draft = null, err = '', toastT = null;
-  let setup = { players: 4, loyalTier: 'smart', sabTier: 'smart', easy: false, spectate: false, seed: '' };
+  let setup = { players: 4, loyalTier: 'smart', sabTier: 'smart', easy: false, spectate: false, seed: '', brand: window.__opBrand || 'op' };
   const ui = { debug: false, sel: null, deal: false, land: null, printed: 0, stamped: '', lastKey: null, shown: null, tick: null };
   try { ui.debug = localStorage.getItem('op-debug') === '1'; } catch (e) {}
 
@@ -1089,6 +1143,27 @@ const OP = (() => {
   const nm = i => (i === 'table' ? 'The table' : S.P[i].name);
   const mine = () => S && !S.spectate;
   const me = () => S.P[ME];
+  // the company brand lives on objects only: logo, wax seals, card backs, letterhead. Never on card faces, never red or green
+  // (Only Profit itself is the placeholder house brand)
+  const BRANDS = [
+    { id: 'op', name: 'Only Profit', suffix: 'Inc.', mono: 'OP', color: '#D9261C', hi: '#EF4A37', lo: '#8E160F', ink: '#fff', font: 'house' },
+    { id: 'granny', name: 'Family Granny Dating', suffix: 'Pty Ltd', mono: 'FG', color: '#9B7BB8', hi: '#BBA0D4', lo: '#5E4478', ink: '#fff', font: 'round',
+      icon: '<circle cx="7" cy="13" r="3.5"/><circle cx="17" cy="13" r="3.5"/><path d="M10.5 13h3M3.5 12 2.5 9M20.5 12l1-3"/>' },
+    { id: 'clown', name: 'Ultra Clown Childcare', suffix: '& Co.', mono: 'UC', color: '#E8B81E', hi: '#F7D560', lo: '#9A7406', ink: '#1a1a1a', font: 'heavy',
+      icon: '<circle cx="12" cy="13" r="6.5"/><circle cx="9.8" cy="10.6" r="1.6"/>' },
+    { id: 'widow', name: 'Eternal Widow', suffix: 'Holdings', mono: 'EW', color: '#4A3E60', hi: '#6E5F8A', lo: '#211A2D', ink: '#fff', font: 'serif',
+      icon: '<path d="M12 3c-5 0-7 5-7 9v8l3-2 2 2 2-2 2 2 2-2 3 2v-8c0-4-2-9-7-9z"/>' },
+    { id: 'kidney', name: 'Executive Kidney Destruction', suffix: 'Group', mono: 'EK', color: '#2F5D8A', hi: '#4F7FB0', lo: '#18344F', ink: '#fff', font: 'wide',
+      icon: '<path d="M15 4c4 0 6 4 5 9s-5 8-9 7-6-4-3-6 3-4 1-6 1-4 6-4z"/>' },
+    { id: 'stepdad', name: 'Compassionate Stepdad Childcare', suffix: 'Ltd', mono: 'CS', color: '#C2793A', hi: '#DC9C63', lo: '#7A4519', ink: '#fff', font: 'script',
+      icon: '<path d="M12 12c-2-3-6-3-8 0 1 2 4 3 8 0 4 3 7 2 8 0-2-3-6-3-8 0z"/>' }];
+  const brand = () => BRANDS.find(b => b.id === setup.brand) || BRANDS[0];
+  const brandMark = () => { const b = brand(); return b.icon ? `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${b.icon}</svg>` : b.mono; };
+  function applyBrand() {
+    const b = brand(), r = document.documentElement;
+    r.style.setProperty('--brand', b.color); r.style.setProperty('--brand-hi', b.hi); r.style.setProperty('--brand-lo', b.lo); r.style.setProperty('--brand-ink', b.ink);
+    r.style.setProperty('--mono', `"${b.mono}"`); r.dataset.brandFont = b.font;
+  }
   // envelopes are told apart by an office object, not a letter; same icon on the TV and the phone
   const ICONS = [
     '<path d="M5 8h11v7a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2M8.5 3.5v2M12 3.5v2"/>',
@@ -1150,7 +1225,7 @@ const OP = (() => {
     const stats = S ? `<span class="tab"><b>Q${Math.max(1, S.r)}</b><span>${PHASE[S.phase]}</span></span>
       <div class="stat"><span class="label">CEO</span><b>${S.r ? esc(nm(S.ceo)) : '—'}</b></div>${meter()}` : '';
     return `<header class="mast"><div class="wrap">
-      <div class="logo"><span class="logo-mark" aria-hidden="true">OP</span><span class="logo-type">Only Profit<small>Inc. · Playtest build 0.2</small></span></div>
+      <div class="logo"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="logo-type"><span class="brand-name">${esc(brand().name)}</span><small>${esc(brand().suffix)} · Playtest build 0.3</small></span></div>
       <div class="mast-stats">${stats}<div class="tools">
         <button class="chip-btn" data-a="debug" aria-pressed="${ui.debug}" title="Show hidden roles, envelope contents and bot reasoning">Observer</button>
         ${S ? '<button class="chip-btn" data-a="quit">New game</button>' : ''}</div></div></div></header>`;
@@ -1172,9 +1247,9 @@ const OP = (() => {
     const vis = su => showAll || (isCEO() && e.revealed.includes(su));
     const anyVis = [0, 1, 2].some(vis);
     const cards = anyVis ? `<div class="env-cards">${e.cards.map((c, su) => {
-      if (!vis(su)) return `<div class="env-card hidden"><b>OP</b><span class="w">${OP.SUITS[su]}</span></div>`;
+      if (!vis(su)) return `<div class="env-card hidden"><b>${brand().mono}</b><span class="w">${OP.SUITS[su]}</span></div>`;
       const v = e.resolved ? e.resolved[su] : c.v;
-      return `<div class="env-card" title="${esc(c.w)}: ${fmt(v)}"><b class="${tone(v)}">${GLYPH[v]}${e.resolved && c.v === 'V' ? '*' : ''}${c.fx ? `<i class="eff fx-${c.fx}">${FXSYM[c.fx]}</i>` : ''}</b><span class="w">${esc(c.w)}</span></div>`;
+      return `<div class="env-card s-${su}" title="${esc(c.w)}: ${fmt(v)}"><b class="${tone(v)}">${GLYPH[v]}${e.resolved && c.v === 'V' ? '*' : ''}${c.fx ? `<i class="eff fx-${c.fx}">${FXSYM[c.fx]}</i>` : ''}</b><span class="w">${esc(c.w)}</span></div>`;
     }).join('')}</div>` : '';
     const who = authorVisible(e) ? (e.autopilot ? 'Autopilot' : (mine() && e.author === ME ? 'You' : nm(e.author))) : null;
     const dept = (ui.debug || e.approved || (mine() && e.author === ME)) ? OP.DEPTS[e.dept] : null;
@@ -1385,7 +1460,7 @@ const OP = (() => {
   // pick-one grids: envelopes as small envelopes, people as name tags
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
-      const peek = e.audited || (isCEO() && e.revealed.length) ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="${tone(c.v)}">${GLYPH[c.v]}</b>` : '<i>OP</i>').join('')}</span>` : '';
+      const peek = e.audited || (isCEO() && e.revealed.length) ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brand().mono}</i>`).join('')}</span>` : '';
       return `<button class="mini c-${e.style.color} t-${e.style.trim}" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="Envelope ${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
         ${peek}<span class="mid">${icon(e.id)}</span>${stampMark(e.stamp)}<span class="ms">${esc(e.subject)}</span>${mine() && e.author === ME ? '<i class="yours">You</i>' : ''}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
@@ -1422,12 +1497,18 @@ const OP = (() => {
     if (S.spectate) return deskSpectate();
     const p = me(), ph = S.phase;
     if (ph === 'brief') {
-      const body = `${ui.badge ? `<div class="badge-hold">${badgeHTML()}</div>` : ''}<div class="sheet letter"><span class="label">Employment letter</span>
-        <div>Dear colleague, the company must reach <b>+${S.target} profit</b> in five quarters. Your allegiance is:</div>
-        <div class="role ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Saboteur' : 'Loyal'}</div>
-        <div>${p.sab ? `Make sure it finishes below +${S.target}. Quietly.` : `There may be ${S.n >= 6 ? 'one or two saboteurs' : 'a saboteur'}, or nobody at all.`}</div>
-        ${p.spec ? `<div>You are also the <b>${p.spec}</b>. ${p.spec === 'Auditor' ? 'You see who wrote every envelope.' : 'You choose next quarter’s envelope.'}</div>` : ''}
-        <div class="sig">Warm regards,<br>People &amp; Culture</div></div>`;
+      // a typed memo on letterhead; the only thing that matters is the rubber stamp
+      const fine = p.sab ? 'Make sure it misses. Quietly.' : S.n >= 6 ? 'Up to two saboteurs. Possibly none.' : 'Possibly a saboteur. Possibly not.';
+      const body = `<div class="memo-sheet">
+        <div class="lh"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="lh-name"><span class="brand-name">${esc(brand().name)}</span> ${esc(brand().suffix)}<small>People &amp; Culture</small></span><span class="lh-ref">Q0 / HR / ${String(S.seed % 1000).padStart(3, '0')}</span></div>
+        <div class="memo-row"><span>To</span>${ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : '<b>You</b>'}</div>
+        <div class="memo-row"><span>Re</span><b>Your allegiance</b></div>
+        <div class="memo-row"><span>Target</span><b>+${S.target}</b> by Q5</div>
+        <div class="memo-stamp ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Saboteur' : 'Loyal'}</div>
+        ${p.spec ? `<div class="memo-spec">${p.spec}<small>${p.spec === 'Auditor' ? 'you see who wrote every envelope' : 'you choose next quarter’s envelope'}</small></div>` : ''}
+        <div class="memo-fine">${fine}</div>
+        <svg class="memo-sig" viewBox="0 0 160 40" aria-hidden="true"><path d="M4 30c10-18 18-24 22-16s-8 18 2 12 14-22 20-16-6 20 4 14 10-14 16-10 2 12 10 8 12-10 20-8 6 8 14 4 14-6 20-4"/></svg>
+      </div>`;
       return deskWrap('Strictly confidential', body, { foot: key('begin', 'Start Q1') });
     }
     if (ph === 'work' && draft) return deskWork();
@@ -1458,7 +1539,7 @@ const OP = (() => {
   // ---------- clocking in: type a name, trace it one letter at a time, get a name badge ----------
   // A letter passes when the ink covers at least half of it and no more than 30% of the ink spills outside.
   // Each letter has a stroke budget; run out without passing and that letter starts again.
-  const TRACE = { size: 520, brush: 58, cover: .5, spill: .3 };
+  const TRACE = { size: 520, brush: 58, cover: .5, spill: .3, part: .1, partCover: .4, dwell: 1800 };
   const maxStrokes = ch => ('IJLOCSUVZ017'.includes(ch) ? 3 : 'MWEKBRQ#'.includes(ch) ? 5 : 4);
   let naming = null;
   const nameLetters = t => t.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
@@ -1490,38 +1571,54 @@ const OP = (() => {
     gx.textAlign = 'center'; gx.textBaseline = 'alphabetic'; gx.fillStyle = 'rgba(20,20,20,.13)';
     const m = gx.measureText(ch), h = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
     gx.fillText(ch, Z / 2, Z / 2 + h / 2 - m.actualBoundingBoxDescent);
+    const mask = gx.getImageData(0, 0, Z, Z).data;
     gx.setLineDash([10, 12]); gx.lineWidth = 3; gx.strokeStyle = 'rgba(20,20,20,.28)';
     gx.strokeText(ch, Z / 2, Z / 2 + h / 2 - m.actualBoundingBoxDescent);
-    const mask = gx.getImageData(0, 0, Z, Z).data;
+    // checkpoints: the letter's box is cut into a 3×3 grid, and every cell with a real part of the letter in it
+    // (the E's middle bar, the ends of its top and bottom bands) has to be inked on its own
+    let bx0 = Z, by0 = Z, bx1 = 0, by1 = 0;
+    for (let y = 0; y < Z; y += 2) for (let x = 0; x < Z; x += 2) if (mask[(y * Z + x) * 4 + 3] > 20) { bx0 = Math.min(bx0, x); bx1 = Math.max(bx1, x); by0 = Math.min(by0, y); by1 = Math.max(by1, y); }
+    const cell = (x, y) => Math.min(2, Math.floor((x - bx0) / ((bx1 - bx0 + 2) / 3))) * 3 + Math.min(2, Math.floor((y - by0) / ((by1 - by0 + 2) / 3)));
     const ix = c.getContext('2d');
     ix.lineCap = ix.lineJoin = 'round'; ix.lineWidth = TRACE.brush; ix.strokeStyle = '#161A2E';
     let down = null;
+    const pad = document.getElementById('pad');
     const at = ev => { const r = c.getBoundingClientRect(); return [(ev.clientX - r.left) * Z / r.width, (ev.clientY - r.top) * Z / r.height]; };
-    c.onpointerdown = ev => { ev.preventDefault(); c.setPointerCapture(ev.pointerId); down = at(ev); ix.beginPath(); ix.moveTo(...down); ix.lineTo(down[0] + .1, down[1]); ix.stroke(); };
+    c.onpointerdown = ev => {
+      ev.preventDefault(); c.setPointerCapture(ev.pointerId);
+      clearTimeout(n.wait); pad.classList.remove('ok');
+      down = at(ev); ix.beginPath(); ix.moveTo(...down); ix.lineTo(down[0] + .1, down[1]); ix.stroke();
+    };
     c.onpointermove = ev => { if (!down) return; const p = at(ev); ix.beginPath(); ix.moveTo(...down); ix.lineTo(...p); ix.stroke(); down = p; };
     c.onpointerup = c.onpointercancel = () => {
       if (!down) return; down = null; n.strokes++;
       const ink = ix.getImageData(0, 0, Z, Z).data;
       let L = 0, cov = 0, inkN = 0, out = 0, x0 = Z, y0 = Z, x1 = 0, y1 = 0;
+      const cl = new Array(9).fill(0), cc = new Array(9).fill(0);
       for (let y = 0; y < Z; y += 2) for (let x = 0; x < Z; x += 2) {
         const k = (y * Z + x) * 4, gi = mask[k + 3] > 20, ii = ink[k + 3] > 60;
-        if (gi) L++;
+        if (gi) { L++; const q = cell(x, y); cl[q]++; if (ii) cc[q]++; }
         if (ii) { inkN++; if (gi) cov++; else out++; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
       }
-      const pass = L && cov / L >= TRACE.cover && out / Math.max(1, inkN) <= TRACE.spill;
+      const area = ((bx1 - bx0) / 3) * ((by1 - by0) / 3) / 4;
+      const parts = cl.every((v, q) => v < area * TRACE.part || cc[q] / v >= TRACE.partCover);
+      const pass = L && parts && cov / L >= TRACE.cover && out / Math.max(1, inkN) <= TRACE.spill;
       if (pass) {
-        const crop = document.createElement('canvas'); crop.width = x1 - x0 + 2; crop.height = Z;
-        crop.getContext('2d').drawImage(c, x0, 0, crop.width, Z, 0, 0, crop.width, Z);
-        n.inks.push(crop); n.i++; n.strokes = 0;
-        if (n.i >= n.letters.length) { composeBadge(); n.phase = 'badge'; }
-        render();
+        // looks right: wait for the pen to stay lifted before moving on, in case they're still going
+        pad.classList.add('ok');
+        n.wait = setTimeout(() => {
+          const crop = document.createElement('canvas'); crop.width = x1 - x0 + 2; crop.height = Z;
+          crop.getContext('2d').drawImage(c, x0, 0, crop.width, Z, 0, 0, crop.width, Z);
+          n.inks.push(crop); n.i++; n.strokes = 0;
+          if (n.i >= n.letters.length) { composeBadge(); n.phase = 'badge'; }
+          render();
+        }, TRACE.dwell);
       } else if (n.strokes >= maxStrokes(ch)) {
-        const pad = document.getElementById('pad'); pad.classList.remove('nope'); void pad.offsetWidth; pad.classList.add('nope');
+        pad.classList.remove('nope'); void pad.offsetWidth; pad.classList.add('nope');
         toast('Inside the lines, please.');
         setTimeout(() => { n.strokes = 0; render(); }, 450);
-      } else {
-        const nb = document.querySelectorAll('.nibs i:not(.used)'); if (nb.length) nb[nb.length - 1].classList.add('used');
       }
+      const nb = document.querySelectorAll('.nibs i:not(.used)'); if (nb.length) nb[nb.length - 1].classList.add('used');
     };
   }
   // the badge shows only the ink, letter by letter, in a row: never the typed text
@@ -1551,6 +1648,7 @@ const OP = (() => {
         <div class="field"><span class="label">Your seat</span>${seg('spectate', [[false, 'Play'], [true, 'Watch the bots']])}</div>
         <div class="field"><span class="label">Loyal bots</span>${seg('loyalTier', [['smart', 'Smart'], ['basic', 'Basic'], ['naive', 'Gullible']])}</div>
         <div class="field"><span class="label">Saboteur bots</span>${seg('sabTier', [['smart', 'Smart'], ['patient', 'Patient'], ['blatant', 'Blatant']])}</div>
+        <div class="field"><span class="label">Company</span>${seg('brand', BRANDS.map(b => [b.id, b.name]))}</div>
         <div class="field"><span class="label">Target</span>${seg('easy', [[false, 'Standard'], [true, 'Easy mode (−3)']])}</div>
         <div class="field"><label class="label" for="seed">Seed (optional, to replay a deal)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}" style="max-width:200px"></div>
         <details class="rules"><summary>The quarter, in brief</summary><ol>
@@ -1565,6 +1663,7 @@ const OP = (() => {
 
   // ---------- render ----------
   function render() {
+    applyBrand();
     document.documentElement.dataset.phase = S ? S.phase : 'setup';
     if (!S && naming) { $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${namingBoard()}</main>${deskNaming()}</div></div>`; if (naming.phase === 'trace') mountTrace(); return; }
     if (!S) { $app.innerHTML = mast() + setupHTML(); return; }
@@ -1609,8 +1708,8 @@ const OP = (() => {
       case 'again': startGame('again'); break;
       case 'name-go': { const l = nameLetters(naming.name); if (!l) break; Object.assign(naming, { phase: 'trace', letters: l, i: 0, strokes: 0, inks: [] }); render(); break; }
       case 'name-skip': naming = null; ui.badge = null; startGame('start'); break;
-      case 'name-back': naming.phase = 'type'; render(); break;
-      case 'name-redo': naming.strokes = 0; render(); break;
+      case 'name-back': clearTimeout(naming.wait); naming.phase = 'type'; render(); break;
+      case 'name-redo': clearTimeout(naming.wait); naming.strokes = 0; render(); break;
       case 'begin': dispatch({ type: 'begin' }); break;
       case 'advance': dispatch({ type: 'advance' }); break;
       case 'swap': { const su = +d.su; draft.swaps = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su); render(); break; }
@@ -1709,6 +1808,6 @@ const OP = (() => {
   if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => ({ S, draft, setup, debug: ui.debug }));
   const start = data => { if (data && data.S) { S = data.S; draft = data.draft; setup = data.setup || setup; } render(); };
   if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(start); else start((window.claude && window.claude.hot && window.claude.hot.data) || {});
-  window.__op = { get S() { return S; }, dispatch };
+  window.__op = { get S() { return S; }, dispatch, brand: id => { setup.brand = id; render(); }, BRANDS };
 })();
 </script>

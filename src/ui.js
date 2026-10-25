@@ -3,7 +3,7 @@
   const $app = document.getElementById('app');
   const ME = 0;
   let S = null, draft = null, err = '', toastT = null;
-  let setup = { players: 4, loyalTier: 'smart', sabTier: 'smart', easy: false, spectate: false, seed: '' };
+  let setup = { players: 4, loyalTier: 'smart', sabTier: 'smart', easy: false, spectate: false, seed: '', brand: window.__opBrand || 'op' };
   const ui = { debug: false, sel: null, deal: false, land: null, printed: 0, stamped: '', lastKey: null, shown: null, tick: null };
   try { ui.debug = localStorage.getItem('op-debug') === '1'; } catch (e) {}
 
@@ -18,6 +18,27 @@
   const nm = i => (i === 'table' ? 'The table' : S.P[i].name);
   const mine = () => S && !S.spectate;
   const me = () => S.P[ME];
+  // the company brand lives on objects only: logo, wax seals, card backs, letterhead. Never on card faces, never red or green
+  // (Only Profit itself is the placeholder house brand)
+  const BRANDS = [
+    { id: 'op', name: 'Only Profit', suffix: 'Inc.', mono: 'OP', color: '#D9261C', hi: '#EF4A37', lo: '#8E160F', ink: '#fff', font: 'house' },
+    { id: 'granny', name: 'Family Granny Dating', suffix: 'Pty Ltd', mono: 'FG', color: '#9B7BB8', hi: '#BBA0D4', lo: '#5E4478', ink: '#fff', font: 'round',
+      icon: '<circle cx="7" cy="13" r="3.5"/><circle cx="17" cy="13" r="3.5"/><path d="M10.5 13h3M3.5 12 2.5 9M20.5 12l1-3"/>' },
+    { id: 'clown', name: 'Ultra Clown Childcare', suffix: '& Co.', mono: 'UC', color: '#E8B81E', hi: '#F7D560', lo: '#9A7406', ink: '#1a1a1a', font: 'heavy',
+      icon: '<circle cx="12" cy="13" r="6.5"/><circle cx="9.8" cy="10.6" r="1.6"/>' },
+    { id: 'widow', name: 'Eternal Widow', suffix: 'Holdings', mono: 'EW', color: '#4A3E60', hi: '#6E5F8A', lo: '#211A2D', ink: '#fff', font: 'serif',
+      icon: '<path d="M12 3c-5 0-7 5-7 9v8l3-2 2 2 2-2 2 2 2-2 3 2v-8c0-4-2-9-7-9z"/>' },
+    { id: 'kidney', name: 'Executive Kidney Destruction', suffix: 'Group', mono: 'EK', color: '#2F5D8A', hi: '#4F7FB0', lo: '#18344F', ink: '#fff', font: 'wide',
+      icon: '<path d="M15 4c4 0 6 4 5 9s-5 8-9 7-6-4-3-6 3-4 1-6 1-4 6-4z"/>' },
+    { id: 'stepdad', name: 'Compassionate Stepdad Childcare', suffix: 'Ltd', mono: 'CS', color: '#C2793A', hi: '#DC9C63', lo: '#7A4519', ink: '#fff', font: 'script',
+      icon: '<path d="M12 12c-2-3-6-3-8 0 1 2 4 3 8 0 4 3 7 2 8 0-2-3-6-3-8 0z"/>' }];
+  const brand = () => BRANDS.find(b => b.id === setup.brand) || BRANDS[0];
+  const brandMark = () => { const b = brand(); return b.icon ? `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${b.icon}</svg>` : b.mono; };
+  function applyBrand() {
+    const b = brand(), r = document.documentElement;
+    r.style.setProperty('--brand', b.color); r.style.setProperty('--brand-hi', b.hi); r.style.setProperty('--brand-lo', b.lo); r.style.setProperty('--brand-ink', b.ink);
+    r.style.setProperty('--mono', `"${b.mono}"`); r.dataset.brandFont = b.font;
+  }
   // envelopes are told apart by an office object, not a letter; same icon on the TV and the phone
   const ICONS = [
     '<path d="M5 8h11v7a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2M8.5 3.5v2M12 3.5v2"/>',
@@ -79,7 +100,7 @@
     const stats = S ? `<span class="tab"><b>Q${Math.max(1, S.r)}</b><span>${PHASE[S.phase]}</span></span>
       <div class="stat"><span class="label">CEO</span><b>${S.r ? esc(nm(S.ceo)) : '—'}</b></div>${meter()}` : '';
     return `<header class="mast"><div class="wrap">
-      <div class="logo"><span class="logo-mark" aria-hidden="true">OP</span><span class="logo-type">Only Profit<small>Inc. · Playtest build 0.2</small></span></div>
+      <div class="logo"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="logo-type"><span class="brand-name">${esc(brand().name)}</span><small>${esc(brand().suffix)} · Playtest build 0.3</small></span></div>
       <div class="mast-stats">${stats}<div class="tools">
         <button class="chip-btn" data-a="debug" aria-pressed="${ui.debug}" title="Show hidden roles, envelope contents and bot reasoning">Observer</button>
         ${S ? '<button class="chip-btn" data-a="quit">New game</button>' : ''}</div></div></div></header>`;
@@ -101,9 +122,9 @@
     const vis = su => showAll || (isCEO() && e.revealed.includes(su));
     const anyVis = [0, 1, 2].some(vis);
     const cards = anyVis ? `<div class="env-cards">${e.cards.map((c, su) => {
-      if (!vis(su)) return `<div class="env-card hidden"><b>OP</b><span class="w">${OP.SUITS[su]}</span></div>`;
+      if (!vis(su)) return `<div class="env-card hidden"><b>${brand().mono}</b><span class="w">${OP.SUITS[su]}</span></div>`;
       const v = e.resolved ? e.resolved[su] : c.v;
-      return `<div class="env-card" title="${esc(c.w)}: ${fmt(v)}"><b class="${tone(v)}">${GLYPH[v]}${e.resolved && c.v === 'V' ? '*' : ''}${c.fx ? `<i class="eff fx-${c.fx}">${FXSYM[c.fx]}</i>` : ''}</b><span class="w">${esc(c.w)}</span></div>`;
+      return `<div class="env-card s-${su}" title="${esc(c.w)}: ${fmt(v)}"><b class="${tone(v)}">${GLYPH[v]}${e.resolved && c.v === 'V' ? '*' : ''}${c.fx ? `<i class="eff fx-${c.fx}">${FXSYM[c.fx]}</i>` : ''}</b><span class="w">${esc(c.w)}</span></div>`;
     }).join('')}</div>` : '';
     const who = authorVisible(e) ? (e.autopilot ? 'Autopilot' : (mine() && e.author === ME ? 'You' : nm(e.author))) : null;
     const dept = (ui.debug || e.approved || (mine() && e.author === ME)) ? OP.DEPTS[e.dept] : null;
@@ -314,7 +335,7 @@
   // pick-one grids: envelopes as small envelopes, people as name tags
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
-      const peek = e.audited || (isCEO() && e.revealed.length) ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="${tone(c.v)}">${GLYPH[c.v]}</b>` : '<i>OP</i>').join('')}</span>` : '';
+      const peek = e.audited || (isCEO() && e.revealed.length) ? `<span class="peek">${e.cards.map((c, su) => e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brand().mono}</i>`).join('')}</span>` : '';
       return `<button class="mini c-${e.style.color} t-${e.style.trim}" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="Envelope ${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
         ${peek}<span class="mid">${icon(e.id)}</span>${stampMark(e.stamp)}<span class="ms">${esc(e.subject)}</span>${mine() && e.author === ME ? '<i class="yours">You</i>' : ''}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
@@ -351,12 +372,18 @@
     if (S.spectate) return deskSpectate();
     const p = me(), ph = S.phase;
     if (ph === 'brief') {
-      const body = `${ui.badge ? `<div class="badge-hold">${badgeHTML()}</div>` : ''}<div class="sheet letter"><span class="label">Employment letter</span>
-        <div>Dear colleague, the company must reach <b>+${S.target} profit</b> in five quarters. Your allegiance is:</div>
-        <div class="role ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Saboteur' : 'Loyal'}</div>
-        <div>${p.sab ? `Make sure it finishes below +${S.target}. Quietly.` : `There may be ${S.n >= 6 ? 'one or two saboteurs' : 'a saboteur'}, or nobody at all.`}</div>
-        ${p.spec ? `<div>You are also the <b>${p.spec}</b>. ${p.spec === 'Auditor' ? 'You see who wrote every envelope.' : 'You choose next quarter’s envelope.'}</div>` : ''}
-        <div class="sig">Warm regards,<br>People &amp; Culture</div></div>`;
+      // a typed memo on letterhead; the only thing that matters is the rubber stamp
+      const fine = p.sab ? 'Make sure it misses. Quietly.' : S.n >= 6 ? 'Up to two saboteurs. Possibly none.' : 'Possibly a saboteur. Possibly not.';
+      const body = `<div class="memo-sheet">
+        <div class="lh"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="lh-name"><span class="brand-name">${esc(brand().name)}</span> ${esc(brand().suffix)}<small>People &amp; Culture</small></span><span class="lh-ref">Q0 / HR / ${String(S.seed % 1000).padStart(3, '0')}</span></div>
+        <div class="memo-row"><span>To</span>${ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : '<b>You</b>'}</div>
+        <div class="memo-row"><span>Re</span><b>Your allegiance</b></div>
+        <div class="memo-row"><span>Target</span><b>+${S.target}</b> by Q5</div>
+        <div class="memo-stamp ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Saboteur' : 'Loyal'}</div>
+        ${p.spec ? `<div class="memo-spec">${p.spec}<small>${p.spec === 'Auditor' ? 'you see who wrote every envelope' : 'you choose next quarter’s envelope'}</small></div>` : ''}
+        <div class="memo-fine">${fine}</div>
+        <svg class="memo-sig" viewBox="0 0 160 40" aria-hidden="true"><path d="M4 30c10-18 18-24 22-16s-8 18 2 12 14-22 20-16-6 20 4 14 10-14 16-10 2 12 10 8 12-10 20-8 6 8 14 4 14-6 20-4"/></svg>
+      </div>`;
       return deskWrap('Strictly confidential', body, { foot: key('begin', 'Start Q1') });
     }
     if (ph === 'work' && draft) return deskWork();
@@ -387,7 +414,7 @@
   // ---------- clocking in: type a name, trace it one letter at a time, get a name badge ----------
   // A letter passes when the ink covers at least half of it and no more than 30% of the ink spills outside.
   // Each letter has a stroke budget; run out without passing and that letter starts again.
-  const TRACE = { size: 520, brush: 58, cover: .5, spill: .3 };
+  const TRACE = { size: 520, brush: 58, cover: .5, spill: .3, part: .1, partCover: .4, dwell: 1800 };
   const maxStrokes = ch => ('IJLOCSUVZ017'.includes(ch) ? 3 : 'MWEKBRQ#'.includes(ch) ? 5 : 4);
   let naming = null;
   const nameLetters = t => t.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
@@ -419,38 +446,54 @@
     gx.textAlign = 'center'; gx.textBaseline = 'alphabetic'; gx.fillStyle = 'rgba(20,20,20,.13)';
     const m = gx.measureText(ch), h = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
     gx.fillText(ch, Z / 2, Z / 2 + h / 2 - m.actualBoundingBoxDescent);
+    const mask = gx.getImageData(0, 0, Z, Z).data;
     gx.setLineDash([10, 12]); gx.lineWidth = 3; gx.strokeStyle = 'rgba(20,20,20,.28)';
     gx.strokeText(ch, Z / 2, Z / 2 + h / 2 - m.actualBoundingBoxDescent);
-    const mask = gx.getImageData(0, 0, Z, Z).data;
+    // checkpoints: the letter's box is cut into a 3×3 grid, and every cell with a real part of the letter in it
+    // (the E's middle bar, the ends of its top and bottom bands) has to be inked on its own
+    let bx0 = Z, by0 = Z, bx1 = 0, by1 = 0;
+    for (let y = 0; y < Z; y += 2) for (let x = 0; x < Z; x += 2) if (mask[(y * Z + x) * 4 + 3] > 20) { bx0 = Math.min(bx0, x); bx1 = Math.max(bx1, x); by0 = Math.min(by0, y); by1 = Math.max(by1, y); }
+    const cell = (x, y) => Math.min(2, Math.floor((x - bx0) / ((bx1 - bx0 + 2) / 3))) * 3 + Math.min(2, Math.floor((y - by0) / ((by1 - by0 + 2) / 3)));
     const ix = c.getContext('2d');
     ix.lineCap = ix.lineJoin = 'round'; ix.lineWidth = TRACE.brush; ix.strokeStyle = '#161A2E';
     let down = null;
+    const pad = document.getElementById('pad');
     const at = ev => { const r = c.getBoundingClientRect(); return [(ev.clientX - r.left) * Z / r.width, (ev.clientY - r.top) * Z / r.height]; };
-    c.onpointerdown = ev => { ev.preventDefault(); c.setPointerCapture(ev.pointerId); down = at(ev); ix.beginPath(); ix.moveTo(...down); ix.lineTo(down[0] + .1, down[1]); ix.stroke(); };
+    c.onpointerdown = ev => {
+      ev.preventDefault(); c.setPointerCapture(ev.pointerId);
+      clearTimeout(n.wait); pad.classList.remove('ok');
+      down = at(ev); ix.beginPath(); ix.moveTo(...down); ix.lineTo(down[0] + .1, down[1]); ix.stroke();
+    };
     c.onpointermove = ev => { if (!down) return; const p = at(ev); ix.beginPath(); ix.moveTo(...down); ix.lineTo(...p); ix.stroke(); down = p; };
     c.onpointerup = c.onpointercancel = () => {
       if (!down) return; down = null; n.strokes++;
       const ink = ix.getImageData(0, 0, Z, Z).data;
       let L = 0, cov = 0, inkN = 0, out = 0, x0 = Z, y0 = Z, x1 = 0, y1 = 0;
+      const cl = new Array(9).fill(0), cc = new Array(9).fill(0);
       for (let y = 0; y < Z; y += 2) for (let x = 0; x < Z; x += 2) {
         const k = (y * Z + x) * 4, gi = mask[k + 3] > 20, ii = ink[k + 3] > 60;
-        if (gi) L++;
+        if (gi) { L++; const q = cell(x, y); cl[q]++; if (ii) cc[q]++; }
         if (ii) { inkN++; if (gi) cov++; else out++; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
       }
-      const pass = L && cov / L >= TRACE.cover && out / Math.max(1, inkN) <= TRACE.spill;
+      const area = ((bx1 - bx0) / 3) * ((by1 - by0) / 3) / 4;
+      const parts = cl.every((v, q) => v < area * TRACE.part || cc[q] / v >= TRACE.partCover);
+      const pass = L && parts && cov / L >= TRACE.cover && out / Math.max(1, inkN) <= TRACE.spill;
       if (pass) {
-        const crop = document.createElement('canvas'); crop.width = x1 - x0 + 2; crop.height = Z;
-        crop.getContext('2d').drawImage(c, x0, 0, crop.width, Z, 0, 0, crop.width, Z);
-        n.inks.push(crop); n.i++; n.strokes = 0;
-        if (n.i >= n.letters.length) { composeBadge(); n.phase = 'badge'; }
-        render();
+        // looks right: wait for the pen to stay lifted before moving on, in case they're still going
+        pad.classList.add('ok');
+        n.wait = setTimeout(() => {
+          const crop = document.createElement('canvas'); crop.width = x1 - x0 + 2; crop.height = Z;
+          crop.getContext('2d').drawImage(c, x0, 0, crop.width, Z, 0, 0, crop.width, Z);
+          n.inks.push(crop); n.i++; n.strokes = 0;
+          if (n.i >= n.letters.length) { composeBadge(); n.phase = 'badge'; }
+          render();
+        }, TRACE.dwell);
       } else if (n.strokes >= maxStrokes(ch)) {
-        const pad = document.getElementById('pad'); pad.classList.remove('nope'); void pad.offsetWidth; pad.classList.add('nope');
+        pad.classList.remove('nope'); void pad.offsetWidth; pad.classList.add('nope');
         toast('Inside the lines, please.');
         setTimeout(() => { n.strokes = 0; render(); }, 450);
-      } else {
-        const nb = document.querySelectorAll('.nibs i:not(.used)'); if (nb.length) nb[nb.length - 1].classList.add('used');
       }
+      const nb = document.querySelectorAll('.nibs i:not(.used)'); if (nb.length) nb[nb.length - 1].classList.add('used');
     };
   }
   // the badge shows only the ink, letter by letter, in a row: never the typed text
@@ -480,6 +523,7 @@
         <div class="field"><span class="label">Your seat</span>${seg('spectate', [[false, 'Play'], [true, 'Watch the bots']])}</div>
         <div class="field"><span class="label">Loyal bots</span>${seg('loyalTier', [['smart', 'Smart'], ['basic', 'Basic'], ['naive', 'Gullible']])}</div>
         <div class="field"><span class="label">Saboteur bots</span>${seg('sabTier', [['smart', 'Smart'], ['patient', 'Patient'], ['blatant', 'Blatant']])}</div>
+        <div class="field"><span class="label">Company</span>${seg('brand', BRANDS.map(b => [b.id, b.name]))}</div>
         <div class="field"><span class="label">Target</span>${seg('easy', [[false, 'Standard'], [true, 'Easy mode (−3)']])}</div>
         <div class="field"><label class="label" for="seed">Seed (optional, to replay a deal)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}" style="max-width:200px"></div>
         <details class="rules"><summary>The quarter, in brief</summary><ol>
@@ -494,6 +538,7 @@
 
   // ---------- render ----------
   function render() {
+    applyBrand();
     document.documentElement.dataset.phase = S ? S.phase : 'setup';
     if (!S && naming) { $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${namingBoard()}</main>${deskNaming()}</div></div>`; if (naming.phase === 'trace') mountTrace(); return; }
     if (!S) { $app.innerHTML = mast() + setupHTML(); return; }
@@ -538,8 +583,8 @@
       case 'again': startGame('again'); break;
       case 'name-go': { const l = nameLetters(naming.name); if (!l) break; Object.assign(naming, { phase: 'trace', letters: l, i: 0, strokes: 0, inks: [] }); render(); break; }
       case 'name-skip': naming = null; ui.badge = null; startGame('start'); break;
-      case 'name-back': naming.phase = 'type'; render(); break;
-      case 'name-redo': naming.strokes = 0; render(); break;
+      case 'name-back': clearTimeout(naming.wait); naming.phase = 'type'; render(); break;
+      case 'name-redo': clearTimeout(naming.wait); naming.strokes = 0; render(); break;
       case 'begin': dispatch({ type: 'begin' }); break;
       case 'advance': dispatch({ type: 'advance' }); break;
       case 'swap': { const su = +d.su; draft.swaps = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su); render(); break; }
@@ -638,5 +683,5 @@
   if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => ({ S, draft, setup, debug: ui.debug }));
   const start = data => { if (data && data.S) { S = data.S; draft = data.draft; setup = data.setup || setup; } render(); };
   if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(start); else start((window.claude && window.claude.hot && window.claude.hot.data) || {});
-  window.__op = { get S() { return S; }, dispatch };
+  window.__op = { get S() { return S; }, dispatch, brand: id => { setup.brand = id; render(); }, BRANDS };
 })();

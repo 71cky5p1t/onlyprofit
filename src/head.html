@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=Share+Tech+Mono&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=Share+Tech+Mono&family=Fraunces:opsz,wght@9..144,600..900&family=Nunito:wght@800..900&family=Caveat:wght@700&display=swap">
 <style>
 /* Layout: a green card table (public board, left) beside your desk (right, sticky), which ends in a desk calculator.
    Look: Draft A. Cards and baize from 7, grotesk + pictograms from 2, calculator from 4, stripe wipes from 5. One committed look, no dark variant. */
@@ -23,6 +23,7 @@
   --f-body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
   --f-seg: "Share Tech Mono", ui-monospace, Menlo, monospace;
   --bounce: cubic-bezier(.34, 1.56, .64, 1);
+  --brand: var(--red); --brand-hi: #EF4A37; --brand-lo: var(--red-lo); --brand-ink: #fff; --mono: "OP";
 }
 
 * { box-sizing: border-box }
@@ -43,7 +44,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .mast { background: var(--ink); color: var(--stock); position: relative; z-index: 2 }
 .mast .wrap { display: flex; align-items: center; gap: 18px 22px; padding-block: 10px; flex-wrap: wrap }
 .logo { display: flex; align-items: center; gap: 10px }
-.logo-mark { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, var(--red-lo)); display: grid; place-items: center; color: rgba(255,255,255,.8); font: 900 13px/1 var(--f-body); letter-spacing: -.04em; box-shadow: 0 2px 5px rgba(0,0,0,.5) }
+.logo-mark { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); display: grid; place-items: center; color: var(--brand-ink); opacity: 1; font: 900 13px/1 var(--f-body); letter-spacing: -.04em; box-shadow: 0 2px 5px rgba(0,0,0,.5) }
 .logo-type { font: 900 21px/1 var(--f-body); letter-spacing: -.03em }
 .logo-type small { display: block; font: 600 10.5px/1.3 var(--f-body); letter-spacing: .08em; color: rgba(241,233,212,.5); text-transform: uppercase; margin-top: 3px }
 .tab { display: inline-flex; align-items: stretch; font: 800 13px/1 var(--f-body); border-radius: 2px; overflow: hidden }
@@ -294,9 +295,9 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .shred:disabled { opacity: .45; cursor: not-allowed }
 /* deal-in: face-down cards fly from the deck, land, then flip. Policy slides out of the inbox above, hand from the deck bottom-right */
 .play .card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: 3; opacity: 0; pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, transparent 0 16px, var(--red) 16.5px 19px, transparent 19.5px), repeating-linear-gradient(45deg, rgba(255,255,255,.09) 0 4px, transparent 4px 9px), var(--red);
+  background: radial-gradient(circle at 50% 50%, transparent 0 16px, var(--brand) 16.5px 19px, transparent 19.5px), repeating-linear-gradient(45deg, rgba(255,255,255,.12) 0 4px, transparent 4px 9px), var(--brand);
   box-shadow: inset 0 0 0 4px var(--stock), inset 0 0 0 5px rgba(0,0,0,.2) }
-.play .card::after { content: "OP"; position: absolute; inset: 0; display: grid; place-items: center; z-index: 4; opacity: 0; pointer-events: none; font: 900 15px/1 var(--f-body); letter-spacing: -.04em; color: var(--stock) }
+.play .card::after { content: var(--mono); position: absolute; inset: 0; display: grid; place-items: center; z-index: 4; opacity: 0; pointer-events: none; font: 900 15px/1 var(--f-body); letter-spacing: -.04em; color: var(--brand-ink) }
 .play.deal .slot { --d: 0s }
 .play.deal .policy .slot:nth-child(2) { --d: .09s } .play.deal .policy .slot:nth-child(3) { --d: .18s }
 .play.deal .fan .slot:nth-child(1) { --d: .34s } .play.deal .fan .slot:nth-child(2) { --d: .43s } .play.deal .fan .slot:nth-child(3) { --d: .52s }
@@ -384,9 +385,9 @@ button.env:hover { transform: translateY(-3px) rotate(-.4deg) }
 .env-top { display: flex; align-items: flex-start; gap: 8px; min-height: 52px }
 .env-id { font: 900 26px/1 var(--f-body); letter-spacing: -.03em }
 .env-kind { font: 800 9px/1.15 var(--f-body); letter-spacing: .12em; text-transform: uppercase; opacity: .55; margin-top: 3px }
-.clasp { position: absolute !important; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, var(--red-lo)); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
-.clasp::after { content: "OP"; position: absolute; inset: 0; display: grid; place-items: center; font: 900 11px/1 var(--f-body); color: rgba(255,255,255,.75); letter-spacing: -.04em }
-.env.approved .clasp, .env.audited .clasp { background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, var(--red-lo)); clip-path: polygon(0 0, 46% 0, 54% 40%, 44% 60%, 52% 100%, 0 100%); transform: translateX(-3px) rotate(-8deg) }
+.clasp { position: absolute !important; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
+.clasp::after { content: var(--mono); position: absolute; inset: 0; display: grid; place-items: center; font: 900 11px/1 var(--f-body); color: var(--brand-ink); opacity: .8; letter-spacing: -.04em }
+.env.approved .clasp, .env.audited .clasp { background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); clip-path: polygon(0 0, 46% 0, 54% 40%, 44% 60%, 52% 100%, 0 100%); transform: translateX(-3px) rotate(-8deg) }
 .env-subj { font: 800 15px/1.2 var(--f-body); letter-spacing: -.015em; min-height: 36px; overflow-wrap: anywhere; margin-top: 30px }
 .env-route { display: grid; gap: 4px; font: 600 11px/1.2 var(--f-body) }
 .env-route div { display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 6px; border-bottom: 1px solid rgba(0,0,0,.35); padding-bottom: 3px }
@@ -400,7 +401,7 @@ button.env:hover { transform: translateY(-3px) rotate(-.4deg) }
 .env-card b { font: 900 20px/1 var(--f-body); letter-spacing: .04em }
 .env-card b.gold { color: var(--sunset) } .env-card b.zero { color: var(--ink) }
 .env-card .w { font: 700 9.5px/1.1 var(--f-body); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
-.env-card.hidden { background: var(--red); box-shadow: inset 0 0 0 2px #FBF6EA, 0 1px 0 rgba(0,0,0,.15); color: rgba(255,255,255,.85) }
+.env-card.hidden { background: var(--brand); box-shadow: inset 0 0 0 2px #FBF6EA, 0 1px 0 rgba(0,0,0,.15); color: var(--brand-ink) }
 .env-card.hidden .w { color: rgba(255,255,255,.8) }
 .env-card.hidden b { color: #fff; opacity: .5 }
 .env-tags { display: flex; gap: 5px; flex-wrap: wrap }
@@ -413,7 +414,7 @@ button.env:hover { transform: translateY(-3px) rotate(-.4deg) }
 @media (max-width: 720px) { .placeholder { min-height: 64px } .placeholder.sealed { min-height: 112px; padding-top: 70px } .stamp-btn { font-size: 10px; letter-spacing: .02em } }
 .placeholder.sealed { border: 0; background: var(--env-manila); color: var(--ink); box-shadow: var(--lift); position: relative; overflow: hidden }
 .placeholder.sealed::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 74px; background: rgba(0,0,0,.07); clip-path: polygon(0 0, 100% 0, 50% 100%) }
-.placeholder.sealed::after { content: "OP"; position: absolute; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #EF4A37, var(--red) 45%, var(--red-lo)); display: grid; place-items: center; font: 900 11px/1 var(--f-body); color: rgba(255,255,255,.75); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
+.placeholder.sealed::after { content: var(--mono); position: absolute; left: 50%; top: 52px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); display: grid; place-items: center; font: 900 11px/1 var(--f-body); color: var(--brand-ink); box-shadow: 0 2px 5px rgba(0,0,0,.4) }
 
 /* ---------- paper on the table: bulletin board, ledger tape, staff ---------- */
 .feed { display: grid; background: var(--stock); color: var(--ink); border-radius: 4px; box-shadow: var(--lift); position: relative }
@@ -555,7 +556,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .mini .peek { position: absolute; left: 50%; top: -24px; display: flex; transform: translateX(-50%); z-index: 0 }
 .mini .peek b, .mini .peek i { width: 28px; height: 40px; margin: 0 -3px; border-radius: 3px; display: grid; place-items: start center; padding-top: 3px; font: 900 13px/1 var(--f-body); font-style: normal; background: var(--stock); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.4), inset 0 0 0 1px rgba(0,0,0,.08); letter-spacing: -.04em }
 .mini .peek > :nth-child(1) { transform: rotate(-9deg) } .mini .peek > :nth-child(3) { transform: rotate(9deg) } .mini .peek > :nth-child(2) { transform: translateY(-3px) }
-.mini .peek i { background: var(--red); color: rgba(255,255,255,.75); font-size: 7px; padding-top: 5px }
+.mini .peek i { background: var(--brand); color: var(--brand-ink); font-size: 7px; padding-top: 5px }
 .mini .peek .pos { color: var(--good) } .mini .peek .neg { color: var(--red) } .mini .peek .gold { color: var(--sunset) }
 .mini > .mid, .mini > .ms { position: relative; z-index: 1 }
 .mini .yours { z-index: 2 }
@@ -596,6 +597,8 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .pad canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none }
 .pad #ink { cursor: crosshair }
 .pad.nope { animation: nope .35s ease both }
+.pad { transition: box-shadow .3s }
+.pad.ok { box-shadow: 0 0 0 3px var(--good), var(--lift) }
 .badge-hold { display: grid; padding: 8px 0 4px }
 .badge-hold.reveal .nametag { animation: badge-in .7s var(--bounce) both }
 @keyframes badge-in { from { transform: translateY(-60px) rotate(-14deg) scale(.6); opacity: 0 } }
@@ -607,4 +610,55 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .desk { display: flex; flex-direction: column }
 .desk-body { flex: 1 0 auto; align-content: start }
 @media (max-width: 980px) { .desk { min-height: calc(100dvh - 24px) } }
+</style>
+<style>
+/* employment letter: a typed memo on letterhead with one rubber stamp */
+.memo-sheet { position: relative; display: grid; gap: 9px; background: #F7F1E1; color: var(--ink); padding: 16px 18px 18px; border-radius: 2px; box-shadow: var(--lift); transform: rotate(-.6deg); font: 400 14px/1.35 var(--f-seg);
+  background-image: linear-gradient(transparent 0 calc(100% - 1px), rgba(0,0,0,.04) 0); background-size: 100% 26px }
+.memo-sheet .lh { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 2px solid var(--ink); font-family: var(--f-body) }
+.memo-sheet .logo-mark { width: 30px; height: 30px; font-size: 11px }
+.lh-name { font: 900 15px/1.05 var(--f-body); letter-spacing: -.02em } .lh-name small { display: block; font: 700 9px/1.4 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3) }
+.lh-ref { font: 400 11px/1 var(--f-seg); color: var(--ink-3) }
+.memo-row { display: flex; align-items: center; gap: 10px; min-height: 22px }
+.memo-row span { width: 54px; flex: none; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3) }
+.memo-row b { font-weight: 400 }
+.memo-row .ink-name { height: 26px }
+.memo-stamp { justify-self: center; margin: 14px 0 8px; font: 900 44px/1 var(--f-body); letter-spacing: .02em; text-transform: uppercase; padding: 8px 16px 6px; border: 5px solid currentColor; border-radius: 6px;
+  box-shadow: inset 0 0 0 3px #F7F1E1, inset 0 0 0 5px currentColor; transform: rotate(-8deg); mix-blend-mode: multiply; opacity: .9;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.5 1.75'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.5 1.75'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: thump .45s cubic-bezier(.2,.9,.3,1.2) .5s both }
+.memo-stamp.loyal { color: var(--good) } .memo-stamp.sab { color: var(--red) }
+@keyframes thump { from { transform: rotate(-8deg) scale(2.2); opacity: 0 } 70% { transform: rotate(-8deg) scale(.96); opacity: .95 } to { transform: rotate(-8deg) scale(1); opacity: .9 } }
+.memo-spec { justify-self: center; font: 900 13px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: #2C46B8; border: 2px solid currentColor; border-radius: 3px; padding: 5px 8px 4px; transform: rotate(3deg); text-align: center; mix-blend-mode: multiply }
+.memo-spec small { display: block; font: 400 10px/1.3 var(--f-seg); letter-spacing: 0; text-transform: none; margin-top: 3px }
+.memo-fine { font-size: 12px; color: var(--ink-2); text-align: center }
+.memo-sig { width: 120px; justify-self: end; margin-top: -4px; fill: none; stroke: #2C46B8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: .8 }
+@media (prefers-reduced-motion: reduce) { .memo-stamp { animation: none } }
+</style>
+<style>
+/* brand type: the superlative decides how the company name is set */
+.logo-mark .ico { width: 20px; height: 20px; stroke-width: 2.2 }
+.mast { box-shadow: inset 0 -3px 0 var(--brand) }
+[data-brand-font="round"] .brand-name { font-family: "Nunito", var(--f-body); font-weight: 900; letter-spacing: -.01em }
+[data-brand-font="heavy"] .brand-name { font-style: italic; font-weight: 900; letter-spacing: -.05em }
+[data-brand-font="serif"] .brand-name { font-family: "Fraunces", Georgia, serif; font-weight: 800; letter-spacing: -.02em }
+[data-brand-font="wide"] .brand-name { text-transform: uppercase; font-weight: 800; letter-spacing: .14em; font-size: .78em }
+[data-brand-font="script"] .brand-name { font-family: "Caveat", "Brush Script MT", cursive; font-weight: 700; font-size: 1.3em; letter-spacing: 0 }
+.lh-name .brand-name { font-size: inherit }
+</style>
+<style>
+/* suits are colours, not symbols: Action cobalt, Target mustard, Modifier plum (red and green stay for profit) */
+:root { --suit-0: #2C46B8; --suit-1: #C98A10; --suit-2: #7A4A8C }
+.s-0 { --suit: var(--suit-0) } .s-1 { --suit: var(--suit-1) } .s-2 { --suit: var(--suit-2) }
+.card .hd { margin: -8px -8px 0; padding: 6px 8px 5px; background: var(--suit); color: #fff; border-radius: 7px 7px 0 0; box-shadow: inset 0 -2px 0 rgba(0,0,0,.15) }
+.play .card .hd { margin: -7px -7px 0; padding: 6px 7px 5px }
+.card .hd .sp { display: none }
+.card .word { border-top-color: var(--suit) }
+.env-card { box-shadow: inset 0 3px 0 var(--suit), 0 1px 0 rgba(0,0,0,.15); padding-top: 7px }
+.env-card.hidden { box-shadow: inset 0 0 0 2px #FBF6EA, inset 0 5px 0 var(--suit), 0 1px 0 rgba(0,0,0,.15) }
+/* effect tape: two chips in the colours of the cards it rewrites */
+.dymo .m0, .dymo .m1 { width: 11px; height: 14px; border-radius: 2px; clip-path: none; box-shadow: 0 0 0 1.5px rgba(255,255,255,.85) }
+.dymo .m0 { background: var(--suit-0) } .dymo .m1 { background: var(--suit-1); margin-left: 2px }
+.mini .peek > * { box-shadow: inset 0 3px 0 var(--suit, transparent), 0 1px 2px rgba(0,0,0,.4) }
 </style>
