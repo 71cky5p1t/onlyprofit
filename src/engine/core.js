@@ -45,21 +45,25 @@ const OP = (() => {
   function argmax(xs, key) { let best = null, bk = null; for (const x of xs) { const k = key(x); if (best === null || cmp(k, bk) > 0) { best = x; bk = k; } } return best; }
 
   // ---------- deck ----------
+  // each value slot takes a word of that value: company words first, then the pool
+  function suitDeck(s, su) {
+    const own = lexOf(s)['atm'[su]] || [], pool = WORDS[su], used = new Set(), q = {};
+    const tier = v => pool[v] || pool[v > 0 ? 2 : -2];
+    const next = v => {
+      const o = shuffle(s, own).find(x => x[1] === v && !used.has(x[0]));
+      if (o) return o[0];
+      if (!q[v] || !q[v].length) q[v] = shuffle(s, tier(v)).filter(x => !used.has(x));
+      return q[v].shift() || pickOne(s, tier(v));
+    };
+    return shuffle(s, VALUES.map((v, k) => {
+      const f = su === 2 && FX[FX_SLOTS.indexOf(k)];
+      if (f) return { id: `${su}.${k}`, s: su, v: f[2], w: f[0], fx: f[1] };
+      const w = next(v); used.add(w);
+      return { id: `${su}.${k}`, s: su, v, w };
+    }));
+  }
   function newDeck(s) {
-    const piles = SUITS.map((_, su) => {
-      const L = lexOf(s);
-      if (su !== 2) {
-        const own = su === 1 ? L.t : [], words = shuffle(s, shuffle(s, WORDS[su].concat(WORDS[su])).slice(own.length).concat(own));
-        return shuffle(s, VALUES.map((v, k) => ({ id: `${su}.${k}`, s: su, v, w: words[k] })));
-      }
-      const plain = WORDS[2].filter(w => !FX.some(f => f[0] === w)), words = shuffle(s, shuffle(s, plain.concat(plain, plain)).slice(L.m.length).concat(L.m));
-      let n = 0;
-      return shuffle(s, VALUES.map((v, k) => {
-        const f = FX[FX_SLOTS.indexOf(k)];
-        return f ? { id: `2.${k}`, s: 2, v: f[2], w: f[0], fx: f[1] } : { id: `2.${k}`, s: 2, v, w: words[n++] };
-      }));
-    });
-    return { piles, disc: [[], [], []] };
+    return { piles: SUITS.map((_, su) => suitDeck(s, su)), disc: [[], [], []] };
   }
   function draw(s, su) {
     const d = s.deck;

@@ -17,7 +17,7 @@ No dependencies. The page loads its fonts from Google Fonts (fallbacks offline) 
 
 | Path | What it is |
 | --- | --- |
-| `src/engine/` | Pure engine: `core.js` rules and state, `bots.js` bot players, `content.js` words. No DOM, no `Math.random`, no clock. |
+| `src/engine/` | Pure engine: `core.js` rules and state, `bots.js` bot players, `content.js` words and their values. No DOM, no `Math.random`, no clock. |
 | `src/ui/*.js` | Browser UI, split by screen (audio, cues, core, brand, clip-art, cover pages, desk, clock-in, signing, render, events, drag, annual report). Concatenated in order into one scope. |
 | `src/head.html` | Page title and fonts. |
 | `src/styles/*.css` | Styles, in cascade order (tokens in `01-base.css`). |
@@ -25,6 +25,7 @@ No dependencies. The page loads its fonts from Google Fonts (fallbacks offline) 
 | `assets/audio/` | Music and SFX, with the tools that generate them. |
 | `build.sh` | Builds `dist/only-profit.html`, `dist/viewer.html` and `dist/audio/`. |
 | `sim/fun/` | Balance and fun harness against the live engine; `CHANGELOG.md` logs each rule round. |
+| `tools/sentences.js` | Lists every Action × Target × Modifier sentence per company with its value (`deal=SEED` for one real deck), to audit that monstrous sentences pay and decent ones cost. |
 | `sim/playtest/`, `sim/*.py` | Historical: scripted playtests on the PR #2 engine, and the original Python sims the bots were ported from. Their rules and targets are out of date. |
 | `docs/how-to-play/` | The Staff Induction (how-to-play video): voiceover script, build brief, UI findings. |
 | `test/` | Node scripts: `balance.js` plays bot-only games at every table size, and `human-actions.js` drives the human seat through 900 games. |
