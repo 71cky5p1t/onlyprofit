@@ -57,7 +57,7 @@
   }
   // the music bed sits about 7 dB under the narrator, and comes back when the line ends
   function voDuck(on) {
-    const c = auCtx(); if (c) AU.mus.gain.setTargetAtTime(on ? .22 : .5, c.currentTime, on ? .08 : .3);
+    const c = auCtx(); if (c) AU.mus.gain.setTargetAtTime(on ? .22 : .5, c.currentTime, on ? .08 : .2);
   }
   function setDuration(d) {
     TRAIN.duration = d; const m = document.querySelector('.induction'); if (m) m.style.setProperty('--dur', d + 's');
