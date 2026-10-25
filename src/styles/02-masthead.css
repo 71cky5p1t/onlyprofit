@@ -1,0 +1,39 @@
+/* ---------- masthead: black band, phase tab, profit calculator ---------- */
+.mast { background: var(--ink); color: var(--stock); position: relative; z-index: 2 }
+.mast .wrap { display: flex; align-items: center; gap: 18px 22px; padding-block: 10px; flex-wrap: wrap }
+.logo { display: flex; align-items: center; gap: 10px }
+.logo-mark { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, var(--brand-hi), var(--brand) 45%, var(--brand-lo)); display: grid; place-items: center; color: var(--brand-ink); opacity: 1; font: 900 13px/1 var(--f-body); letter-spacing: -.04em; box-shadow: 0 2px 5px rgba(0,0,0,.5) }
+.logo-type { font: 900 21px/1 var(--f-body); letter-spacing: -.03em }
+.logo-type small { display: block; font: 600 10.5px/1.3 var(--f-body); letter-spacing: .08em; color: rgba(241,233,212,.5); text-transform: uppercase; margin-top: 3px }
+.tab { display: inline-flex; align-items: stretch; font: 800 13px/1 var(--f-body); border-radius: 2px; overflow: hidden }
+.tab b { background: var(--red); color: #fff; padding: 7px 9px; font-weight: 900 }
+.tab span { background: var(--stock); color: var(--ink); padding: 7px 10px; letter-spacing: .01em }
+.mast-stats { display: flex; gap: 18px; align-items: center; margin-left: auto; flex-wrap: wrap }
+.stat { display: grid; gap: 2px }
+.stat .label { color: rgba(241,233,212,.5); font-size: 10px }
+.stat b { font: 800 16px/1.1 var(--f-body) }
+.meter { display: flex; align-items: center; gap: 10px; background: var(--housing); padding: 6px 8px 6px 6px; border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,.07) }
+.meter-lcd { background: var(--lcd); color: var(--lcd-ink); font-family: var(--f-seg); padding: 3px 9px 2px; border-radius: 3px; box-shadow: inset 0 2px 4px rgba(0,0,0,.35); min-width: 132px; display: grid }
+.meter-lcd .ann { font-size: 9.5px; letter-spacing: .12em; display: flex; justify-content: space-between; gap: 8px }
+.meter-lcd .ann .off { opacity: .25 }
+.meter-lcd .v { font-size: 25px; line-height: 1; text-align: right; font-variant-numeric: tabular-nums }
+.meter-lcd .v .ghost { opacity: .13 }
+.meter-lcd .v small { font-size: 13px; opacity: .7 }
+.meter-track { position: relative; width: 92px; height: 32px; display: grid; align-content: center }
+.meter-track .bar { position: relative; height: 8px; background: #1C1D1B; border-radius: 4px; overflow: hidden }
+.meter-fill { position: absolute; top: 0; bottom: 0; background: var(--gold); transition: left .7s ease, width .7s ease }
+.meter-fill.neg { background: var(--red) }
+.meter-zero { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.35) }
+.meter-tick { position: absolute; top: 4px; bottom: 4px; width: 2px; background: var(--stock); border-radius: 1px }
+.meter-track .lbl { display: flex; justify-content: space-between; font: 700 9px/1 var(--f-body); letter-spacing: .08em; color: rgba(241,233,212,.45); margin-top: 5px; text-transform: uppercase }
+.tools { display: flex; gap: 6px }
+.chip-btn { border: 1px solid rgba(241,233,212,.28); background: transparent; color: var(--stock); border-radius: 999px; padding: 6px 12px; font: 700 12px/1 var(--f-body) }
+.chip-btn:hover { border-color: var(--stock) }
+.chip-btn[aria-pressed="true"] { background: var(--gold); color: var(--ink); border-color: var(--gold) }
+
+/* ---------- layout ---------- */
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 410px; gap: 30px; padding-block: 26px 72px; align-items: start }
+.board { display: grid; gap: 30px; min-width: 0 }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--table-rule); margin-bottom: 14px; color: var(--on-table) }
+.section-head .label { color: var(--on-table-2) }
+@media (max-width: 980px) { .layout { grid-template-columns: minmax(0, 1fr) } .desk { position: static; max-height: none; order: -1; width: 100%; max-width: 440px; justify-self: center } }

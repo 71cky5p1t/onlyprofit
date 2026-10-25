@@ -1,0 +1,35 @@
+/* Layout: a green card table (public board, left) beside your desk (right, sticky), which ends in a desk calculator.
+   Look: Draft A. Cards and baize from 7, grotesk + pictograms from 2, calculator from 4, stripe wipes from 5. One committed look, no dark variant. */
+:root {
+  color-scheme: light;
+  --baize: #35574A; --baize-hi: #46705F; --baize-lo: #284338;
+  --stock: #F1E9D4;      /* card stock */
+  --stock-2: #E7DCC0;    /* flap, spares */
+  --stock-3: #D9CCAA;
+  --ink: #141414; --ink-2: #4E4A40; --ink-3: #857D6B;
+  --on-table: #F1E9D4; --on-table-2: rgba(241,233,212,.62); --table-rule: rgba(241,233,212,.22);
+  --red: #D9261C; --red-lo: #8E160F;
+  --good: #2C6A4E;
+  --sunset: #E0732C; --gold: #E9A23B; --rust: #C0472A; --teak: #6E3420;
+  --lcd: #AEBB9E; --lcd-ink: #1E261A; --housing: #2B2C2A; --key: #4A4B47;
+  --env-manila: #E5D3A4; --env-salmon: #EDC6B4; --env-carbon: #C8D3E2; --env-mint: #CEDFCF; --env-gold: #EDD57F;
+  --lift: 0 1px 0 rgba(0,0,0,.18), 0 8px 18px -10px rgba(0,0,0,.6);
+  --f-body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-seg: "Share Tech Mono", ui-monospace, Menlo, monospace;
+  --bounce: cubic-bezier(.34, 1.56, .64, 1);
+  --brand: var(--red); --brand-hi: #EF4A37; --brand-lo: var(--red-lo); --brand-ink: #fff; --mono: "OP";
+}
+
+* { box-sizing: border-box }
+table { color: inherit; font-size: inherit }
+html { background: var(--baize-lo) }
+body { background: radial-gradient(90% 70% at 40% 0%, var(--baize-hi), var(--baize) 45%, var(--baize-lo) 100%) no-repeat, var(--baize-lo); color: var(--on-table); font: 15px/1.5 var(--f-body); -webkit-font-smoothing: antialiased; min-height: 100vh }
+button { font: inherit; color: inherit; cursor: pointer }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px }
+.wrap { max-width: 1260px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.mono, .num { font-family: var(--f-seg); font-variant-numeric: tabular-nums }
+.pos { color: var(--good) } .gold { color: var(--sunset) } .neg { color: var(--red) } .zero { color: var(--ink-3) }
+.label { font: 700 11px/1.2 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2) }
+h1, h2, h3 { text-wrap: balance; margin: 0 }
+h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
+.muted { color: var(--ink-2) }

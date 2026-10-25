@@ -1,0 +1,19 @@
+/* ---------- envelope icons and peeking cards ---------- */
+.ico { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; display: inline-block }
+.env-id .ico { width: 28px; height: 28px; stroke-width: 2.2 }
+.mini .mid .ico { width: 30px; height: 30px; stroke-width: 2.2 }
+.slip .ico, .btn .ico { width: 16px; height: 16px; stroke-width: 2.4 }
+.ico-cell .ico { width: 18px; height: 18px }
+.mini { overflow: visible }
+.mini .peek { position: absolute; left: 50%; top: -24px; display: flex; transform: translateX(-50%); z-index: 0 }
+.mini .peek b, .mini .peek i { width: 28px; height: 40px; margin: 0 -3px; border-radius: 3px; display: grid; place-items: start center; padding-top: 3px; font: 900 13px/1 var(--f-body); font-style: normal; background: var(--stock); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.4), inset 0 0 0 1px rgba(0,0,0,.08); letter-spacing: -.04em }
+.mini .peek > :nth-child(1) { transform: rotate(-9deg) } .mini .peek > :nth-child(3) { transform: rotate(9deg) } .mini .peek > :nth-child(2) { transform: translateY(-3px) }
+.mini .peek i { background: var(--brand); color: var(--brand-ink); font-size: 7px; padding-top: 5px }
+.mini .peek .pos { color: var(--good) } .mini .peek .neg { color: var(--red) } .mini .peek .gold { color: var(--sunset) }
+.mini > .mid, .mini > .ms { position: relative; z-index: 1 }
+.mini .yours { z-index: 2 }
+.mini::after { content: ""; position: absolute; inset: 0; border-radius: 4px; background: var(--c); z-index: 0; background-image: inherit; background-size: inherit; background-repeat: inherit; background-position: inherit }
+.mini.none::after { display: none }
+.mini::before { z-index: 1 }
+.mini.t-confidential::after { box-shadow: inset 0 5px 0 var(--ink) }
+.mini .env-stamp { z-index: 2 }

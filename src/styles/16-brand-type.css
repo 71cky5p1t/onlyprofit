@@ -1,0 +1,9 @@
+/* brand type: the superlative decides how the company name is set */
+.logo-mark .ico { width: 20px; height: 20px; stroke-width: 2.2 }
+.mast { box-shadow: inset 0 -3px 0 var(--brand) }
+[data-brand-font="round"] .brand-name { font-family: "Nunito", var(--f-body); font-weight: 900; letter-spacing: -.01em }
+[data-brand-font="heavy"] .brand-name { font-style: italic; font-weight: 900; letter-spacing: -.05em }
+[data-brand-font="serif"] .brand-name { font-family: "Fraunces", Georgia, serif; font-weight: 800; letter-spacing: -.02em }
+[data-brand-font="wide"] .brand-name { text-transform: uppercase; font-weight: 800; letter-spacing: .14em; font-size: .78em }
+[data-brand-font="script"] .brand-name { font-family: "Caveat", "Brush Script MT", cursive; font-weight: 700; font-size: 1.3em; letter-spacing: 0 }
+.lh-name .brand-name { font-size: inherit }

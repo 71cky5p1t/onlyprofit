@@ -1,0 +1,23 @@
+/* picking an envelope. Phone: the chosen one lifts, the rest fall away, three sealed cards rise out of it */
+.minis.picking .mini:not(.chosen) { animation: miniAway .45s ease both }
+.mini.chosen { z-index: 5; animation: miniLift .55s var(--bounce) both }
+.mini.chosen::before { transform-origin: 50% 0; animation: flapOpen .35s ease .3s both }
+.mini .pull { position: absolute; left: 50%; top: 18%; width: 30px; height: 42px; margin-left: -15px; border-radius: 3px; z-index: -1; pointer-events: none;
+  background: var(--mark) center / 58% no-repeat, var(--brand); box-shadow: inset 0 0 0 2px var(--stock), 0 2px 5px rgba(0,0,0,.45);
+  animation: pullOut .5s var(--bounce) calc(.45s + var(--k) * .1s) both }
+.mini .pull[style*="--k:0"] { --x: -34px; --r: -14deg } .mini .pull[style*="--k:1"] { --x: 0px; --r: 0deg } .mini .pull[style*="--k:2"] { --x: 34px; --r: 14deg }
+@keyframes miniAway { to { transform: translateY(14px) scale(.94); opacity: .2; filter: saturate(.4) } }
+@keyframes miniLift { from { transform: translateY(-5px) rotate(-1.2deg) } to { transform: translateY(-16px) rotate(-2.5deg) scale(1.08) } }
+@keyframes flapOpen { to { transform: scaleY(.12); opacity: .6 } }
+@keyframes pullOut { from { transform: translateY(14px); opacity: 0 } to { transform: translate(var(--x), -62px) rotate(var(--r)); opacity: 1 } }
+/* TV: the nominee is pulled from the pile; the approved one opens and its cards slide out. Both wait for the stripe wipe */
+.env.pick { z-index: 2; animation: envPick .7s var(--bounce) 1.15s both }
+.env.fall { animation: envFall .5s ease 1.1s both }
+.env.pull::before { transform-origin: 50% 0; animation: flapOpen .4s ease 1.15s both }
+.env.pull .env-card { animation: cardOut .5s var(--bounce) both }
+.env.pull .env-card:nth-child(1) { animation-delay: 1.45s } .env.pull .env-card:nth-child(2) { animation-delay: 1.57s } .env.pull .env-card:nth-child(3) { animation-delay: 1.69s }
+.env.pull .big-stamp { animation-delay: 2.1s }
+@keyframes envPick { 0% { transform: none } 45% { transform: translateY(-18px) rotate(-2deg) scale(1.04) } 100% { transform: translateY(-4px) rotate(-.6deg) } }
+@keyframes envFall { from { opacity: 1; filter: none; transform: none } to { transform: translateY(6px) } }
+@keyframes cardOut { from { transform: translateY(-46px) scale(.7) rotate(-6deg); opacity: 0 } to { transform: none; opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .env.pick, .env.fall, .env.pull::before, .env.pull .env-card { animation: none } }
