@@ -790,6 +790,17 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .rp-staff { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center }
 .rp-tag { width: 128px; padding-bottom: 14px } .rp-tag .stk { justify-self: center; margin-top: 6px } .rp-tag .rp-stamp { justify-self: center; margin-top: 4px; font-size: 11px; border-width: 2.5px }
 @media (prefers-reduced-motion: reduce) { .rp-cover .rp-stamp { animation: none } }
+/* ---------- the signature line under every vote ---------- */
+.sign { position: relative; background: var(--stock); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); transform: rotate(-.6deg); touch-action: none }
+.sign::after { content: ""; position: absolute; left: 34px; right: 16px; bottom: 24%; border-bottom: 1.5px solid rgba(20,20,20,.45); pointer-events: none }
+.sign-x { position: absolute; left: 14px; bottom: 20%; font: 800 20px/1 var(--f-body); color: var(--red); pointer-events: none }
+.sign canvas { display: block; width: 100%; aspect-ratio: 600 / 130; cursor: crosshair; touch-action: none }
+.sign.off { opacity: .55 } .sign.off canvas { cursor: not-allowed }
+.sign.nope { animation: nope .35s ease both }
+.sign.ok { box-shadow: 0 0 0 3px var(--good), 0 8px 14px -10px rgba(0,0,0,.6); transition: box-shadow .3s }
+.sign.done { animation: filed .35s ease-in both }
+@keyframes filed { to { transform: translateY(-30px) rotate(-4deg); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .sign.done, .sign.nope { animation: none } }
 </style>
 <div id="app"></div>
 <script>
@@ -2010,20 +2021,20 @@ const OP = (() => {
       const nom = S.envs.find(e => e.id === S.nominee);
       const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}${auditor() && !nom.autopilot ? ` · by <b>${nom.author === ME ? 'you' : esc(nm(nom.author))}</b>` : ''}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom)}</div>
         <div class="bar3 two" role="radiogroup" aria-label="Board vote">${['ratify', 'open'].map(v => `<button class="b-${v}" role="radio" data-a="sel" data-id="${v}" aria-checked="${ui.sel === v}" aria-pressed="${ui.sel === v}"><span>${v === 'ratify' ? 'Ratify' : 'Open it'}</span></button>`).join('')}</div>`;
-      return deskWrap('Board vote', `${leave}${body}`, { foot: key('board', 'Sign', ui.sel === 'ratify' || ui.sel === 'open') });
+      return deskWrap('Board vote', `${leave}${body}${signHTML('board', ui.sel === 'ratify' || ui.sel === 'open')}`);
     }
     if (ph === 'reveal') {
       const list = S.P.filter(q => q.id !== ME && !q.leave);
       const won = S.envs.find(e => e.approved), go = won && ui.lineAnim !== S.r && !still();
       if (go) ui.lineAnim = S.r;
-      return deskWrap('Written Warning', `<div class="slips">${boardSlip()}${resultSlip()}</div>${won ? lineHTML(won, { anim: go }) : ''}${nameTags(list, ui.sel, 'Nobody')}`, { foot: key('warn', 'Vote', ui.sel != null) });
+      return deskWrap('Written Warning', `<div class="slips">${boardSlip()}${resultSlip()}</div>${won ? lineHTML(won, { anim: go }) : ''}${nameTags(list, ui.sel, 'Nobody')}${signHTML('warn', ui.sel != null)}`);
     }
     if (ph === 'review') {
       const w = S.warn;
       return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
-      return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
+      return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${signHTML('whistle', ui.sel != null)}`);
     }
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');
@@ -2128,6 +2139,28 @@ const OP = (() => {
     naming = null;
     S = OP.newGame(Object.assign({}, setup, { seed })); draft = null; err = ''; ui.sel = null; ui.shown = null; ui.lastKey = null; ui.printed = 0; render(); window.scrollTo(0, 0);
   }
+  // ---------- signing a vote: pick one, squiggle on the line, it locks a moment after the pen lifts ----------
+  const SIGN = { w: 600, h: 130, ink: 140, hold: 1000 };
+  const SIGNED = { board: () => ({ type: 'boardVote', vote: ui.sel }), warn: () => ({ type: 'warnVote', target: ui.sel }), whistle: () => ({ type: 'whistleVote', target: ui.sel }) };
+  const signHTML = (kind, ready) => `<div class="sign${ready ? '' : ' off'}" data-sign="${kind}"><span class="sign-x" aria-hidden="true">×</span><canvas width="${SIGN.w}" height="${SIGN.h}" aria-label="${ready ? 'Sign here to lock in your vote' : 'Pick one, then sign here'}"></canvas></div>`;
+  function mountSign() {
+    const box = document.querySelector('.desk [data-sign]'); if (!box) return;
+    const c = box.querySelector('canvas'), x = c.getContext('2d'), kind = box.dataset.sign;
+    x.lineCap = x.lineJoin = 'round'; x.lineWidth = 7; x.strokeStyle = '#161A2E';
+    let down = null, len = 0, wait = null;
+    const at = ev => { const r = c.getBoundingClientRect(); return [(ev.clientX - r.left) * SIGN.w / r.width, (ev.clientY - r.top) * SIGN.h / r.height]; };
+    c.onpointerdown = ev => {
+      if (box.classList.contains('off')) { box.classList.remove('nope'); void box.offsetWidth; box.classList.add('nope'); return; }
+      ev.preventDefault(); c.setPointerCapture(ev.pointerId); clearTimeout(wait); box.classList.remove('ok'); down = at(ev);
+    };
+    c.onpointermove = ev => { if (!down) return; const p = at(ev); x.beginPath(); x.moveTo(...down); x.lineTo(...p); x.stroke(); len += Math.hypot(p[0] - down[0], p[1] - down[1]); down = p; };
+    c.onpointerup = c.onpointercancel = () => {
+      if (!down) return; down = null;
+      if (len < SIGN.ink) return;
+      box.classList.add('ok');
+      wait = setTimeout(() => { box.classList.add('done'); setTimeout(() => dispatch(SIGNED[kind]()), 350); }, SIGN.hold);
+    };
+  }
   // ---------- setup ----------
   function seg(key, opts) { return `<div class="seg">${opts.map(([v, l]) => `<button data-a="set" data-k="${key}" data-v="${v}" aria-pressed="${String(setup[key]) === String(v)}">${l}</button>`).join('')}</div>`; }
   function setupHTML() {
@@ -2163,6 +2196,7 @@ const OP = (() => {
     if (!(S.phase === 'work' && draft)) stopTimer();
     $app.innerHTML = `${mast()}<div class="wrap"><div class="layout"><main class="board">${board}</main>${desk()}</div></div>`;
     syncWheel();
+    mountSign();
     transition();
   }
   // stripe wipe when the phase label changes; the profit calculator counts up to the new total
@@ -2309,7 +2343,7 @@ const OP = (() => {
   $app.addEventListener('scroll', ev => { if (ev.target.dataset && 'wheel' in ev.target.dataset) onWheel(ev.target); }, true);
   const start = data => { if (data && data.S) { S = data.S; draft = data.draft; setup = data.setup || setup; } render(); };
   if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(start); else start((window.claude && window.claude.hot && window.claude.hot.data) || {});
-  window.__op = { get S() { return S; }, dispatch, brand: id => { setup.brand = id; render(); }, cards: m => { setup.cards = m; render(); }, BRANDS, markSVG, markURL,
+  window.__op = { get S() { return S; }, dispatch, sign: () => { const b = document.querySelector('.desk [data-sign]:not(.off)'); if (b) dispatch(SIGNED[b.dataset.sign]()); }, brand: id => { setup.brand = id; render(); }, cards: m => { setup.cards = m; render(); }, BRANDS, markSVG, markURL,
     cardHTML, coverHTML, lineHTML, artSVG, ART, brandMark, look: (b, c) => { setup.brand = b; setup.cards = c; applyBrand(); } };
   // ---------- annual report: the five approved pages, then who was who ----------
   function reportHTML() {

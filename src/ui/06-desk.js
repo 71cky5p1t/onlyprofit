@@ -193,20 +193,20 @@
       const nom = S.envs.find(e => e.id === S.nominee);
       const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}${auditor() && !nom.autopilot ? ` · by <b>${nom.author === ME ? 'you' : esc(nm(nom.author))}</b>` : ''}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom)}</div>
         <div class="bar3 two" role="radiogroup" aria-label="Board vote">${['ratify', 'open'].map(v => `<button class="b-${v}" role="radio" data-a="sel" data-id="${v}" aria-checked="${ui.sel === v}" aria-pressed="${ui.sel === v}"><span>${v === 'ratify' ? 'Ratify' : 'Open it'}</span></button>`).join('')}</div>`;
-      return deskWrap('Board vote', `${leave}${body}`, { foot: key('board', 'Sign', ui.sel === 'ratify' || ui.sel === 'open') });
+      return deskWrap('Board vote', `${leave}${body}${signHTML('board', ui.sel === 'ratify' || ui.sel === 'open')}`);
     }
     if (ph === 'reveal') {
       const list = S.P.filter(q => q.id !== ME && !q.leave);
       const won = S.envs.find(e => e.approved), go = won && ui.lineAnim !== S.r && !still();
       if (go) ui.lineAnim = S.r;
-      return deskWrap('Written Warning', `<div class="slips">${boardSlip()}${resultSlip()}</div>${won ? lineHTML(won, { anim: go }) : ''}${nameTags(list, ui.sel, 'Nobody')}`, { foot: key('warn', 'Vote', ui.sel != null) });
+      return deskWrap('Written Warning', `<div class="slips">${boardSlip()}${resultSlip()}</div>${won ? lineHTML(won, { anim: go }) : ''}${nameTags(list, ui.sel, 'Nobody')}${signHTML('warn', ui.sel != null)}`);
     }
     if (ph === 'review') {
       const w = S.warn;
       return deskWrap('Quarter closed', `<div class="slips">${resultSlip()}${slip(w.target == null ? 'No warning' : `Warning · <b>${esc(nm(w.target))}</b> ${w.passed ? 'passed' : 'failed'}`)}</div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
-      return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}`, { foot: key('whistle', 'Vote', ui.sel != null) });
+      return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${signHTML('whistle', ui.sel != null)}`);
     }
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');

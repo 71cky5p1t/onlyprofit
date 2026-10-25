@@ -1,0 +1,11 @@
+/* ---------- the signature line under every vote ---------- */
+.sign { position: relative; background: var(--stock); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); transform: rotate(-.6deg); touch-action: none }
+.sign::after { content: ""; position: absolute; left: 34px; right: 16px; bottom: 24%; border-bottom: 1.5px solid rgba(20,20,20,.45); pointer-events: none }
+.sign-x { position: absolute; left: 14px; bottom: 20%; font: 800 20px/1 var(--f-body); color: var(--red); pointer-events: none }
+.sign canvas { display: block; width: 100%; aspect-ratio: 600 / 130; cursor: crosshair; touch-action: none }
+.sign.off { opacity: .55 } .sign.off canvas { cursor: not-allowed }
+.sign.nope { animation: nope .35s ease both }
+.sign.ok { box-shadow: 0 0 0 3px var(--good), 0 8px 14px -10px rgba(0,0,0,.6); transition: box-shadow .3s }
+.sign.done { animation: filed .35s ease-in both }
+@keyframes filed { to { transform: translateY(-30px) rotate(-4deg); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .sign.done, .sign.nope { animation: none } }
