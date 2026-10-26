@@ -31,7 +31,7 @@
     let seat = 0;
     const tag = (n, extra, cls = '') => `<div class="i-year ${cls}">${demoTag(n, .02 * seat++, extra, cls !== 'star')}</div>`;
     return `<div class="i-staff year">
-      ${tag('Gary', `<span class="rubber red b thump" ${at(.22)}>Disgruntled</span>`)}
+      ${tag('Gary', `<span class="rubber red b thump" ${at(.22)}>Mole</span>`)}
       ${tag('Denise', `<div class="stickers b slap" ${at(.58)}><span class="stk beige">See me</span></div>`)}
       ${tag('Trevor', `<div class="stickers b slap" ${at(.62)}><span class="stk gold">Great work!</span><span class="stk blue" style="--r:4deg">Team player</span></div><span class="eoty b frame-in" ${at(.76)}><span>Employee of the Year</span></span>`, 'star')}
       ${tag('Moira', `<div class="stickers b slap" ${at(.66)}><span class="stk grey">Noted</span></div>`)}</div>`;

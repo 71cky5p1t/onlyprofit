@@ -7,7 +7,7 @@
         <details class="lobby-options" ${ui.settings ? 'open' : ''}><summary>Company &amp; game settings</summary><div class="options-body"><div class="field"><span class="label">Your seat</span>${seg('spectate', [[false,'Play'],[true,'Watch the bots']])}</div>
           <div class="field"><span class="label">Company</span>${seg('brand', BRANDS.map(b => [b.id,b.name]))}</div>
           <div class="field"><span class="label">Loyal bots</span>${seg('loyalTier', [['smart','Smart'],['basic','Basic'],['naive','Gullible']])}</div>
-          <div class="field"><span class="label">Disgruntled bots</span>${seg('sabTier', [['smart','Smart'],['patient','Patient'],['blatant','Blatant']])}</div>
+          <div class="field"><span class="label">Mole bots</span>${seg('sabTier', [['smart','Smart'],['patient','Patient'],['blatant','Blatant']])}</div>
           <div class="field"><span class="label">Cards</span>${seg('cards', [['paper','Paper'],['colour','Colour']])}</div>
           <div class="field"><span class="label">Target</span>${seg('easy', [[false,'Standard'],[true,'Easy mode (−3)']])}</div>
           <div class="field"><label class="label" for="seed">Replay a deal (optional seed)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}"></div></div></details><p class="lobby-fine">No experience necessary.<br>Accountability negotiable.</p></div></section></main>`;
