@@ -10,7 +10,7 @@
     draft.reveals = next; render();
   }
   function refuse(su) {
-    toast('Not enough overtime.');
+    toast('Your input has been noted.');
     document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
   }
   const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : revealSuit(su));

@@ -8,7 +8,8 @@
   const slip = html => `<span class="slip">${html}</span>`;
   const stampMark = k => `<span class="env-stamp ${k}">${STAMP[k]}</span>`;
   const key = (a, label, on) => `<button class="btn primary wide" data-a="${a}" ${on === false ? 'disabled' : ''}>${label}</button>`;
-  const hrs = n => `<i class="hrs">${n}h</i>`;
+  // a price is empty punch holes; paid ones are punched through
+  const hrs = (n, paid) => `<i class="hrs${paid ? ' paid-h' : ''}" aria-hidden="true">${'<b></b>'.repeat(n)}</i>`;
   function inhSource(inh) {
     if (inh.kind === 'legacy') return 'Legacy';
     if (inh.kind === 'cleanup') return `Leftovers <b>${inh.author === ME ? 'yours' : esc(nm(inh.author))}</b>`;
@@ -56,7 +57,7 @@
     if (draft.page === 2) return deskTemplates(p);
     if (draft.page === 3) return deskTweak(p);
     const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
-    // tokens are overtime hours: chits on the hand, punched chits pinned to the policy cards they bought
+    // tokens are inputs: hole chits on the hand, punched chits pinned to the policy cards they bought
     const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.reveals.includes(su) ? 1 : 0);
     // an effect Modifier rewrites the other two right here, before you commit
     const fx = wr.prop[2].fx, blink = fx && ui.fxw !== wr.prop[2].w;
@@ -65,8 +66,8 @@
       const c0 = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
       const hit = su < 2 && fx && c0.v !== 'V' && after(fx, c0.v) !== c0.v, c = hit ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0;
       const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
-      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
-        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 hour of overtime'}"`));
+      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
+        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 input'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
       const c = wr.aside[su], on = draft.swaps.includes(su);
@@ -74,7 +75,7 @@
       const price = on ? 0 : OP.SWAP_COST[next.length] - OP.SWAP_COST[draft.swaps.length];
       const ok = costWith({ swaps: next }) <= 3;
       return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, on ? '<span class="tag back">↺</span>' : `<span class="tag">${hrs(price)}</span>`,
-        `data-drag="hand" data-su="${su}" role="button" tabindex="0" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${on ? 'Swap back for free' : `Swap in for ${price} hour${price === 1 ? '' : 's'} of overtime`}"`));
+        `data-drag="hand" data-su="${su}" role="button" tabindex="0" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${on ? 'Swap back for free' : `Swap in for ${price} input${price === 1 ? '' : 's'}`}"`));
     }).join('');
     ui.land = null;
     const v = evs(wr.prop), vol = wr.prop.some(c => c.v === 'V');
@@ -83,11 +84,11 @@
     // a fresh quarter waits for the stripe wipe to clear before dealing
     const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
     ui.deal = false;
-    const purse = `<span class="purse" role="img" aria-label="${left} of 3 overtime hours left">${[0, 1, 2].map(k => `<i class="slotbox${k >= left ? ' punched' : ''}">${k + 1}</i>`).join('')}</span>`;
+    const purse = `<span class="purse" role="img" aria-label="${left} of 3 inputs left"><span class="pc-band"><i class="pc-mk"></i><b>Your Input<br>Matters*</b></span><span class="pc-holes">${[0, 1, 2].map(k => `<i class="slotbox${k < 3 - left ? ' punched' : ''}"></i>`).join('')}</span><small>*3 per quarter</small></span>`;
     // one strip of adding-machine tape between the policy and the hand: where it came from, what it's worth, re-deal
     const tray = `<div class="tape"><span class="t-src">${inhSource(inh)}</span>
         <span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
-        <button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 hours of overtime">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="t-cost">${hrs(2)}</span></button></div>`;
+        <button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 inputs">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="t-cost">${hrs(2)}</span></button></div>`;
     const honest = OP.rightStamp(wr.prop);
     const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}" style="--wait:${wait}s"><div class="policy">${env}</div>${tray}<div class="fan">${hand}</div></div>${stamps}`;
