@@ -17,7 +17,10 @@
 /* two chips in the colours of the cards it rewrites */
 .dymo i { width: calc(10 * var(--u)); height: calc(13 * var(--u)); border-radius: 2px; box-shadow: 0 0 0 1.5px rgba(255,255,255,.85) }
 .dymo .m0 { background: var(--suit-0) } .dymo .m1 { background: var(--suit-1) }
-.card.shown { box-shadow: inset 0 3px 0 var(--suit), 0 0 0 3px var(--gold), 0 7px 14px -7px rgba(0,0,0,.55) }
+/* redacted: black marker over each line of the word */
+.card.redacted .word > span { color: transparent; background: linear-gradient(178deg, transparent 0 42%, rgba(255,255,255,.08) 44% 47%, transparent 49%), #141414; padding: 0 .12em; margin: 0 -.12em;
+  border-radius: .3em .08em .25em .1em / .45em .2em .5em .25em; -webkit-box-decoration-break: clone; box-decoration-break: clone; animation: niko .28s ease-out both }
+@keyframes niko { from { clip-path: inset(0 100% 0 0) } to { clip-path: inset(0 0 0 0) } }
 .card.spare { background: var(--stock-2); transform: scale(.94); opacity: .82 }
 .card.dim { opacity: .45 }
 /* colour cards: the whole face is the suit */
@@ -28,5 +31,4 @@
 [data-cards="colour"] .card .glyph { display: grid; place-items: center; min-width: 58%; aspect-ratio: 1.3; padding: 0 calc(6 * var(--u)); border-radius: 50%; background: #FBF6EA; box-shadow: inset 0 -2px 0 rgba(0,0,0,.12), 0 2px 3px rgba(0,0,0,.25); transform: rotate(-4deg) }
 [data-cards="colour"] .card .glyph.v-v { width: auto; height: auto; border: 0; aspect-ratio: 1.3; font-size: calc(26 * var(--u)) }
 [data-cards="colour"] .card .dymo i { box-shadow: 0 0 0 1.5px #FBF6EA }
-[data-cards="colour"] .card.shown { box-shadow: inset 0 0 0 3px rgba(251,246,234,.9), 0 0 0 3px var(--gold), 0 7px 14px -7px rgba(0,0,0,.55) }
 [data-cards="colour"] .card.spare { opacity: .7 }

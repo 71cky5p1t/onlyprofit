@@ -4,23 +4,24 @@
     if (costWith({ swaps: next }) > 3) return refuse(su);
     draft.swaps = next; ui.land = su; render();
   }
-  function revealSuit(su) {
-    const next = draft.reveals.includes(su) ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su);
-    if (costWith({ reveals: next }) > 3) return refuse(su);
-    draft.reveals = next; render();
+  // tap a policy card to black it out with the marker
+  function redactSuit(su) {
+    const next = draft.redacts.includes(su) ? draft.redacts.filter(x => x !== su) : draft.redacts.concat(su);
+    if (costWith({ redacts: next }) > 3) return refuse(su);
+    draft.redacts = next; render();
   }
   // a shredded card is replaced in place; which pile it came from depends on whether its suit is swapped
   function shredCard(zone, su) {
     const pile = (zone === 'env') !== draft.swaps.includes(su) ? 'inh' : 'spare', next = draft.discards.concat({ pile, su });
-    const reveals = zone === 'env' ? draft.reveals.filter(x => x !== su) : draft.reveals;
-    if (costWith({ discards: next, reveals }) > 3) return refuse(su);
-    draft.discards = next; draft.reveals = reveals; ui.fresh = { zone, su }; render();
+    const redacts = zone === 'env' ? draft.redacts.filter(x => x !== su) : draft.redacts;
+    if (costWith({ discards: next, redacts }) > 3) return refuse(su);
+    draft.discards = next; draft.redacts = redacts; ui.fresh = { zone, su }; render();
   }
   function refuse(su) {
     toast('Your input has been noted.');
     document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
   }
-  const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : revealSuit(su));
+  const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : redactSuit(su));
   let drag = null;
   function endDrag() {
     if (!drag) return;

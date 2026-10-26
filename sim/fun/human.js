@@ -22,15 +22,16 @@ function work(OP, s, st) {
   const { evs, ev, workResult, workCost } = OP;
   let best = null;
   for (const o of options(s)) {
-    const w = { swaps: o.swaps, picks: o.picks, reveals: [], discards: [] };
+    const w = { swaps: o.swaps, picks: o.picks, redacts: [], discards: [] };
     if (workCost(w) > 3) continue;
     const prop = workResult(s, 0, w).prop, v = evs(prop), left = 3 - workCost(w);
-    const rev = [0, 1, 2].filter(su => ev(prop[su]) > 0).sort((a, b) => ev(prop[b]) - ev(prop[a])).slice(0, left);
-    const shown = rev.reduce((a, su) => a + ev(prop[su]), 0);
+    // black out the losing cards it can afford, worst first
+    const rev = [0, 1, 2].filter(su => ev(prop[su]) < 0).sort((a, b) => ev(prop[a]) - ev(prop[b])).slice(0, left);
+    const shown = [0, 1, 2].filter(su => !rev.includes(su)).reduce((a, su) => a + ev(prop[su]), 0);
     const key = st.aim === 'min' ? [-v, shown] : [v <= -1 && v >= -2 ? 2 : v === 0 ? 1 : 0, shown - v];
     if (!best || key[0] > best.key[0] || (key[0] === best.key[0] && key[1] > best.key[1])) best = { key, o, rev };
   }
-  const a = { type: 'submitWork', swaps: best.o.swaps, picks: best.o.picks, reveals: best.rev, stamp: s.ceo === 0 && st.self ? 'Risky' : 'Rec' };
+  const a = { type: 'submitWork', swaps: best.o.swaps, picks: best.o.picks, redacts: best.rev, stamp: s.ceo === 0 && st.self ? 'Risky' : 'Rec' };
   const inh = s.P[0].inh;
   if (inh.kind === 'rejected' && inh.author != null && inh.author !== 0) {
     const tv = evs(inh.cards);

@@ -20,7 +20,7 @@
   const fit = w => { const L = Math.max(...w.split(/\s+/).map(x => x.length)); return Math.min(1, 10.5 / L, Math.sqrt(30 / Math.max(30, w.length))).toFixed(2); };
   function cardHTML(c, cls, extra, attrs) {
     const face = c.fx ? `${glyph(c.v)}<span class="dymo" title="${FXSAY[c.fx]}"><i class="m0"></i><i class="m1"></i><b>${FXSYM[c.fx]}</b></span>` : glyph(c.v);
-    return `<div class="card s-${c.s} ${c.fx ? 'has-fx' : ''} ${cls || ''}" ${attrs || ''}><div class="cf" style="--fit:${fit(c.w)}"><span class="word">${esc(c.w)}</span><div class="fx">${face}</div></div>${extra || ''}</div>`;
+    return `<div class="card s-${c.s} ${c.fx ? 'has-fx' : ''} ${cls || ''}" ${attrs || ''}><div class="cf" style="--fit:${fit(c.w)}"><span class="word"><span>${esc(c.w)}</span></span><div class="fx">${face}</div></div>${extra || ''}</div>`;
   }
   // the table is a shared screen: authors appear only once approved
   const authorVisible = e => e.approved || ui.debug;

@@ -7,7 +7,7 @@ const V = {
   // at most one card shown per envelope
   reveal1: [['core.js', '.slice(0, Math.max(0, tokens));', '.slice(0, Math.min(1, Math.max(0, tokens)));']],
   // the Modifier (fine print) can never be shown
-  fineprint: [['core.js', 'const order = [0, 1, 2]', 'const order = [0, 1]'], ['core.js', 'reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3)', 'reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 2)']],
+  fineprint: [['core.js', 'const order = [0, 1, 2]', 'const order = [0, 1]'], ['core.js', 'redacts: [...new Set(a.redacts || [])].filter(x => x >= 0 && x < 3)', 'redacts: [...new Set(a.redacts || [])].filter(x => x >= 0 && x < 2)']],
   // no end-game Whistleblower
   nowhistle: [['core.js', "named: winner === 'none' ? null : +winner };", "named: null };"]],
   // no Written Warning votes; only the CEO acts

@@ -84,14 +84,15 @@
   function lineHTML(e, o) {
     o = o || {};
     const all = o.all || e.audited || e.autopilot || e.approved || ui.debug || (mine() && e.author === ME);
-    const vis = su => all || e.revealed.includes(su);
+    // words show unless blacked out; worth only once it's out in the open
+    const vis = su => all || !(e.redacted || []).includes(su);
     if (![0, 1, 2].some(vis)) return '';
     const fx = e.cards[2].fx, live = o.anim && e.resolved;
     const ph = e.cards.map((c, su) => {
       if (!vis(su)) return `<span class="ph s-${su} hid"><mark aria-label="Hidden ${OP.SUITS[su]}">${'█'.repeat(5)}</mark></span>`;
       const v = e.resolved ? e.resolved[su] : c.v;
       const change = live && su < 2 && fx && after(fx, v) !== v;
-      const mark = change ? `<b class="v ${tone(v)} was">${val(v)}</b><b class="v ${tone(after(fx, v))} now">${val(after(fx, v))}</b>` : `<b class="v ${tone(v)}">${val(v)}</b>`;
+      const mark = !all ? '' : change ? `<b class="v ${tone(v)} was">${val(v)}</b><b class="v ${tone(after(fx, v))} now">${val(after(fx, v))}</b>` : `<b class="v ${tone(v)}">${val(v)}</b>`;
       return `<span class="ph s-${su}${su === 2 ? ' mod' : ''}"><mark>${esc(c.w)}</mark>${mark}${c.fx ? `<i class="fxs">${FXSYM[c.fx]}</i>` : ''}${su === 2 && live ? `<i class="sfx" aria-hidden="true">${sfxOf(c, v)}</i>` : ''}</span>`;
     }).join(' ');
     const sum = e.resolved ? `<b class="sum ${tone(OP.total(e.resolved, e.cards))}">= ${fmt(OP.total(e.resolved, e.cards))}</b>` : '';
