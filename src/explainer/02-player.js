@@ -17,11 +17,13 @@
   const clock = s => { s = Math.floor(s); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
   // a recorded line sets the chapter's length; its words land when they're spoken
   const voiced = k => { const f = window.__opVoiceFiles || [], id = LESSONS[k][0]; return [id, voiceClip(k)].find(n => f.includes(n)); };
-  const chapterLen = k => voiced(k) && VO_TIMES[LESSONS[k][0]] ? VO_TIMES[LESSONS[k][0]].dur + .6 : LESSONS[k][3];
+  // played a touch quick, pitch held
+  const VO_RATE = 1.14;
+  const chapterLen = k => voiced(k) && VO_TIMES[LESSONS[k][0]] ? VO_TIMES[LESSONS[k][0]].dur / VO_RATE + .6 : LESSONS[k][3];
   const tapeAt = () => LESSONS.slice(0, TRAIN.i).reduce((n, l, k) => n + chapterLen(k), 0) + TRAIN.elapsed;
   function wordTimes(k) {
     const [id, , line] = LESSONS[k], w = line.split(' ');
-    if (voiced(k) && VO_TIMES[id] && VO_TIMES[id].times.length === w.length) return VO_TIMES[id].times;
+    if (voiced(k) && VO_TIMES[id] && VO_TIMES[id].times.length === w.length) return VO_TIMES[id].times.map(t => t / VO_RATE);
     const total = line.length; let acc = 0;
     return w.map(x => { const t = acc / total * .8 * TRAIN.duration; acc += x.length + 1; return t; });
   }
@@ -55,8 +57,8 @@
     const clip = voiced(TRAIN.i);
     voDuck(false);
     if (clip) {
-      const a = TRAIN.audio = new Audio(AU_BASE + 'induction/' + clip + '.mp3'); a.muted = !AU.on;
-      a.onloadedmetadata = () => { if (TRAIN.audio === a && Number.isFinite(a.duration)) setDuration(a.duration + .6); };
+      const a = TRAIN.audio = new Audio(AU_BASE + 'induction/' + clip + '.mp3'); a.muted = !AU.on; a.playbackRate = VO_RATE; a.preservesPitch = true;
+      a.onloadedmetadata = () => { if (TRAIN.audio === a && Number.isFinite(a.duration)) setDuration(a.duration / VO_RATE + .6); };
       a.onerror = () => { if (TRAIN.audio === a) { a.pause(); TRAIN.audio = null; voDuck(false); } };
       a.onplay = () => voDuck(true); a.onpause = a.onended = () => voDuck(false);
       if (!TRAIN.pause) a.play().catch(() => { if (TRAIN.audio === a) TRAIN.audio = null; });
@@ -87,7 +89,7 @@
     const now = performance.now(), delta = (now - TRAIN.last) / 1000; TRAIN.last = now;
     if (TRAIN.audio) TRAIN.audio.muted = !AU.on;
     if (TRAIN.pause || document.hidden) return;
-    TRAIN.elapsed = TRAIN.audio && !TRAIN.audio.paused && !TRAIN.audio.ended ? TRAIN.audio.currentTime : TRAIN.elapsed + delta;
+    TRAIN.elapsed = TRAIN.audio && !TRAIN.audio.paused && !TRAIN.audio.ended ? TRAIN.audio.currentTime / VO_RATE : TRAIN.elapsed + delta;
     const f = TRAIN.elapsed / TRAIN.duration, id = LESSONS[TRAIN.i][0], beats = BEATS[id] || [];
     while (TRAIN.fired < beats.length && beats[TRAIN.fired][0] <= f) sfx(beats[TRAIN.fired++][1], 0, .7);
     const m = document.querySelector('.induction'); if (!m) return;
