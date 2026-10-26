@@ -665,22 +665,29 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .cert-seal { align-self: flex-start; width: 58px; height: 58px; flex: none; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 38% 32%, #F7D38A, #E9A23B 50%, #A86A16); box-shadow: 0 0 0 4px #E9A23B, 0 0 0 5px #A86A16 }
 .cert-seal .px { width: 36px; height: 36px }
 .t-certificate .cp-stamp { right: 30px; bottom: 30px }
-/* ---------- tokens are overtime hours: a time card you punch, hour chits on the cards ---------- */
-.purse { justify-self: start; display: inline-flex; align-items: center; gap: 4px; padding: 4px 6px 4px 5px; border-radius: 2px; background: var(--stock); color: var(--ink); transform: rotate(-2deg);
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.1), 0 2px 4px rgba(0,0,0,.4) }
-.purse::before { content: "OT"; font: 900 9px/1 var(--f-body); letter-spacing: .1em; color: var(--red); writing-mode: vertical-rl; transform: rotate(180deg); margin-right: 1px }
-.purse .slotbox { width: 17px; height: 21px; border: 1.5px solid rgba(20,20,20,.35); border-radius: 1px; display: grid; place-items: center; font: 400 10px/1 var(--f-seg); color: rgba(20,20,20,.45) }
-/* a punched hour: a hole straight through the card */
-.purse .slotbox.punched { border-color: rgba(20,20,20,.2); color: transparent; background: radial-gradient(circle, #1E2420 0 5px, rgba(0,0,0,.25) 5.5px, transparent 6.5px) }
-.hrs { display: inline-block; font: 400 12px/1 var(--f-seg); color: var(--ink); background: var(--stock); padding: 3px 5px 2px; border-radius: 2px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.4); transform: rotate(4deg) }
-.tag .hrs { font-size: 13px }
-.card.broke .tag .hrs { color: var(--red); text-decoration: line-through; opacity: .85 }
-/* hours already put into a card: a punched chit pinned to its corner */
+/* ---------- tokens are inputs: a branded card you punch, hole chits on the cards ---------- */
+.purse { justify-self: start; display: inline-grid; grid-template-columns: auto auto; align-items: center; gap: 3px 6px; width: 132px; padding: 0 7px 4px 0; border-radius: 5px; overflow: hidden; background: var(--stock); color: var(--ink); transform: rotate(-2deg);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.1), 0 3px 6px rgba(0,0,0,.45) }
+.pc-band { grid-column: 1 / -1; display: flex; align-items: center; gap: 5px; padding: 4px 6px 3px; background: var(--brand); color: var(--brand-ink) }
+.pc-band b { font: 900 8.5px/1.05 var(--f-body); letter-spacing: .07em; text-transform: uppercase }
+.pc-mk { width: 15px; height: 15px; flex: none; background: var(--mark) center / contain no-repeat }
+.pc-holes { display: flex; gap: 6px; padding-left: 7px }
+.purse small { font: 400 7.5px/1.1 var(--f-seg); color: var(--ink-3); justify-self: end; align-self: end; white-space: nowrap }
+.purse .slotbox { width: 15px; height: 15px; border-radius: 50%; border: 1.5px dashed rgba(20,20,20,.38) }
+/* a spent input: a hole straight through the card */
+.purse .slotbox.punched { border: 0; background: radial-gradient(circle, #1E2420 0 6.5px, rgba(0,0,0,.25) 7px, transparent 7.5px) }
+/* a price chit: one empty hole per input */
+.hrs { display: inline-flex; gap: 3px; padding: 4px 5px; background: var(--stock); border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,.4); transform: rotate(4deg) }
+.hrs b { width: 10px; height: 10px; border-radius: 50%; border: 1.5px dashed rgba(20,20,20,.42) }
+.hrs.paid-h b { border: 0; background: radial-gradient(circle, #1E2420 0 4.5px, transparent 5px) }
+.card.broke .tag .hrs b { border-color: var(--red) }
+.card.broke .tag .hrs { opacity: .85 }
+/* inputs already put into a card: a punched chit pinned to its corner */
 .paid { position: absolute; right: -7px; top: -8px; z-index: 2 }
-.paid .hrs { padding-left: 13px; background: radial-gradient(circle at 6px 50%, #1E2420 0 2.6px, transparent 3.2px), var(--stock) }
 .land .paid, .shown .paid { animation: chit .4s var(--bounce) both }
 @keyframes chit { from { transform: translateY(-14px) rotate(-8deg); opacity: 0 } }
-.t-cost .hrs { font-size: 11px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); transform: none }
+.t-cost .hrs { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); transform: none; padding: 3px 4px }
+.t-cost .hrs b { width: 8px; height: 8px }
 .t-redeal:disabled .hrs { opacity: .5 }
 @media (prefers-reduced-motion: reduce) { .land .paid, .shown .paid { animation: none } }
 /* ---------- the policy as one sentence, highlighter in the suit colours ---------- */
@@ -2168,7 +2175,8 @@ const OP = (() => {
   const slip = html => `<span class="slip">${html}</span>`;
   const stampMark = k => `<span class="env-stamp ${k}">${STAMP[k]}</span>`;
   const key = (a, label, on) => `<button class="btn primary wide" data-a="${a}" ${on === false ? 'disabled' : ''}>${label}</button>`;
-  const hrs = n => `<i class="hrs">${n}h</i>`;
+  // a price is empty punch holes; paid ones are punched through
+  const hrs = (n, paid) => `<i class="hrs${paid ? ' paid-h' : ''}" aria-hidden="true">${'<b></b>'.repeat(n)}</i>`;
   function inhSource(inh) {
     if (inh.kind === 'legacy') return 'Legacy';
     if (inh.kind === 'cleanup') return `Leftovers <b>${inh.author === ME ? 'yours' : esc(nm(inh.author))}</b>`;
@@ -2216,7 +2224,7 @@ const OP = (() => {
     if (draft.page === 2) return deskTemplates(p);
     if (draft.page === 3) return deskTweak(p);
     const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
-    // tokens are overtime hours: chits on the hand, punched chits pinned to the policy cards they bought
+    // tokens are inputs: hole chits on the hand, punched chits pinned to the policy cards they bought
     const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.reveals.includes(su) ? 1 : 0);
     // an effect Modifier rewrites the other two right here, before you commit
     const fx = wr.prop[2].fx, blink = fx && ui.fxw !== wr.prop[2].w;
@@ -2225,8 +2233,8 @@ const OP = (() => {
       const c0 = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
       const hit = su < 2 && fx && c0.v !== 'V' && after(fx, c0.v) !== c0.v, c = hit ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0;
       const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
-      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
-        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 hour of overtime'}"`));
+      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
+        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 input'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
       const c = wr.aside[su], on = draft.swaps.includes(su);
@@ -2234,7 +2242,7 @@ const OP = (() => {
       const price = on ? 0 : OP.SWAP_COST[next.length] - OP.SWAP_COST[draft.swaps.length];
       const ok = costWith({ swaps: next }) <= 3;
       return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, on ? '<span class="tag back">↺</span>' : `<span class="tag">${hrs(price)}</span>`,
-        `data-drag="hand" data-su="${su}" role="button" tabindex="0" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${on ? 'Swap back for free' : `Swap in for ${price} hour${price === 1 ? '' : 's'} of overtime`}"`));
+        `data-drag="hand" data-su="${su}" role="button" tabindex="0" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${on ? 'Swap back for free' : `Swap in for ${price} input${price === 1 ? '' : 's'}`}"`));
     }).join('');
     ui.land = null;
     const v = evs(wr.prop), vol = wr.prop.some(c => c.v === 'V');
@@ -2243,11 +2251,11 @@ const OP = (() => {
     // a fresh quarter waits for the stripe wipe to clear before dealing
     const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
     ui.deal = false;
-    const purse = `<span class="purse" role="img" aria-label="${left} of 3 overtime hours left">${[0, 1, 2].map(k => `<i class="slotbox${k >= left ? ' punched' : ''}">${k + 1}</i>`).join('')}</span>`;
+    const purse = `<span class="purse" role="img" aria-label="${left} of 3 inputs left"><span class="pc-band"><i class="pc-mk"></i><b>Your Input<br>Matters*</b></span><span class="pc-holes">${[0, 1, 2].map(k => `<i class="slotbox${k < 3 - left ? ' punched' : ''}"></i>`).join('')}</span><small>*3 per quarter</small></span>`;
     // one strip of adding-machine tape between the policy and the hand: where it came from, what it's worth, re-deal
     const tray = `<div class="tape"><span class="t-src">${inhSource(inh)}</span>
         <span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
-        <button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 hours of overtime">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="t-cost">${hrs(2)}</span></button></div>`;
+        <button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 inputs">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="t-cost">${hrs(2)}</span></button></div>`;
     const honest = OP.rightStamp(wr.prop);
     const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}" style="--wait:${wait}s"><div class="policy">${env}</div>${tray}<div class="fan">${hand}</div></div>${stamps}`;
@@ -2526,7 +2534,7 @@ const OP = (() => {
         <div class="field"><span class="label">Target</span>${seg('easy', [[false, 'Standard'], [true, 'Easy mode (−3)']])}</div>
         <div class="field"><label class="label" for="seed">Seed (optional, to replay a deal)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}" style="max-width:200px"></div>
         <details class="rules"><summary>The quarter, in brief</summary><ol>
-          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Spend 3 hours of overtime: swap a card in (1, then 2), re-deal all three (2), or show one card to the table (1). Stamp it, then make a cover page: template, subject line, font, clip-art.</li>
+          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Punch your 3 inputs: swap a card in (1, then 2), re-deal all three (2), or show one card to the table (1). Stamp it, then make a cover page: template, subject line, font, clip-art.</li>
           <li><b>Decide + Reveal.</b> Proposals land shuffled and anonymous, and memos on the bulletin board say who left whom a mess. The CEO nominates one; the Board (everyone else) ratifies it or opens it. If an opened nominee disappoints, the best-looking proposal goes through instead, the nominee is unmasked, and a CEO caught pushing their own sits out their next turn as CEO. Profit moves and the approved author is unmasked. Rejected proposals pass, unopened, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
           <li><b>Effect Modifiers.</b> Four Modifiers rewrite the other two cards: ∅ cancels them, ×2 doubles them, ≥0 stops them losing, ⇅ flips them. Each also has its own value.</li>
           <li><b>After Q5.</b> The table may name a saboteur. Right, and Clawback reverses every losing policy they wrote (at least +3). Wrong costs −3. Audit and Whistleblower ties are drawn at random (a tied Whistleblower names nobody).</li></ol></details>
@@ -2626,7 +2634,7 @@ const OP = (() => {
     draft.reveals = next; render();
   }
   function refuse(su) {
-    toast('Not enough overtime.');
+    toast('Your input has been noted.');
     document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
   }
   const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : revealSuit(su));

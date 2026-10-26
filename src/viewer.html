@@ -208,7 +208,7 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
   function kitHTML(op) {
     const C = (s, v, w, fx) => ({ s, v, w, fx });
     const card = (c, cls, extra) => op.cardHTML(c, cls, extra);
-    const hrs = n => `<i class="hrs">${n}h</i>`, purse = left => `<span class="purse">${[0, 1, 2].map(k => `<i class="slotbox${k >= left ? ' punched' : ''}">${k + 1}</i>`).join('')}</span>`;
+    const hrs = (n, paid) => `<i class="hrs${paid ? ' paid-h' : ''}">${'<b></b>'.repeat(n)}</i>`, purse = left => `<span class="purse"><span class="pc-band"><i class="pc-mk"></i><b>Your Input<br>Matters*</b></span><span class="pc-holes">${[0, 1, 2].map(k => `<i class="slotbox${k < 3 - left ? ' punched' : ''}"></i>`).join('')}</span><small>*3 per quarter</small></span>`;
     const sw = (name, v) => `<div class="sw"><i style="background:var(${v})"></i><b>${name}</b><span>${v}</span></div>`;
     const page = (tpl, subject, stamp, art) => ({ id: '·', subject, stamp, style: { tpl, art }, revealed: [] });
     const SUBJ = { fax: 'Fwd: Pension Agility — Revised', memo: 'Synergy Alert: Customer Delight for Q3', wordart: 'Action Required: Break Room Monetisation', clipart: 'Low-Hanging Fruit: Bingo Night Synergies',
@@ -220,10 +220,10 @@ main { display: grid; gap: 8px; padding-block: 12px 80px }
     return `<style>${KIT_CSS}</style><div class="kit">
     <section><h4>Values</h4><div class="play"><div class="row">${card(C(0, 2, 'Liquidate'))}${card(C(1, 1, 'Interns'))}${card(C(2, 0, 'Quietly'))}${card(C(0, -1, 'Rightsize'))}${card(C(1, -2, 'Union Relations'))}${card(C(2, 'V', 'Allegedly'))}</div></div></section>
     <section><h4>Effect Modifiers</h4><div class="play"><div class="row">${card(C(2, -1, 'With Thoughts and Prayers', 'null'))}${card(C(2, -2, 'Retroactively', 'x2'))}${card(C(2, -1, "Per Legal's Advice", 'shield'))}${card(C(2, 0, 'Without Consultation', 'flip'))}</div></div></section>
-    <section><h4>Overtime</h4><div class="play"><div class="row" style="align-items:center;gap:26px">
-      <div class="piece">${purse(3)}<span class="note">Three hours to give</span></div><div class="piece">${purse(1)}<span class="note">Two punched</span></div>
+    <section><h4>Inputs</h4><div class="play"><div class="row" style="align-items:center;gap:26px">
+      <div class="piece">${purse(3)}<span class="note">Three inputs</span></div><div class="piece">${purse(1)}<span class="note">Two punched</span></div>
       <div class="piece"><div class="slot">${card(C(1, 1, 'Interns'), '', `<span class="tag">${hrs(2)}</span>`)}</div><span class="note">Price to swap in</span></div>
-      <div class="piece"><div class="slot">${card(C(0, 2, 'Liquidate'), 'shown', `<span class="paid">${hrs(2)}</span>`)}</div><span class="note">Paid, and shown to the table</span></div>
+      <div class="piece"><div class="slot">${card(C(0, 2, 'Liquidate'), 'shown', `<span class="paid">${hrs(2, true)}</span>`)}</div><span class="note">Paid, and shown to the table</span></div>
       <div class="piece"><div class="slot">${card(C(2, 2, 'In Perpetuity'), 'broke', `<span class="tag">${hrs(3)}</span>`)}</div><span class="note">Can't afford</span></div></div></div></section>
     <section><h4>Cover pages</h4><div class="pages" style="justify-content:flex-start">${pages}</div></section>
     <section><h4>The policy, read out</h4><div class="row" style="align-items:center">${op.lineHTML(part)}${op.lineHTML(said, { all: true })}</div></section>
