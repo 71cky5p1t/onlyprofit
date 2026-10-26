@@ -25,7 +25,7 @@
     if (id === 'goal') return `<div class="calc i-calc b rise"><div class="lcd"><div class="ann"><span>PROFIT</span><span>TARGET +${target}</span></div><div class="val" data-count="${target}">${lcd(0)}</div></div></div>
       <div class="i-qtabs">${[1, 2, 3, 4, 5].map(q => `<span class="b fan-in" ${at(.3 + q * .06)}>Q${q}</span>`).join('')}</div>`;
     if (id === 'saboteurs') return `<div class="i-staff">${['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'You'].map((n, k) => `<div class="i-seat">${demoTag(n, k * .03)}
-      <div class="i-role b ${k === 2 ? 'peek' : ''}" style="--at:${.74 + k * .025}"><i class="face back">${brandMark()}</i><i class="face front">Loyal</i>${k === 2 ? `<i class="under">Disgr</i>` : ''}</div></div>`).join('')}</div>`;
+      <div class="i-role b ${k === 2 ? 'peek' : ''}" style="--at:${.74 + k * .025}"><i class="face back">${brandMark()}</i><i class="face front">Loyal</i>${k === 2 ? `<i class="under">Mole</i>` : ''}</div></div>`).join('')}</div>`;
     if (id === 'inherit') return `<div class="i-leaver b exit-left" ${at(.08)}>${demoTag('Gary')}</div>${cardRow(cs.map((c, k) => flipCard(c, .28 + k * .08, k)).join(''))}`;
     if (id === 'policy') return cardRow(cs.map((c, k) => cardHTML(c, 'b pop', '', at(.3 + k * .1, vt('vt-c' + k)))).join('') + cardHTML({ s: 2, v: 'V', w: 'Going Forward' }, 'b spin-in coin', '', at(.78)));
     if (id === 'overtime') return overtimeProp(cs);

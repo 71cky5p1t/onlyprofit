@@ -32,7 +32,7 @@ Shot ids double as audio file names: `assets/audio/vo/<id>.mp3`.
 
 1. **vo-01-welcome** — Welcome aboard. Please enjoy this mandatory induction. Enjoyment is also mandatory.
 2. **vo-02-goal** — The company has five quarters to hit its profit target. Hit it, and everyone keeps their job. Probably.
-3. **vo-03-saboteurs** — Some of you are Disgruntled, and want the company to sink. Your role memo will say if it's you. Maybe it's nobody, and we're just bad at our jobs.
+3. **vo-03-saboteurs** — Some of you are evil, manipulative little Moles, here to sink the company. Your role memo will say if it's you. Maybe it's nobody, and we're just bad at our jobs.
 4. **vo-04-inherit** — Every quarter, you move to a new department and inherit the last manager's three cards. Nobody can prove they weren't yours. Congratulations.
 5. **vo-05-policy** — Three cards make a proposal: an Action, a Target and a Modifier. Read as one sentence, the worse it sounds, the more it makes.
 6. **vo-06-overtime** — You also get spares. Spend overtime hours to swap one in, or turn a card face up so people trust you. The hours are unpaid.
@@ -49,7 +49,7 @@ Shot ids double as audio file names: `assets/audio/vo/<id>.mp3`.
 Record both. The build picks one with a single constant. The end-game rules are still moving, so this is the only shot that should change when they do.
 
 **12W, the end vote + personal records** (what `core.js` does today: the whistleblower vote stays, PR #24 adds records):
-> After quarter five, you vote on who was Disgruntled. Right, and their damage is undone. Wrong, and the innocent one sues for unfair dismissal. Then we count the money.
+> After quarter five, you vote on who the Mole was. Right, and their damage is undone. Wrong, and the innocent one sues for unfair dismissal. Then we count the money.
 
 TV: name tags in a row; a whistle; one tag takes the red SABOTEUR stamp and the calculator un-ticks the clawback (KA-CHING!). Then a personnel file slides in with dog-eared stickers on it (Great work!, See me) and an EMPLOYEE OF THE YEAR frame drops over one name tag. Phone: your role memo with your record clipped to it.
 
