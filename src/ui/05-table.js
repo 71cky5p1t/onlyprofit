@@ -34,7 +34,7 @@
       if (S.r && S.ceo === p.id && live) meta.push('<i class="tag-tape">CEO</i>');
       if (p.leave) meta.push('<i class="tag-tape grey">Stood down</i>');
       if (p.spec && ui.debug) meta.push(`<i class="tag-tape gold">${p.spec}</i>`);
-      if (ui.debug || S.phase === 'end') meta.push(`<i class="tag-tape ${p.sab ? 'red' : 'green'}">${p.sab ? 'Saboteur' : 'Loyal'}</i>`);
+      if (ui.debug || S.phase === 'end') meta.push(`<i class="tag-tape ${p.sab ? 'red' : 'green'}">${p.sab ? 'Disgruntled' : 'Loyal'}</i>`);
       const dept = S.r && ui.debug ? `<small class="tag-dept">${OP.DEPTS[p.dept]}</small>` : '';
       return `<div class="nametag staff-tag${p.leave ? ' down' : ''}" style="--r:${((p.id * 5) % 7 - 3) * .7}deg"><span class="hello">Hello<small>my name is</small></span>
         <b>${p.id === ME && mine() && ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : esc(p.name)}</b>${dept}${meta.length ? `<span class="tag-tapes">${meta.join('')}</span>` : ''}${stickers(p)}</div>`;

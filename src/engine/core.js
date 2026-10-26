@@ -285,7 +285,7 @@ const OP = (() => {
     const best = argmax(s.envs, x => [pubEst(s, x)]);
     const overruled = opened && best.id !== nom.id && pubEst(s, nom) < pubEst(s, best) - 1;
     s.board = { nominee: nom.id, votes: s.bvotes, no, opened, overruled };
-    if (!overruled) { log(s, E, 'event', opened ? `It stands. Proposal ${nom.id} goes through.` : `The Board ratified proposal ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
+    if (!overruled) { log(s, E, 'event', opened ? `It stands. Proposal ${nom.id} goes through.` : `The Board rubber-stamped proposal ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
     const own = nom.author === s.ceo && !nom.autopilot;
     nom.unmasked = true; s.board.own = own; s.board.author = nom.autopilot ? null : nom.author;
     log(s, E, 'event', `The Board overruled ${who(s, s.ceo)}. Proposal ${nom.id} was written by ${nom.autopilot ? 'interim management' : own ? 'the CEO' : who(s, nom.author)}. Proposal ${best.id} goes through instead.`, { target: s.ceo });
@@ -369,7 +369,7 @@ const OP = (() => {
     s.whistle = { votes: s.wb, count, named: winner === 'none' ? null : +winner };
     if (s.whistle.named != null) {
       const q = s.P[s.whistle.named];
-      // Clawback: reverse a caught saboteur's losses (min +3)
+      // Clawback: reverse a caught disgruntled player's losses (min +3)
       const lost = s.ledger.filter(l => l.author === q.id && !l.autopilot && l.actual < 0);
       const back = lost.reduce((a, l) => a - 2 * l.actual, 0);
       const swing = q.sab ? Math.max(3, back) : -3;
@@ -381,7 +381,7 @@ const OP = (() => {
     scoreStaff(s);
     log(s, E, 'system', s.win ? `Final profit ${fmt(s.profit)} against a target of +${s.target}. Target met.` : `Final profit ${fmt(s.profit)} against a target of +${s.target}. Target missed.`);
   }
-  // personal records: loyal staff +1 per money-maker someone else approved, minus their losses; saboteurs score their losses
+  // personal records: loyal staff +1 per money-maker someone else approved, minus their losses; the disgruntled score their losses
   function scoreStaff(s) {
     s.scores = s.P.map(p => s.ledger.filter(l => l.author === p.id && !l.autopilot).reduce((a, l) => a + (p.sab ? Math.max(0, -l.actual) : l.actual < 0 ? l.actual : l.actual > 0 && l.ceo !== p.id ? 1 : 0), 0));
     const side = s.P.filter(p => p.sab !== s.win);

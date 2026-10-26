@@ -2,10 +2,10 @@
     if (!ui.debug) return '';
     const sus = S.P.map(p => `<span class="pill ${p.sab ? 'red' : 'green'}">${esc(p.name)} · ${p.sab ? (p.ruthless ? 'SAB · ruthless' : 'SAB') : `LOYAL · ${OP.PERS_SAY[p.pers]}`} · sus ${OP.suspicion(S, p).toFixed(1)}</span>`).join('');
     return `<section class="observer"><div class="section-head" style="margin:0;border-bottom-width:1px"><h2>Observer view</h2><span class="label">Hidden from players</span></div>
-      <div style="font-size:13.5px">Headcount Memo: <b>${S.nSab} saboteur${S.nSab === 1 ? '' : 's'}</b>. Loyal bots play <b>${TIER[S.loyalTier]}</b>; saboteur bots play <b>${TIER[S.sabTier]}</b>. Seed <span class="mono">${S.seed}</span>.
+      <div style="font-size:13.5px">Headcount Memo: <b>${S.nSab} disgruntled</b>. Loyal bots play <b>${TIER[S.loyalTier]}</b>; disgruntled bots play <b>${TIER[S.sabTier]}</b>. Seed <span class="mono">${S.seed}</span>.
       ${S.nextStyle ? ` Designer has set next quarter: ${S.nextStyle.tpl} in ${S.nextStyle.font}.` : ''}</div>
       <div class="observer-grid">${sus}</div>
-      <div class="hint">Debug strips show allegiance · bot mode (loyal, good = saboteur playing clean, disguised, bad) · true value · what the table would estimate · tokens spent. "sus" is the end-of-game Whistleblower score the bots use.</div></section>`;
+      <div class="hint">Debug strips show allegiance · bot mode (loyal, good = disgruntled playing clean, disguised, bad) · true value · what the table would estimate · tokens spent. "sus" is the end-of-game Whistleblower score the bots use.</div></section>`;
   }
   function exitHTML() {
     const rounds = S.history.map(h => {

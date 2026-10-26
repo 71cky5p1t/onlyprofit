@@ -14,7 +14,7 @@
       const fx = cards.find(c => c.fx && !TEACH.seen.has(c.fx));
       if (fx) offer(fx.fx, `${fx.w}: ${FXSAY[fx.fx].toLowerCase()}. Its own value still counts.`);
     }
-    if (S.phase === 'board') offer('board', 'Ratify keeps the policy sealed. A majority voting Open reveals it and may overturn the CEO’s choice.');
+    if (S.phase === 'board') offer('board', 'Rubber-stamping keeps the policy sealed. A majority voting Open reveals it and may overturn the CEO’s choice.');
     if (S.phase === 'reveal') offer('warning', 'Pick someone for a Written Warning, or Nobody, then sign. A second warning stands them down.');
     if (S.phase === 'review' && isCEO()) offer('investigate', 'As CEO, you may pull one file and sign to investigate its stamp. A dishonest stamp can mean a PIP next quarter.');
     if (S.P.some(p => p.pip)) offer('pip', 'A Performance Improvement Plan makes that person’s future proposals visible to the CEO. Everyone else still sees a sealed page.');
