@@ -1,11 +1,34 @@
-/* ---------- the signature line under every vote ---------- */
-.sign { position: relative; background: var(--stock); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); transform: rotate(-.6deg); touch-action: none }
-.sign::after { content: ""; position: absolute; left: 34px; right: 16px; bottom: 24%; border-bottom: 1.5px solid rgba(20,20,20,.45); pointer-events: none }
-.sign-x { position: absolute; left: 14px; bottom: 20%; font: 800 20px/1 var(--f-body); color: var(--red); pointer-events: none }
-.sign canvas { display: block; width: 100%; aspect-ratio: 600 / 130; cursor: crosshair; touch-action: none }
-.sign.off { opacity: .55 } .sign.off canvas { cursor: not-allowed }
-.sign.nope { animation: nope .35s ease both }
-.sign.ok { box-shadow: 0 0 0 3px var(--good), 0 8px 14px -10px rgba(0,0,0,.6); transition: box-shadow .3s }
-.sign.done { animation: filed .35s ease-in both }
-@keyframes filed { to { transform: translateY(-30px) rotate(-4deg); opacity: 0 } }
-@media (prefers-reduced-motion: reduce) { .sign.done, .sign.nope { animation: none } }
+/* ---------- every vote is a form on the blotter: tick a box, write a name, sign in ballpoint ---------- */
+.form { --biro: #25398C; position: relative; display: grid; gap: 10px; margin-top: 4px; padding: 13px 16px 8px; background: #F7F1E1; color: var(--ink); border-radius: 2px; box-shadow: var(--lift); transform: rotate(-.7deg); touch-action: none;
+  background-image: linear-gradient(90deg, transparent 0 13px, rgba(217,38,28,.18) 13px 14px, transparent 14px), linear-gradient(transparent 0 calc(100% - 1px), rgba(0,0,0,.035) 0); background-size: 100% 100%, 100% 24px }
+.f-hd { display: flex; justify-content: space-between; align-items: center; gap: 8px; font: 400 10px/1 var(--f-seg); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3) }
+.f-org { display: flex; align-items: center; gap: 6px } .f-org .logo-mark { width: 18px; height: 18px; font-size: 7px }
+.f-title { margin: 0; padding-bottom: 7px; font: 900 21px/1.05 var(--f-body); letter-spacing: -.02em; border-bottom: 3px double var(--ink) }
+.f-lbl { font: 700 10.5px/1 "Courier Prime", var(--f-seg); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3) }
+/* a printed field, filled in by hand */
+.f-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 10px; min-height: 38px }
+.f-val { min-height: 30px; border-bottom: 1.5px dotted rgba(20,20,20,.45); padding: 0 4px }
+.f-val b { display: inline-block; font: 700 30px/1 Caveat, cursive; color: var(--biro); transform: rotate(-2deg) translateY(4px); white-space: nowrap; animation: write .45s steps(9, end) both }
+@keyframes write { from { clip-path: inset(-20% 100% -20% 0) } to { clip-path: inset(-20% 0 -20% 0) } }
+/* printed tick boxes */
+.f-opts { display: grid; gap: 4px }
+.f-opt { display: flex; align-items: center; gap: 12px; padding: 7px 0; border: 0; background: none; color: var(--ink); font: 700 16px/1 "Courier Prime", var(--f-seg); text-align: left; cursor: pointer }
+.f-box { position: relative; flex: none; width: 24px; height: 24px; border: 1.5px solid var(--ink); background: rgba(255,255,255,.35) }
+.f-tick { position: absolute; left: -2px; top: -9px; width: 34px; height: 30px; fill: none; stroke: var(--biro); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 40; animation: tick .3s ease-out both }
+@keyframes tick { from { stroke-dashoffset: 40 } }
+.f-opts:has([aria-pressed="true"]) .f-opt:not([aria-pressed="true"]) { opacity: .45; text-decoration: line-through 1.5px var(--biro) }
+.f-opt:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px }
+/* the signature line; the canvas sits over it, ink is ballpoint blue */
+.f-sig { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: end; gap: 0 8px; margin-top: 2px }
+.f-sig .f-lbl, .sign-x { padding-bottom: 10px }
+.sign-x { font: 700 18px/1 "Courier Prime", var(--f-seg); color: var(--ink); pointer-events: none }
+.f-sig canvas { display: block; width: 100%; aspect-ratio: 600 / 150; cursor: crosshair; touch-action: none; background: linear-gradient(rgba(20,20,20,.55), rgba(20,20,20,.55)) no-repeat left 0 bottom 9px / 100% 1.5px }
+.form.off .f-sig { opacity: .4 } .form.off canvas { cursor: not-allowed }
+.form.nope { animation: nope .35s ease both }
+/* signed: HR stamps it received, then it's filed */
+.f-rcvd { position: absolute; right: 12px; top: 40px; font: 900 15px/1 var(--f-body); font-style: normal; letter-spacing: .1em; text-transform: uppercase; color: var(--good); padding: 5px 8px 4px; border: 3px solid currentColor; border-radius: 4px; mix-blend-mode: multiply; opacity: 0; transform: rotate(-12deg) scale(2); pointer-events: none }
+.form.ok .f-rcvd { animation: rcvd .35s cubic-bezier(.2,.9,.3,1.2) both }
+@keyframes rcvd { to { opacity: .85; transform: rotate(-12deg) scale(1) } }
+.form.done { animation: filed .4s ease-in both }
+@keyframes filed { to { transform: translateY(-36px) rotate(-5deg); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .form.done, .form.nope, .f-val b, .f-tick, .form.ok .f-rcvd { animation: none } .form.ok .f-rcvd { opacity: .85; transform: rotate(-12deg) } }
