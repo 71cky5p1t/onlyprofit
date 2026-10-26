@@ -978,8 +978,20 @@ section > .label { color: var(--on-table-2) }
 /* finalising: the sentence and hand clear off before the page lands */
 .play.stuff .said, .play.stuff .hand-row .t-redeal { transition: opacity .2s; opacity: 0 }
 @media (prefers-reduced-motion: reduce) { .cig .paper i::before, .said-stamp { animation: none } }
-/* on a phone the desk fills the glass: the blotter stretches, stamps settle at its foot, the tray below */
-.desk-body { flex: 1 0 auto; align-content: space-between }
+/* on a phone the desk fills the glass; other screens keep their pieces together at the top */
+.desk-body { flex: 1 0 auto; align-content: start }
+/* the work screen spreads its pieces down the blotter, and they grow to fill it */
+.desk-body:has(> .play) { align-content: space-evenly }
+@container (max-width: 520px) {
+  .play { --cw: min(112px, calc((100cqw - 54px) / 3)) }
+  .fan .slot { margin-left: calc(var(--cw) * -.34) }
+  .fan { padding-left: calc(var(--cw) * .34) }
+  .said .line { font-size: 17px }
+  .rstamp .knob { width: 36px; height: 27px }
+  .rstamp .neck { width: 14px; height: 11px }
+  .rstamp .block { min-height: 42px }
+  .rstamp .block span { font-size: 10.5px; padding: 6px 3px 5px }
+}
 /* an unstamped page at the tray: the stamps hop */
 .rstamps.want .rstamp { animation: want .5s var(--bounce) both }
 .rstamps.want .rstamp:nth-child(2) { animation-delay: .07s } .rstamps.want .rstamp:nth-child(3) { animation-delay: .14s }
