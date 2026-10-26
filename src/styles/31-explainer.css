@@ -34,7 +34,7 @@
 .outro .i-tabs { animation-name: sink !important }
 .rubber { display: inline-block; font: 900 15px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; color: var(--red); border: 3.5px solid currentColor; border-radius: 4px; padding: 7px 11px 6px; rotate: -8deg; mix-blend-mode: multiply; opacity: .92;
   mask-image: radial-gradient(circle at 30% 40%, #000 0 60%, rgba(0,0,0,.7) 61%), repeating-linear-gradient(80deg, #000 0 3px, rgba(0,0,0,.82) 3px 5px); mask-composite: intersect }
-.rubber.big { position: absolute; font-size: clamp(28px, 6.5vw, 66px); border-width: clamp(4px, .7vw, 8px); padding: .2em .35em .14em; mix-blend-mode: normal; animation: thump .45s var(--bounce) both, sweep .7s cubic-bezier(.5, 0, .9, .4) .5s forwards }
+.rubber.big { position: absolute; font-size: clamp(28px, 6.5vw, 66px); border-width: clamp(4px, .7vw, 8px); padding: .2em .35em .14em; mix-blend-mode: normal; animation: i-thump .45s var(--bounce) both, sweep .7s cubic-bezier(.5, 0, .9, .4) .5s forwards }
 .tclock { position: absolute; top: 0; left: 50%; display: grid; justify-items: center; translate: -50% 0; animation: clock-drop .9s cubic-bezier(.3, 1.4, .5, 1) .6s both; transform-origin: 50% 0 }
 .tclock .chain { width: 4px; height: 24svh; background: repeating-linear-gradient(#9C9A8E 0 6px, #5E5D55 6px 8px, transparent 8px 10px) }
 .tc-body { padding: 10px 14px 14px; border-radius: 10px; background: linear-gradient(#ECE5D0, #D2C8AA); box-shadow: inset 0 1px 0 #fff8, inset 0 -3px 0 rgba(0,0,0,.12), 0 24px 30px -16px rgba(0,0,0,.7); display: grid; justify-items: center; gap: 8px; animation: swing 2.2s ease-out 1.3s both }
@@ -51,7 +51,7 @@
 @keyframes osd-blink { 50% { opacity: .15 } }
 @keyframes sweep { to { transform: translateY(75svh) rotate(5deg); opacity: 0 } }
 @keyframes sink { to { transform: translateY(80px) } }
-@keyframes thump { from { scale: 2.6; opacity: 0 } 55% { scale: .94; opacity: 1 } to { scale: 1; opacity: 1 } }
+@keyframes i-thump { from { scale: 2.6; opacity: 0 } 55% { scale: .94; opacity: 1 } to { scale: 1; opacity: 1 } }
 @keyframes clock-drop { from { translate: -50% -110% } }
 @keyframes swing { from { rotate: 4deg } 30% { rotate: -2.5deg } 60% { rotate: 1deg } to { rotate: 0deg } }
 @keyframes flap-out { to { transform: rotateX(-90deg) } }

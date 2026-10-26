@@ -1,0 +1,19 @@
+/* ---------- Staff Induction, between chapters: carried objects slide, the rest is swept off the desk ---------- */
+.induction .i-stage { view-transition-name: i-stage } .induction .i-sub { view-transition-name: i-sub }
+.induction .carry, .induction .carry > .cp-w { animation: none !important }
+::view-transition-group(root), ::view-transition-old(root), ::view-transition-new(root) { animation: none }
+::view-transition-group(*) { animation-duration: .6s; animation-timing-function: cubic-bezier(.34, 1.25, .5, 1) }
+::view-transition-old(*), ::view-transition-new(*) { animation-duration: .2s }
+::view-transition-group(i-stage), ::view-transition-new(i-stage), ::view-transition-group(i-sub), ::view-transition-new(i-sub) { animation: none }
+::view-transition-old(i-stage) { animation: sweep-l .45s cubic-bezier(.5, 0, .9, .5) both }
+html[data-sweep="r"]::view-transition-old(i-stage) { animation-name: sweep-r }
+html[data-sweep="d"]::view-transition-old(i-stage) { animation-name: sweep-d }
+::view-transition-old(i-sub) { animation: gone .01s both }
+/* an object that doesn't make the next chapter gets flung off; one that's new flicks in by itself */
+::view-transition-old(*):only-child { animation: fling .4s cubic-bezier(.5, 0, .9, .5) both }
+::view-transition-new(*):only-child { animation: none }
+@keyframes sweep-l { to { transform: translate(-115vw, 10vh) rotate(-16deg) } }
+@keyframes sweep-r { to { transform: translate(115vw, -6vh) rotate(14deg) } }
+@keyframes sweep-d { to { transform: translate(8vw, 110vh) rotate(9deg) } }
+@keyframes fling { to { transform: translate(-40vw, 90vh) rotate(-40deg) } }
+@keyframes gone { to { opacity: 0 } }
