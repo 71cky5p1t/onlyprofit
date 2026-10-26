@@ -8,7 +8,8 @@
       ? cs.map((c, su) => su === 1 ? `<div class="swap-slot" style="${vt('vt-c1')}">${cardHTML(c, 'b swap-out', '', at(.34))}${cardHTML(SPARES[1], 'b swap-in', '', at(.34))}</div>` : cardHTML(c, '', '', `style="${vt('vt-c' + su)}"`)).join('')
       : policy.map((c, su) => cardHTML(c, '', '', `style="${vt('vt-c' + su)}"`)).join('');
     const spent = auto ? 2 : OP.SWAP_COST[swaps] || 0;
-    const shown = auto ? `<p class="line i-shown"><span class="ph s-0"><mark>${esc(cs[0].w)}</mark><b class="v pos">${GLYPH[2]}</b><i class="redact b peel" ${at(.68)}></i></span> <span class="ph s-1 hid"><mark>█████</mark></span> <span class="ph s-2 hid"><mark>█████</mark></span></p>` : '';
+    // the table reads the sentence, never the marks; an input blacks a word out
+    const shown = auto ? `<p class="line i-shown">${[cs[0], SPARES[1], cs[2]].map((c, su) => `<span class="ph s-${su}"><mark>${esc(c.w)}</mark>${su === 2 ? `<i class="redact b strike" ${at(.7)}></i>` : ''}</span>`).join(' ')}</p>` : '';
     return `${punch(spent, auto ? [.36, .7] : [])}${cardRow(row, 'ot-policy')}${shown}<div class="i-cards spares">${hand}</div>`;
   }
   const SUBJECTS = ['Synergy Review: the Interns', 'Right-Sizing Morale', 'Customer Trust, Phase Two', 'Strategic Pivot to Vending', 'Going Forward, Again', 'Quick Win: Break Room Monetisation (Pilot)'];
