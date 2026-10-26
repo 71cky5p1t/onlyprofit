@@ -54,8 +54,8 @@
 .swap-slot { display: grid; rotate: 0deg } .swap-slot > * { grid-area: 1 / 1 }
 .b.swap-out { animation-name: swap-out; animation-duration: .45s } .b.swap-in { animation-name: swap-in; animation-duration: .5s }
 .b.lift-out { animation-name: lift-out; animation-duration: .45s }
-.i-shown { font-size: clamp(12px, 1.6vw, 15px) } .i-shown .ph:first-child { position: relative }
-.redact { position: absolute; inset: 1px 0; background: var(--ink); border-radius: 2px; transform-origin: 0 50% } .b.peel { animation-name: peel; animation-duration: .4s; animation-timing-function: ease-in }
+.i-shown { font-size: clamp(12px, 1.6vw, 15px) } .i-shown .ph { position: relative }
+.redact { position: absolute; inset: -1px -3px; background: #141414; border-radius: 3px 1px 4px 2px; rotate: -1.5deg; transform-origin: 0 50% } .b.strike { animation-name: strike; animation-duration: .35s; animation-timing-function: ease-out }
 
 /* the stamp: honest tick on Risky, the stamp lands on Recommended anyway; a PIP slaps on and peels off */
 .i-stamp { position: relative } .i-stamp .cp-stamp { animation: i-thump .45s var(--bounce) both; animation-delay: calc(var(--dur) * var(--at) - var(--played)) }
@@ -87,7 +87,7 @@
 @keyframes swap-out { to { transform: translateY(70%) rotate(8deg); opacity: 0 } }
 @keyframes swap-in { from { transform: translateY(140%) rotate(-6deg); opacity: 0 } }
 @keyframes lift-out { to { opacity: .25 } }
-@keyframes peel { to { transform: scaleX(0) } }
+@keyframes strike { from { transform: scaleX(0) } }
 @keyframes slap-peel { from { scale: 1.8; opacity: 0 } 12% { scale: 1; opacity: 1; transform: none } 72% { transform: none; opacity: 1 } to { transform: translate(40px, -50px) rotate(30deg); opacity: 0 } }
 @keyframes press { to { border-style: solid; border-color: var(--good); color: var(--good); transform: rotate(-4deg) } }
 @keyframes riffle { to { transform: translate(55vw, -18svh) rotate(28deg); opacity: 0 } }
