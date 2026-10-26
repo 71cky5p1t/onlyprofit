@@ -16,8 +16,8 @@
     const b = brand();
     return `<div class="i-binder b ${stamped ? 'settle' : 'drop-in'}" style="${vt('vt-binder')}"><i class="rings"></i><div class="sleeve"><small>${esc(b.name)} · People &amp; Culture</small><strong>Staff<br>Induction</strong><span class="seal">${brandMark()}</span></div>${stamped ? `<span class="rubber b thump" ${at(.4)}>Read &amp;<br>Understood</span>` : ''}</div>`;
   }
-  // a hole for every hour spent; holes arrive on their own beat
-  const punch = (spent, beats = []) => `<span class="purse i-purse">${[0, 1, 2].map(k => `<i class="slotbox${k < spent ? ' punched' : ''}${beats[k] != null ? ' b hole' : ''}" ${beats[k] != null ? at(beats[k]) : ''}>${k + 1}</i>`).join('')}</span>`;
+  // the Your Input Matters card: a hole for every input spent, each on its own beat
+  const punch = (spent, beats = []) => `<span class="purse i-purse"><span class="pc-band">${brandMark()}<b>Your Input<br>Matters*</b></span><span class="pc-holes">${[0, 1, 2].map(k => `<i class="slotbox${k < spent ? ' punched' : ''}${beats[k] != null ? ' b hole' : ''}" ${beats[k] != null ? at(beats[k]) : ''}></i>`).join('')}</span><small>*3 per quarter</small></span>`;
   function trainingProp(id) {
     const cs = demoCards(), target = S ? S.target : OP.TARGETS[setup.players] - (setup.easy ? 3 : 0);
     if (id === 'welcome') return binderHTML(false);

@@ -50,7 +50,7 @@
 .lesson-overtime .i-cards.spares { display: grid; grid-template-columns: repeat(3, auto); gap: 10px } .lesson-overtime .spares .card { --cw: clamp(56px, 7.2vw, 82px); rotate: 0deg; cursor: pointer }
 .lesson-overtime .spares .card:hover { translate: 0 -4px }
 .lesson-overtime .stage, .lesson-overtime { gap: clamp(10px, 2vh, 18px) }
-.purse .slotbox.hole { animation-name: punch; animation-duration: .3s; animation-timing-function: steps(1, end) }
+.purse .slotbox.hole { animation-name: punch; animation-duration: .3s; animation-timing-function: linear }
 .swap-slot { display: grid; rotate: 0deg } .swap-slot > * { grid-area: 1 / 1 }
 .b.swap-out { animation-name: swap-out; animation-duration: .45s } .b.swap-in { animation-name: swap-in; animation-duration: .5s }
 .b.lift-out { animation-name: lift-out; animation-duration: .45s }
@@ -83,7 +83,7 @@
 @keyframes deal-flip { from { transform: translateX(-70vw) rotateY(180deg) } 55% { transform: rotateY(180deg) } to { transform: rotateY(0) } }
 @keyframes mark-pop { from { transform: scale(0); opacity: 0 } }
 @keyframes coin { from { transform: translateY(-50svh) rotateY(1080deg) scale(.6); opacity: 0 } 60% { transform: rotateY(0) } 75% { transform: rotate(-6deg) } 88% { transform: rotate(4deg) } }
-@keyframes punch { from { background: none; color: rgba(20,20,20,.45); border-color: rgba(20,20,20,.35) } }
+@keyframes punch { 0%, 80% { background: none; border: 1.5px dashed rgba(20,20,20,.38) } }
 @keyframes swap-out { to { transform: translateY(70%) rotate(8deg); opacity: 0 } }
 @keyframes swap-in { from { transform: translateY(140%) rotate(-6deg); opacity: 0 } }
 @keyframes lift-out { to { opacity: .25 } }
