@@ -3140,12 +3140,12 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     const policy = cs.map((c, su) => d[su] == null ? c : SPARES[d[su]]);
     const hand = SPARES.map((c, i) => cardHTML(d[c.s] === i ? cs[c.s] : c, auto && i === 1 ? 'b lift-out' : '', '', `role="button" tabindex="0" data-a="lesson-swap" data-su="${c.s}" data-i="${i}" aria-label="Swap in ${esc(c.w)}" ${auto && i === 1 ? at(.3) : ''}`)).join('');
     const row = auto
-      ? cs.map((c, su) => su === 1 ? `<div class="swap-slot" style="${vt('vt-c1')}">${cardHTML(c, 'b swap-out', '', at(.34))}${cardHTML(SPARES[1], 'b swap-in', '', at(.34))}</div>` : cardHTML(c, '', '', `style="${vt('vt-c' + su)}"`)).join('')
+      ? cs.map((c, su) => su === 1 ? `<div class="swap-slot" style="${vt('vt-c1')}">${cardHTML(c, 'b swap-out', '', at(.38))}${cardHTML(SPARES[1], 'b swap-in', '', at(.38))}</div>` : cardHTML(c, '', '', `style="${vt('vt-c' + su)}"`)).join('')
       : policy.map((c, su) => cardHTML(c, '', '', `style="${vt('vt-c' + su)}"`)).join('');
     const spent = auto ? 2 : OP.SWAP_COST[swaps] || 0;
     // the table reads the sentence, never the marks; an input blacks a word out
-    const shown = auto ? `<p class="line i-shown">${[cs[0], SPARES[1], cs[2]].map((c, su) => `<span class="ph s-${su}"><mark>${esc(c.w)}</mark>${su === 2 ? `<i class="redact b strike" ${at(.7)}></i>` : ''}</span>`).join(' ')}</p>` : '';
-    return `${punch(spent, auto ? [.36, .7] : [])}${cardRow(row, 'ot-policy')}${shown}<div class="i-cards spares">${hand}</div>`;
+    const shown = auto ? `<p class="line i-shown">${[cs[0], SPARES[1], cs[2]].map((c, su) => `<span class="ph s-${su}"><mark>${esc(c.w)}</mark>${su === 2 ? `<i class="redact b strike" ${at(.6)}></i>` : ''}</span>`).join(' ')}</p>` : '';
+    return `${punch(spent, auto ? [.38, .6] : [])}${cardRow(row, 'ot-policy')}${shown}<div class="i-cards spares">${hand}</div>`;
   }
   const SUBJECTS = ['Synergy Review: the Interns', 'Right-Sizing Morale', 'Customer Trust, Phase Two', 'Strategic Pivot to Vending', 'Going Forward, Again', 'Quick Win: Break Room Monetisation (Pilot)'];
   function trainingProp2(id, cs) {
@@ -3154,7 +3154,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     if (id === 'board') {
       const side = (word, names, f) => `<div class="i-vote"><span class="vote-word b thump" ${at(f)}>${word}</span>${names.map((n, k) => `<div class="i-signer">${demoTag(n, f + k * .04)}${squiggle(f + .06 + k * .05)}</div>`).join('')}</div>`;
       const bad = [{ s: 0, v: -2, w: 'Outsource' }, { s: 1, v: -1, w: 'Customer Trust' }, cs[2]];
-      return `<div class="i-votes">${side('Rubber-stamp', ['Gary', 'Moira'], .05)}${side('Open it', ['Trevor', 'Clive', 'You'], .18)}</div>
+      return `<div class="i-votes">${side('Rubber-stamp', ['Gary', 'Moira'], .21)}${side('Open it', ['Trevor', 'Clive', 'You'], .36)}</div>
         <div class="i-duel"><div class="leaf b deal nominee" ${at(.45)}>${page('memo', { id: 'n', subject: 'Outsource Customer Trust (Off the Books)', cards: bad, k: .4, tilt: -2 })}<p class="line b type" ${at(.52)}>${bad.map((c, su) => `<span class="ph s-${su}"><mark>${esc(c.w)}</mark><b class="v ${tone(c.v)}">${GLYPH[c.v]}</b></span>`).join(' ')}</p><span class="rubber red b thump" ${at(.64)}>Overruled</span></div>
         <div class="leaf b deal rival" style="--at:.48">${page('fax', { id: 'r', subject: SUBJECTS[0], k: .4, tilt: 3 })}</div></div>`;
     }
@@ -3162,7 +3162,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
       const e = { ...demoPage('memo', { approved: true }), resolved: cs.map(c => c.v) };
       return `<div class="i-approved b deal" ${at(0, vt('vt-memo'))}>${coverHTML(e, { list: [{ id: 'demo' }], k: .56, tilt: -1, fresh: true })}</div>
         <div class="b rise" ${at(.3)}>${lineHTML(e, { all: true, anim: true })}</div>
-        <div class="pg-from i-from b type" ${at(.62)}>From <b>Trevor</b> · Facilities</div>`;
+        <div class="pg-from i-from b type" ${at(.4)}>From <b>Trevor</b> · Facilities</div>`;
     }
     let seat = 0;
     const tag = (n, extra, cls = '') => `<div class="i-year ${cls}">${demoTag(n, .02 * seat++, extra, cls !== 'star')}</div>`;
@@ -3200,9 +3200,9 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     if (id === 'goal') return `<div class="calc i-calc b rise"><div class="lcd"><div class="ann"><span>PROFIT</span><span>TARGET +${target}</span></div><div class="val" data-count="${target}">${lcd(0)}</div></div></div>
       <div class="i-qtabs">${[1, 2, 3, 4, 5].map(q => `<span class="b fan-in" ${at(.3 + q * .06)}>Q${q}</span>`).join('')}</div>`;
     if (id === 'saboteurs') return `<div class="i-staff">${['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'You'].map((n, k) => `<div class="i-seat">${demoTag(n, k * .03)}
-      <div class="i-role b ${k === 2 ? 'peek' : ''}" style="--at:${.74 + k * .025}"><i class="face back">${brandMark()}</i><i class="face front">Loyal</i>${k === 2 ? `<i class="under">Mole</i>` : ''}</div></div>`).join('')}</div>`;
-    if (id === 'inherit') return `<div class="i-leaver b exit-left" ${at(.08)}>${demoTag('Gary')}</div>${cardRow(cs.map((c, k) => flipCard(c, .28 + k * .08, k)).join(''))}`;
-    if (id === 'policy') return cardRow(cs.map((c, k) => cardHTML(c, 'b pop', '', at(.3 + k * .1, vt('vt-c' + k)))).join('') + cardHTML({ s: 2, v: 'V', w: 'Going Forward' }, 'b spin-in coin', '', at(.78)));
+      <div class="i-role b ${k === 2 ? 'peek' : ''}" style="--at:${.7 + k * .025}"><i class="face back">${brandMark()}</i><i class="face front">Loyal</i>${k === 2 ? `<i class="under">Mole</i>` : ''}</div></div>`).join('')}</div>`;
+    if (id === 'inherit') return `<div class="i-leaver b exit-left" ${at(.08)}>${demoTag('Gary')}</div>${cardRow(cs.map((c, k) => flipCard(c, .33 + k * .06, k)).join(''))}`;
+    if (id === 'policy') return cardRow(cs.map((c, k) => cardHTML(c, 'b pop', '', at(.22 + k * .095, vt('vt-c' + k)))).join('') + cardHTML({ s: 2, v: 'V', w: 'Going Forward' }, 'b spin-in coin', '', at(.78)));
     if (id === 'overtime') return overtimeProp(cs);
     if (id === 'stamp') return `<div class="i-stamp" ${at(.42, vt('vt-memo'))}>${page('memo', { cards: [cs[0], cs[1], { s: 2, v: 'V', w: 'Going Forward' }], stamp: 'Rec', tilt: -2 })}<span class="stk pip b slap" ${at(.74)}>PIP</span></div>
       <div class="bar3 stampstrip i-strip">${Object.keys(STAMP).map(k => `<button tabindex="-1" class="s-${k}${k === 'Risky' ? ' right' : ''}"><span class="${k === 'Rec' ? 'b press' : ''}" ${k === 'Rec' ? at(.38) : ''}>${STAMP[k]}</span></button>`).join('')}</div>`;
@@ -3221,15 +3221,15 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
   // sound beats, as a share of the chapter
   const BEATS = {
     goal: [[.1, 'calc-key'], [.2, 'calc-key'], [.3, 'calc-key'], [.42, 'calc-total']],
-    saboteurs: [[.05, 'paper-shuffle'], [.3, 'desk-card-flip'], [.74, 'paper-shuffle']],
-    inherit: [[.08, 'paper-pull'], [.28, 'desk-card-deal'], [.36, 'desk-card-deal'], [.44, 'desk-card-deal']],
-    policy: [[.36, 'desk-ding'], [.46, 'desk-ding'], [.56, 'desk-ding'], [.78, 'desk-card-flip']],
-    overtime: [[.34, 'desk-card-drop'], [.36, 'desk-stapler'], [.7, 'desk-stapler']],
+    saboteurs: [[.05, 'paper-shuffle'], [.3, 'desk-card-flip'], [.7, 'paper-shuffle']],
+    inherit: [[.08, 'paper-pull'], [.33, 'desk-card-deal'], [.39, 'desk-card-deal'], [.45, 'desk-card-deal']],
+    policy: [[.27, 'desk-ding'], [.36, 'desk-ding'], [.46, 'desk-ding'], [.78, 'desk-card-flip']],
+    overtime: [[.38, 'desk-card-drop'], [.39, 'desk-stapler'], [.6, 'desk-stapler']],
     stamp: [[.42, 'desk-stamp'], [.74, 'desk-sticker']],
     cover: [[.13, 'paper-shuffle'], [.3, 'paper-typing'], [.62, 'desk-sign'], [.8, 'paper-pull']],
     ceo: [[.05, 'paper-shuffle'], [.5, 'desk-sticker'], [.8, 'paper-pull']],
-    board: [[.12, 'desk-sign'], [.3, 'desk-sign'], [.45, 'paper-pull'], [.64, 'sting-overruled']],
-    approved: [[.05, 'desk-stamp'], [.12, 'sting-approved'], [.62, 'paper-type-key']],
+    board: [[.26, 'desk-sign'], [.42, 'desk-sign'], [.45, 'paper-pull'], [.64, 'sting-overruled']],
+    approved: [[.05, 'desk-stamp'], [.12, 'sting-approved'], [.4, 'paper-type-key']],
     endgame: [[.22, 'sting-saboteur'], [.6, 'desk-sticker'], [.76, 'desk-ding']],
     signoff: [[.4, 'desk-stamp']]
   };
