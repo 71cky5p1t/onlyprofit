@@ -2,15 +2,15 @@
   // sound beats, as a share of the chapter
   const BEATS = {
     goal: [[.1, 'calc-key'], [.2, 'calc-key'], [.3, 'calc-key'], [.42, 'calc-total']],
-    saboteurs: [[.05, 'paper-shuffle'], [.3, 'desk-card-flip'], [.74, 'paper-shuffle']],
-    inherit: [[.08, 'paper-pull'], [.28, 'desk-card-deal'], [.36, 'desk-card-deal'], [.44, 'desk-card-deal']],
-    policy: [[.36, 'desk-ding'], [.46, 'desk-ding'], [.56, 'desk-ding'], [.78, 'desk-card-flip']],
-    overtime: [[.34, 'desk-card-drop'], [.36, 'desk-stapler'], [.7, 'desk-stapler']],
+    saboteurs: [[.05, 'paper-shuffle'], [.3, 'desk-card-flip'], [.7, 'paper-shuffle']],
+    inherit: [[.08, 'paper-pull'], [.33, 'desk-card-deal'], [.39, 'desk-card-deal'], [.45, 'desk-card-deal']],
+    policy: [[.27, 'desk-ding'], [.36, 'desk-ding'], [.46, 'desk-ding'], [.78, 'desk-card-flip']],
+    overtime: [[.38, 'desk-card-drop'], [.39, 'desk-stapler'], [.6, 'desk-stapler']],
     stamp: [[.42, 'desk-stamp'], [.74, 'desk-sticker']],
     cover: [[.13, 'paper-shuffle'], [.3, 'paper-typing'], [.62, 'desk-sign'], [.8, 'paper-pull']],
     ceo: [[.05, 'paper-shuffle'], [.5, 'desk-sticker'], [.8, 'paper-pull']],
-    board: [[.12, 'desk-sign'], [.3, 'desk-sign'], [.45, 'paper-pull'], [.64, 'sting-overruled']],
-    approved: [[.05, 'desk-stamp'], [.12, 'sting-approved'], [.62, 'paper-type-key']],
+    board: [[.26, 'desk-sign'], [.42, 'desk-sign'], [.45, 'paper-pull'], [.64, 'sting-overruled']],
+    approved: [[.05, 'desk-stamp'], [.12, 'sting-approved'], [.4, 'paper-type-key']],
     endgame: [[.22, 'sting-saboteur'], [.6, 'desk-sticker'], [.76, 'desk-ding']],
     signoff: [[.4, 'desk-stamp']]
   };
