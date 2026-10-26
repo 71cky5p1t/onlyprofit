@@ -1055,6 +1055,20 @@ html[data-sweep="d"]::view-transition-old(i-stage) { animation-name: sweep-d }
 .b.frame-in { animation-name: frame-drop; animation-duration: .7s } .b.slap { animation-name: slap; animation-duration: .35s }
 @media (max-width: 740px) { .i-staff.year { grid-template-columns: repeat(2, minmax(0, 140px)); row-gap: 48px } }
 
+/* induction name badges: the red-framed sticker, names in marker, slapped on crooked */
+.induction .nametag { border-radius: 9px; padding-bottom: 15px; background: #FCFAF4; box-shadow: inset 0 0 0 4px var(--red), inset 0 -12px 0 var(--red), 0 1px 1px rgba(0,0,0,.25), 0 12px 18px -12px rgba(0,0,0,.75) }
+.induction .nametag .hello { padding-top: 8px }
+.induction .nametag b { font: 700 clamp(26px, 3vw, 36px)/.9 Caveat, var(--f-body); letter-spacing: 0; color: #20242C; padding: 8px 6px 0; transform: rotate(-4deg) }
+.induction .i-signer .nametag { border-radius: 7px; padding-bottom: 10px; box-shadow: inset 0 0 0 3px var(--red), inset 0 -8px 0 var(--red), 0 8px 12px -8px rgba(0,0,0,.75) }
+.induction .i-signer .nametag b { font-size: clamp(18px, 2.3vw, 26px); padding-top: 4px }
+.i-signer:nth-child(3n+1) .nametag, .i-year:nth-child(odd) .nametag, .i-leaver .nametag { rotate: -2.5deg }
+.i-signer:nth-child(3n+2) .nametag, .i-year:nth-child(even) .nametag, .i-ceo .nametag { rotate: 2deg }
+/* stickers sit on the bottom edge, so every badge stays the same size */
+.induction .i-year .stickers { position: absolute; left: -10px; right: -10px; top: 100%; translate: 0 -9px; flex-wrap: nowrap; min-height: 0; margin: 0 }
+.induction .i-year .rubber { top: 58% }
+.induction .i-year .stk { white-space: nowrap }
+@media (max-width: 740px) { .induction .eoty { inset: -8px -6px -36px } }
+
 /* ---------- Staff Induction: a training tape played over the felt. Beats run off --dur (chapter) and --played (time already played) ---------- */
 .induction { --played: 0s; position: relative; height: 100svh; min-height: 540px; overflow: hidden; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; padding: 58px 16px 0; user-select: none }
 :where(.induction) .b { animation-delay: calc(var(--dur) * var(--at, 0) - var(--played)); animation-duration: .55s; animation-timing-function: var(--bounce); animation-fill-mode: both }
@@ -3076,17 +3090,17 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
   // [id, tab name, narrator line, seconds]. The line is the caption and the voice script, word for word.
   const LESSONS = [
     ['welcome', 'Welcome', 'Welcome aboard. Please enjoy this mandatory induction. Enjoyment is also mandatory.', 5],
-    ['goal', 'The target', 'You’ve got five quarters to hit the profit target. Hit it, and everyone keeps their job. Probably.', 7],
-    ['saboteurs', 'Saboteurs', 'Some of your colleagues may be quietly sinking the company. Maybe one. Maybe two. Maybe nobody, and we’re just like this.', 8],
-    ['inherit', 'Handover', 'Each quarter, you run a department. You inherit the last manager’s work. It’s yours now. Congratulations.', 8],
-    ['policy', 'Policy', 'One Action. One Target. One Modifier. Read together, that’s a policy. Add up the marks. A question mark is a coin toss.', 8],
-    ['overtime', 'Overtime', 'You’ll draw some spares. Overtime hours buy you swaps, or show a card to the whole table. You get three hours. They’re unpaid.', 9],
-    ['stamp', 'The stamp', 'Then stamp it. The pencil tick marks the honest answer. You can lie. You can also be put on a Performance Improvement Plan.', 8],
-    ['cover', 'Cover page', 'Dress it up with a cover page. Nobody knows who wrote what. That’s the whole point.', 7],
-    ['ceo', 'The CEO', 'Each quarter, someone has a go as CEO, and picks one proposal from the pile.', 6],
-    ['board', 'The Board', 'Everyone else is the Board. Ratify it, or open it up. If it’s dodgy, a better one goes through instead. The CEO has some explaining to do.', 10],
-    ['approved', 'Approved', 'Only the approved policy gets a name on it. Profit moves. Everyone acts like they saw it coming.', 7],
-    ['endgame', 'Year end', 'After quarter five, the table names a saboteur. Get it right, and their damage is reversed. Get it wrong, and that’s an unfair dismissal claim. Best record on the winning side is Employee of the Year.', 12],
+    ['goal', 'The target', 'The company has five quarters to hit its profit target. Hit it, and everyone keeps their job. Probably.', 6],
+    ['saboteurs', 'Saboteurs', 'Some of you were hired to quietly sink the company. Your role memo will say if it’s you. Maybe it’s nobody, and we’re just like this.', 8],
+    ['inherit', 'Handover', 'Every quarter, you move to a new department and inherit the last manager’s three cards. Nobody can prove they weren’t yours. Congratulations.', 8],
+    ['policy', 'Policy', 'Three cards make a proposal: an Action, a Target and a Modifier. Read as one sentence, the worse it sounds, the more it makes.', 8],
+    ['overtime', 'Overtime', 'You also get spares. Spend overtime hours to swap one in, or turn a card face up so people trust you. The hours are unpaid.', 8],
+    ['stamp', 'The stamp', 'Then stamp it: Recommended, Risky, or Not. The pencil tick marks the honest one. You can lie. The CEO can check. That’s a Performance Improvement Plan.', 9],
+    ['cover', 'Cover page', 'Give it a cover page and drop it in the pile. No names. Nobody knows who wrote what.', 6],
+    ['ceo', 'The CEO', 'Each quarter, someone takes a turn as CEO. They read the pile and pick one.', 5],
+    ['board', 'The Board', 'Everyone else is the Board. Ratify the pick, or open it up. If there was a better one, that goes through instead, and the dud’s author is named.', 9],
+    ['approved', 'Approved', 'Whatever goes through hits the books, and its author is named. Everyone acts like they saw it coming.', 6],
+    ['endgame', 'Year end', 'After quarter five, you vote on who the saboteur was. Right, and their damage is undone. Wrong, and they sue for unfair dismissal. Then we count the money.', 9],
     ['signoff', 'Sign-off', 'That concludes your induction. The clock starts now. Please look busy.', 5]
   ];
   // recorded lines drop in as assets/audio/induction/welcome.mp3 (or vo-01-welcome.mp3) and so on
@@ -3210,14 +3224,16 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
   };
   const clock = s => { s = Math.floor(s); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
   // a recorded line sets the chapter's length; its words land when they're spoken
-  const voiced = k => { const f = window.__opVoiceFiles || [], id = LESSONS[k][0]; return [id, voiceClip(k)].find(n => f.includes(n)); };
+  // a take recorded for an older line stays silent rather than talk over new captions
+  const voiced = k => { const f = window.__opVoiceFiles || [], [id, , line] = LESSONS[k], vt = VO_TIMES[id];
+    return vt && vt.times.length === line.split(' ').length ? [id, voiceClip(k)].find(n => f.includes(n)) : undefined; };
   // played a touch quick, pitch held
   const VO_RATE = 1.14;
-  const chapterLen = k => voiced(k) && VO_TIMES[LESSONS[k][0]] ? VO_TIMES[LESSONS[k][0]].dur / VO_RATE + .6 : LESSONS[k][3];
+  const chapterLen = k => voiced(k) ? VO_TIMES[LESSONS[k][0]].dur / VO_RATE + .6 : LESSONS[k][3];
   const tapeAt = () => LESSONS.slice(0, TRAIN.i).reduce((n, l, k) => n + chapterLen(k), 0) + TRAIN.elapsed;
   function wordTimes(k) {
     const [id, , line] = LESSONS[k], w = line.split(' ');
-    if (voiced(k) && VO_TIMES[id] && VO_TIMES[id].times.length === w.length) return VO_TIMES[id].times.map(t => t / VO_RATE);
+    if (voiced(k)) return VO_TIMES[id].times.map(t => t / VO_RATE);
     const total = line.length; let acc = 0;
     return w.map(x => { const t = acc / total * .8 * TRAIN.duration; acc += x.length + 1; return t; });
   }

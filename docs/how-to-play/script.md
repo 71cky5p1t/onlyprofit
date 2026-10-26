@@ -31,16 +31,16 @@ Shot ids double as audio file names: `assets/audio/vo/<id>.mp3`.
 ### The lines
 
 1. **vo-01-welcome** — Welcome aboard. Please enjoy this mandatory induction. Enjoyment is also mandatory.
-2. **vo-02-goal** — You have five quarters to hit the profit target. Hit it, and everyone keeps their job. Probably.
-3. **vo-03-saboteurs** — Some of your colleagues may be quietly sinking the company. Maybe one. Maybe two. Maybe nobody, and we're just like this.
-4. **vo-04-inherit** — Each quarter you run a department, and you inherit the last manager's work. Three cards. Congratulations, they're yours now.
-5. **vo-05-policy** — One Action, one Target, one Modifier. That's a policy. Every card has a value. Question marks are a coin toss.
-6. **vo-06-overtime** — You'll draw three more. Overtime hours buy you swaps, or show a card to the whole table. You get three hours. They're unpaid.
-7. **vo-07-stamp** — Then stamp it. The pencil tick marks the honest answer. Lying is an option. So is a Performance Improvement Plan.
-8. **vo-08-cover** — Dress it up with a cover page. Nobody knows who wrote what. That's the whole point.
-9. **vo-09-ceo** — Every quarter, someone takes a turn as CEO, and picks one proposal from the pile.
-10. **vo-10-board** — Everyone else is the Board. Ratify it, or open it up. If it stinks, a better one goes through instead, and the CEO has some explaining to do.
-11. **vo-11-approved** — Only the approved policy gets a name on it. Profit moves. Everyone acts like they saw it coming.
+2. **vo-02-goal** — The company has five quarters to hit its profit target. Hit it, and everyone keeps their job. Probably.
+3. **vo-03-saboteurs** — Some of you were hired to quietly sink the company. Your role memo will say if it's you. Maybe it's nobody, and we're just like this.
+4. **vo-04-inherit** — Every quarter, you move to a new department and inherit the last manager's three cards. Nobody can prove they weren't yours. Congratulations.
+5. **vo-05-policy** — Three cards make a proposal: an Action, a Target and a Modifier. Read as one sentence, the worse it sounds, the more it makes.
+6. **vo-06-overtime** — You also get spares. Spend overtime hours to swap one in, or turn a card face up so people trust you. The hours are unpaid.
+7. **vo-07-stamp** — Then stamp it: Recommended, Risky, or Not. The pencil tick marks the honest one. You can lie. The CEO can check. That's a Performance Improvement Plan.
+8. **vo-08-cover** — Give it a cover page and drop it in the pile. No names. Nobody knows who wrote what.
+9. **vo-09-ceo** — Each quarter, someone takes a turn as CEO. They read the pile and pick one.
+10. **vo-10-board** — Everyone else is the Board. Ratify the pick, or open it up. If there was a better one, that goes through instead, and the dud's author is named.
+11. **vo-11-approved** — Whatever goes through hits the books, and its author is named. Everyone acts like they saw it coming.
 12. **vo-12-endgame** — *(module, below)*
 13. **vo-13-signoff** — That concludes your induction. The clock starts now. Please look busy.
 
@@ -49,7 +49,7 @@ Shot ids double as audio file names: `assets/audio/vo/<id>.mp3`.
 Record both. The build picks one with a single constant. The end-game rules are still moving, so this is the only shot that should change when they do.
 
 **12W, the end vote + personal records** (what `core.js` does today: the whistleblower vote stays, PR #24 adds records):
-> After quarter five, the table names a saboteur. Right, and their damage is reversed. Wrong, and it's a wrongful dismissal claim. The best record on the winning side is Employee of the Year.
+> After quarter five, you vote on who the saboteur was. Right, and their damage is undone. Wrong, and they sue for unfair dismissal. Then we count the money.
 
 TV: name tags in a row; a whistle; one tag takes the red SABOTEUR stamp and the calculator un-ticks the clawback (KA-CHING!). Then a personnel file slides in with dog-eared stickers on it (Great work!, See me) and an EMPLOYEE OF THE YEAR frame drops over one name tag. Phone: your role memo with your record clipped to it.
 

@@ -16,14 +16,16 @@
   };
   const clock = s => { s = Math.floor(s); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
   // a recorded line sets the chapter's length; its words land when they're spoken
-  const voiced = k => { const f = window.__opVoiceFiles || [], id = LESSONS[k][0]; return [id, voiceClip(k)].find(n => f.includes(n)); };
+  // a take recorded for an older line stays silent rather than talk over new captions
+  const voiced = k => { const f = window.__opVoiceFiles || [], [id, , line] = LESSONS[k], vt = VO_TIMES[id];
+    return vt && vt.times.length === line.split(' ').length ? [id, voiceClip(k)].find(n => f.includes(n)) : undefined; };
   // played a touch quick, pitch held
   const VO_RATE = 1.14;
-  const chapterLen = k => voiced(k) && VO_TIMES[LESSONS[k][0]] ? VO_TIMES[LESSONS[k][0]].dur / VO_RATE + .6 : LESSONS[k][3];
+  const chapterLen = k => voiced(k) ? VO_TIMES[LESSONS[k][0]].dur / VO_RATE + .6 : LESSONS[k][3];
   const tapeAt = () => LESSONS.slice(0, TRAIN.i).reduce((n, l, k) => n + chapterLen(k), 0) + TRAIN.elapsed;
   function wordTimes(k) {
     const [id, , line] = LESSONS[k], w = line.split(' ');
-    if (voiced(k) && VO_TIMES[id] && VO_TIMES[id].times.length === w.length) return VO_TIMES[id].times.map(t => t / VO_RATE);
+    if (voiced(k)) return VO_TIMES[id].times.map(t => t / VO_RATE);
     const total = line.length; let acc = 0;
     return w.map(x => { const t = acc / total * .8 * TRAIN.duration; acc += x.length + 1; return t; });
   }
