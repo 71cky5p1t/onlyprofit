@@ -52,12 +52,24 @@
       a.onplay = () => voDuck(true); a.onpause = a.onended = () => voDuck(false);
       if (!TRAIN.pause) a.play().catch(() => { if (TRAIN.audio === a) TRAIN.audio = null; });
     }
-    TRAIN.last = performance.now(); render();
+    TRAIN.last = performance.now(); flow(render);
     TRAIN.tick = setInterval(step, 100);
   }
   // the music bed sits about 7 dB under the narrator, and comes back when the line ends
   function voDuck(on) {
     const c = auCtx(); if (c) AU.mus.gain.setTargetAtTime(on ? .22 : .5, c.currentTime, on ? .08 : .2);
+  }
+  // between chapters, objects that carry over slide to their new spot; the rest is swept off the desk
+  const SWEEP = ['l', 'r', 'd'];
+  function flow(paint) {
+    const old = document.querySelector('.induction .i-stage');
+    if (!old || !document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return paint();
+    const kept = new Set([...old.querySelectorAll('[style*="view-transition-name"]')].map(e => e.style.viewTransitionName));
+    document.documentElement.dataset.sweep = SWEEP[TRAIN.i % 3];
+    document.startViewTransition(() => {
+      paint();
+      document.querySelectorAll('.i-stage [style*="view-transition-name"]').forEach(e => { if (kept.has(e.style.viewTransitionName)) e.classList.add('carry'); });
+    });
   }
   function setDuration(d) {
     TRAIN.duration = d; const m = document.querySelector('.induction'); if (m) m.style.setProperty('--dur', d + 's');

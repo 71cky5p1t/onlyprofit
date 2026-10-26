@@ -895,6 +895,26 @@ section > .label { color: var(--on-table-2) }
 .au-btn svg path:first-child { fill: currentColor }
 .au-btn[aria-pressed="true"] .x, .au-btn[aria-pressed="false"] .w { display: none }
 
+/* ---------- Staff Induction, between chapters: carried objects slide, the rest is swept off the desk ---------- */
+.induction .i-stage { view-transition-name: i-stage } .induction .i-sub { view-transition-name: i-sub }
+.induction .carry, .induction .carry > .cp-w { animation: none !important }
+::view-transition-group(root), ::view-transition-old(root), ::view-transition-new(root) { animation: none }
+::view-transition-group(*) { animation-duration: .6s; animation-timing-function: cubic-bezier(.34, 1.25, .5, 1) }
+::view-transition-old(*), ::view-transition-new(*) { animation-duration: .2s }
+::view-transition-group(i-stage), ::view-transition-new(i-stage), ::view-transition-group(i-sub), ::view-transition-new(i-sub) { animation: none }
+::view-transition-old(i-stage) { animation: sweep-l .45s cubic-bezier(.5, 0, .9, .5) both }
+html[data-sweep="r"]::view-transition-old(i-stage) { animation-name: sweep-r }
+html[data-sweep="d"]::view-transition-old(i-stage) { animation-name: sweep-d }
+::view-transition-old(i-sub) { animation: gone .01s both }
+/* an object that doesn't make the next chapter gets flung off; one that's new flicks in by itself */
+::view-transition-old(*):only-child { animation: fling .4s cubic-bezier(.5, 0, .9, .5) both }
+::view-transition-new(*):only-child { animation: none }
+@keyframes sweep-l { to { transform: translate(-115vw, 10vh) rotate(-16deg) } }
+@keyframes sweep-r { to { transform: translate(115vw, -6vh) rotate(14deg) } }
+@keyframes sweep-d { to { transform: translate(8vw, 110vh) rotate(9deg) } }
+@keyframes fling { to { transform: translate(-40vw, 90vh) rotate(-40deg) } }
+@keyframes gone { to { opacity: 0 } }
+
 /* ---------- Staff Induction props: the game's own pieces, choreographed ---------- */
 .i-cards { display: flex; gap: clamp(8px, 1.6vw, 16px); align-items: center; justify-content: center; flex-wrap: wrap }
 .i-cards .card, .i-cards .flip { --cw: clamp(76px, 12vw, 138px) }
@@ -932,7 +952,7 @@ section > .label { color: var(--on-table-2) }
 
 /* someone else's work, dealt face down and turned over */
 .i-leaver .nametag { width: 150px } .b.exit-left { animation-name: exit-left; animation-duration: .8s; animation-timing-function: ease-in }
-.flip { position: relative; transform-style: preserve-3d; animation-name: deal-flip !important; animation-duration: 1.1s !important; animation-timing-function: ease-out !important }
+.flip { position: relative; transform-style: preserve-3d; animation-name: i-deal-flip !important; animation-duration: 1.1s !important; animation-timing-function: ease-out !important }
 .flip .card { backface-visibility: hidden }
 .flip .cback { position: absolute; inset: 0; border-radius: calc(var(--cw) * .075); backface-visibility: hidden; transform: rotateY(180deg); display: grid; place-items: center; color: var(--brand-ink);
   background: radial-gradient(circle, transparent 0 28%, rgba(0,0,0,.08) 29% 30%, transparent 31%), repeating-linear-gradient(45deg, rgba(255,255,255,.08) 0 4px, transparent 4px 8px), var(--brand); box-shadow: inset 0 0 0 calc(var(--cw) * .05) var(--stock), var(--lift) }
@@ -955,7 +975,7 @@ section > .label { color: var(--on-table-2) }
 .redact { position: absolute; inset: 1px 0; background: var(--ink); border-radius: 2px; transform-origin: 0 50% } .b.peel { animation-name: peel; animation-duration: .4s; animation-timing-function: ease-in }
 
 /* the stamp: honest tick on Risky, the stamp lands on Recommended anyway; a PIP slaps on and peels off */
-.i-stamp { position: relative } .i-stamp .cp-stamp { animation: thump .45s var(--bounce) both; animation-delay: calc(var(--dur) * var(--at) - var(--played)) }
+.i-stamp { position: relative } .i-stamp .cp-stamp { animation: i-thump .45s var(--bounce) both; animation-delay: calc(var(--dur) * var(--at) - var(--played)) }
 .i-stamp .stk.pip { position: absolute; top: 18px; right: -16px; font-size: 13px; padding: 8px 14px 7px 10px; animation-name: slap-peel; animation-duration: calc(var(--dur) * .2) }
 .i-strip { width: min(420px, 90vw); background: var(--stock); box-shadow: var(--lift) }
 .i-strip .b.press { animation-name: press; animation-duration: .3s }
@@ -968,12 +988,12 @@ section > .label { color: var(--on-table-2) }
 .squig { position: absolute; bottom: 6%; right: 4%; width: 44%; fill: none; stroke: #161A2E; stroke-width: 3.2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1 }
 .b.draw { animation-name: draw; animation-duration: .7s; animation-timing-function: ease-out }
 
-.b.deal { animation-name: deal } .b.rise { animation-name: rise; animation-timing-function: ease-out } .b.fan-in { animation-name: fan } .b.thump { animation-name: thump; animation-duration: .45s }
+.b.deal { animation-name: i-deal } .b.rise { animation-name: rise; animation-timing-function: ease-out } .b.fan-in { animation-name: fan } .b.thump { animation-name: i-thump; animation-duration: .45s }
 
 @keyframes drop-in { from { transform: translate(40vw, -70svh) rotate(28deg) } }
-@keyframes deal { from { opacity: 0; transform: translateY(-36px) scale(.92) } }
-@keyframes rise { from { opacity: 0; transform: translateY(26px) } }
-@keyframes fan { from { opacity: 0; transform: translate(-30px, 20px) rotate(-24deg) } }
+@keyframes i-deal { from { transform: translate(var(--fx, 0), -75svh) rotate(var(--fr, -22deg)) } }
+@keyframes rise { from { transform: translateY(75svh) rotate(7deg) } }
+@keyframes fan { from { transform: translate(-75vw, 20px) rotate(-40deg) } }
 @keyframes turn { to { transform: rotateY(180deg) } }
 @keyframes peek { 25%, 75% { transform: rotate(-13deg) translate(-4px, -16px) } }
 @keyframes exit-left { to { transform: translateX(-80vw) rotate(-14deg); opacity: 0 } }
@@ -991,7 +1011,7 @@ section > .label { color: var(--on-table-2) }
 @keyframes send-up { to { transform: translateY(-90svh) rotate(-4deg) } }
 @keyframes type-on { from { clip-path: inset(0 100% 0 0) } to { clip-path: inset(0) } }
 @keyframes draw { to { stroke-dashoffset: 0 } }
-@keyframes scatter { from { opacity: 0; transform: translate(0, -60svh) rotate(40deg) } }
+@keyframes scatter { from { transform: translate(calc((var(--k) - 2.5) * 30vw), -75svh) rotate(40deg) } }
 @keyframes lift { to { transform: translateY(-18px) scale(1.06) rotate(var(--t, 0deg)); filter: drop-shadow(0 0 0 var(--gold)) drop-shadow(0 18px 14px rgba(0,0,0,.45)) } }
 @keyframes slide-plate { from { opacity: 0; translate: 80% 0 } }
 @keyframes frame-drop { from { opacity: 0; transform: translateY(-50svh) rotate(-10deg) } 70% { transform: rotate(2deg) } }
@@ -1003,6 +1023,8 @@ section > .label { color: var(--on-table-2) }
   .i-votes { flex-direction: column; align-items: center; gap: 6px } .i-signer { width: 58px } .i-binder .rubber { font-size: 12px; border-width: 2.5px } .i-votes { gap: 14px } .i-vote { gap: 4px } .i-duel .line { font-size: 10px; max-width: 160px } .i-calc .val { font-size: 52px }
 }
 
+.nametag.b.deal:nth-of-type(even), .i-seat:nth-child(even) .nametag, .i-signer:nth-child(odd) .nametag { --fx: 20vw; --fr: 26deg }
+
 /* ---------- Staff Induction props, second half: the CEO, the Board, approval, year end ---------- */
 /* the CEO's pile */
 .i-pile { display: grid; grid-template-columns: repeat(3, auto); gap: 0 4px; justify-content: center; margin-bottom: -20px }
@@ -1013,7 +1035,7 @@ section > .label { color: var(--on-table-2) }
 /* the Board: signatures under each side, then the opened nominee loses to a rival */
 .i-votes { display: flex; gap: clamp(18px, 5vw, 60px); justify-content: center; align-items: flex-start }
 .i-vote { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; justify-content: center; max-width: 360px }
-.vote-word { flex-basis: 100%; justify-self: center; text-align: center; font: 900 15px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--on-table); animation-name: thump }
+.vote-word { flex-basis: 100%; justify-self: center; text-align: center; font: 900 15px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--on-table); animation-name: i-thump }
 .i-signer { position: relative; width: clamp(66px, 9vw, 100px) } .i-signer .squig { position: static; width: 100%; height: 22px; stroke: var(--on-table) }
 .i-signer .nametag b { font-size: clamp(12px, 1.7vw, 19px) } .i-signer .nametag .hello { font-size: 10px; padding: 5px 2px 4px } .i-signer .nametag .hello small { font-size: 6px }
 .i-duel { display: flex; gap: clamp(16px, 4vw, 44px); align-items: flex-start; justify-content: center }
@@ -1069,7 +1091,7 @@ section > .label { color: var(--on-table-2) }
 .outro .i-tabs { animation-name: sink !important }
 .rubber { display: inline-block; font: 900 15px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; color: var(--red); border: 3.5px solid currentColor; border-radius: 4px; padding: 7px 11px 6px; rotate: -8deg; mix-blend-mode: multiply; opacity: .92;
   mask-image: radial-gradient(circle at 30% 40%, #000 0 60%, rgba(0,0,0,.7) 61%), repeating-linear-gradient(80deg, #000 0 3px, rgba(0,0,0,.82) 3px 5px); mask-composite: intersect }
-.rubber.big { position: absolute; font-size: clamp(28px, 6.5vw, 66px); border-width: clamp(4px, .7vw, 8px); padding: .2em .35em .14em; mix-blend-mode: normal; animation: thump .45s var(--bounce) both, sweep .7s cubic-bezier(.5, 0, .9, .4) .5s forwards }
+.rubber.big { position: absolute; font-size: clamp(28px, 6.5vw, 66px); border-width: clamp(4px, .7vw, 8px); padding: .2em .35em .14em; mix-blend-mode: normal; animation: i-thump .45s var(--bounce) both, sweep .7s cubic-bezier(.5, 0, .9, .4) .5s forwards }
 .tclock { position: absolute; top: 0; left: 50%; display: grid; justify-items: center; translate: -50% 0; animation: clock-drop .9s cubic-bezier(.3, 1.4, .5, 1) .6s both; transform-origin: 50% 0 }
 .tclock .chain { width: 4px; height: 24svh; background: repeating-linear-gradient(#9C9A8E 0 6px, #5E5D55 6px 8px, transparent 8px 10px) }
 .tc-body { padding: 10px 14px 14px; border-radius: 10px; background: linear-gradient(#ECE5D0, #D2C8AA); box-shadow: inset 0 1px 0 #fff8, inset 0 -3px 0 rgba(0,0,0,.12), 0 24px 30px -16px rgba(0,0,0,.7); display: grid; justify-items: center; gap: 8px; animation: swing 2.2s ease-out 1.3s both }
@@ -1086,7 +1108,7 @@ section > .label { color: var(--on-table-2) }
 @keyframes osd-blink { 50% { opacity: .15 } }
 @keyframes sweep { to { transform: translateY(75svh) rotate(5deg); opacity: 0 } }
 @keyframes sink { to { transform: translateY(80px) } }
-@keyframes thump { from { scale: 2.6; opacity: 0 } 55% { scale: .94; opacity: 1 } to { scale: 1; opacity: 1 } }
+@keyframes i-thump { from { scale: 2.6; opacity: 0 } 55% { scale: .94; opacity: 1 } to { scale: 1; opacity: 1 } }
 @keyframes clock-drop { from { translate: -50% -110% } }
 @keyframes swing { from { rotate: 4deg } 30% { rotate: -2.5deg } 60% { rotate: 1deg } to { rotate: 0deg } }
 @keyframes flap-out { to { transform: rotateX(-90deg) } }
@@ -2845,7 +2867,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
 
   function seg(key, opts) { return `<div class="seg">${opts.map(([v, l]) => `<button data-a="set" data-k="${key}" data-v="${v}" aria-pressed="${String(setup[key]) === String(v)}">${l}</button>`).join('')}</div>`; }
   function setupHTML() {
-    return `<main class="lobby"><section class="lobby-pitch"><div class="lobby-kicker"><span class="logo-mark">${brandMark()}</span> A GAME OF QUESTIONABLE MANAGEMENT</div><h1>ONLY<br><span>PROFIT.</span></h1><p class="lobby-tagline">Good company.<br>Terrible colleagues.</p><p class="lobby-summary">Inherit a mess. Sell it as a good idea.<br>Keep the company afloat—or quietly sink it.</p><div class="lobby-props" aria-hidden="true">${demoCards().map(c => cardHTML(c)).join('')}<span class="lobby-stamp">APPROVED<br><small>probably</small></span></div><div class="lobby-meta">4–8 employees <i>·</i> 5 quarters <i>·</i> ~10 minutes</div></section>
+    return `<main class="lobby"><section class="lobby-pitch"><div class="lobby-kicker"><span class="logo-mark">${brandMark()}</span> A GAME OF QUESTIONABLE MANAGEMENT</div><h1>ONLY<br><span>PROFIT.</span></h1><p class="lobby-tagline">Good company.<br>Terrible colleagues.</p><p class="lobby-summary">Inherit a mess. Sell it as a good idea.<br>Keep the company afloat—or quietly sink it.</p><div class="lobby-props" aria-hidden="true">${demoCards().map(c => cardHTML(c)).join('')}<span class="lobby-stamp">APPROVED<br><small>pending the inquest</small></span></div><div class="lobby-meta">4–8 employees <i>·</i> 5 quarters <i>·</i> ~10 minutes</div></section>
       <section class="setup lobby-form" aria-label="Game setup"><div class="setup-hero"><span class="label">Your next questionable career move</span><h2>Clock in.</h2><p>One human. The rest are bots.<br>Everyone has an agenda.</p></div><div class="setup-body"><div class="field"><span class="label">Employees at the table</span>${seg('players', [[4,'4'],[5,'5'],[6,'6'],[7,'7'],[8,'8']])}</div>
         ${deskThemePicker()}
         <button class="btn primary wide" data-a="start">${setup.spectate ? 'Watch the office' : 'Clock in & play'} ↗</button><button class="induction-binder" data-a="induction"><span class="book-spine"></span><span><b>STAFF INDUCTION</b><small>How to play · under 2 minutes</small></span><i>▶</i></button>
@@ -3077,30 +3099,31 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     const policy = cs.map((c, su) => d[su] == null ? c : SPARES[d[su]]);
     const hand = SPARES.map((c, i) => cardHTML(d[c.s] === i ? cs[c.s] : c, auto && i === 1 ? 'b lift-out' : '', '', `role="button" tabindex="0" data-a="lesson-swap" data-su="${c.s}" data-i="${i}" aria-label="Swap in ${esc(c.w)}" ${auto && i === 1 ? at(.3) : ''}`)).join('');
     const row = auto
-      ? cs.map((c, su) => su === 1 ? `<div class="swap-slot">${cardHTML(c, 'b swap-out', '', at(.34))}${cardHTML(SPARES[1], 'b swap-in', '', at(.34))}</div>` : cardHTML(c)).join('')
-      : policy.map(c => cardHTML(c)).join('');
+      ? cs.map((c, su) => su === 1 ? `<div class="swap-slot" style="${vt('vt-c1')}">${cardHTML(c, 'b swap-out', '', at(.34))}${cardHTML(SPARES[1], 'b swap-in', '', at(.34))}</div>` : cardHTML(c, '', '', `style="${vt('vt-c' + su)}"`)).join('')
+      : policy.map((c, su) => cardHTML(c, '', '', `style="${vt('vt-c' + su)}"`)).join('');
     const spent = auto ? 2 : OP.SWAP_COST[swaps] || 0;
     const shown = auto ? `<p class="line i-shown"><span class="ph s-0"><mark>${esc(cs[0].w)}</mark><b class="v pos">${GLYPH[2]}</b><i class="redact b peel" ${at(.68)}></i></span> <span class="ph s-1 hid"><mark>█████</mark></span> <span class="ph s-2 hid"><mark>█████</mark></span></p>` : '';
     return `${punch(spent, auto ? [.36, .7] : [])}${cardRow(row, 'ot-policy')}${shown}<div class="i-cards spares">${hand}</div>`;
   }
   const SUBJECTS = ['Synergy Review: the Interns', 'Right-Sizing Morale', 'Customer Trust, Phase Two', 'Strategic Pivot to Vending', 'Going Forward, Again', 'Quick Win: Break Room Monetisation (Pilot)'];
   function trainingProp2(id, cs) {
-    if (id === 'ceo') return `<div class="i-pile">${['fax', 'certificate', 'overhead', 'clipart', 'dossier', 'memo'].map((t, k) => `<div class="leaf b scatter${k === 5 ? ' pull' : ''}" style="--at:${.05 + k * .05};--k:${k}">${page(t, { id: 'p' + k, subject: SUBJECTS[k], k: .42, tilt: (k * 37 % 11) - 5 })}</div>`).join('')}</div>
+    if (id === 'ceo') return `<div class="i-pile">${['fax', 'certificate', 'overhead', 'clipart', 'dossier', 'memo'].map((t, k) => `<div class="leaf b scatter${k === 5 ? ' pull' : ''}" style="--at:${.05 + k * .05};--k:${k};${k === 5 ? vt('vt-memo') : ''}">${page(t, { id: 'p' + k, subject: SUBJECTS[k], k: .42, tilt: (k * 37 % 11) - 5 })}</div>`).join('')}</div>
       <div class="i-ceo">${demoTag('Denise', null, `<span class="plate b slide-plate" ${at(.5)}>CEO</span>`)}</div>`;
     if (id === 'board') {
       const side = (word, names, f) => `<div class="i-vote"><span class="vote-word b thump" ${at(f)}>${word}</span>${names.map((n, k) => `<div class="i-signer">${demoTag(n, f + k * .04)}${squiggle(f + .06 + k * .05)}</div>`).join('')}</div>`;
       const bad = [{ s: 0, v: -2, w: 'Outsource' }, { s: 1, v: -1, w: 'Customer Trust' }, cs[2]];
       return `<div class="i-votes">${side('Ratify', ['Gary', 'Moira'], .05)}${side('Open it', ['Trevor', 'Clive', 'You'], .18)}</div>
-        <div class="i-duel"><div class="leaf b deal nominee" ${at(.45)}>${page('memo', { id: 'n', subject: 'Outsource Customer Trust (Off the Books)', cards: bad, k: .4, tilt: -2 })}<p class="line b rise" ${at(.52)}>${bad.map((c, su) => `<span class="ph s-${su}"><mark>${esc(c.w)}</mark><b class="v ${tone(c.v)}">${GLYPH[c.v]}</b></span>`).join(' ')}</p><span class="rubber red b thump" ${at(.64)}>Overruled</span></div>
+        <div class="i-duel"><div class="leaf b deal nominee" ${at(.45)}>${page('memo', { id: 'n', subject: 'Outsource Customer Trust (Off the Books)', cards: bad, k: .4, tilt: -2 })}<p class="line b type" ${at(.52)}>${bad.map((c, su) => `<span class="ph s-${su}"><mark>${esc(c.w)}</mark><b class="v ${tone(c.v)}">${GLYPH[c.v]}</b></span>`).join(' ')}</p><span class="rubber red b thump" ${at(.64)}>Overruled</span></div>
         <div class="leaf b deal rival" style="--at:.48">${page('fax', { id: 'r', subject: SUBJECTS[0], k: .4, tilt: 3 })}</div></div>`;
     }
     if (id === 'approved') {
       const e = { ...demoPage('memo', { approved: true }), resolved: cs.map(c => c.v) };
-      return `<div class="i-approved b deal" ${at(0)}>${coverHTML(e, { list: [{ id: 'demo' }], k: .56, tilt: -1, fresh: true })}</div>
+      return `<div class="i-approved b deal" ${at(0, vt('vt-memo'))}>${coverHTML(e, { list: [{ id: 'demo' }], k: .56, tilt: -1, fresh: true })}</div>
         <div class="b rise" ${at(.3)}>${lineHTML(e, { all: true, anim: true })}</div>
         <div class="pg-from i-from b type" ${at(.62)}>From <b>Trevor</b> · Facilities</div>`;
     }
-    const tag = (n, extra, cls = '') => `<div class="i-year ${cls}">${demoTag(n, null, extra)}</div>`;
+    let seat = 0;
+    const tag = (n, extra, cls = '') => `<div class="i-year ${cls}">${demoTag(n, .02 * seat++, extra, cls !== 'star')}</div>`;
     return `<div class="i-staff year">
       ${tag('Gary', `<span class="rubber red b thump" ${at(.22)}>Saboteur</span>`)}
       ${tag('Denise', `<div class="stickers b slap" ${at(.58)}><span class="stk beige">See me</span></div>`)}
@@ -3109,20 +3132,22 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
   }
 
   // Demonstration props only, never live hidden information. --at is when a beat lands, as a share of the chapter.
-  const at = f => `style="--at:${f}"`;
+  const at = (f, more = '') => `style="--at:${f};${more}"`;
+  // the same object keeps its name from chapter to chapter, so it moves rather than reappears
+  const vt = name => `view-transition-name:${name}`;
   function demoCards() {
     const L = OP.LEX[setup.brand] || OP.LEX.op;
     return [{ s: 0, v: 2, w: 'Monetise' }, { s: 1, v: -1, w: L.t[0] || 'the Break Room' }, { s: 2, v: 1, w: 'Off the Books' }];
   }
-  const demoTag = (name, f, extra = '') => `<div class="nametag b ${f == null ? '' : 'deal'}" ${f == null ? '' : at(f)}><span class="hello">Hello<small>my name is</small></span><b>${name}</b>${extra}</div>`;
+  const demoTag = (name, f, extra = '', carry = true) => `<div class="nametag b deal" ${at(f || 0, carry ? vt('vt-tag-' + name) : '')}><span class="hello">Hello<small>my name is</small></span><b>${name}</b>${extra}</div>`;
   const demoPage = (tpl, o = {}) => ({ id: o.id || 'demo', cards: o.cards || demoCards(), revealed: [], subject: o.subject || 'Quick Win: Break Room Monetisation (Pilot)', stamp: o.stamp || 'Rec', approved: !!o.approved, style: { tpl } });
   const page = (tpl, o = {}) => coverHTML(demoPage(tpl, o), { list: [{ id: o.id || 'demo' }], k: o.k || .62, tilt: o.tilt });
   const squiggle = f => `<svg class="squig b draw" ${at(f)} viewBox="0 0 120 40" aria-hidden="true"><path pathLength="1" d="M4 28c8-14 14-20 18-14s-6 16 2 12 10-20 16-16-4 18 4 14 12-18 18-12-2 14 6 10 16-12 22-8 6 8 14 2"/></svg>`;
-  const flipCard = (c, f) => `<div class="flip b deal-flip" ${at(f)}>${cardHTML(c)}<i class="cback">${brandMark()}</i></div>`;
+  const flipCard = (c, f, k) => `<div class="flip b deal-flip" ${at(f, vt('vt-c' + k))}>${cardHTML(c)}<i class="cback">${brandMark()}</i></div>`;
   const cardRow = (html, cls = '') => `<div class="i-cards ${cls}">${html}</div>`;
   function binderHTML(stamped) {
     const b = brand();
-    return `<div class="i-binder b ${stamped ? 'settle' : 'drop-in'}"><i class="rings"></i><div class="sleeve"><small>${esc(b.name)} · People &amp; Culture</small><strong>Staff<br>Induction</strong><span class="seal">${brandMark()}</span></div>${stamped ? `<span class="rubber b thump" ${at(.4)}>Read &amp;<br>Understood</span>` : ''}</div>`;
+    return `<div class="i-binder b ${stamped ? 'settle' : 'drop-in'}" style="${vt('vt-binder')}"><i class="rings"></i><div class="sleeve"><small>${esc(b.name)} · People &amp; Culture</small><strong>Staff<br>Induction</strong><span class="seal">${brandMark()}</span></div>${stamped ? `<span class="rubber b thump" ${at(.4)}>Read &amp;<br>Understood</span>` : ''}</div>`;
   }
   // a hole for every hour spent; holes arrive on their own beat
   const punch = (spent, beats = []) => `<span class="purse i-purse">${[0, 1, 2].map(k => `<i class="slotbox${k < spent ? ' punched' : ''}${beats[k] != null ? ' b hole' : ''}" ${beats[k] != null ? at(beats[k]) : ''}>${k + 1}</i>`).join('')}</span>`;
@@ -3134,12 +3159,12 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
       <div class="i-qtabs">${[1, 2, 3, 4, 5].map(q => `<span class="b fan-in" ${at(.3 + q * .06)}>Q${q}</span>`).join('')}</div>`;
     if (id === 'saboteurs') return `<div class="i-staff">${['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'You'].map((n, k) => `<div class="i-seat">${demoTag(n, k * .03)}
       <div class="i-role b ${k === 2 ? 'peek' : ''}" style="--at:${.74 + k * .025}"><i class="face back">${brandMark()}</i><i class="face front">Loyal</i>${k === 2 ? `<i class="under">Sabot</i>` : ''}</div></div>`).join('')}</div>`;
-    if (id === 'inherit') return `<div class="i-leaver b exit-left" ${at(.08)}>${demoTag('Gary')}</div>${cardRow(cs.map((c, k) => flipCard(c, .28 + k * .08)).join(''))}`;
-    if (id === 'policy') return cardRow(cs.map((c, k) => cardHTML(c, 'b pop', '', at(.3 + k * .1))).join('') + cardHTML({ s: 2, v: 'V', w: 'Going Forward' }, 'b spin-in coin', '', at(.78)));
+    if (id === 'inherit') return `<div class="i-leaver b exit-left" ${at(.08)}>${demoTag('Gary')}</div>${cardRow(cs.map((c, k) => flipCard(c, .28 + k * .08, k)).join(''))}`;
+    if (id === 'policy') return cardRow(cs.map((c, k) => cardHTML(c, 'b pop', '', at(.3 + k * .1, vt('vt-c' + k)))).join('') + cardHTML({ s: 2, v: 'V', w: 'Going Forward' }, 'b spin-in coin', '', at(.78)));
     if (id === 'overtime') return overtimeProp(cs);
-    if (id === 'stamp') return `<div class="i-stamp" ${at(.42)}>${page('memo', { cards: [cs[0], cs[1], { s: 2, v: 'V', w: 'Going Forward' }], stamp: 'Rec', tilt: -2 })}<span class="stk pip b slap" ${at(.74)}>PIP</span></div>
+    if (id === 'stamp') return `<div class="i-stamp" ${at(.42, vt('vt-memo'))}>${page('memo', { cards: [cs[0], cs[1], { s: 2, v: 'V', w: 'Going Forward' }], stamp: 'Rec', tilt: -2 })}<span class="stk pip b slap" ${at(.74)}>PIP</span></div>
       <div class="bar3 stampstrip i-strip">${Object.keys(STAMP).map(k => `<button tabindex="-1" class="s-${k}${k === 'Risky' ? ' right' : ''}"><span class="${k === 'Rec' ? 'b press' : ''}" ${k === 'Rec' ? at(.38) : ''}>${STAMP[k]}</span></button>`).join('')}</div>`;
-    if (id === 'cover') return `<div class="i-riffle">${['memo', 'report', 'wordart', 'fax'].map((t, k) => `<div class="leaf b ${k ? 'riffle' : 'keep'}" ${at(k ? .06 + (4 - k) * .07 : .88)}>${page(t, { tilt: (k - 1.5) * 2.4 })}${k ? '' : squiggle(.62)}</div>`).join('')}</div>`;
+    if (id === 'cover') return `<div class="i-riffle">${['memo', 'report', 'wordart', 'fax'].map((t, k) => `<div class="leaf b ${k ? 'riffle' : 'keep'}" ${k ? at(.06 + (4 - k) * .07) : at(.88, vt('vt-memo'))}>${page(t, { tilt: (k - 1.5) * 2.4 })}${k ? '' : squiggle(.62)}</div>`).join('')}</div>`;
     return trainingProp2(id, cs);
   }
 
@@ -3204,12 +3229,24 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
       a.onplay = () => voDuck(true); a.onpause = a.onended = () => voDuck(false);
       if (!TRAIN.pause) a.play().catch(() => { if (TRAIN.audio === a) TRAIN.audio = null; });
     }
-    TRAIN.last = performance.now(); render();
+    TRAIN.last = performance.now(); flow(render);
     TRAIN.tick = setInterval(step, 100);
   }
   // the music bed sits about 7 dB under the narrator, and comes back when the line ends
   function voDuck(on) {
     const c = auCtx(); if (c) AU.mus.gain.setTargetAtTime(on ? .22 : .5, c.currentTime, on ? .08 : .2);
+  }
+  // between chapters, objects that carry over slide to their new spot; the rest is swept off the desk
+  const SWEEP = ['l', 'r', 'd'];
+  function flow(paint) {
+    const old = document.querySelector('.induction .i-stage');
+    if (!old || !document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return paint();
+    const kept = new Set([...old.querySelectorAll('[style*="view-transition-name"]')].map(e => e.style.viewTransitionName));
+    document.documentElement.dataset.sweep = SWEEP[TRAIN.i % 3];
+    document.startViewTransition(() => {
+      paint();
+      document.querySelectorAll('.i-stage [style*="view-transition-name"]').forEach(e => { if (kept.has(e.style.viewTransitionName)) e.classList.add('carry'); });
+    });
   }
   function setDuration(d) {
     TRAIN.duration = d; const m = document.querySelector('.induction'); if (m) m.style.setProperty('--dur', d + 's');
