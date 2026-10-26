@@ -42,7 +42,10 @@
 .desk-foot .btn.primary { transform: rotate(-1deg); border: 0; border-radius: 8px; padding: 15px 14px 14px; font: 900 14px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase;
   background: linear-gradient(#E8473A, #C5251B); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 0 rgba(0,0,0,.2), 0 6px 0 #7E140D, 0 7px 0 #4A0B07, 0 14px 14px -6px rgba(0,0,0,.6) }
 .desk-foot .btn.primary:active:not(:disabled) { transform: rotate(-1deg) translateY(5px); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 #7E140D, 0 2px 0 #4A0B07, 0 5px 8px -4px rgba(0,0,0,.6) }
-.desk-foot .btn.back { color: var(--stock); border-color: rgba(241,233,212,.35); background: rgba(0,0,0,.15) }
+.desk-foot .btn.back { transform: rotate(.8deg); border: 0; border-radius: 8px; padding: 15px 12px 14px; color: var(--ink); font: 900 13px/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase;
+  background: linear-gradient(#F3EAD3, #DCCFAE); box-shadow: inset 0 1px 0 rgba(255,255,255,.7), inset 0 -2px 0 rgba(0,0,0,.08), 0 6px 0 #A8976E, 0 7px 0 #6F6247, 0 14px 14px -6px rgba(0,0,0,.6) }
+.desk-foot .btn.back:hover { background: linear-gradient(#F7EFDA, #E2D6B6) }
+.desk-foot .btn.back:active { transform: rotate(.8deg) translateY(5px); box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 1px 0 #A8976E, 0 2px 0 #6F6247, 0 5px 8px -4px rgba(0,0,0,.6) }
 /* Finalise is the out tray */
 .outtray { display: block; position: relative; width: min(230px, 70%); height: 62px; margin: 0 auto; border: 0; padding: 0; background: none; cursor: pointer; transform: rotate(-2.5deg); transition: transform .18s var(--bounce) }
 .outtray:hover { transform: rotate(-2.5deg) translateY(-3px) }
@@ -85,13 +88,14 @@
 .desk-body:has(> .play) { align-content: space-evenly }
 @container (max-width: 520px) {
   .play { --cw: min(112px, calc((100cqw - 54px) / 3)) }
-  .fan .slot { margin-left: calc(var(--cw) * -.34) }
-  .fan { padding-left: calc(var(--cw) * .34) }
+  .fan { --cw: min(112px, calc((100cqw - 54px) / 3), calc((100cqw - 122px) / 2.4)); flex: none; padding-left: calc(var(--cw) * .42); padding-right: calc(var(--cw) * .24) }
+  .fan .slot { margin-left: calc(var(--cw) * -.42) }
+  .fan .slot:nth-child(1) { transform: rotate(-7deg) translateY(6px) } .fan .slot:nth-child(3) { transform: rotate(7deg) translateY(6px); z-index: 2 }
   .said .line { font-size: 17px }
   .rstamp .knob { width: 36px; height: 27px }
   .rstamp .neck { width: 14px; height: 11px }
   .rstamp .block { min-height: 42px }
-  .rstamp .block span { font-size: 10.5px; padding: 6px 3px 5px }
+  .rstamp .block span { font-size: min(10.5px, 2.75cqw); letter-spacing: .02em; padding: 6px 3px 5px }
 }
 /* an unstamped page at the tray: the stamps hop */
 .rstamps.want .rstamp { animation: want .5s var(--bounce) both }

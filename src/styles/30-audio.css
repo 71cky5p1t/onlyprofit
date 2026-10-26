@@ -5,3 +5,9 @@
 .au-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round }
 .au-btn svg path:first-child { fill: currentColor }
 .au-btn[aria-pressed="true"] .x, .au-btn[aria-pressed="false"] .w { display: none }
+/* on a phone it sits up in the masthead's corner, clear of the desk */
+@media (max-width: 980px) {
+  .au-btn { position: absolute; left: auto; bottom: auto; right: calc(14px + env(safe-area-inset-right, 0px)); top: calc(14px + env(safe-area-inset-top, 0px)) }
+  .mast .wrap { padding-right: 52px }
+  html, body { overflow-x: clip }
+}

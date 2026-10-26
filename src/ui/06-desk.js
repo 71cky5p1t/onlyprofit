@@ -117,13 +117,14 @@
   function deskTweak(p) {
     const locked = !!S.reqStyle, L = lookOf(mockPage(p));
     const arrive = ui.arrive ? ' arrive' : ''; ui.arrive = false;
+    const punched = ui.punch; ui.punch = null;
     const designer = p.spec === 'Designer' ? `<label class="drop"><select id="next-style" data-in="nextStyle" aria-label="Next quarter's cover page"><option value="">Next quarter: any cover page</option>${OP.TEMPLATES.flatMap(t => OP.FONTS.map(f => `<option value="${t}/${f}" ${draft.nextStyle && draft.nextStyle.tpl === t && draft.nextStyle.font === f ? 'selected' : ''}>Next quarter: ${TPL[t].name} · ${FONTS[f]}</option>`)).join('')}</select></label>` : '';
-    const fonts = OP.FONTS.map(f => `<button class="chip f-${f}" data-a="font" data-v="${f}" aria-pressed="${L.font === f}" aria-label="${FONTS[f]}" ${locked ? 'disabled' : ''}>Aa</button>`).join('');
-    const aligns = Object.keys(ALIGN).map(a => `<button class="chip" data-a="align" data-v="${a}" aria-pressed="${L.align === a}" aria-label="Align ${a}"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="${ALIGN[a]}"/></svg></button>`).join('');
-    const wheel = `<div class="wheel"><div class="wheel-in" role="listbox" aria-label="Clip-art" data-wheel>${ART.map(id => `<button class="px-opt" role="option" data-a="art" data-v="${id}" aria-selected="${L.art === id}" aria-label="${id.replace(/-/g, ' ')}">${artSVG(id)}</button>`).join('')}</div><i class="wheel-frame" aria-hidden="true"></i></div>`;
+    const fonts = OP.FONTS.map(f => `<button class="chip f-${f}" data-a="font" data-v="${f}" aria-pressed="${L.font === f}" aria-label="${FONTS[f]}" ${locked ? 'disabled' : ''}><span>Aa</span></button>`).join('');
+    const aligns = Object.keys(ALIGN).map(a => `<button class="chip" data-a="align" data-v="${a}" aria-pressed="${L.align === a}" aria-label="Align ${a}"><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="${ALIGN[a]}"/></svg></span></button>`).join('');
+    const wheel = `<div class="wheel"><div class="wheel-in" role="listbox" aria-label="Clip-art" data-wheel>${ART.map(id => `<button class="px-opt" role="option" data-a="art" data-v="${id}" aria-selected="${L.art === id}" aria-label="${id.replace(/-/g, ' ')}">${artSVG(id)}</button>`).join('')}</div></div>`;
     const body = `<div class="preview${arrive}">${coverHTML(mockPage(p), { k: .6, tilt: -1.2 })}</div>
-      <div class="subj">${draft.words.map((k, i) => `<button class="subj-word" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled' : ''}>${esc((S.subj || OP.SUBJ)[i][k])}</button>`).join('')}</div>
-      <input class="input" id="custom-subject" data-in="custom" maxlength="80" placeholder="Or write your own…" value="${esc(draft.custom)}">
+      <div class="subj">${draft.words.map((k, i) => `<button class="subj-word${punched === i ? ' punch' : ''}" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled' : ''}>${esc((S.subj || OP.SUBJ)[i][k])}</button>`).join('')}</div>
+      <label class="typed-slip"><input class="input" id="custom-subject" data-in="custom" maxlength="80" placeholder="Or type your own…" value="${esc(draft.custom)}"></label>
       <div class="dress-row"><div class="chips fonts">${fonts}</div><div class="chips aligns">${aligns}</div></div>${wheel}${designer}`;
     return deskWrap(OP.DEPTS[p.dept], body, { fuse: fuse(`${S.r}-dress`, TIME.dress, seal), foot: `<div class="two-keys"><button class="btn back" data-a="back">‹ ${locked ? 'Cards' : 'Templates'}</button>${key('seal', 'Hand it in')}</div>` });
   }
@@ -158,9 +159,11 @@
   }
   function nameTags(list, current, none) {
     return `<div class="tags">${list.map(q => `<button class="nametag" data-a="sel" data-id="${q.id}" aria-pressed="${String(current) === String(q.id)}"><span class="hello">Hello<small>my name is</small></span><b>${esc(q.name)}</b>${stickers(q)}</button>`).join('')}
-      ${none ? `<button class="nametag none" data-a="sel" data-id="none" aria-pressed="${String(current) === 'none'}"><b>${none}</b></button>` : ''}</div>`;
+      ${none ? `<button class="nametag none" data-a="sel" data-id="none" aria-pressed="${String(current) === 'none'}"><span class="hello">Hello<small>my name is</small></span><b>${none}</b></button>` : ''}</div>`;
   }
-  const boardSlip = () => S.board ? slip(S.board.overruled ? `Board overruled ${icon(S.board.nominee)} · ${S.board.own ? 'the CEO’s own' : S.board.author == null ? 'autopilot' : esc(nm(S.board.author))}` : S.board.opened ? `Opened ${icon(S.board.nominee)} · it stands` : `Board ratified ${icon(S.board.nominee)}`) : '';
+  // whoever's tag is picked, written onto the form
+  const picked = () => ui.sel == null ? '' : ui.sel === 'none' ? 'Nobody' : esc(nm(ui.sel));
+  const boardSlip = () => S.board ? slip(S.board.overruled ? `Board overruled ${icon(S.board.nominee)} · ${S.board.own ? 'the CEO’s own' : S.board.author == null ? 'autopilot' : esc(nm(S.board.author))}` : S.board.opened ? `Opened ${icon(S.board.nominee)} · it stands` : `Board rubber-stamped ${icon(S.board.nominee)}`) : '';
   function resultSlip() {
     if (!S.result) return '';
     const e = S.envs.find(x => x.id === S.result.id); if (!e) return '';
@@ -172,7 +175,7 @@
     const list = S.P.filter(q => q.id !== ME && !q.pip && S.envs.some(e => e.author === q.id && !e.autopilot));
     if (!list.length) return '';
     return `<div class="slips">${slip('Pull a file')}</div><div class="files">${list.map(q => `<button class="file" data-a="sel" data-id="${q.id}" aria-pressed="${String(ui.sel) === String(q.id)}"><span class="file-tab">${esc(q.name)}</span></button>`).join('')}</div>
-      ${signHTML('investigate', ui.sel != null && list.some(q => String(q.id) === String(ui.sel)))}`;
+      ${signHTML('investigate', ui.sel != null && list.some(q => String(q.id) === String(ui.sel)), fField('Employee', list.some(q => String(q.id) === String(ui.sel)) ? picked() : ''))}`;
   }
   function deskSpectate() {
     const ph = S.phase;
@@ -219,15 +222,15 @@
     }
     if (ph === 'board') {
       const nom = S.envs.find(e => e.id === S.nominee);
-      const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}${auditor() && !nom.autopilot ? ` · by <b>${nom.author === ME ? 'you' : esc(nm(nom.author))}</b>` : ''}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom, { all: nom.openTo && nom.openTo.includes(ME) })}</div>
-        <div class="bar3 two" role="radiogroup" aria-label="Board vote">${['ratify', 'open'].map(v => `<button class="b-${v}" role="radio" data-a="sel" data-id="${v}" aria-checked="${ui.sel === v}" aria-pressed="${ui.sel === v}"><span>${v === 'ratify' ? 'Ratify' : 'Open it'}</span></button>`).join('')}</div>`;
-      return deskWrap('Board vote', `${leave}${body}${signHTML('board', ui.sel === 'ratify' || ui.sel === 'open')}`);
+      const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}${auditor() && !nom.autopilot ? ` · by <b>${nom.author === ME ? 'you' : esc(nm(nom.author))}</b>` : ''}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom, { all: nom.openTo && nom.openTo.includes(ME) })}</div>`;
+      const opts = `<div class="f-opts" role="radiogroup" aria-label="Board vote">${fBox('ratify', 'Rubber-stamp it')}${fBox('open', 'Open it up')}</div>`;
+      return deskWrap('Board vote', `${leave}${body}${signHTML('board', ui.sel === 'ratify' || ui.sel === 'open', opts)}`);
     }
     if (ph === 'reveal') {
       const list = S.P.filter(q => q.id !== ME && !q.leave);
       const won = S.envs.find(e => e.approved), go = won && ui.lineAnim !== S.r && !still();
       if (go) ui.lineAnim = S.r;
-      return deskWrap('Written Warning', `<div class="slips">${boardSlip()}${resultSlip()}</div>${won ? lineHTML(won, { anim: go }) : ''}${nameTags(list, ui.sel, 'Nobody')}${signHTML('warn', ui.sel != null)}`);
+      return deskWrap('Written Warning', `<div class="slips">${boardSlip()}${resultSlip()}</div>${won ? lineHTML(won, { anim: go }) : ''}${nameTags(list, ui.sel, 'Nobody')}${signHTML('warn', ui.sel != null, fField('Issued to', picked()))}`);
     }
     if (ph === 'review') {
       const w = S.warn;
@@ -236,7 +239,7 @@
         ${isCEO() ? filesHTML() : ''}<div class="tags one"><div class="nametag mine"><span class="hello">Hello<small>my name is</small></span><b>${esc(p.name)}</b>${got || '<span class="stickers"><i class="stk grey">Present</i></span>'}</div></div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
-      return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${signHTML('whistle', ui.sel != null)}`);
+      return deskWrap('Whistleblower', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${signHTML('whistle', ui.sel != null, fField('The Mole is', picked()))}`);
     }
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');
