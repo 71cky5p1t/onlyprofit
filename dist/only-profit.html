@@ -897,6 +897,90 @@ section > .label { color: var(--on-table-2) }
 .au-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round }
 .au-btn svg path:first-child { fill: currentColor }
 .au-btn[aria-pressed="true"] .x, .au-btn[aria-pressed="false"] .w { display: none }
+/* ---------- the phone is a desk: wood top, a felt blotter with leather corners, real objects on both ---------- */
+.desk { --wood: #6A3B22; --wood-lo: #4A2715; --leather: #2E1C12;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006 .22' numOctaves='4' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .18  0 0 0 0 .08  0 0 0 0 .03  0 0 0 1.1 -.25'/%3E%3C/filter%3E%3Crect width='600' height='600' filter='url(%23w)'/%3E%3C/svg%3E") 0 0 / 600px 600px, linear-gradient(175deg, #7A4628, var(--wood) 40%, #5C321C);
+  border-radius: 12px; padding: 10px 10px 14px; box-shadow: inset 0 1px 0 rgba(255,220,180,.18), inset 0 -2px 0 rgba(0,0,0,.35), 0 18px 30px -14px rgba(0,0,0,.7) }
+.desk-head { position: static; margin: 0 0 12px; border-radius: 0; overflow: visible; background: none; box-shadow: none; display: grid; gap: 6px }
+.bar-row { padding: 2px 2px 0; align-items: flex-start }
+.bar-row.two { align-items: center; padding-top: 0 }
+/* the nameplate: an engraved brass plate on a walnut wedge */
+.desk .plate { position: relative; color: #2A1E0A; font: 900 11.5px/1 var(--f-body); letter-spacing: .16em; white-space: nowrap; padding: 9px 14px 8px; border: 0; border-radius: 2px; transform: rotate(-1.5deg); margin: 4px 0 10px 2px;
+  background: linear-gradient(#EDD596, #C9A04A 55%, #A47C34); text-shadow: 0 1px 0 rgba(255,240,200,.55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 0 0 1px rgba(90,60,20,.4), 0 9px 0 -3px #3A2214, 0 10px 0 -3px #1E110A, 0 14px 10px -6px rgba(0,0,0,.7) }
+.desk .plate::before, .desk .plate::after { content: ""; position: absolute; top: 50%; width: 3px; height: 3px; margin-top: -1.5px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff6d8, #8a6a2a) }
+.desk .plate::before { left: 5px } .desk .plate::after { right: 5px }
+/* the profit ticket: a torn raffle stub */
+.ticket { display: inline-grid; justify-items: center; gap: 1px; padding: 5px 12px 5px; background: #F2DCC4; color: var(--ink-2); transform: rotate(4deg); filter: drop-shadow(0 4px 4px rgba(0,0,0,.45));
+  -webkit-mask: radial-gradient(circle at 0 50%, transparent 5px, #000 5.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 5px, #000 5.5px) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle at 0 50%, transparent 5px, #000 5.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 5px, #000 5.5px) right / 51% 100% no-repeat;
+  background-image: linear-gradient(90deg, transparent 3px, rgba(140,60,40,.35) 3px 4px, transparent 4px calc(100% - 4px), rgba(140,60,40,.35) calc(100% - 4px) calc(100% - 3px), transparent calc(100% - 3px)) }
+.ticket small { font: 800 7.5px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: #8C4A32 }
+.ticket b { font: 400 20px/1 var(--f-seg); color: var(--ink) } .ticket b.pos { color: var(--good) } .ticket b.neg { color: var(--red) }
+/* the timer: a cigarette burning down in a glass ashtray */
+.fuse { position: relative; height: 26px; width: min(190px, 60%); background: none; box-shadow: none; overflow: visible }
+.ashtray { position: absolute; left: 0; top: -2px; width: 42px; height: 30px; border-radius: 50%; background: radial-gradient(ellipse at 50% 55%, #3a2a20 0 34%, rgba(160,120,70,.55) 36% 60%, rgba(220,190,140,.5) 64%, rgba(120,90,50,.4) 72%, transparent 74%);
+  box-shadow: inset 0 0 0 1px rgba(255,230,190,.25) }
+.cig { position: absolute; left: 14px; right: 0; top: 10px; height: 7px; display: flex; transform: rotate(-3deg); transform-origin: 0 50%; filter: drop-shadow(0 3px 2px rgba(0,0,0,.45)) }
+.cig .filter { flex: none; width: 22px; border-radius: 2px 0 0 2px; background: radial-gradient(circle, rgba(120,60,20,.35) 0 .8px, transparent 1px) 0 0 / 3px 3px, linear-gradient(#E9A85C, #C9823A) }
+.cig .paper { flex: 1; position: relative }
+.cig .paper i { position: absolute; left: 0; top: 0; bottom: 0; display: block; background: linear-gradient(#FFFFFF, #E6E1D6); transition: width .2s linear; min-width: 0; height: auto }
+/* ember, a stub of ash, and smoke riding on the burning end */
+.cig .paper i::after { content: ""; position: absolute; right: -9px; top: 0; bottom: 0; width: 10px; border-radius: 0 3px 3px 0; background: linear-gradient(90deg, #FF7A2A, #B8361A 40%, #8E8A84 55%, #B9B5AD) }
+.cig .paper i::before { content: ""; position: absolute; right: -10px; bottom: 7px; width: 14px; height: 22px; border-radius: 50%; border-left: 1.5px solid rgba(240,240,235,.45); filter: blur(.6px); animation: smoke 2.6s ease-in-out infinite; transform-origin: 50% 100% }
+@keyframes smoke { 0% { transform: translateY(2px) scaleY(.6) skewX(10deg); opacity: 0 } 30% { opacity: .9 } 100% { transform: translateY(-8px) scaleY(1.1) skewX(-14deg); opacity: 0 } }
+/* the blotter */
+.desk-body { position: relative; padding: 14px 8px 18px; border-radius: 3px; background-color: var(--baize);
+  background-image: linear-gradient(135deg, var(--leather) 0 24px, #5A3A26 24px 25px, transparent 25px), linear-gradient(225deg, var(--leather) 0 24px, #5A3A26 24px 25px, transparent 25px),
+    linear-gradient(45deg, var(--leather) 0 24px, #5A3A26 24px 25px, transparent 25px), linear-gradient(315deg, var(--leather) 0 24px, #5A3A26 24px 25px, transparent 25px),
+    radial-gradient(90% 70% at 40% 0%, var(--baize-hi), var(--baize) 50%, var(--baize-lo));
+  background-size: 50% 50%, 50% 50%, 50% 50%, 50% 50%, 100% 100%; background-position: 0 0, 100% 0, 0 100%, 100% 100%, 0 0; background-repeat: no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), inset 0 3px 10px rgba(0,0,0,.35), 0 1px 0 rgba(255,220,180,.15) }
+.desk-foot { position: static; padding: 14px 0 0; background: none; box-shadow: none; border-radius: 0 }
+/* other keys: a chunky angled bakelite key */
+.desk-foot .btn.primary { transform: rotate(-1deg); border: 0; border-radius: 8px; padding: 15px 14px 14px; font: 900 14px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase;
+  background: linear-gradient(#E8473A, #C5251B); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 0 rgba(0,0,0,.2), 0 6px 0 #7E140D, 0 7px 0 #4A0B07, 0 14px 14px -6px rgba(0,0,0,.6) }
+.desk-foot .btn.primary:active:not(:disabled) { transform: rotate(-1deg) translateY(5px); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 #7E140D, 0 2px 0 #4A0B07, 0 5px 8px -4px rgba(0,0,0,.6) }
+.desk-foot .btn.back { color: var(--stock); border-color: rgba(241,233,212,.35); background: rgba(0,0,0,.15) }
+/* Finalise is the out tray */
+.outtray { display: block; position: relative; width: min(230px, 70%); height: 62px; margin: 0 auto; border: 0; padding: 0; background: none; cursor: pointer; transform: rotate(-2.5deg); transition: transform .18s var(--bounce) }
+.outtray:hover { transform: rotate(-2.5deg) translateY(-3px) }
+.outtray:active { transform: rotate(-2.5deg) translateY(2px) }
+.ot-in { position: absolute; left: 6%; right: 6%; top: 0; height: 30px; border-radius: 3px 3px 0 0; background: linear-gradient(#2A160C, #4A2715); box-shadow: inset 0 4px 6px rgba(0,0,0,.6) }
+.ot-in::before { content: ""; position: absolute; left: 10%; right: 12%; top: 8px; height: 6px; background: var(--stock); border-radius: 1px; transform: rotate(-1deg); box-shadow: 0 1px 2px rgba(0,0,0,.5) }
+.ot-front { position: absolute; left: 0; right: 0; top: 18px; bottom: 0; display: grid; place-items: center; clip-path: polygon(4% 0, 96% 0, 100% 100%, 0 100%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='80'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.01 .3' numOctaves='3' seed='2'/%3E%3CfeColorMatrix values='0 0 0 0 .2  0 0 0 0 .1  0 0 0 0 .04  0 0 0 1 -.2'/%3E%3C/filter%3E%3Crect width='300' height='80' filter='url(%23w)'/%3E%3C/svg%3E") 0 0 / 300px 80px, linear-gradient(#8A5432, #6A3B22 60%, #522C18);
+  box-shadow: inset 0 2px 0 rgba(255,220,180,.35) }
+.ot-front b { font: 900 11px/1 var(--f-body); letter-spacing: .3em; text-transform: uppercase; color: #2A1E0A; padding: 5px 7px 4px 10px; border-radius: 2px; background: linear-gradient(#EDD596, #C9A04A 60%, #A47C34); box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 1px 2px rgba(0,0,0,.5) }
+.outtray:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px }
+/* the score sits on the end of the sentence */
+.said .line .sum { font: 400 1.25em/1 var(--f-seg); margin-left: 10px }
+.said .line .sum sup { font-size: .55em; color: var(--sunset); margin-left: 1px }
+.said-row { position: relative }
+.said-stamp { position: absolute; right: -4px; top: -14px; font-size: 10px; padding: 4px 6px; border-width: 2.5px; transform: rotate(-9deg); background: rgba(241,233,212,.5); mix-blend-mode: normal; animation: imprint .3s var(--bounce) both;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.9'/%3E%3C/filter%3E%3Crect width='120' height='40' filter='url(%23n)'/%3E%3C/svg%3E") 0 0 / 120px 40px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.9'/%3E%3C/filter%3E%3Crect width='120' height='40' filter='url(%23n)'/%3E%3C/svg%3E") 0 0 / 120px 40px }
+@keyframes imprint { from { transform: rotate(-14deg) scale(1.6); opacity: 0 } }
+/* rubber stamps: wooden knob, neck, block with its label, coloured rubber */
+.rstamps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 4px 6px 0; align-items: end }
+.rstamp { --ink-c: var(--good); position: relative; display: grid; justify-items: center; border: 0; padding: 0; background: none; cursor: pointer; transition: transform .16s var(--bounce); filter: drop-shadow(0 8px 6px rgba(0,0,0,.45)) }
+.rstamp.s-Risky { --ink-c: #C2621E } .rstamp.s-Not { --ink-c: var(--red) }
+.rstamp .knob { width: 30px; height: 22px; border-radius: 50% 50% 45% 45%; background: radial-gradient(circle at 35% 30%, #C98A55, #8A4E28 55%, #5A2F16); box-shadow: inset 0 -2px 3px rgba(0,0,0,.35) }
+.rstamp .neck { width: 12px; height: 9px; margin-top: -2px; background: linear-gradient(90deg, #5A2F16, #9A5E34 45%, #5A2F16) }
+.rstamp .block { display: grid; place-items: center; width: 100%; min-height: 34px; padding: 4px; border-radius: 3px 3px 1px 1px; background: linear-gradient(#A2643A, #7A4326); box-shadow: inset 0 1px 0 rgba(255,220,180,.4) }
+.rstamp .block span { display: block; width: 100%; padding: 4px 3px 3px; background: var(--stock); color: var(--ink-c); border-radius: 1px; font: 900 9.5px/1.1 var(--f-body); letter-spacing: .04em; text-transform: uppercase; text-align: center; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08) }
+.rstamp .pad { width: 96%; height: 5px; border-radius: 0 0 2px 2px; background: var(--ink-c); filter: brightness(.75) }
+.rstamp:hover { transform: translateY(-4px) }
+.rstamp[aria-pressed="true"] { transform: translateY(7px) scaleY(.96); filter: drop-shadow(0 2px 2px rgba(0,0,0,.5)) }
+.rstamps:has([aria-pressed="true"]) .rstamp:not([aria-pressed="true"]) { opacity: .75 }
+.rstamp:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px }
+.rstamp.right::after { top: 2px; right: 0 }
+/* finalising: the sentence and hand clear off before the page lands */
+.play.stuff .said, .play.stuff .hand-row .t-redeal { transition: opacity .2s; opacity: 0 }
+@media (prefers-reduced-motion: reduce) { .cig .paper i::before, .said-stamp { animation: none } }
+/* the desk is as big as what's on it */
+.desk-body { flex: 0 0 auto }
+@media (max-width: 980px) { .desk { min-height: 0 } }
 </style>
 <div id="app"></div>
 <script>
@@ -2271,10 +2355,12 @@ const OP = (() => {
     return `<section><div class="section-head"><h2>Exit interview</h2></div><div class="exit">${rounds}</div></section>`;
   }
   // ---------- desk: your phone. Objects on the felt, same as the TV; almost no prose ----------
-  // a bakelite header bar (nameplate, time card, timer tape) and a footer bar that holds the one key that matters
+  // a real desk: nameplate, input card, ashtray timer and profit ticket on the wood; work happens on the blotter
+  const ticket = () => S && S.r ? `<span class="ticket" role="img" aria-label="Company profit ${fmt(S.profit)} of ${S.target}"><small>Profit</small><b class="${tone(S.profit)}">${fmt(S.profit)}</b><small>of ${S.target}</small></span>` : '';
   function deskWrap(title, body, o) {
     o = o || {};
-    return `<aside class="desk" aria-label="Your desk"><div class="desk-head"><div class="bar-row"><h3 class="plate">${title}</h3>${o.right || ''}</div>${o.fuse || ''}</div>
+    const tk = ticket();
+    return `<aside class="desk" aria-label="Your desk"><div class="desk-head"><div class="bar-row"><h3 class="plate">${title}</h3>${o.right || tk}</div>${o.fuse || (o.right && tk) ? `<div class="bar-row two">${o.fuse || '<span></span>'}${o.right ? tk : ''}</div>` : ''}</div>
       <div class="desk-body">${body}${err ? `<div class="err" role="alert">${esc(err)}</div>` : ''}</div>${o.foot ? `<div class="desk-foot">${o.foot}</div>` : ''}</aside>`;
   }
   const slip = html => `<span class="slip">${html}</span>`;
@@ -2303,7 +2389,8 @@ const OP = (() => {
       }, 200);
     }
     const pct = window.__opFreeze ? 64 : Math.max(0, (timer.end - Date.now()) / timer.total * 100);
-    return `<div class="fuse" role="timer" aria-label="Time left"><i style="width:${pct}%"></i></div>`;
+    // a cigarette burning down in an ashtray; the unburnt paper is the time left
+    return `<div class="fuse" role="timer" aria-label="Time left"><span class="ashtray"></span><span class="cig"><span class="filter"></span><span class="paper"><i style="width:${pct}%"></i></span></span></div>`;
   }
   // Finalise: the hand drops away, the policy squares up into a pile and a blank cover page lands on it
   function finalise() {
@@ -2313,7 +2400,8 @@ const OP = (() => {
     const next = S.reqStyle ? 3 : 2, play = document.querySelector('.play');
     if (!play || still()) { draft.page = next; render(); return; }
     ui.stuffing = true;
-    play.insertAdjacentHTML('beforeend', '<i class="stuff" aria-hidden="true"></i>');
+    const pol = play.querySelector('.policy');
+    play.insertAdjacentHTML('beforeend', `<i class="stuff" aria-hidden="true" style="top:${pol ? pol.offsetTop + 2 : 2}px"></i>`);
     play.classList.add('stuff');
     setTimeout(() => { ui.stuffing = false; if (draft && S.phase === 'work') { draft.page = next; ui.arrive = true; render(); } }, 1250);
   }
@@ -2360,12 +2448,13 @@ const OP = (() => {
     // the sentence on top: what the three cards say, coloured by suit, with the effect applied
     const said = { cards: wr.prop.map((c0, su) => su < 2 && fx && c0.v !== 'V' ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0), revealed: [0, 1, 2] };
     const src = inhSource(inh);
-    const head = `<div class="said">${src ? `<span class="said-src">${src}</span>` : ''}<div class="said-row">${lineHTML(said, { all: true })}<span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span></div></div>`;
+    const head = `<div class="said">${src ? `<span class="said-src">${src}</span>` : ''}<div class="said-row">${lineHTML(said, { all: true }).replace(/<\/p>$/, `<b class="sum ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<sup>?</sup>' : ''}</b></p>`)}${draft.stamp ? `<span class="said-stamp env-stamp ${draft.stamp}" aria-hidden="true">${STAMP[draft.stamp]}</span>` : ''}</div></div>`;
     const redeal = `<button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 inputs"><i class="rd-ic" aria-hidden="true">↻</i><span>${draft.redeal ? 'Re-dealt' : 'Re-deal'}</span><span class="t-cost">${hrs(2)}</span></button>`;
     const honest = OP.rightStamp(wr.prop);
-    const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
+    // three rubber stamps standing on the blotter; the one you use leaves its mark on the sentence
+    const stamps = `<div class="stampstrip rstamps" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="rstamp s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><i class="knob"></i><i class="neck"></i><span class="block"><span>${STAMP[k]}</span></span><i class="pad"></i></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.redeal ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div>${redeal}</div></div>${stamps}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: key('finalise', 'Finalise') });
+    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: '<button class="outtray" data-a="finalise"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
   const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', revealed: [], author: ME, dept: p.dept });
