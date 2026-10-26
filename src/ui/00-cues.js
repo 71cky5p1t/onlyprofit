@@ -12,7 +12,7 @@
       inv: S.invq ? `${S.invq.r}:${S.invq.t}` : null,
       pips: S.P.filter(p => p.pip).length, warns: S.P.reduce((a, p) => a + p.warnings, 0),
       named: S.whistle ? S.whistle.named : undefined, correct: S.whistle && S.whistle.correct,
-      d: d ? { sw: d.swaps.length, rv: d.reveals.length, re: d.redeal, st: d.stamp, pg: d.page || 1 } : null,
+      d: d ? { sw: d.swaps.length, rv: d.reveals.length, sh: d.discards.length, st: d.stamp, pg: d.page || 1 } : null,
     };
   }
 
@@ -53,8 +53,8 @@
     if (wipe) { sfx('music/06-stripe-wipe', 0, .8); duck(2.4); }
     // the desk
     const a = p.d, b = n.d;
-    if (b && (!a || (b.re && !a.re))) {
-      if (b.re && a) sfx('paper-shuffle');
+    if (a && b && b.sh > a.sh) { sfx('paper-shuffle'); sfx('desk-card-deal', .35, .8); sfx('desk-card-flip', .7, .7); }
+    if (b && !a) {
       [0, .12, .24].forEach((s, i) => { sfx('desk-card-deal', .45 + s, .8); sfx('desk-card-flip', .9 + i * .08, .7); });
     }
     if (a && b) {

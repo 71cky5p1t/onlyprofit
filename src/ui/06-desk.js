@@ -58,10 +58,12 @@
   function seal() {
     const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
     stopTimer();
-    dispatch({ type: 'submitWork', redeal: draft.redeal, swaps: draft.swaps, reveals: draft.reveals, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
+    dispatch({ type: 'submitWork', discards: draft.discards, swaps: draft.swaps, reveals: draft.reveals, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
       claim: null, nextStyle: draft.nextStyle });
     toast('Sealed.');
   }
+  // the card that just came out of the shredder deals in
+  const fresh = (zone, su) => ui.fresh && ui.fresh.zone === zone && ui.fresh.su === su;
   function deskWork() {
     const p = me(), inh = p.inh, wr = OP.workResult(S, ME, draft), cost = OP.workCost(draft);
     if (draft.page === 2) return deskTemplates(p);
@@ -76,7 +78,7 @@
       const c0 = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
       const hit = su < 2 && fx && c0.v !== 'V' && after(fx, c0.v) !== c0.v, c = hit ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0;
       const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
-      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
+      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${fresh('env', su) ? ' fresh' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
         `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 input'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
@@ -84,13 +86,12 @@
       const next = on ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su);
       const price = on ? 0 : OP.SWAP_COST[next.length] - OP.SWAP_COST[draft.swaps.length];
       const ok = costWith({ swaps: next }) <= 3;
-      return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, on ? '<span class="tag back">↺</span>' : `<span class="tag">${hrs(price)}</span>`,
+      return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${fresh('hand', su) ? ' fresh' : ''}`, on ? '<span class="tag back">↺</span>' : `<span class="tag">${hrs(price)}</span>`,
         `data-drag="hand" data-su="${su}" role="button" tabindex="0" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${on ? 'Swap back for free' : `Swap in for ${price} input${price === 1 ? '' : 's'}`}"`));
     }).join('');
-    ui.land = null;
+    ui.land = null; const shredding = !!ui.fresh; ui.fresh = null;
     const v = evs(wr.prop), vol = wr.prop.some(c => c.v === 'V');
-    const canRedeal = !draft.redeal && costWith({ redeal: true }) <= 3;
-    const left = Math.max(0, 3 - cost), dealCls = ui.deal ? (ui.deal === 'redeal' ? ' deal redeal' : ' deal') : '';
+    const left = Math.max(0, 3 - cost), dealCls = ui.deal ? ' deal' : '';
     // a fresh quarter waits for the stripe wipe to clear before dealing
     const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
     ui.deal = false;
@@ -99,11 +100,13 @@
     const said = { cards: wr.prop.map((c0, su) => su < 2 && fx && c0.v !== 'V' ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0), revealed: [0, 1, 2] };
     const src = inhSource(inh);
     const head = `<div class="said">${src ? `<span class="said-src">${src}</span>` : ''}<div class="said-row">${lineHTML(said, { all: true }).replace(/<\/p>$/, `<b class="sum ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<sup>?</sup>' : ''}</b></p>`)}${draft.stamp ? `<span class="said-stamp env-stamp ${draft.stamp}" aria-hidden="true">${STAMP[draft.stamp]}</span>` : ''}</div></div>`;
-    const redeal = `<button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 inputs"><i class="rd-ic" aria-hidden="true">↻</i><span>${draft.redeal ? 'Re-dealt' : 'Re-deal'}</span><span class="t-cost">${hrs(2)}</span></button>`;
+    // the shredder: drop any card in, pay 1 input, a fresh one of that suit takes its place
+    const shreds = wr.shred.map((c, k) => `<i class="s-${c.s}" style="--k:${k}"></i>`).join('');
+    const bin = `<div class="shredder${shredding ? ' chew' : ''}${costWith({ discards: draft.discards.concat({ pile: 'inh', su: 0 }) }) > 3 ? ' broke' : ''}" data-drop="bin" role="img" aria-label="Shredder: drop a card in to replace it for 1 input"><span class="sh-top"><i class="sh-mouth"></i></span><span class="sh-body"><b>Shred</b><span class="t-cost">${hrs(1)}</span></span><span class="sh-out">${shreds}</span></div>`;
     const honest = OP.rightStamp(wr.prop);
     // three rubber stamps standing on the blotter; the one you use leaves its mark on the sentence
     const stamps = `<div class="stampstrip rstamps" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="rstamp s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><i class="knob"></i><i class="neck"></i><span class="block"><span>${STAMP[k]}</span></span><i class="pad"></i></button>`).join('')}</div>`;
-    const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.redeal ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div>${redeal}</div></div>${stamps}`;
+    const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.discards.length ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row">${bin}<div class="fan">${hand}</div></div></div>${stamps}`;
     return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="outtray" data-a="finalise"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both

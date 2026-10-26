@@ -37,7 +37,7 @@ const s0 = OP.newGame({ players: 4, seed: 123, loyalTier: 'smart', sabTier: 'sma
 const { state, events } = OP.apply(s0, seat, { type: 'begin' });   // or { error }
 ```
 
-Actions: `begin`, `submitWork` (`redeal`, `swaps`, `reveals`, `stamp`, `subject`, `style`, `claim`, `nextStyle`), `approve` (the CEO nominates), `boardVote` (`vote`: `ratify` or `open`), `warnVote`, `investigate` (CEO, `target`), `whistleVote`, `advance`. `apply` never mutates the state it is given.
+Actions: `begin`, `submitWork` (`discards`: `[{pile: "inh"|"spare", su}]`, `swaps`, `reveals`, `stamp`, `subject`, `style`, `claim`, `nextStyle`), `approve` (the CEO nominates), `boardVote` (`vote`: `ratify` or `open`), `warnVote`, `investigate` (CEO, `target`), `whistleVote`, `advance`. `apply` never mutates the state it is given.
 
 Seat 0 is the human. With `spectate: true` every seat is a bot and the game moves on `advance`.
 

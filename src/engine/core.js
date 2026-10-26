@@ -168,7 +168,7 @@ const OP = (() => {
   }
 
   const pubEst = (s, e) => estimate(e, s.loyalTier, false);
-  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
+  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
 
   // ---------- round flow ----------
   function startRound(s, E) {
@@ -182,7 +182,8 @@ const OP = (() => {
       p.dept = d; p.inh = inh;
       const D = draw3(s);
       if (p.leave) { const [e, h] = autopilot(s, i, inh.cards, D); e.dept = d; s.envs.push(e); s.left[d] = h; continue; }
-      if (isHuman(s, i)) { s.work[i] = { D, R: draw3(s) }; continue; }
+      // three replacements per suit wait under the shredder
+      if (isHuman(s, i)) { s.work[i] = { D, X: [0, 1, 2].map(su => [draw(s, su), draw(s, su), draw(s, su)]) }; continue; }
       botInheritMemo(s, i, inh);
       const [e, h] = botWork(s, i, inh.cards, D); e.dept = d; s.envs.push(e); s.left[d] = h;
     }
@@ -203,26 +204,28 @@ const OP = (() => {
     const p = s.P[q.t]; s.investigations.push(q);
     if (q.guilty) { p.pip = true; (s.accused[p.id] = s.accused[p.id] || []).push('table'); p.accusations++; log(s, E, 'event', `${who(s, p.id, 1)} ${p.human ? 'have' : 'has'} been placed on a Performance Improvement Plan.`, { target: p.id }); }
   }
-  function workCost(w) { return (w.redeal ? 2 : 0) + SWAP_COST[w.swaps.length] + w.reveals.length; }
+  // shredding a card costs 1 and brings a fresh one of its suit into the same spot (inherited or spare)
+  function workCost(w) { return SWAP_COST[w.swaps.length] + (w.discards || []).length + w.reveals.length; }
   function workResult(s, i, w) {
-    const inh = s.P[i].inh, wk = s.work[i];
-    const base = w.redeal ? wk.R : inh.cards;
-    const prop = base.map((c, su) => (w.swaps.includes(su) ? wk.D[su] : c));
-    const aside = wk.D.map((c, su) => (w.swaps.includes(su) ? base[su] : c));
-    return { prop, aside };
+    const wk = s.work[i], I = s.P[i].inh.cards.slice(), D = wk.D.slice(), used = [0, 0, 0], shred = [];
+    for (const d of w.discards || []) { const a = d.pile === 'spare' ? D : I; shred.push(a[d.su]); a[d.su] = wk.X[d.su][used[d.su]++]; }
+    const prop = I.map((c, su) => (w.swaps.includes(su) ? D[su] : c));
+    const aside = D.map((c, su) => (w.swaps.includes(su) ? I[su] : c));
+    return { prop, aside, shred, used };
   }
   function submitWork(s, i, a, E) {
-    const w = { redeal: !!a.redeal, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3) };
+    const discards = (Array.isArray(a.discards) ? a.discards : []).filter(d => d && ['inh', 'spare'].includes(d.pile) && [0, 1, 2].includes(d.su)).slice(0, TOKENS).map(d => ({ pile: d.pile, su: d.su }));
+    const w = { discards, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3) };
     if (workCost(w) > TOKENS) return 'Not enough work tokens.';
     if (!STAMP_LABEL[a.stamp]) return 'Stamp the cover page first.';
-    const p = s.P[i], wk = s.work[i], { prop, aside } = workResult(s, i, w);
-    discard(s, w.redeal ? p.inh.cards : wk.R);
+    const p = s.P[i], wk = s.work[i], { prop, aside, shred, used } = workResult(s, i, w);
+    discard(s, shred.concat(...wk.X.map((xs, su) => xs.slice(used[su]))));
     const subject = String(a.subject || '').trim().slice(0, 80) || randomSubject(s);
     const st = a.style || {}, style = s.reqStyle ? Object.assign({}, s.reqStyle) : { tpl: TEMPLATES.includes(st.tpl) ? st.tpl : 'memo', font: FONTS.includes(st.font) ? st.font : 'grotesk' };
     // alignment and clip-art are cosmetic
     if (['left', 'center', 'right'].includes(st.align)) style.align = st.align;
     if (typeof st.art === 'string') style.art = st.art.slice(0, 24);
-    const e = { author: i, cards: prop, stamp: a.stamp, revealed: w.reveals, subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), redeal: w.redeal, dept: p.dept };
+    const e = { author: i, cards: prop, stamp: a.stamp, revealed: w.reveals, subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), shredded: discards.length, dept: p.dept };
     s.envs.push(e); s.left[p.dept] = aside;
     const inh = p.inh;
     if (a.claim && inh.kind === 'rejected' && inh.author != null && inh.author !== i) {

@@ -9,6 +9,13 @@
     if (costWith({ reveals: next }) > 3) return refuse(su);
     draft.reveals = next; render();
   }
+  // a shredded card is replaced in place; which pile it came from depends on whether its suit is swapped
+  function shredCard(zone, su) {
+    const pile = (zone === 'env') !== draft.swaps.includes(su) ? 'inh' : 'spare', next = draft.discards.concat({ pile, su });
+    const reveals = zone === 'env' ? draft.reveals.filter(x => x !== su) : draft.reveals;
+    if (costWith({ discards: next, reveals }) > 3) return refuse(su);
+    draft.discards = next; draft.reveals = reveals; ui.fresh = { zone, su }; render();
+  }
   function refuse(su) {
     toast('Your input has been noted.');
     document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
@@ -19,10 +26,10 @@
     if (!drag) return;
     if (drag.clone) drag.clone.remove();
     drag.el.classList.remove('lifted');
-    document.querySelectorAll('.slot.ok, .slot.hot').forEach(x => x.classList.remove('ok', 'hot'));
+    document.querySelectorAll('.slot.ok, .slot.hot, .shredder.ok, .shredder.hot').forEach(x => x.classList.remove('ok', 'hot'));
     drag = null;
   }
-  const slotAt = (x, y) => { const el = document.elementFromPoint(x, y); return el && el.closest('.slot'); };
+  const slotAt = (x, y) => { const el = document.elementFromPoint(x, y); return el && el.closest('.slot, .shredder'); };
   $app.addEventListener('pointerdown', ev => {
     const el = ev.target.closest('.card[data-drag]'); if (!el || !draft || ev.button > 0) return;
     const r = el.getBoundingClientRect();
@@ -38,7 +45,7 @@
       c.style.width = drag.w + 'px'; c.style.height = drag.h + 'px';
       document.body.appendChild(c); drag.clone = c; drag.el.classList.add('lifted');
       const other = drag.zone === 'hand' ? 'env' : 'hand';
-      document.querySelectorAll(`.slot[data-drop="${other}"][data-su="${drag.su}"]`).forEach(x => x.classList.add('ok'));
+      document.querySelectorAll(`.slot[data-drop="${other}"][data-su="${drag.su}"], .shredder:not(.broke)`).forEach(x => x.classList.add('ok'));
     }
     ev.preventDefault();
     drag.clone.style.transform = `translate(${ev.clientX - drag.ox}px, ${ev.clientY - drag.oy}px) rotate(${Math.max(-8, Math.min(8, (ev.clientX - drag.x) / 18))}deg) scale(1.06)`;
@@ -52,12 +59,13 @@
     const t = clone && slotAt(ev.clientX, ev.clientY);
     const hit = t && t.classList.contains('ok');
     endDrag();
-    if (!clone) tapCard(zone, su); else if (hit) swapSuit(su);
+    if (!clone) tapCard(zone, su); else if (hit && t.classList.contains('shredder')) shredCard(zone, su); else if (hit) swapSuit(su);
   });
   window.addEventListener('pointercancel', endDrag);
   $app.addEventListener('keydown', ev => {
     const el = ev.target.closest && ev.target.closest('.card[data-drag]');
     if (el && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); tapCard(el.dataset.drag, +el.dataset.su); }
+    if (el && (ev.key === 'Delete' || ev.key === 'Backspace')) { ev.preventDefault(); shredCard(el.dataset.drag, +el.dataset.su); }
     if (ev.target.id === 'name-in' && ev.key === 'Enter') { ev.preventDefault(); const b = document.querySelector('[data-a="name-go"]'); if (b && !b.disabled) b.click(); }
   });
   $app.addEventListener('input', ev => {

@@ -1,0 +1,38 @@
+/* ---------- one light, top-left: everything standing on the desk leans a little and throws its shadow down-right ---------- */
+.rstamp { --rz: -4deg; transform: rotate(var(--rz)); filter: drop-shadow(5px 8px 4px rgba(0,0,0,.45)) drop-shadow(1px 2px 1px rgba(0,0,0,.35)) }
+.rstamp:nth-child(2) { --rz: 2.5deg } .rstamp:nth-child(3) { --rz: -1.5deg }
+.rstamp:hover { transform: rotate(var(--rz)) translateY(-4px) }
+.rstamp[aria-pressed="true"] { transform: rotate(var(--rz)) translateY(7px) scaleY(.96); filter: drop-shadow(2px 3px 2px rgba(0,0,0,.5)) }
+@keyframes want { 40% { transform: rotate(var(--rz)) translateY(-12px) rotate(-3deg) } }
+/* the block's top face, seen from above, so it reads as a solid thing rather than a sign */
+.rstamp .block { position: relative; margin-top: 6px }
+.rstamp .block::before { content: ""; position: absolute; left: 4px; right: 4px; top: -7px; height: 8px; background: linear-gradient(#C68A58, #A9693C); clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%) }
+.rstamp .neck { position: relative; z-index: 1; margin-bottom: -9px }
+.rstamp .knob { position: relative; z-index: 1 }
+/* the out tray sits square on the wood with a shadow under its front lip */
+.outtray { filter: drop-shadow(6px 8px 5px rgba(0,0,0,.5)) }
+.ot-in { background: linear-gradient(#1E0F07, #3E2010 60%, #5A3019); clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%) }
+
+/* ---------- the shredder, left of the fan: drop any card in, 1 input, a fresh one of that suit takes its place ---------- */
+.shredder { position: relative; flex: none; display: grid; justify-items: center; width: 60px; margin: 0 2px 16px 0; align-self: flex-end; transform: rotate(-4deg); filter: drop-shadow(5px 8px 4px rgba(0,0,0,.45)); transition: transform .18s var(--bounce) }
+.sh-top { position: relative; width: 60px; height: 22px; border-radius: 6px 6px 2px 2px; background: linear-gradient(#4A4D55, #2A2C32); box-shadow: inset 0 1px 0 rgba(255,255,255,.18) }
+.sh-mouth { position: absolute; left: 7px; right: 7px; top: 8px; height: 5px; border-radius: 2px; background: #07080A; box-shadow: inset 0 2px 2px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.12); transition: box-shadow .15s }
+.sh-body { position: relative; display: grid; justify-items: center; align-content: start; gap: 5px; width: 54px; height: 52px; padding-top: 7px; overflow: hidden;
+  background: linear-gradient(90deg, rgba(0,0,0,.12), transparent 30%, transparent 70%, rgba(0,0,0,.18)), linear-gradient(#D9D1BD, #B8AE96); clip-path: polygon(0 0, 100% 0, 94% 100%, 6% 100%) }
+.sh-body b { font: 900 8.5px/1 var(--f-body); letter-spacing: .2em; text-transform: uppercase; color: rgba(40,34,22,.55); text-shadow: 0 1px 0 rgba(255,255,255,.5) }
+.sh-body .t-cost .hrs { background: var(--stock) }
+/* what's been shredded this quarter piles up in the window, in its suit's colour */
+.sh-out { position: absolute; left: 10px; right: 10px; bottom: 4px; height: 12px; display: flex; justify-content: center; align-items: flex-end; gap: 1px; pointer-events: none }
+.sh-out i { width: 3px; height: calc(7px + var(--k) * 2px); background: var(--suit); border-radius: 1px; box-shadow: 4px 1px 0 var(--suit), -4px 2px 0 var(--suit), 8px 3px 0 var(--suit) }
+.shredder.ok .sh-mouth { box-shadow: inset 0 2px 2px rgba(0,0,0,.9), 0 0 0 2px var(--gold) }
+.shredder.hot { transform: rotate(-4deg) scale(1.1) }
+.shredder.hot .sh-mouth { box-shadow: inset 0 2px 2px rgba(0,0,0,.9), 0 0 0 3px var(--gold), 0 0 16px rgba(233,162,59,.7) }
+.shredder.broke { opacity: .55 }
+.shredder.chew { animation: chew .45s linear both }
+@keyframes chew { 0%, 100% { transform: rotate(-4deg) } 20%, 60% { transform: rotate(-4deg) translateX(-2px) } 40%, 80% { transform: rotate(-4deg) translateX(2px) } }
+.shredder.chew .sh-out i:last-child { animation: shreds .5s ease-out .2s both }
+@keyframes shreds { from { transform: translateY(-14px); opacity: 0 } }
+/* the replacement deals in from the shredder side */
+.play .card.fresh { animation: fresh .55s cubic-bezier(.2,.9,.25,1.1) .25s both }
+@keyframes fresh { from { transform: translate(-60px, 30px) rotate(-18deg) scale(.6); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .shredder.chew, .shredder.chew .sh-out i, .play .card.fresh { animation: none } }
