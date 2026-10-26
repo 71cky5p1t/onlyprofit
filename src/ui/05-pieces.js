@@ -7,8 +7,9 @@
       <div class="meter-track"><div class="bar"><div class="meter-zero" style="left:${z}%"></div><div class="meter-fill ${S.profit < 0 ? 'neg' : ''}" style="left:${left}%;width:${w}%"></div><div class="meter-tick" style="left:calc(${pct(S.target)}% - 1px)"></div>${S.r ? `<div class="meter-pace" style="left:calc(${pct(S.target * Math.min(5, S.r) / 5)}% - 1px)"></div>` : ''}</div><div class="lbl"><span>Q${Math.max(1, S.r)}/5</span><span>Target</span></div></div></div>`;
   }
   function mast() {
-    const stats = S ? `<span class="tab"><b>Q${Math.max(1, S.r)}</b><span>${PHASE[S.phase]}</span></span>
-      <div class="stat"><span class="label">CEO</span><b>${S.r ? esc(nm(S.ceo)) : '—'}</b></div>${meter()}` : '';
+    // on the felt: a tear-off desk calendar for the quarter, a brass plate for the CEO, a desk calculator for profit
+    const stats = S ? `<span class="tab" aria-label="Quarter ${Math.max(1, S.r)}, ${PHASE[S.phase]}"><b>Q${Math.max(1, S.r)}</b><span>${PHASE[S.phase]}</span></span>
+      ${S.r ? `<div class="stat"><span class="label">CEO</span><b>${esc(nm(S.ceo))}</b></div>` : ''}${meter()}` : '';
     return `<header class="mast"><div class="wrap">
       <div class="logo"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="logo-type"><span class="brand-name">${esc(brand().name)}</span><small>${esc(brand().suffix)}</small></span></div>
       <div class="mast-stats">${stats}<div class="tools">

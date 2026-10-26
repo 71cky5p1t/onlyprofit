@@ -1,0 +1,26 @@
+/* ---------- masthead: no black band, just objects lying on the felt ---------- */
+.mast { background: none; box-shadow: none; color: var(--on-table) }
+.mast .wrap { padding-block: 14px 4px }
+.logo-type small { color: var(--on-table-2) }
+/* the quarter: a tear-off desk calendar with two binder rings */
+.tab { position: relative; display: inline-grid; justify-items: center; min-width: 64px; overflow: visible; border-radius: 3px; transform: rotate(-3deg); box-shadow: 0 1px 0 rgba(0,0,0,.2), 0 10px 12px -8px rgba(0,0,0,.7) }
+.tab b { width: 100%; text-align: center; padding: 9px 10px 5px; font: 900 18px/1 var(--f-body); border-radius: 3px 3px 0 0; background: linear-gradient(#E0372B, #B81F16) }
+.tab span { width: 100%; text-align: center; padding: 5px 9px 6px; font: 800 9.5px/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; border-radius: 0 0 3px 3px;
+  background: linear-gradient(var(--stock) 0 85%, var(--stock-2) 85% 88%, var(--stock) 88% 92%, var(--stock-2) 92% 95%, var(--stock) 95%) }
+.tab::before, .tab::after { content: ""; position: absolute; top: -4px; width: 4px; height: 9px; border-radius: 2px; background: linear-gradient(90deg, #8D9190, #E4E6E3 50%, #8D9190) }
+.tab::before { left: 30% } .tab::after { right: 30% }
+/* the CEO: a small brass desk plate */
+.mast .stat { padding: 6px 12px 6px; border-radius: 2px; transform: rotate(1.5deg); color: #2A1E0A; text-align: center;
+  background: linear-gradient(#EDD596, #C9A04A 55%, #A47C34); box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 0 0 1px rgba(90,60,20,.4), 0 7px 0 -3px #3A2214, 0 8px 0 -3px #1E110A, 0 12px 10px -6px rgba(0,0,0,.7) }
+.mast .stat .label { color: rgba(42,30,10,.65); font: 900 8.5px/1 var(--f-body); letter-spacing: .2em }
+.mast .stat b { font: 900 14px/1.1 var(--f-body); letter-spacing: .04em; text-transform: uppercase }
+/* profit: a beige desk calculator */
+.meter { transform: rotate(-1.5deg); padding: 7px 9px 7px 7px; border-radius: 9px 9px 12px 12px; background: linear-gradient(#E4D9BE, #CDBF9C);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), inset 0 -3px 0 rgba(0,0,0,.12), 0 4px 0 #9C8D6A, 0 14px 14px -8px rgba(0,0,0,.7) }
+.meter-lcd { box-shadow: inset 0 2px 4px rgba(0,0,0,.4), 0 0 0 3px #3B3A35 }
+.meter-track .bar { background: #3B3A35; box-shadow: inset 0 1px 2px rgba(0,0,0,.6) }
+.meter-track .lbl { color: rgba(40,34,20,.6) }
+/* chips: plain paper tabs */
+.mast .chip-btn { border-color: var(--table-rule); color: var(--on-table) }
+/* on a phone the desk already carries the profit ticket */
+@media (max-width: 980px) { .mast .meter { display: none } }
