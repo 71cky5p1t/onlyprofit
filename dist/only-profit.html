@@ -967,7 +967,7 @@ html[data-sweep="d"]::view-transition-old(i-stage) { animation-name: sweep-d }
 .lesson-overtime .i-cards.spares { display: grid; grid-template-columns: repeat(3, auto); gap: 10px } .lesson-overtime .spares .card { --cw: clamp(56px, 7.2vw, 82px); rotate: 0deg; cursor: pointer }
 .lesson-overtime .spares .card:hover { translate: 0 -4px }
 .lesson-overtime .stage, .lesson-overtime { gap: clamp(10px, 2vh, 18px) }
-.purse .slotbox.hole { animation-name: punch; animation-duration: .3s; animation-timing-function: steps(1, end) }
+.purse .slotbox.hole { animation-name: punch; animation-duration: .3s; animation-timing-function: linear }
 .swap-slot { display: grid; rotate: 0deg } .swap-slot > * { grid-area: 1 / 1 }
 .b.swap-out { animation-name: swap-out; animation-duration: .45s } .b.swap-in { animation-name: swap-in; animation-duration: .5s }
 .b.lift-out { animation-name: lift-out; animation-duration: .45s }
@@ -1000,7 +1000,7 @@ html[data-sweep="d"]::view-transition-old(i-stage) { animation-name: sweep-d }
 @keyframes deal-flip { from { transform: translateX(-70vw) rotateY(180deg) } 55% { transform: rotateY(180deg) } to { transform: rotateY(0) } }
 @keyframes mark-pop { from { transform: scale(0); opacity: 0 } }
 @keyframes coin { from { transform: translateY(-50svh) rotateY(1080deg) scale(.6); opacity: 0 } 60% { transform: rotateY(0) } 75% { transform: rotate(-6deg) } 88% { transform: rotate(4deg) } }
-@keyframes punch { from { background: none; color: rgba(20,20,20,.45); border-color: rgba(20,20,20,.35) } }
+@keyframes punch { 0%, 80% { background: none; border: 1.5px dashed rgba(20,20,20,.38) } }
 @keyframes swap-out { to { transform: translateY(70%) rotate(8deg); opacity: 0 } }
 @keyframes swap-in { from { transform: translateY(140%) rotate(-6deg); opacity: 0 } }
 @keyframes lift-out { to { opacity: .25 } }
@@ -1068,6 +1068,16 @@ html[data-sweep="d"]::view-transition-old(i-stage) { animation-name: sweep-d }
 .induction .i-year .rubber { top: 58%; font-size: clamp(15px, 2.2vw, 20px) }
 .induction .i-year .stk { white-space: nowrap }
 @media (max-width: 740px) { .induction .eoty { inset: -8px -6px -36px } }
+/* the Your Input Matters punch card, as on the desk */
+.i-purse.purse { display: inline-grid; grid-template-columns: auto auto; align-items: center; gap: 3px 6px; width: 132px; padding: 0 7px 4px 0; border-radius: 5px; overflow: hidden }
+.i-purse::before { content: none }
+.i-purse .pc-band { grid-column: 1 / -1; display: flex; align-items: center; gap: 5px; padding: 4px 6px 3px; background: var(--brand); color: var(--brand-ink) }
+.i-purse .pc-band svg { width: 15px; height: 15px; flex: none }
+.i-purse .pc-band b { font: 900 8.5px/1.05 var(--f-body); letter-spacing: .07em; text-transform: uppercase }
+.i-purse .pc-holes { display: flex; gap: 6px; padding-left: 7px }
+.i-purse small { font: 400 7.5px/1.1 var(--f-seg); color: var(--ink-3); justify-self: end; align-self: end; white-space: nowrap }
+.i-purse .slotbox { width: 15px; height: 15px; border-radius: 50%; border: 1.5px dashed rgba(20,20,20,.38) }
+.i-purse .slotbox.punched { border: 0; background: radial-gradient(circle, #1E2420 0 6.5px, rgba(0,0,0,.25) 7px, transparent 7.5px) }
 
 /* ---------- Staff Induction: a training tape played over the felt. Beats run off --dur (chapter) and --played (time already played) ---------- */
 .induction { --played: 0s; position: relative; height: 100svh; min-height: 540px; overflow: hidden; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; padding: 58px 16px 0; user-select: none }
@@ -3180,8 +3190,8 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     const b = brand();
     return `<div class="i-binder b ${stamped ? 'settle' : 'drop-in'}" style="${vt('vt-binder')}"><i class="rings"></i><div class="sleeve"><small>${esc(b.name)} · People &amp; Culture</small><strong>Staff<br>Induction</strong><span class="seal">${brandMark()}</span></div>${stamped ? `<span class="rubber b thump" ${at(.4)}>Read &amp;<br>Understood</span>` : ''}</div>`;
   }
-  // a hole for every hour spent; holes arrive on their own beat
-  const punch = (spent, beats = []) => `<span class="purse i-purse">${[0, 1, 2].map(k => `<i class="slotbox${k < spent ? ' punched' : ''}${beats[k] != null ? ' b hole' : ''}" ${beats[k] != null ? at(beats[k]) : ''}>${k + 1}</i>`).join('')}</span>`;
+  // the Your Input Matters card: a hole for every input spent, each on its own beat
+  const punch = (spent, beats = []) => `<span class="purse i-purse"><span class="pc-band">${brandMark()}<b>Your Input<br>Matters*</b></span><span class="pc-holes">${[0, 1, 2].map(k => `<i class="slotbox${k < spent ? ' punched' : ''}${beats[k] != null ? ' b hole' : ''}" ${beats[k] != null ? at(beats[k]) : ''}></i>`).join('')}</span><small>*3 per quarter</small></span>`;
   function trainingProp(id) {
     const cs = demoCards(), target = S ? S.target : OP.TARGETS[setup.players] - (setup.easy ? 3 : 0);
     if (id === 'welcome') return binderHTML(false);
