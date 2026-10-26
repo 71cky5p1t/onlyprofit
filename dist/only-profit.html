@@ -978,9 +978,8 @@ section > .label { color: var(--on-table-2) }
 /* finalising: the sentence and hand clear off before the page lands */
 .play.stuff .said, .play.stuff .hand-row .t-redeal { transition: opacity .2s; opacity: 0 }
 @media (prefers-reduced-motion: reduce) { .cig .paper i::before, .said-stamp { animation: none } }
-/* the desk is as big as what's on it */
-.desk-body { flex: 0 0 auto }
-@media (max-width: 980px) { .desk { min-height: 0 } }
+/* on a phone the desk fills the glass: the blotter stretches, stamps settle at its foot, the tray below */
+.desk-body { flex: 1 0 auto; align-content: space-between }
 /* an unstamped page at the tray: the stamps hop */
 .rstamps.want .rstamp { animation: want .5s var(--bounce) both }
 .rstamps.want .rstamp:nth-child(2) { animation-delay: .07s } .rstamps.want .rstamp:nth-child(3) { animation-delay: .14s }
