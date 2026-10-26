@@ -230,7 +230,8 @@ const OP = (() => {
     if (!STAMP_LABEL[a.stamp]) return 'Stamp the cover page first.';
     const p = s.P[i], wk = s.work[i], { prop, aside, shred, used } = workResult(s, i, w);
     discard(s, shred.concat(...wk.X.map((xs, su) => xs.slice(used[su]))));
-    const subject = String(a.subject || '').trim().slice(0, 80) || randomSubject(s);
+    // the cover page says the policy itself
+    const subject = prop.map(c => c.w).join(' ');
     const st = a.style || {}, style = s.reqStyle ? Object.assign({}, s.reqStyle) : { tpl: TEMPLATES.includes(st.tpl) ? st.tpl : 'memo', font: FONTS.includes(st.font) ? st.font : 'grotesk' };
     // alignment and clip-art are cosmetic
     if (['left', 'center', 'right'].includes(st.align)) style.align = st.align;

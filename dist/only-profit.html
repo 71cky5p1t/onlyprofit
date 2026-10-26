@@ -126,7 +126,7 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 .desk .btn.back:hover { background: rgba(0,0,0,.2) }
 
 
-.mini .yours { position: absolute; left: 0; bottom: 0; font: 800 8.5px/1 var(--f-body); font-style: normal; letter-spacing: .1em; text-transform: uppercase; background: var(--ink); color: var(--stock); padding: 3px 6px 3px 10px; border-radius: 0 3px 0 0 }
+.mini .yours, .prow .yours { position: absolute; left: 0; bottom: 0; font: 800 8.5px/1 var(--f-body); font-style: normal; letter-spacing: .1em; text-transform: uppercase; background: var(--ink); color: var(--stock); padding: 3px 6px 3px 10px; border-radius: 0 3px 0 0 }
 .mini[aria-pressed="true"], .nametag[aria-pressed="true"] { transform: translateY(-5px) rotate(-1.2deg); box-shadow: 0 0 0 3px var(--gold), 0 18px 26px -12px rgba(0,0,0,.75) }
 .mini.none { background: transparent; box-shadow: inset 0 0 0 2px var(--table-rule); color: var(--on-table-2); display: grid; place-items: center; font: 800 12px/1.2 var(--f-body); text-transform: uppercase; letter-spacing: .08em }
 .mini.none[aria-pressed="true"] { color: var(--on-table); box-shadow: inset 0 0 0 2px var(--gold) }
@@ -745,22 +745,6 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .preview .cp-w > .cp { box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 18px 26px -14px rgba(0,0,0,.85) }
 .preview.arrive .cp-w { animation: arrive .5s var(--bounce) both }
 @keyframes arrive { from { transform: translateY(-40px) scale(.9) rotate(4deg); opacity: 0 } }
-/* subject words: embossed label-maker tape; tap one and it's punched again */
-.desk .subj { justify-content: center; gap: 9px 7px; padding: 4px 0 2px; filter: drop-shadow(0 2px 1.5px rgba(0,0,0,.5)) }
-.desk .subj-word { position: relative; border: 0; border-radius: 0; padding: 8px 13px 7px; color: #EDEAE2; font: 800 13px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase; cursor: pointer;
-  background: linear-gradient(180deg, rgba(255,255,255,.16), transparent 30%, transparent 70%, rgba(0,0,0,.3)), repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 3px), #1E2129;
-  text-shadow: 0 -1px 0 rgba(0,0,0,.7), 0 1px 0 rgba(255,255,255,.18); clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); transition: transform .15s var(--bounce) }
-.desk .subj-word:nth-child(1) { transform: rotate(-1.4deg) } .desk .subj-word:nth-child(2) { transform: rotate(.8deg) translateY(1px) } .desk .subj-word:nth-child(3) { transform: rotate(-.5deg) }
-.desk .subj-word:hover:not(:disabled) { transform: translateY(-2px) }
-.desk .subj-word:disabled { opacity: .3; cursor: not-allowed }
-.desk .subj-word.punch { animation: dymo .45s steps(7, end) both }
-@keyframes dymo { from { clip-path: polygon(3px 0, 3px 0, 0 100%, 0 100%) } }
-/* or type your own: a strip torn off a notepad */
-.typed-slip { position: relative; display: block; margin: 2px 6px 0; padding-top: 5px; background: #FBF7EC; border-radius: 0 0 2px 2px; transform: rotate(.6deg); box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 12px -9px rgba(0,0,0,.7) }
-.typed-slip::before { content: ""; position: absolute; left: 0; right: 0; top: -3px; height: 6px; background: radial-gradient(circle at 4px 0, transparent 2.6px, #FBF7EC 3px) 0 0 / 8px 6px repeat-x }
-.typed-slip .input { border: 0; border-radius: 0; background: none; padding: 7px 12px 9px; font: 700 15px/1.3 "Courier Prime", var(--f-seg); color: var(--ink) }
-.typed-slip .input::placeholder { color: rgba(20,20,20,.38) }
-.typed-slip .input:focus { outline: none } .typed-slip:focus-within { box-shadow: 0 0 0 2px var(--gold), 0 8px 12px -9px rgba(0,0,0,.7) }
 /* fonts and alignment: wooden type blocks in a case; the one in use is lifted out */
 .dress-row { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 3fr); gap: 8px; margin-top: 4px }
 .chips { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 5px; padding: 6px; border-radius: 3px;
@@ -783,7 +767,6 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .px-opt .px { width: 34px; height: 34px; padding: 6px; box-sizing: content-box; background: #fff; border-radius: 10px; box-shadow: 0 0 0 1px rgba(0,0,0,.07), 0 1px 1.5px rgba(0,0,0,.22); transition: box-shadow .2s }
 .px-opt[aria-selected="true"] { transform: translateY(-4px) rotate(-7deg) scale(1.12); z-index: 1 }
 .px-opt[aria-selected="true"] .px { box-shadow: 0 0 0 1px rgba(0,0,0,.05), 0 9px 10px -3px rgba(0,0,0,.45) }
-@media (prefers-reduced-motion: reduce) { .desk .subj-word.punch { animation: none } }
 /* proposals to pick from on the phone */
 .minis { display: grid; grid-template-columns: repeat(3, 98px); justify-content: center; gap: 34px 12px; padding-top: 30px }
 .mini { position: relative; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 2px; transition: transform .2s var(--bounce) }
@@ -1129,7 +1112,7 @@ section > .label { color: var(--on-table-2) }
   --ink-fill: linear-gradient(180deg, rgba(255,255,255,.08), transparent 30%, transparent 72%, rgba(255,255,255,.05)), repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 3px), #101114;
   --ink-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40' preserveAspectRatio='none'%3E%3Cfilter id='r' x='-5%25' y='-20%25' width='110%25' height='140%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035 .5' numOctaves='2' seed='4'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='9'/%3E%3C/filter%3E%3Crect x='3' y='6' width='194' height='28' rx='9' filter='url(%23r)'/%3E%3C/svg%3E");
 }
-.card.redacted .word > span, .line .hid mark, .line.nil { background: var(--ink-fill); -webkit-mask: var(--ink-mask) 0 0 / 100% 100%; mask: var(--ink-mask) 0 0 / 100% 100%; border-radius: 0 }
+.card.redacted .word > span, .line .hid mark { background: var(--ink-fill); -webkit-mask: var(--ink-mask) 0 0 / 100% 100%; mask: var(--ink-mask) 0 0 / 100% 100%; border-radius: 0 }
 .card.redacted .word > span { padding: .04em .16em; margin: 0 -.16em; animation: niko .46s linear both }
 .line .hid mark { padding: 0 .2em; transform: rotate(-1.2deg) }
 .cp-redact { background: var(--ink-fill); -webkit-mask: var(--ink-mask) 0 0 / 100% 100%; mask: var(--ink-mask) 0 0 / 100% 100% }
@@ -1142,27 +1125,26 @@ section > .label { color: var(--on-table-2) }
 .marker-fly { position: fixed; left: 0; top: 0; z-index: 60; width: 86px; transform-origin: 6px 13px; pointer-events: none; filter: drop-shadow(6px 10px 5px rgba(0,0,0,.4)) }
 .marker-fly svg { display: block; width: 100%; height: auto } .marker-fly .cap { display: none }
 
-/* phone CEO: every page as a row, cover beside its sentence */
-.prows { display: grid; gap: 14px; padding: 6px 0 }
-.prow { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; padding: 4px 6px 4px 2px; border: 0; background: none; text-align: left; cursor: pointer; border-radius: 4px; transition: transform .2s var(--bounce) }
+/* phone CEO: the cover pages two across, big enough to read the sentence printed on each */
+.prows { display: grid; grid-template-columns: repeat(2, max-content); justify-content: center; gap: 22px 14px; padding: 8px 0 }
+.prow { position: relative; display: grid; justify-items: center; gap: 8px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 2px; transition: transform .2s var(--bounce) }
 .prow .cp-w::before, .prow .cp-w::after { display: none }
-.prow .cp { box-shadow: 0 10px 14px -9px rgba(0,0,0,.75) }
-.prow .line { font-size: 15px; text-align: left; transform: rotate(.6deg) }
-.prow:nth-child(even) .line { transform: rotate(-.8deg) }
-.prow[aria-pressed="true"] { transform: translateX(4px) }
+.prow .cp { box-shadow: 0 12px 16px -10px rgba(0,0,0,.75) }
+.prow .line { max-width: 152px; font-size: 12px }
+.prow[aria-pressed="true"] { transform: translateY(-5px) rotate(-1.2deg) }
 .prow[aria-pressed="true"] .cp { outline: 3px solid var(--gold); outline-offset: 2px }
-.prow[aria-pressed="true"] .line { box-shadow: 0 0 0 3px var(--gold), 0 8px 14px -10px rgba(0,0,0,.6) }
-.prow .yours { position: absolute; left: 2px; bottom: 4px; z-index: 3 }
-.prow { position: relative }
-.line.nil { color: transparent; padding: 6px 10px; letter-spacing: -.1em }
+.prow .yours { z-index: 3 }
+/* a blacked-out word on a cover page */
+.cp-ink { display: inline-block; color: transparent; padding: 0 .1em; background: var(--ink-fill); -webkit-mask: var(--ink-mask) 0 0 / 100% 100%; mask: var(--ink-mask) 0 0 / 100% 100%; transform: rotate(-1.5deg); letter-spacing: -.12em; line-height: 1 }
+.cp-arc span.ink { color: #101114; text-shadow: none }
 
-/* TV: the sentence is the punchline, stapled to the foot of its page and read out one at a time */
+/* TV: the sentence on each cover is the punchline, read out one page at a time; once the worth is out it's stapled underneath */
 .pg-under .line { position: relative; z-index: 2; width: 112%; margin-top: -8px; font-size: 17px; line-height: 1.45 }
 .pg-under .line::before { content: ""; position: absolute; left: 50%; top: -3px; width: 22px; height: 4px; margin-left: -11px; border-radius: 1px; background: linear-gradient(#D9DCE0, #8A8F96); box-shadow: 0 1px 1px rgba(0,0,0,.4) }
 .pages.n7 .pg-under .line, .pages.n8 .pg-under .line { font-size: 15px }
-.pg.say .pg-under .line { animation: say .45s cubic-bezier(.2,.9,.3,1.2) calc(.5s + var(--i) * .45s) both }
+.pg.say :is(.cp-subj, .cp-arc) { animation: say .45s cubic-bezier(.2,.9,.3,1.2) calc(.5s + var(--i) * .45s) both }
 @keyframes say { from { transform: translateY(18px) rotate(-4deg) scale(.9); opacity: 0 } }
-@media (prefers-reduced-motion: reduce) { .card.redacted .word > span, .pg.say .pg-under .line { animation: none } .marker .cap { transition: none } }
+@media (prefers-reduced-motion: reduce) { .card.redacted .word > span, .pg.say :is(.cp-subj, .cp-arc) { animation: none } .marker .cap { transition: none } }
 </style>
 <div id="app"></div>
 <script>
@@ -1378,11 +1360,11 @@ const OP_BOTS = (() => {
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
       // a smart saboteur sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
-      return [{ author: i, cards: prop, stamp, redacted: rev, revealed: [0, 1, 2].filter(x => !rev.includes(x)), subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
+      return [{ author: i, cards: prop, stamp, redacted: rev, revealed: [0, 1, 2].filter(x => !rev.includes(x)), subject: prop.map(c => c.w).join(' '), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
     }
     function autopilot(s, i, I, D) {
       const cards = draw3(s); discard(s, I);
-      return [{ author: i, cards, stamp: 'Risky', redacted: [], revealed: [0, 1, 2], autopilot: true, subject: 'Interim Management Update', style: { tpl: 'memo', font: 'typewriter' }, mode: 'autopilot', cost: 0 }, D];
+      return [{ author: i, cards, stamp: 'Risky', redacted: [], revealed: [0, 1, 2], autopilot: true, subject: cards.map(c => c.w).join(' '), style: { tpl: 'memo', font: 'typewriter' }, mode: 'autopilot', cost: 0 }, D];
     }
     function botInheritMemo(s, i, inh) {
       const p = s.P[i];
@@ -1720,7 +1702,8 @@ const OP = (() => {
     if (!STAMP_LABEL[a.stamp]) return 'Stamp the cover page first.';
     const p = s.P[i], wk = s.work[i], { prop, aside, shred, used } = workResult(s, i, w);
     discard(s, shred.concat(...wk.X.map((xs, su) => xs.slice(used[su]))));
-    const subject = String(a.subject || '').trim().slice(0, 80) || randomSubject(s);
+    // the cover page says the policy itself
+    const subject = prop.map(c => c.w).join(' ');
     const st = a.style || {}, style = s.reqStyle ? Object.assign({}, s.reqStyle) : { tpl: TEMPLATES.includes(st.tpl) ? st.tpl : 'memo', font: FONTS.includes(st.font) ? st.font : 'grotesk' };
     // alignment and clip-art are cosmetic
     if (['left', 'center', 'right'].includes(st.align)) style.align = st.align;
@@ -2074,7 +2057,6 @@ const OP = (() => {
       const b = ev.target.closest('[data-a]'); if (!b || b.disabled) return;
       const a = b.dataset.a;
       if (a === 'approve') sfx('paper-pull');
-      else if (a === 'reroll') sfx('paper-type-key');
       else if (a === 'name-go') sfx('paper-type-bell', 0, .7);
       else if (TAP.has(a)) sfx('desk-tap', 0, .7);
       // the lobby comes off hold while you poke at the menu, and goes back on when you stop
@@ -2213,10 +2195,9 @@ const OP = (() => {
   }
   function newDraft() {
     const p = me(), inh = p.inh;
-    return { discards: [], swaps: [], redacts: [], stamp: null, words: (S.subj || OP.SUBJ).map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
+    return { discards: [], swaps: [], redacts: [], stamp: null, 
       style: Object.assign({ tpl: 'memo', font: 'grotesk' }, p.fav, S.reqStyle), artSet: false, claim: { kind: 'none', val: evs(inh.cards), stamp: inh.stamp || 'Rec' }, nextStyle: null };
   }
-  const subjectOf = d => (d.useCustom && d.custom.trim() ? d.custom.trim() : d.words.map((k, i) => (S.subj || OP.SUBJ)[i][k]).join(' '));
   function costWith(ch) { return OP.workCost(Object.assign({}, draft, ch)); }
   function toast(t) { let el = document.querySelector('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); } el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, 2200); }
   // ---------- clip-art: pixel pictures for cover pages. HAND are 12×12 colour maps, PX are 16×16 one-colour bitmaps ----------
@@ -2256,41 +2237,51 @@ const OP = (() => {
   const FONTS = { grotesk: 'Grotesk', typewriter: 'Typewriter', comic: 'Comic', serif: 'Serif', poster: 'Poster' };
   const FW = { poster: .58, grotesk: .6, typewriter: .62, comic: .56, serif: .6 };
   const hash = t => { let h = 7; for (const ch of String(t)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
+  const plain = e => e.cards.map(c => c.w).join(' ');
   function lookOf(e) {
     const st = e.style || {}, tpl = TPL[st.tpl] ? st.tpl : 'memo', d = TPL[tpl];
-    // bots don't pick clip-art; theirs is dealt from the subject line
-    return { tpl, font: FONTS[st.font] ? st.font : d.font, align: st.align || d.align, art: ART.includes(st.art) ? st.art : ART[hash(e.subject) % ART.length] };
+    // bots don't pick clip-art; theirs is dealt from the sentence
+    return { tpl, font: FONTS[st.font] ? st.font : d.font, align: st.align || d.align, art: ART.includes(st.art) ? st.art : ART[hash(plain(e)) % ART.length] };
   }
-  // the subject sized to fill its box: short ones get big, no word wider than the box
-  function subjHTML(text, font, align, base, w, h) {
-    const long = Math.max(...text.split(/\s+/).map(x => x.length)), W = FW[font];
+  // who can read what: words show unless blacked out; worth only once it's out in the open
+  const inOpen = (e, o) => !!(o.all || e.audited || e.autopilot || e.approved || ui.debug);
+  const seesAll = (e, o) => inOpen(e, o) || (mine() && e.author === ME);
+  const BLOT = '█████';
+  // the cover says the policy: its three card words, blacked-out ones inked over
+  const wordsOf = (e, all) => e.cards.map((c, su) => all || !(e.redacted || []).includes(su) ? { w: c.w } : { w: BLOT, ink: true });
+  const sayOf = (e, o) => wordsOf(e, seesAll(e, o || {})).map(p => p.ink ? 'blacked out' : p.w).join(' ');
+  // the sentence sized to fill its box: short ones get big, no word wider than the box
+  function subjHTML(parts, font, align, base, w, h) {
+    const text = parts.map(p => p.w).join(' '), long = Math.max(...text.split(/\s+/).map(x => x.length)), W = FW[font];
     const fs = Math.max(12, Math.min(base * 1.7, Math.sqrt(w * h / (Math.max(6, text.length) * W * 1.2)), w / (long * W * 1.08)));
-    return `<div class="cp-subj f-${font}" style="text-align:${align};font-size:${fs.toFixed(1)}px">${esc(text)}</div>`;
+    return `<div class="cp-subj f-${font}" style="text-align:${align};font-size:${fs.toFixed(1)}px">${parts.map(p => p.ink ? `<mark class="cp-ink" aria-label="blacked out">${BLOT}</mark>` : esc(p.w)).join(' ')}</div>`;
   }
   // WordArt: short lines, each on a gentle arc in one solid colour with a block shadow
-  function arcHTML(text, font) {
-    const words = text.split(' ');
+  function arcHTML(parts, font) {
+    const words = parts.flatMap(p => p.w.split(' ').map(w => ({ w, ink: p.ink })));
     let max = 14, lines;
     do {
       lines = [];
-      for (const w of words) { const l = lines[lines.length - 1]; if (l && (l + ' ' + w).length <= max) lines[lines.length - 1] = l + ' ' + w; else lines.push(w); }
+      for (const w of words) { const l = lines[lines.length - 1]; if (l && l.reduce((n, x) => n + x.w.length + 1, w.w.length) <= max) l.push(w); else lines.push([w]); }
       max += 3;
     } while (lines.length > 5);
-    const W = FW[font], long = Math.max(...lines.map(l => l.length)), fs = Math.max(14, Math.min(40, 236 / (W * long)));
+    const len = l => l.reduce((n, x) => n + x.w.length + 1, -1);
+    const W = FW[font], long = Math.max(...lines.map(len)), fs = Math.max(14, Math.min(40, 236 / (W * long)));
     const R = 300, gap = fs * 1.2, sag = R - Math.sqrt(R * R - 118 * 118);
     const out = lines.map((line, li) => {
-      const step = (fs * W * 1.06) / R, start = -((line.length - 1) * step) / 2;
-      return [...line].map((c, k) => {
+      const chars = line.flatMap((x, k) => [...(k ? ' ' : '') + x.w].map(c => ({ c, ink: x.ink && c !== ' ' })));
+      const step = (fs * W * 1.06) / R, start = -((chars.length - 1) * step) / 2;
+      return chars.map(({ c, ink }, k) => {
         const t = start + k * step, x = 128 + R * Math.sin(t), y = fs / 2 + li * gap + R * (1 - Math.cos(t));
-        return `<span class="l${li % 3}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;transform:translate(-50%,-50%) rotate(${(t * 180 / Math.PI).toFixed(1)}deg)">${esc(c)}</span>`;
+        return `<span class="l${li % 3}${ink ? ' ink' : ''}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;transform:translate(-50%,-50%) rotate(${(t * 180 / Math.PI).toFixed(1)}deg)">${esc(c)}</span>`;
       }).join('');
     }).join('');
-    return `<div class="cp-arc f-${font}" role="img" aria-label="${esc(text)}" style="font-size:${fs.toFixed(1)}px;height:${(lines.length * gap + sag).toFixed(0)}px">${out}</div>`;
+    return `<div class="cp-arc f-${font}" role="img" aria-label="${esc(parts.map(p => p.ink ? 'blacked out' : p.w).join(' '))}" style="font-size:${fs.toFixed(1)}px;height:${(lines.length * gap + sag).toFixed(0)}px">${out}</div>`;
   }
   const artBox = (id, cls) => `<span class="cp-art ${cls || ''}">${artSVG(id)}</span>`;
   const redact = w => `<i class="cp-redact" style="width:${w}"></i>`;
-  function coverInner(e, L) {
-    const s = e.subject, q = `Q${Math.max(1, S ? S.r : 1)}`, b = brand();
+  function coverInner(e, L, all) {
+    const s = wordsOf(e, all), q = `Q${Math.max(1, S ? S.r : 1)}`, b = brand();
     const sub = (base, w, h) => subjHTML(s, L.font, L.align, base, w, h);
     switch (L.tpl) {
       case 'fax': return `<div class="cp-in"><div class="fax-h">FAX COVER SHEET</div>
@@ -2303,7 +2294,7 @@ const OP = (() => {
       case 'clipart': return `<div class="cp-in center"><div class="clip-h">Good news!</div>${artBox(L.art, 'big')}<div class="grow">${sub(22, 236, 120)}</div></div>`;
       case 'report': return `<div class="cp-in report"><div class="rep-h">QUARTERLY REPORT</div><div class="rep-box">${sub(23, 164, 110)}</div>
         <div class="grow">${artBox(L.art, 'big')}</div><div class="rep-f">${q} · PREPARED BY ${redact('70px')}</div></div>`;
-      case 'dossier': return `<div class="cp-in dos"><div class="dos-stamp">CONFIDENTIAL</div><div class="dos-ref"><span>FILE NO. ${String(hash(s) % 9000 + 1000)}-B</span><span>EYES ONLY</span></div>
+      case 'dossier': return `<div class="cp-in dos"><div class="dos-stamp">CONFIDENTIAL</div><div class="dos-ref"><span>FILE NO. ${String(hash(plain(e)) % 9000 + 1000)}-B</span><span>EYES ONLY</span></div>
         <div class="grow">${sub(22, 236, 130)}</div><div class="dos-bars">${redact('100%')}${redact('64%')}${redact('82%')}</div></div>`;
       case 'overhead': return `<div class="cp-in oh">${sub(25, 182, 110)}<div class="oh-rule"></div><div class="oh-list"><span>• Profit</span><span>• More profit</span><span>• Questions (none)</span></div>
         <div class="grow end">${artBox(L.art, 'small')}</div></div>`;
@@ -2314,8 +2305,8 @@ const OP = (() => {
   // the page itself: sticky note with the proposal's office icon, stamp in the corner
   function coverHTML(e, o) {
     o = o || {};
-    const L = lookOf(e), tilt = o.tilt == null ? ((hash(e.id + e.subject) % 7) - 3) * .6 : o.tilt;
-    return `<div class="cp-w" style="${o.k ? `--k:${o.k};` : ''}--t:${tilt}deg"><div class="cp t-${L.tpl}">${coverInner(e, L)}
+    const L = lookOf(e), tilt = o.tilt == null ? ((hash(e.id + plain(e)) % 7) - 3) * .6 : o.tilt;
+    return `<div class="cp-w" style="${o.k ? `--k:${o.k};` : ''}--t:${tilt}deg"><div class="cp t-${L.tpl}">${coverInner(e, L, seesAll(e, o))}
       ${o.note === false ? '' : `<span class="cp-note">${icon(e.id, o.list)}</span>`}<span class="env-stamp cp-stamp ${e.stamp}">${STAMP[e.stamp]}</span>
       ${e.approved ? `<span class="big-stamp${o.fresh ? '' : ' no-anim'}" aria-hidden="true">Approved</span>` : ''}</div></div>`;
   }
@@ -2327,10 +2318,9 @@ const OP = (() => {
   const val = v => v === 'V' ? '?' : v > 2 || v < -2 ? fmt(v) : GLYPH[v];
   function lineHTML(e, o) {
     o = o || {};
-    const all = o.all || e.audited || e.autopilot || e.approved || ui.debug || (mine() && e.author === ME);
-    // words show unless blacked out; worth only once it's out in the open
-    const vis = su => all || !(e.redacted || []).includes(su);
-    if (![0, 1, 2].some(vis)) return '';
+    // the words are on the cover; this line is for once the worth is out in the open too
+    if (!inOpen(e, o)) return '';
+    const all = seesAll(e, o), vis = su => all || !(e.redacted || []).includes(su);
     const fx = e.cards[2].fx, live = o.anim && e.resolved;
     const ph = e.cards.map((c, su) => {
       if (!vis(su)) return `<span class="ph s-${su} hid"><mark aria-label="Hidden ${OP.SUITS[su]}">${'█'.repeat(5)}</mark></span>`;
@@ -2456,7 +2446,7 @@ const OP = (() => {
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
     if (fresh) ui.stamped = `${S.r}${e.id}`;
-    return `<${tag} class="pg ${ui.sel === e.id ? 'sel' : ''} ${opt.faded ? 'faded' : ''} ${opt.motion || ''}" style="--i:${opt.i || 0}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}"` : ''}>
+    return `<${tag} class="pg ${ui.sel === e.id ? 'sel' : ''} ${opt.faded ? 'faded' : ''} ${opt.motion || ''}" style="--i:${opt.i || 0}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(sayOf(e))}"` : ''}>
       ${coverHTML(e, { fresh })}<div class="pg-under">${lineHTML(e, { anim: opt.motion === 'pull' })}
       ${who ? `<div class="pg-from">From <b>${esc(who)}</b>${dept ? ` · ${esc(dept)}` : ''}</div>` : ''}${tags.length ? `<div class="pg-tags">${tags.join('')}</div>` : ''}${dbg}</div></${tag}>`;
   }
@@ -2619,7 +2609,7 @@ const OP = (() => {
   function seal() {
     const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
     stopTimer();
-    dispatch({ type: 'submitWork', discards: draft.discards, swaps: draft.swaps, redacts: draft.redacts, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
+    dispatch({ type: 'submitWork', discards: draft.discards, swaps: draft.swaps, redacts: draft.redacts, stamp: draft.stamp || 'Rec', style: draft.style,
       claim: null, nextStyle: draft.nextStyle });
     toast('Sealed.');
   }
@@ -2671,7 +2661,7 @@ const OP = (() => {
     return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)) + marker(draft.redacts.length > 0), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
-  const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', redacted: draft.redacts, author: ME, dept: p.dept });
+  const mockPage = p => ({ id: '·', style: draft.style, cards: OP.workResult(S, ME, draft).prop, stamp: draft.stamp || 'Rec', redacted: draft.redacts, author: ME, dept: p.dept });
   function deskTemplates(p) {
     const arrive = ui.arrive ? ' arrive' : ''; ui.arrive = false;
     const tiles = OP.TEMPLATES.map(t => `<button class="tpl" data-a="tpl" data-v="${t}" aria-pressed="${draft.style.tpl === t}" aria-label="${TPL[t].name}">${coverHTML(Object.assign(mockPage(p), { style: { tpl: t, art: draft.artSet ? draft.style.art : TPL[t].art } }), { k: .35, note: false })}</button>`).join('');
@@ -2681,14 +2671,11 @@ const OP = (() => {
   function deskTweak(p) {
     const locked = !!S.reqStyle, L = lookOf(mockPage(p));
     const arrive = ui.arrive ? ' arrive' : ''; ui.arrive = false;
-    const punched = ui.punch; ui.punch = null;
     const designer = p.spec === 'Designer' ? `<label class="drop"><select id="next-style" data-in="nextStyle" aria-label="Next quarter's cover page"><option value="">Next quarter: any cover page</option>${OP.TEMPLATES.flatMap(t => OP.FONTS.map(f => `<option value="${t}/${f}" ${draft.nextStyle && draft.nextStyle.tpl === t && draft.nextStyle.font === f ? 'selected' : ''}>Next quarter: ${TPL[t].name} · ${FONTS[f]}</option>`)).join('')}</select></label>` : '';
     const fonts = OP.FONTS.map(f => `<button class="chip f-${f}" data-a="font" data-v="${f}" aria-pressed="${L.font === f}" aria-label="${FONTS[f]}" ${locked ? 'disabled' : ''}><span>Aa</span></button>`).join('');
     const aligns = Object.keys(ALIGN).map(a => `<button class="chip" data-a="align" data-v="${a}" aria-pressed="${L.align === a}" aria-label="Align ${a}"><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="${ALIGN[a]}"/></svg></span></button>`).join('');
     const wheel = `<div class="wheel"><div class="wheel-in" role="listbox" aria-label="Clip-art" data-wheel>${ART.map(id => `<button class="px-opt" role="option" data-a="art" data-v="${id}" aria-selected="${L.art === id}" aria-label="${id.replace(/-/g, ' ')}">${artSVG(id)}</button>`).join('')}</div></div>`;
     const body = `<div class="preview${arrive}">${coverHTML(mockPage(p), { k: .6, tilt: -1.2 })}</div>
-      <div class="subj">${draft.words.map((k, i) => `<button class="subj-word${punched === i ? ' punch' : ''}" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled' : ''}>${esc((S.subj || OP.SUBJ)[i][k])}</button>`).join('')}</div>
-      <label class="typed-slip"><input class="input" id="custom-subject" data-in="custom" maxlength="80" placeholder="Or type your own…" value="${esc(draft.custom)}"></label>
       <div class="dress-row"><div class="chips fonts">${fonts}</div><div class="chips aligns">${aligns}</div></div>${wheel}${designer}`;
     return deskWrap(OP.DEPTS[p.dept], body, { fuse: fuse(`${S.r}-dress`, TIME.dress, seal), foot: `<div class="two-keys"><button class="btn back" data-a="back">‹ ${locked ? 'Cards' : 'Templates'}</button><button class="outtray" data-a="seal" aria-label="Hand it in"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button></div>` });
   }
@@ -2713,16 +2700,16 @@ const OP = (() => {
   // your own page, and every author for the Auditor; phone only
   const auditor = () => mine() && me().spec === 'Auditor' && !me().leave;
   const tagFor = e => !mine() || e.autopilot ? '' : e.author === ME ? '<i class="yours">You</i>' : auditor() ? `<i class="yours">${esc(nm(e.author))}</i>` : '';
-  // the CEO reads the sentences: each page as a row, cover beside what it says
+  // the CEO reads the cover pages: big enough that the sentence on each is the thing being picked
   function rows(list, current) {
-    return `<div class="prows">${list.map(e => `<button class="prow" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
-      ${coverHTML(e, { k: .27, note: false })}${lineHTML(e, { all: e.openTo && mine() && e.openTo.includes(ME) }) || '<p class="line nil">█████ █████ █████</p>'}${tagFor(e)}</button>`).join('')}</div>`;
+    return `<div class="prows">${list.map(e => `<button class="prow" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(sayOf(e))}">
+      ${coverHTML(e, { k: .54 })}${lineHTML(e, { all: e.openTo && mine() && e.openTo.includes(ME) })}${tagFor(e)}</button>`).join('')}</div>`;
   }
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
       const open = e.openTo && mine() && e.openTo.includes(ME);
       const peek = open || e.audited ? `<span class="peek">${e.cards.map((c, su) => open || e.audited ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
-      return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
+      return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(sayOf(e))}">
         ${coverHTML(e, { k: .35 })}${peek}${tagFor(e)}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
   }
@@ -3025,7 +3012,6 @@ const OP = (() => {
       case 'stamp': draft.stamp = d.v; render(); break;
       case 'finalise': finalise(); break;
       case 'back': draft.page = draft.page === 3 && !S.reqStyle ? 2 : 1; render(); break;
-      case 'reroll': { const i = +d.i, l = (S.subj || OP.SUBJ)[i].length; let k; do { k = Math.floor(Math.random() * l); } while (k === draft.words[i] && l > 1); draft.words[i] = k; ui.punch = i; render(); break; }
       case 'tpl': Object.assign(draft.style, { tpl: d.v, font: TPL[d.v].font, align: TPL[d.v].align }); if (!draft.artSet) draft.style.art = TPL[d.v].art; draft.page = 3; ui.arrive = true; render(); break;
       case 'font': draft.style.font = d.v; render(); break;
       case 'align': draft.style.align = d.v; render(); break;
@@ -3136,11 +3122,6 @@ const OP = (() => {
     const el = ev.target, k = el.dataset && el.dataset.in; if (!k) return;
     if (k === 'seed') setup.seed = el.value;
     if (k === 'name') { naming.name = el.value; const go = document.querySelector('[data-a="name-go"]'); if (go) go.disabled = !nameLetters(el.value); }
-    if (k === 'custom') {
-      draft.custom = el.value; const was = draft.useCustom; draft.useCustom = !!el.value.trim();
-      if (was !== draft.useCustom) document.querySelectorAll('.subj-word').forEach(b => { b.disabled = draft.useCustom; });
-      refreshPreview();
-    }
     if (k === 'claimStamp') draft.claim.stamp = el.value;
     if (k === 'claimVal') draft.claim.val = +el.value;
     if (k === 'nextStyle') { const [t, f] = el.value.split('/'); draft.nextStyle = el.value ? { tpl: t, font: f } : null; }

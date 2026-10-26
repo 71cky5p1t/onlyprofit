@@ -9,9 +9,8 @@
   }
   function newDraft() {
     const p = me(), inh = p.inh;
-    return { discards: [], swaps: [], redacts: [], stamp: null, words: (S.subj || OP.SUBJ).map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
+    return { discards: [], swaps: [], redacts: [], stamp: null, 
       style: Object.assign({ tpl: 'memo', font: 'grotesk' }, p.fav, S.reqStyle), artSet: false, claim: { kind: 'none', val: evs(inh.cards), stamp: inh.stamp || 'Rec' }, nextStyle: null };
   }
-  const subjectOf = d => (d.useCustom && d.custom.trim() ? d.custom.trim() : d.words.map((k, i) => (S.subj || OP.SUBJ)[i][k]).join(' '));
   function costWith(ch) { return OP.workCost(Object.assign({}, draft, ch)); }
   function toast(t) { let el = document.querySelector('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); } el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, 2200); }
