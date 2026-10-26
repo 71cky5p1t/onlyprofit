@@ -6,7 +6,7 @@ mkdir -p dist
 {
   cat src/head.html; echo '<style>'; cat src/styles/*.css; echo '</style>'
   echo '<div id="app"></div>'
-  echo '<script>'; sed '/^if (typeof module/d' src/engine/content.js src/engine/bots.js src/engine/core.js; echo '</script>'
+  echo '<script>'; sed '/^if (typeof module/d' src/engine/lex.js src/engine/content.js src/engine/bots.js src/engine/core.js; echo '</script>'
   echo '<script>'; echo '(() => {'; cat src/ui/*.js; echo '})();'; echo '</script>'
 } > dist/only-profit.html
 # the viewer embeds the built game

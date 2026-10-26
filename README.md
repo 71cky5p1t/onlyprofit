@@ -17,7 +17,7 @@ No dependencies. The page loads its fonts from Google Fonts (fallbacks offline) 
 
 | Path | What it is |
 | --- | --- |
-| `src/engine/` | Pure engine: `core.js` rules and state, `bots.js` bot players, `content.js` words and their values. No DOM, no `Math.random`, no clock. |
+| `src/engine/` | Pure engine: `core.js` rules and state, `bots.js` bot players, `content.js` words and their values, `lex.js` each company noun's own valued words. No DOM, no `Math.random`, no clock. |
 | `src/ui/*.js` | Browser UI, split by screen (audio, cues, core, brand, clip-art, cover pages, desk, clock-in, signing, render, events, drag, annual report). Concatenated in order into one scope. |
 | `src/head.html` | Page title and fonts. |
 | `src/styles/*.css` | Styles, in cascade order (tokens in `01-base.css`). |
