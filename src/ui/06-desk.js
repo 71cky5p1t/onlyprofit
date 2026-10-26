@@ -106,8 +106,8 @@
     const honest = OP.rightStamp(wr.prop);
     // three rubber stamps standing on the blotter; the one you use leaves its mark on the sentence
     const stamps = `<div class="stampstrip rstamps" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="rstamp s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><i class="knob"></i><i class="neck"></i><span class="block"><span>${STAMP[k]}</span></span><i class="pad"></i></button>`).join('')}</div>`;
-    const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.discards.length ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row">${bin}<div class="fan">${hand}</div></div></div>${stamps}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="outtray" data-a="finalise"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button>' });
+    const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.discards.length ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div></div>${bin}</div>${stamps}`;
+    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
   const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', revealed: [], author: ME, dept: p.dept });
@@ -129,7 +129,7 @@
       <div class="subj">${draft.words.map((k, i) => `<button class="subj-word${punched === i ? ' punch' : ''}" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled' : ''}>${esc((S.subj || OP.SUBJ)[i][k])}</button>`).join('')}</div>
       <label class="typed-slip"><input class="input" id="custom-subject" data-in="custom" maxlength="80" placeholder="Or type your own…" value="${esc(draft.custom)}"></label>
       <div class="dress-row"><div class="chips fonts">${fonts}</div><div class="chips aligns">${aligns}</div></div>${wheel}${designer}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { fuse: fuse(`${S.r}-dress`, TIME.dress, seal), foot: `<div class="two-keys"><button class="btn back" data-a="back">‹ ${locked ? 'Cards' : 'Templates'}</button>${key('seal', 'Hand it in')}</div>` });
+    return deskWrap(OP.DEPTS[p.dept], body, { fuse: fuse(`${S.r}-dress`, TIME.dress, seal), foot: `<div class="two-keys"><button class="btn back" data-a="back">‹ ${locked ? 'Cards' : 'Templates'}</button><button class="outtray" data-a="seal" aria-label="Hand it in"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button></div>` });
   }
   // the preview and the wheel change in place, so typing and swiping aren't interrupted
   function refreshPreview() {

@@ -26,6 +26,7 @@
     if (!drag) return;
     if (drag.clone) drag.clone.remove();
     drag.el.classList.remove('lifted');
+    document.querySelectorAll('.play.holding').forEach(x => x.classList.remove('holding'));
     document.querySelectorAll('.slot.ok, .slot.hot, .shredder.ok, .shredder.hot').forEach(x => x.classList.remove('ok', 'hot'));
     drag = null;
   }
@@ -44,6 +45,7 @@
       const c = drag.el.cloneNode(true); c.classList.add('dragging'); c.removeAttribute('data-drag');
       c.style.width = drag.w + 'px'; c.style.height = drag.h + 'px';
       document.body.appendChild(c); drag.clone = c; drag.el.classList.add('lifted');
+      const play = drag.el.closest('.play'); if (play) play.classList.add('holding');
       const other = drag.zone === 'hand' ? 'env' : 'hand';
       document.querySelectorAll(`.slot[data-drop="${other}"][data-su="${drag.su}"], .shredder:not(.broke)`).forEach(x => x.classList.add('ok'));
     }

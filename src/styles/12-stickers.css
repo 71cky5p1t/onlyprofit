@@ -1,7 +1,7 @@
 /* ---------- stickers: cheap praise, dog-eared ---------- */
-.stickers { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 0; padding: 0 6px }
+.stickers { display: grid; grid-template-areas: "s"; place-items: center; height: 24px; padding: 0 6px }
 .stk { --c: #F3D36B; --k: #6B4A0E; position: relative; font: 900 8.5px/1 var(--f-body); font-style: normal; letter-spacing: .06em; text-transform: uppercase; color: var(--k); background: var(--c); padding: 5px 9px 4px 6px; margin: 0 -2px; border-radius: 2px;
-  transform: rotate(var(--r, -3deg)); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%); box-shadow: 0 1px 1px rgba(0,0,0,.25); filter: saturate(.85) }
+  grid-area: s; white-space: nowrap; transform: translate(var(--x, 0px), var(--y, 0px)) rotate(var(--r, -3deg)); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%); box-shadow: 0 1px 1px rgba(0,0,0,.25); filter: saturate(.85) }
 .stk::after { content: ""; position: absolute; right: 0; bottom: 0; width: 7px; height: 7px; background: linear-gradient(135deg, rgba(0,0,0,.28) 0 50%, rgba(255,255,255,.75) 50%) }
 .stk::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 20% 70%, rgba(255,255,255,.35) 0 1px, transparent 1.5px) 0 0 / 7px 6px, linear-gradient(100deg, transparent 60%, rgba(255,255,255,.25) 62%, transparent 70%); opacity: .7 }
 .stk.gold { --c: #F3C94E; --k: #5C3E07 } .stk.gold:first-letter { }
@@ -9,8 +9,8 @@
 .stk.blue { --c: #9CC2E8; --k: #173E66 }
 .stk.red { --c: #F06A5C; --k: #fff }
 .stk.grey { --c: #C9C6BC; --k: #3C3A34 }
-.nametag .stickers { min-height: 18px; margin-top: 2px }
-.staff-meta .stickers { justify-content: flex-end; padding: 0 }
+.nametag .stickers { margin-top: 2px }
+.staff-meta .stickers { justify-items: end; padding: 0 }
 .staff .stk { font-size: 8px }
 /* CEO: a sticker slapped on the corner of the tag; every past term leaves its peel marks in about the same spot */
 .ceo-marks { position: absolute; inset: 0; pointer-events: none }

@@ -449,9 +449,9 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .mini .peek .pos { color: var(--good) } .mini .peek .neg { color: var(--red) } .mini .peek .gold { color: var(--sunset) }
 .mini .yours { z-index: 2 }
 /* ---------- stickers: cheap praise, dog-eared ---------- */
-.stickers { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 0; padding: 0 6px }
+.stickers { display: grid; grid-template-areas: "s"; place-items: center; height: 24px; padding: 0 6px }
 .stk { --c: #F3D36B; --k: #6B4A0E; position: relative; font: 900 8.5px/1 var(--f-body); font-style: normal; letter-spacing: .06em; text-transform: uppercase; color: var(--k); background: var(--c); padding: 5px 9px 4px 6px; margin: 0 -2px; border-radius: 2px;
-  transform: rotate(var(--r, -3deg)); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%); box-shadow: 0 1px 1px rgba(0,0,0,.25); filter: saturate(.85) }
+  grid-area: s; white-space: nowrap; transform: translate(var(--x, 0px), var(--y, 0px)) rotate(var(--r, -3deg)); clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%); box-shadow: 0 1px 1px rgba(0,0,0,.25); filter: saturate(.85) }
 .stk::after { content: ""; position: absolute; right: 0; bottom: 0; width: 7px; height: 7px; background: linear-gradient(135deg, rgba(0,0,0,.28) 0 50%, rgba(255,255,255,.75) 50%) }
 .stk::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 20% 70%, rgba(255,255,255,.35) 0 1px, transparent 1.5px) 0 0 / 7px 6px, linear-gradient(100deg, transparent 60%, rgba(255,255,255,.25) 62%, transparent 70%); opacity: .7 }
 .stk.gold { --c: #F3C94E; --k: #5C3E07 } .stk.gold:first-letter { }
@@ -459,8 +459,8 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .stk.blue { --c: #9CC2E8; --k: #173E66 }
 .stk.red { --c: #F06A5C; --k: #fff }
 .stk.grey { --c: #C9C6BC; --k: #3C3A34 }
-.nametag .stickers { min-height: 18px; margin-top: 2px }
-.staff-meta .stickers { justify-content: flex-end; padding: 0 }
+.nametag .stickers { margin-top: 2px }
+.staff-meta .stickers { justify-items: end; padding: 0 }
 .staff .stk { font-size: 8px }
 /* CEO: a sticker slapped on the corner of the tag; every past term leaves its peel marks in about the same spot */
 .ceo-marks { position: absolute; inset: 0; pointer-events: none }
@@ -1030,7 +1030,7 @@ section > .label { color: var(--on-table-2) }
 .desk-body:has(> .play) { align-content: space-evenly }
 @container (max-width: 520px) {
   .play { --cw: min(112px, calc((100cqw - 54px) / 3)) }
-  .fan { --cw: min(112px, calc((100cqw - 54px) / 3), calc((100cqw - 128px) / 2.64)); flex: none; padding-left: calc(var(--cw) * .66); padding-right: calc(var(--cw) * .24) }
+  .fan { --cw: min(112px, calc((100cqw - 54px) / 3), calc((100cqw - 64px) / 2.64)); flex: none; padding-left: calc(var(--cw) * .66); padding-right: calc(var(--cw) * .24) }
   .fan .slot { margin-left: calc(var(--cw) * -.42) }
   .fan .slot:nth-child(1) { transform: rotate(-7deg) translateY(6px) } .fan .slot:nth-child(3) { transform: rotate(7deg) translateY(6px); z-index: 2 }
   .said .line { font-size: 17px }
@@ -1080,12 +1080,28 @@ section > .label { color: var(--on-table-2) }
 .rstamp .block::before { content: ""; position: absolute; left: 4px; right: 4px; top: -7px; height: 8px; background: linear-gradient(#C68A58, #A9693C); clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%) }
 .rstamp .neck { position: relative; z-index: 1; margin-bottom: -9px }
 .rstamp .knob { position: relative; z-index: 1 }
+/* Cover it: a stack of blank cover pages at the front edge of the desk; the next step puts one on the policy */
+.coverstack { position: relative; display: block; width: min(200px, 62%); height: 66px; margin: 0 auto; padding: 0; border: 0; background: none; cursor: pointer; transform: rotate(-2deg); filter: drop-shadow(5px 7px 4px rgba(0,0,0,.45)); transition: transform .18s var(--bounce) }
+.cs-sheet, .cs-top { position: absolute; left: 0; right: 0; top: 6px; bottom: 0; border-radius: 2px 2px 0 0; background: #EFE8D6 }
+.cs-sheet:nth-child(1) { transform: translate(5px, 2px) rotate(2.5deg); background: #E6DEC9 } .cs-sheet:nth-child(2) { transform: translate(-4px, 1px) rotate(-1.5deg); background: #ECE5D1 }
+.cs-top { top: 4px; display: grid; align-content: start; gap: 6px; padding: 9px 14px 0; background: #FAF6EC; box-shadow: 0 1px 0 rgba(0,0,0,.08); transition: transform .2s var(--bounce) }
+.cs-band { display: block; width: 58%; height: 11px; background: var(--brand, var(--ink)); opacity: .85 }
+.cs-rule { display: block; height: 2px; width: 82%; background: rgba(20,20,20,.14) } .cs-rule + .cs-rule { width: 64% }
+.cs-note { position: absolute; right: -10px; top: -8px; padding: 9px 9px 8px; background: #F6DD6A; color: #3A3008; font: 700 17px/1 Caveat, cursive; transform: rotate(6deg); box-shadow: 2px 3px 3px rgba(0,0,0,.3);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%) }
+.coverstack:hover .cs-top { transform: translateY(-5px) rotate(-1deg) }
+.coverstack:active { transform: rotate(-2deg) translateY(2px) }
+.coverstack:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px }
+.two-keys:has(.outtray) { align-items: center } .two-keys .outtray { width: 100% }
 /* the out tray sits square on the wood with a shadow under its front lip */
 .outtray { filter: drop-shadow(6px 8px 5px rgba(0,0,0,.5)) }
 .ot-in { background: linear-gradient(#1E0F07, #3E2010 60%, #5A3019); clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%) }
 
 /* ---------- the shredder, left of the fan: drop any card in, 1 input, a fresh one of that suit takes its place ---------- */
-.shredder { position: relative; flex: none; display: grid; justify-items: center; width: 60px; margin: 0 2px 16px 0; align-self: flex-end; transform: rotate(-4deg); filter: drop-shadow(5px 8px 4px rgba(0,0,0,.45)); transition: transform .18s var(--bounce) }
+.shredder { position: absolute; z-index: 30; left: 2px; top: 50%; display: grid; justify-items: center; width: 60px; margin-top: -40px; transform: translateX(-46px) rotate(-14deg); opacity: 0; pointer-events: none;
+  filter: drop-shadow(5px 8px 4px rgba(0,0,0,.45)); transition: transform .28s var(--bounce), opacity .18s }
+/* it only slides in from the left while you're holding a card */
+.play.holding .shredder { transform: rotate(-4deg); opacity: 1; pointer-events: auto }
 .sh-top { position: relative; width: 60px; height: 22px; border-radius: 6px 6px 2px 2px; background: linear-gradient(#4A4D55, #2A2C32); box-shadow: inset 0 1px 0 rgba(255,255,255,.18) }
 .sh-mouth { position: absolute; left: 7px; right: 7px; top: 8px; height: 5px; border-radius: 2px; background: #07080A; box-shadow: inset 0 2px 2px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.12); transition: box-shadow .15s }
 .sh-body { position: relative; display: grid; justify-items: center; align-content: start; gap: 5px; width: 54px; height: 52px; padding-top: 7px; overflow: hidden;
@@ -1099,8 +1115,8 @@ section > .label { color: var(--on-table-2) }
 .shredder.hot { transform: rotate(-4deg) scale(1.1) }
 .shredder.hot .sh-mouth { box-shadow: inset 0 2px 2px rgba(0,0,0,.9), 0 0 0 3px var(--gold), 0 0 16px rgba(233,162,59,.7) }
 .shredder.broke { opacity: .55 }
-.shredder.chew { animation: chew .45s linear both }
-@keyframes chew { 0%, 100% { transform: rotate(-4deg) } 20%, 60% { transform: rotate(-4deg) translateX(-2px) } 40%, 80% { transform: rotate(-4deg) translateX(2px) } }
+.shredder.chew { animation: chew 1.1s linear both }
+@keyframes chew { 0% { transform: rotate(-4deg); opacity: 1 } 8%, 24%, 40% { transform: rotate(-4deg) translateX(-2px); opacity: 1 } 16%, 32%, 48% { transform: rotate(-4deg) translateX(2px); opacity: 1 } 70% { transform: rotate(-4deg); opacity: 1 } 100% { transform: translateX(-46px) rotate(-14deg); opacity: 0 } }
 .shredder.chew .sh-out i:last-child { animation: shreds .5s ease-out .2s both }
 @keyframes shreds { from { transform: translateY(-14px); opacity: 0 } }
 /* the replacement deals in from the shredder side */
@@ -2127,7 +2143,8 @@ const OP = (() => {
     for (let k = 0; k < warns; k++) out.push(['red', 'See me']);
     if (q.accusations && !r) out.push(['grey', `Noted ×${q.accusations}`]);
     if (!out.length) return '';
-    return `<span class="stickers">${out.map(([c, t], k) => `<i class="stk ${c}" style="--r:${((q.id * 7 + k * 13) % 11) - 5}deg">${t}</i>`).join('')}</span>`;
+    // slapped on top of each other in one spot, so the tag never grows
+    return `<span class="stickers">${out.map(([c, t], k) => `<i class="stk ${c}" style="--r:${((q.id * 7 + k * 13) % 11) - 5}deg;--x:${k ? ((q.id * 11 + k * 23) % 9 - 4) * 5 : 0}px;--y:${k ? ((q.id * 3 + k * 7) % 5 - 2) * 2 : 0}px">${t}</i>`).join('')}</span>`;
   }
   const isCEO = () => mine() && S.ceo === ME;
   const STAMP = OP.STAMP_LABEL;
@@ -2595,8 +2612,8 @@ const OP = (() => {
     const honest = OP.rightStamp(wr.prop);
     // three rubber stamps standing on the blotter; the one you use leaves its mark on the sentence
     const stamps = `<div class="stampstrip rstamps" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="rstamp s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><i class="knob"></i><i class="neck"></i><span class="block"><span>${STAMP[k]}</span></span><i class="pad"></i></button>`).join('')}</div>`;
-    const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.discards.length ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row">${bin}<div class="fan">${hand}</div></div></div>${stamps}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="outtray" data-a="finalise"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button>' });
+    const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.discards.length ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div></div>${bin}</div>${stamps}`;
+    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
   const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', revealed: [], author: ME, dept: p.dept });
@@ -2618,7 +2635,7 @@ const OP = (() => {
       <div class="subj">${draft.words.map((k, i) => `<button class="subj-word${punched === i ? ' punch' : ''}" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled' : ''}>${esc((S.subj || OP.SUBJ)[i][k])}</button>`).join('')}</div>
       <label class="typed-slip"><input class="input" id="custom-subject" data-in="custom" maxlength="80" placeholder="Or type your own…" value="${esc(draft.custom)}"></label>
       <div class="dress-row"><div class="chips fonts">${fonts}</div><div class="chips aligns">${aligns}</div></div>${wheel}${designer}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { fuse: fuse(`${S.r}-dress`, TIME.dress, seal), foot: `<div class="two-keys"><button class="btn back" data-a="back">‹ ${locked ? 'Cards' : 'Templates'}</button>${key('seal', 'Hand it in')}</div>` });
+    return deskWrap(OP.DEPTS[p.dept], body, { fuse: fuse(`${S.r}-dress`, TIME.dress, seal), foot: `<div class="two-keys"><button class="btn back" data-a="back">‹ ${locked ? 'Cards' : 'Templates'}</button><button class="outtray" data-a="seal" aria-label="Hand it in"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button></div>` });
   }
   // the preview and the wheel change in place, so typing and swiping aren't interrupted
   function refreshPreview() {
@@ -2998,6 +3015,7 @@ const OP = (() => {
     if (!drag) return;
     if (drag.clone) drag.clone.remove();
     drag.el.classList.remove('lifted');
+    document.querySelectorAll('.play.holding').forEach(x => x.classList.remove('holding'));
     document.querySelectorAll('.slot.ok, .slot.hot, .shredder.ok, .shredder.hot').forEach(x => x.classList.remove('ok', 'hot'));
     drag = null;
   }
@@ -3016,6 +3034,7 @@ const OP = (() => {
       const c = drag.el.cloneNode(true); c.classList.add('dragging'); c.removeAttribute('data-drag');
       c.style.width = drag.w + 'px'; c.style.height = drag.h + 'px';
       document.body.appendChild(c); drag.clone = c; drag.el.classList.add('lifted');
+      const play = drag.el.closest('.play'); if (play) play.classList.add('holding');
       const other = drag.zone === 'hand' ? 'env' : 'hand';
       document.querySelectorAll(`.slot[data-drop="${other}"][data-su="${drag.su}"], .shredder:not(.broke)`).forEach(x => x.classList.add('ok'));
     }
