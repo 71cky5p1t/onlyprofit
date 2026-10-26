@@ -37,7 +37,7 @@
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
     if (fresh) ui.stamped = `${S.r}${e.id}`;
-    return `<${tag} class="pg ${ui.sel === e.id ? 'sel' : ''} ${opt.faded ? 'faded' : ''} ${opt.motion || ''}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}"` : ''}>
+    return `<${tag} class="pg ${ui.sel === e.id ? 'sel' : ''} ${opt.faded ? 'faded' : ''} ${opt.motion || ''}" style="--i:${opt.i || 0}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}"` : ''}>
       ${coverHTML(e, { fresh })}<div class="pg-under">${lineHTML(e, { anim: opt.motion === 'pull' })}
       ${who ? `<div class="pg-from">From <b>${esc(who)}</b>${dept ? ` · ${esc(dept)}` : ''}</div>` : ''}${tags.length ? `<div class="pg-tags">${tags.join('')}</div>` : ''}${dbg}</div></${tag}>`;
   }
@@ -113,13 +113,13 @@
     const envs = S.envs.slice().sort((a, b) => a.id.localeCompare(b.id));
     const animKey = `${S.r}|${ph}`, anim = ui.envAnim !== animKey && !still();
     ui.envAnim = animKey;
-    const motion = e => !anim ? '' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
+    const motion = e => !anim ? '' : ph === 'decide' ? 'say' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
     const b = S.board;
     if (ph === 'reveal' && b && b.opened && b.best !== b.nominee) {
       const side = (id, k) => { const e = envs.find(x => x.id === id); return `<div class="vs-side">${pageHTML(e, { motion: e.approved && anim ? 'pull' : '', faded: !e.approved })}<span class="vs-est ${tone(Math.round(b.est[k]))}">≈ ${fmt(Math.round(b.est[k]))}</span></div>`; };
       return `<section><div class="vs">${side(b.nominee, 0)}<i class="vs-x ${b.overruled ? 'over' : ''}">${b.overruled ? (b.own ? 'Overruled · CEO’s own' : 'Overruled') : 'It stands'}</i>${side(b.best, 1)}</div></section>`;
     }
-    return `<section><div class="pages n${envs.length}">${envs.map(e => pageHTML(e, { motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
+    return `<section><div class="pages n${envs.length}">${envs.map((e, i) => pageHTML(e, { i, motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
   function exitHTML() {
     const rounds = S.history.map(h => {

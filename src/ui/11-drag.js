@@ -9,6 +9,18 @@
     const next = draft.redacts.includes(su) ? draft.redacts.filter(x => x !== su) : draft.redacts.concat(su);
     if (costWith({ redacts: next }) > 3) return refuse(su);
     draft.redacts = next; render();
+    if (next.includes(su)) inkSweep(su);
+  }
+  // the marker comes off the desk, uncapped, and runs along each line of the word
+  function inkSweep(su) {
+    const w = document.querySelector(`.policy .slot[data-su="${su}"] .card.redacted .word > span`), m = document.querySelector('.desk .marker svg');
+    if (!w || !m || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const rs = [...w.getClientRects()]; if (!rs.length) return;
+    const pen = document.createElement('div'); pen.className = 'marker-fly'; pen.innerHTML = m.outerHTML; document.body.appendChild(pen);
+    const at = (x, r, a) => `translate(${x}px, ${r.top + r.height / 2 - 13}px) rotate(${a}deg)`;
+    const f = rs.flatMap((r, i) => [{ transform: at(r.left - 2, r, -30), offset: i / rs.length }, { transform: at(r.right + 2, r, -24), offset: (i + .85) / rs.length }]);
+    f.push({ transform: at(rs[rs.length - 1].right + 30, rs[rs.length - 1], -40), opacity: 0, offset: 1 });
+    pen.animate(f, { duration: 260 + 200 * rs.length, easing: 'linear' }).onfinish = () => pen.remove();
   }
   // a shredded card is replaced in place; which pile it came from depends on whether its suit is swapped
   function shredCard(zone, su) {

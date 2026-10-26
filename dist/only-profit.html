@@ -1124,6 +1124,45 @@ section > .label { color: var(--on-table-2) }
 .play .card.fresh { animation: fresh .55s cubic-bezier(.2,.9,.25,1.1) .25s both }
 @keyframes fresh { from { transform: translate(-60px, 30px) rotate(-18deg) scale(.6); opacity: 0 } }
 @media (prefers-reduced-motion: reduce) { .shredder.chew, .shredder.chew .sh-out i, .play .card.fresh { animation: none } }
+/* ---------- permanent marker: one ink everywhere something's been blacked out ---------- */
+:root {
+  --ink-fill: linear-gradient(180deg, rgba(255,255,255,.08), transparent 30%, transparent 72%, rgba(255,255,255,.05)), repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 3px), #101114;
+  --ink-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40' preserveAspectRatio='none'%3E%3Cfilter id='r' x='-5%25' y='-20%25' width='110%25' height='140%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035 .5' numOctaves='2' seed='4'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='9'/%3E%3C/filter%3E%3Crect x='3' y='6' width='194' height='28' rx='9' filter='url(%23r)'/%3E%3C/svg%3E");
+}
+.card.redacted .word > span, .line .hid mark, .line.nil { background: var(--ink-fill); -webkit-mask: var(--ink-mask) 0 0 / 100% 100%; mask: var(--ink-mask) 0 0 / 100% 100%; border-radius: 0 }
+.card.redacted .word > span { padding: .04em .16em; margin: 0 -.16em; animation: niko .46s linear both }
+.line .hid mark { padding: 0 .2em; transform: rotate(-1.2deg) }
+.cp-redact { background: var(--ink-fill); -webkit-mask: var(--ink-mask) 0 0 / 100% 100%; mask: var(--ink-mask) 0 0 / 100% 100% }
+
+/* the marker lying on the desk between the ashtray and the ticket; uncapped once it's been used */
+.marker { flex: none; width: 78px; margin: 0 auto; transform: rotate(-9deg); filter: drop-shadow(3px 5px 2px rgba(0,0,0,.45)) }
+.marker svg { display: block; width: 100%; height: auto; overflow: visible }
+.marker .cap { transition: transform .3s var(--bounce) }
+.marker.open .cap { transform: translate(-10px, 11px) rotate(-16deg) }
+.marker-fly { position: fixed; left: 0; top: 0; z-index: 60; width: 86px; transform-origin: 6px 13px; pointer-events: none; filter: drop-shadow(6px 10px 5px rgba(0,0,0,.4)) }
+.marker-fly svg { display: block; width: 100%; height: auto } .marker-fly .cap { display: none }
+
+/* phone CEO: every page as a row, cover beside its sentence */
+.prows { display: grid; gap: 14px; padding: 6px 0 }
+.prow { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; padding: 4px 6px 4px 2px; border: 0; background: none; text-align: left; cursor: pointer; border-radius: 4px; transition: transform .2s var(--bounce) }
+.prow .cp-w::before, .prow .cp-w::after { display: none }
+.prow .cp { box-shadow: 0 10px 14px -9px rgba(0,0,0,.75) }
+.prow .line { font-size: 15px; text-align: left; transform: rotate(.6deg) }
+.prow:nth-child(even) .line { transform: rotate(-.8deg) }
+.prow[aria-pressed="true"] { transform: translateX(4px) }
+.prow[aria-pressed="true"] .cp { outline: 3px solid var(--gold); outline-offset: 2px }
+.prow[aria-pressed="true"] .line { box-shadow: 0 0 0 3px var(--gold), 0 8px 14px -10px rgba(0,0,0,.6) }
+.prow .yours { position: absolute; left: 2px; bottom: 4px; z-index: 3 }
+.prow { position: relative }
+.line.nil { color: transparent; padding: 6px 10px; letter-spacing: -.1em }
+
+/* TV: the sentence is the punchline, stapled to the foot of its page and read out one at a time */
+.pg-under .line { position: relative; z-index: 2; width: 112%; margin-top: -8px; font-size: 17px; line-height: 1.45 }
+.pg-under .line::before { content: ""; position: absolute; left: 50%; top: -3px; width: 22px; height: 4px; margin-left: -11px; border-radius: 1px; background: linear-gradient(#D9DCE0, #8A8F96); box-shadow: 0 1px 1px rgba(0,0,0,.4) }
+.pages.n7 .pg-under .line, .pages.n8 .pg-under .line { font-size: 15px }
+.pg.say .pg-under .line { animation: say .45s cubic-bezier(.2,.9,.3,1.2) calc(.5s + var(--i) * .45s) both }
+@keyframes say { from { transform: translateY(18px) rotate(-4deg) scale(.9); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .card.redacted .word > span, .pg.say .pg-under .line { animation: none } .marker .cap { transition: none } }
 </style>
 <div id="app"></div>
 <script>
@@ -2019,7 +2058,8 @@ const OP = (() => {
     }
     if (a && b) {
       if (b.sw > a.sw) { sfx('desk-stapler'); sfx('desk-card-drop', .12, .7); }
-      if (b.sw < a.sw || b.rv > a.rv) sfx('desk-card-flip');
+      if (b.sw < a.sw) sfx('desk-card-flip');
+      if (b.rv > a.rv) sfx('desk-sign', 0, .8);
       if (b.st && b.st !== a.st) sfx('desk-stamp');
       if (b.pg !== a.pg) sfx('paper-pull', 0, .8);
     }
@@ -2416,7 +2456,7 @@ const OP = (() => {
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
     if (fresh) ui.stamped = `${S.r}${e.id}`;
-    return `<${tag} class="pg ${ui.sel === e.id ? 'sel' : ''} ${opt.faded ? 'faded' : ''} ${opt.motion || ''}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}"` : ''}>
+    return `<${tag} class="pg ${ui.sel === e.id ? 'sel' : ''} ${opt.faded ? 'faded' : ''} ${opt.motion || ''}" style="--i:${opt.i || 0}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}"` : ''}>
       ${coverHTML(e, { fresh })}<div class="pg-under">${lineHTML(e, { anim: opt.motion === 'pull' })}
       ${who ? `<div class="pg-from">From <b>${esc(who)}</b>${dept ? ` · ${esc(dept)}` : ''}</div>` : ''}${tags.length ? `<div class="pg-tags">${tags.join('')}</div>` : ''}${dbg}</div></${tag}>`;
   }
@@ -2492,13 +2532,13 @@ const OP = (() => {
     const envs = S.envs.slice().sort((a, b) => a.id.localeCompare(b.id));
     const animKey = `${S.r}|${ph}`, anim = ui.envAnim !== animKey && !still();
     ui.envAnim = animKey;
-    const motion = e => !anim ? '' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
+    const motion = e => !anim ? '' : ph === 'decide' ? 'say' : ph === 'board' ? (e.id === S.nominee ? 'pick' : 'fall') : ph === 'reveal' && e.approved ? 'pull' : '';
     const b = S.board;
     if (ph === 'reveal' && b && b.opened && b.best !== b.nominee) {
       const side = (id, k) => { const e = envs.find(x => x.id === id); return `<div class="vs-side">${pageHTML(e, { motion: e.approved && anim ? 'pull' : '', faded: !e.approved })}<span class="vs-est ${tone(Math.round(b.est[k]))}">≈ ${fmt(Math.round(b.est[k]))}</span></div>`; };
       return `<section><div class="vs">${side(b.nominee, 0)}<i class="vs-x ${b.overruled ? 'over' : ''}">${b.overruled ? (b.own ? 'Overruled · CEO’s own' : 'Overruled') : 'It stands'}</i>${side(b.best, 1)}</div></section>`;
     }
-    return `<section><div class="pages n${envs.length}">${envs.map(e => pageHTML(e, { motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
+    return `<section><div class="pages n${envs.length}">${envs.map((e, i) => pageHTML(e, { i, motion: motion(e), click, faded: ((ph === 'reveal' || ph === 'review') && !e.approved) || (ph === 'board' && e.id !== S.nominee) })).join('')}</div></section>`;
   }
   function exitHTML() {
     const rounds = S.history.map(h => {
@@ -2555,6 +2595,8 @@ const OP = (() => {
     // a cigarette burning down in an ashtray; the unburnt paper is the time left
     return `<div class="fuse" role="timer" aria-label="Time left"><span class="ashtray"></span><span class="cig"><span class="filter"></span><span class="paper"><i style="width:${pct}%"></i></span></span></div>`;
   }
+  // the marker lives on the desk; capped until you've blacked something out
+  const marker = open => `<span class="marker${open ? ' open' : ''}" aria-hidden="true"><svg viewBox="0 0 120 26"><g class="pen"><path d="M6 13 L14 9.5 V16.5 Z" fill="#0B0B0D"/><rect x="14" y="8" width="10" height="10" rx="1.5" fill="#8E9197"/><rect x="24" y="6" width="84" height="14" rx="3" fill="#1B1C21"/><rect x="24" y="6" width="84" height="4" rx="2" fill="#fff" opacity=".12"/><rect x="50" y="7" width="34" height="12" fill="#ECE8DD"/><text x="67" y="15.6" text-anchor="middle" font-family="Schibsted Grotesk, Arial, sans-serif" font-weight="900" font-size="5.6" letter-spacing=".6" fill="#1B1C21">PERMANENT</text><rect x="106" y="7.5" width="6" height="11" rx="2" fill="#2A2B31"/></g><g class="cap"><rect x="2" y="5" width="36" height="16" rx="4" fill="#15161A"/><rect x="2" y="5" width="36" height="4.5" rx="2.5" fill="#fff" opacity=".14"/><rect x="30" y="2.5" width="5" height="21" rx="1.5" fill="#22232A"/></g></svg></span>`;
   // Finalise: the hand drops away, the policy squares up into a pile and a blank cover page lands on it
   // the tray won't take an unstamped page; if the clock runs out first, it's filed honestly
   function finalise(auto) {
@@ -2626,7 +2668,7 @@ const OP = (() => {
     // three rubber stamps standing on the blotter; the one you use leaves its mark on the sentence
     const stamps = `<div class="stampstrip rstamps" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="rstamp s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><i class="knob"></i><i class="neck"></i><span class="block"><span>${STAMP[k]}</span></span><i class="pad"></i></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.discards.length ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div></div>${bin}</div>${stamps}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
+    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)) + marker(draft.redacts.length > 0), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
   const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', redacted: draft.redacts, author: ME, dept: p.dept });
@@ -2671,6 +2713,11 @@ const OP = (() => {
   // your own page, and every author for the Auditor; phone only
   const auditor = () => mine() && me().spec === 'Auditor' && !me().leave;
   const tagFor = e => !mine() || e.autopilot ? '' : e.author === ME ? '<i class="yours">You</i>' : auditor() ? `<i class="yours">${esc(nm(e.author))}</i>` : '';
+  // the CEO reads the sentences: each page as a row, cover beside what it says
+  function rows(list, current) {
+    return `<div class="prows">${list.map(e => `<button class="prow" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
+      ${coverHTML(e, { k: .27, note: false })}${lineHTML(e, { all: e.openTo && mine() && e.openTo.includes(ME) }) || '<p class="line nil">█████ █████ █████</p>'}${tagFor(e)}</button>`).join('')}</div>`;
+  }
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
       const open = e.openTo && mine() && e.openTo.includes(ME);
@@ -2738,9 +2785,9 @@ const OP = (() => {
     if (ph === 'work' && draft) return deskWork();
     const leave = p.leave ? slip('Stood down') : '';
     if (ph === 'decide') {
-      if (isCEO()) return deskWrap('You are CEO', `${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Nominate ${icon(ui.sel)}` : 'Nominate', !!ui.sel) });
+      if (isCEO()) return deskWrap('You are CEO', `${rows(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Nominate ${icon(ui.sel)}` : 'Nominate', !!ui.sel) });
       const own = S.envs.find(e => !e.autopilot && e.author === ME);
-      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}${auditor() ? minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), null) : own ? `<div class="board-nom own">${coverHTML(own, { k: .6 })}${lineHTML(own)}</div>` : ''}`, { foot: key('advance', 'See the decision') });
+      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}${auditor() ? rows(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), null) : own ? `<div class="board-nom own">${coverHTML(own, { k: .6 })}${lineHTML(own)}</div>` : ''}`, { foot: key('advance', 'See the decision') });
     }
     if (ph === 'board') {
       const nom = S.envs.find(e => e.id === S.nominee);
@@ -3011,6 +3058,18 @@ const OP = (() => {
     const next = draft.redacts.includes(su) ? draft.redacts.filter(x => x !== su) : draft.redacts.concat(su);
     if (costWith({ redacts: next }) > 3) return refuse(su);
     draft.redacts = next; render();
+    if (next.includes(su)) inkSweep(su);
+  }
+  // the marker comes off the desk, uncapped, and runs along each line of the word
+  function inkSweep(su) {
+    const w = document.querySelector(`.policy .slot[data-su="${su}"] .card.redacted .word > span`), m = document.querySelector('.desk .marker svg');
+    if (!w || !m || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const rs = [...w.getClientRects()]; if (!rs.length) return;
+    const pen = document.createElement('div'); pen.className = 'marker-fly'; pen.innerHTML = m.outerHTML; document.body.appendChild(pen);
+    const at = (x, r, a) => `translate(${x}px, ${r.top + r.height / 2 - 13}px) rotate(${a}deg)`;
+    const f = rs.flatMap((r, i) => [{ transform: at(r.left - 2, r, -30), offset: i / rs.length }, { transform: at(r.right + 2, r, -24), offset: (i + .85) / rs.length }]);
+    f.push({ transform: at(rs[rs.length - 1].right + 30, rs[rs.length - 1], -40), opacity: 0, offset: 1 });
+    pen.animate(f, { duration: 260 + 200 * rs.length, easing: 'linear' }).onfinish = () => pen.remove();
   }
   // a shredded card is replaced in place; which pile it came from depends on whether its suit is swapped
   function shredCard(zone, su) {
