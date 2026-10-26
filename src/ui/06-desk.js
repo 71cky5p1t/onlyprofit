@@ -60,7 +60,7 @@
   function seal() {
     const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
     stopTimer();
-    dispatch({ type: 'submitWork', discards: draft.discards, swaps: draft.swaps, redacts: draft.redacts, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
+    dispatch({ type: 'submitWork', discards: draft.discards, swaps: draft.swaps, redacts: draft.redacts, stamp: draft.stamp || 'Rec', style: draft.style,
       claim: null, nextStyle: draft.nextStyle });
     toast('Sealed.');
   }
@@ -112,7 +112,7 @@
     return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)) + marker(draft.redacts.length > 0), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
-  const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', redacted: draft.redacts, author: ME, dept: p.dept });
+  const mockPage = p => ({ id: '·', style: draft.style, cards: OP.workResult(S, ME, draft).prop, stamp: draft.stamp || 'Rec', redacted: draft.redacts, author: ME, dept: p.dept });
   function deskTemplates(p) {
     const arrive = ui.arrive ? ' arrive' : ''; ui.arrive = false;
     const tiles = OP.TEMPLATES.map(t => `<button class="tpl" data-a="tpl" data-v="${t}" aria-pressed="${draft.style.tpl === t}" aria-label="${TPL[t].name}">${coverHTML(Object.assign(mockPage(p), { style: { tpl: t, art: draft.artSet ? draft.style.art : TPL[t].art } }), { k: .35, note: false })}</button>`).join('');
@@ -122,14 +122,11 @@
   function deskTweak(p) {
     const locked = !!S.reqStyle, L = lookOf(mockPage(p));
     const arrive = ui.arrive ? ' arrive' : ''; ui.arrive = false;
-    const punched = ui.punch; ui.punch = null;
     const designer = p.spec === 'Designer' ? `<label class="drop"><select id="next-style" data-in="nextStyle" aria-label="Next quarter's cover page"><option value="">Next quarter: any cover page</option>${OP.TEMPLATES.flatMap(t => OP.FONTS.map(f => `<option value="${t}/${f}" ${draft.nextStyle && draft.nextStyle.tpl === t && draft.nextStyle.font === f ? 'selected' : ''}>Next quarter: ${TPL[t].name} · ${FONTS[f]}</option>`)).join('')}</select></label>` : '';
     const fonts = OP.FONTS.map(f => `<button class="chip f-${f}" data-a="font" data-v="${f}" aria-pressed="${L.font === f}" aria-label="${FONTS[f]}" ${locked ? 'disabled' : ''}><span>Aa</span></button>`).join('');
     const aligns = Object.keys(ALIGN).map(a => `<button class="chip" data-a="align" data-v="${a}" aria-pressed="${L.align === a}" aria-label="Align ${a}"><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="${ALIGN[a]}"/></svg></span></button>`).join('');
     const wheel = `<div class="wheel"><div class="wheel-in" role="listbox" aria-label="Clip-art" data-wheel>${ART.map(id => `<button class="px-opt" role="option" data-a="art" data-v="${id}" aria-selected="${L.art === id}" aria-label="${id.replace(/-/g, ' ')}">${artSVG(id)}</button>`).join('')}</div></div>`;
     const body = `<div class="preview${arrive}">${coverHTML(mockPage(p), { k: .6, tilt: -1.2 })}</div>
-      <div class="subj">${draft.words.map((k, i) => `<button class="subj-word${punched === i ? ' punch' : ''}" data-a="reroll" data-i="${i}" ${draft.useCustom ? 'disabled' : ''}>${esc((S.subj || OP.SUBJ)[i][k])}</button>`).join('')}</div>
-      <label class="typed-slip"><input class="input" id="custom-subject" data-in="custom" maxlength="80" placeholder="Or type your own…" value="${esc(draft.custom)}"></label>
       <div class="dress-row"><div class="chips fonts">${fonts}</div><div class="chips aligns">${aligns}</div></div>${wheel}${designer}`;
     return deskWrap(OP.DEPTS[p.dept], body, { fuse: fuse(`${S.r}-dress`, TIME.dress, seal), foot: `<div class="two-keys"><button class="btn back" data-a="back">‹ ${locked ? 'Cards' : 'Templates'}</button><button class="outtray" data-a="seal" aria-label="Hand it in"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button></div>` });
   }
@@ -154,16 +151,16 @@
   // your own page, and every author for the Auditor; phone only
   const auditor = () => mine() && me().spec === 'Auditor' && !me().leave;
   const tagFor = e => !mine() || e.autopilot ? '' : e.author === ME ? '<i class="yours">You</i>' : auditor() ? `<i class="yours">${esc(nm(e.author))}</i>` : '';
-  // the CEO reads the sentences: each page as a row, cover beside what it says
+  // the CEO reads the cover pages: big enough that the sentence on each is the thing being picked
   function rows(list, current) {
-    return `<div class="prows">${list.map(e => `<button class="prow" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
-      ${coverHTML(e, { k: .27, note: false })}${lineHTML(e, { all: e.openTo && mine() && e.openTo.includes(ME) }) || '<p class="line nil">█████ █████ █████</p>'}${tagFor(e)}</button>`).join('')}</div>`;
+    return `<div class="prows">${list.map(e => `<button class="prow" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(sayOf(e))}">
+      ${coverHTML(e, { k: .54 })}${lineHTML(e, { all: e.openTo && mine() && e.openTo.includes(ME) })}${tagFor(e)}</button>`).join('')}</div>`;
   }
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
       const open = e.openTo && mine() && e.openTo.includes(ME);
       const peek = open || e.audited ? `<span class="peek">${e.cards.map((c, su) => open || e.audited ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
-      return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
+      return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(sayOf(e))}">
         ${coverHTML(e, { k: .35 })}${peek}${tagFor(e)}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
   }

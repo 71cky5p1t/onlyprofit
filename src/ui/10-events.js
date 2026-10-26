@@ -21,7 +21,6 @@
       case 'stamp': draft.stamp = d.v; render(); break;
       case 'finalise': finalise(); break;
       case 'back': draft.page = draft.page === 3 && !S.reqStyle ? 2 : 1; render(); break;
-      case 'reroll': { const i = +d.i, l = (S.subj || OP.SUBJ)[i].length; let k; do { k = Math.floor(Math.random() * l); } while (k === draft.words[i] && l > 1); draft.words[i] = k; ui.punch = i; render(); break; }
       case 'tpl': Object.assign(draft.style, { tpl: d.v, font: TPL[d.v].font, align: TPL[d.v].align }); if (!draft.artSet) draft.style.art = TPL[d.v].art; draft.page = 3; ui.arrive = true; render(); break;
       case 'font': draft.style.font = d.v; render(); break;
       case 'align': draft.style.align = d.v; render(); break;

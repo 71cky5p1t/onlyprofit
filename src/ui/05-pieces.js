@@ -37,7 +37,7 @@
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
     if (fresh) ui.stamped = `${S.r}${e.id}`;
-    return `<${tag} class="pg ${ui.sel === e.id ? 'sel' : ''} ${opt.faded ? 'faded' : ''} ${opt.motion || ''}" style="--i:${opt.i || 0}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}"` : ''}>
+    return `<${tag} class="pg ${ui.sel === e.id ? 'sel' : ''} ${opt.faded ? 'faded' : ''} ${opt.motion || ''}" style="--i:${opt.i || 0}" ${opt.click ? `data-a="${opt.click}" data-id="${e.id}" aria-pressed="${ui.sel === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(sayOf(e))}"` : ''}>
       ${coverHTML(e, { fresh })}<div class="pg-under">${lineHTML(e, { anim: opt.motion === 'pull' })}
       ${who ? `<div class="pg-from">From <b>${esc(who)}</b>${dept ? ` · ${esc(dept)}` : ''}</div>` : ''}${tags.length ? `<div class="pg-tags">${tags.join('')}</div>` : ''}${dbg}</div></${tag}>`;
   }

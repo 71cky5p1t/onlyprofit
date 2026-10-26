@@ -118,11 +118,11 @@ const OP_BOTS = (() => {
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
       // a smart saboteur sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
-      return [{ author: i, cards: prop, stamp, redacted: rev, revealed: [0, 1, 2].filter(x => !rev.includes(x)), subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
+      return [{ author: i, cards: prop, stamp, redacted: rev, revealed: [0, 1, 2].filter(x => !rev.includes(x)), subject: prop.map(c => c.w).join(' '), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
     }
     function autopilot(s, i, I, D) {
       const cards = draw3(s); discard(s, I);
-      return [{ author: i, cards, stamp: 'Risky', redacted: [], revealed: [0, 1, 2], autopilot: true, subject: 'Interim Management Update', style: { tpl: 'memo', font: 'typewriter' }, mode: 'autopilot', cost: 0 }, D];
+      return [{ author: i, cards, stamp: 'Risky', redacted: [], revealed: [0, 1, 2], autopilot: true, subject: cards.map(c => c.w).join(' '), style: { tpl: 'memo', font: 'typewriter' }, mode: 'autopilot', cost: 0 }, D];
     }
     function botInheritMemo(s, i, inh) {
       const p = s.P[i];

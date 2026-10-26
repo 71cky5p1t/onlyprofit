@@ -75,7 +75,6 @@
       const b = ev.target.closest('[data-a]'); if (!b || b.disabled) return;
       const a = b.dataset.a;
       if (a === 'approve') sfx('paper-pull');
-      else if (a === 'reroll') sfx('paper-type-key');
       else if (a === 'name-go') sfx('paper-type-bell', 0, .7);
       else if (TAP.has(a)) sfx('desk-tap', 0, .7);
       // the lobby comes off hold while you poke at the menu, and goes back on when you stop

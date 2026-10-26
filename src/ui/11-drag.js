@@ -87,11 +87,6 @@
     const el = ev.target, k = el.dataset && el.dataset.in; if (!k) return;
     if (k === 'seed') setup.seed = el.value;
     if (k === 'name') { naming.name = el.value; const go = document.querySelector('[data-a="name-go"]'); if (go) go.disabled = !nameLetters(el.value); }
-    if (k === 'custom') {
-      draft.custom = el.value; const was = draft.useCustom; draft.useCustom = !!el.value.trim();
-      if (was !== draft.useCustom) document.querySelectorAll('.subj-word').forEach(b => { b.disabled = draft.useCustom; });
-      refreshPreview();
-    }
     if (k === 'claimStamp') draft.claim.stamp = el.value;
     if (k === 'claimVal') draft.claim.val = +el.value;
     if (k === 'nextStyle') { const [t, f] = el.value.split('/'); draft.nextStyle = el.value ? { tpl: t, font: f } : null; }
