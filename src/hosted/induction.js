@@ -12,7 +12,7 @@ export function inductionHTML(s, lessons, index, tv, demo) {
   let prop = `<div class="training-policy">${trainingCards.map(c => card(c)).join('')}</div>`;
   if (id === 'welcome' || id === 'signoff') prop = '<div class="binder">STAFF<br>INDUCTION<small>Enjoyment is mandatory.</small></div>';
   if (id === 'goal' || id === 'endgame') prop = `<div class="training-target">5 QUARTERS<strong>+${s.game.target}</strong><small>One company target.</small></div>`;
-  if (id === 'saboteurs') prop = '<div class="binder confidential">LOYAL?<br>SABOTEUR?<small>Check your own phone. Trust nobody else’s.</small></div>';
+  if (id === 'saboteurs') prop = '<div class="binder confidential">LOYAL?<br>DISGRUNTLED?<small>Check your own phone. Trust nobody else’s.</small></div>';
   if (id === 'stamp') prop = '<div class="training-stamps"><b>RECOMMENDED</b><b>RISKY</b><b>NOT RECOMMENDED</b></div>';
   if (!tv && ['overtime', 'reveal'].includes(id)) prop = `<p>Try it here. This is practice.</p><div class="training-policy">${trainingCards.map((c, i) => button('practice', card({ ...c, v: demo.includes(i) ? 2 : c.v }), `data-suit="${i}" aria-pressed="${demo.includes(i)}"`)).join('')}</div><p>${3 - [0,1,3][demo.length]} hours left. Tap a card to replace it, or undo.</p>`;
   if (!tv && !['overtime', 'reveal'].includes(id)) prop = '<div class="paper"><h2>Look at the TV.</h2><p>Your practice exercise appears here when we reach overtime.</p></div>';

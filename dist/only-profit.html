@@ -525,7 +525,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.5 1.75'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.5 1.75'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: thump .45s cubic-bezier(.2,.9,.3,1.2) .5s both }
-.memo-stamp.loyal { color: var(--good) } .memo-stamp.sab { color: var(--red) }
+.memo-stamp.loyal { color: var(--good) } .memo-stamp.sab { color: var(--red); font-size: 26px }
 @keyframes thump { from { transform: rotate(-8deg) scale(2.2); opacity: 0 } 70% { transform: rotate(-8deg) scale(.96); opacity: .95 } to { transform: rotate(-8deg) scale(1); opacity: .9 } }
 .memo-spec { justify-self: center; font: 900 13px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: #2C46B8; border: 2px solid currentColor; border-radius: 3px; padding: 5px 8px 4px; transform: rotate(3deg); text-align: center; mix-blend-mode: multiply }
 .memo-spec small { display: block; font: 400 10px/1.3 var(--f-seg); letter-spacing: 0; text-transform: none; margin-top: 3px }
@@ -1065,7 +1065,7 @@ html[data-sweep="d"]::view-transition-old(i-stage) { animation-name: sweep-d }
 .i-signer:nth-child(3n+2) .nametag, .i-year:nth-child(even) .nametag, .i-ceo .nametag { rotate: 2deg }
 /* stickers sit on the bottom edge, so every badge stays the same size */
 .induction .i-year .stickers { position: absolute; left: -10px; right: -10px; top: 100%; translate: 0 -9px; flex-wrap: nowrap; min-height: 0; margin: 0 }
-.induction .i-year .rubber { top: 58% }
+.induction .i-year .rubber { top: 58%; font-size: clamp(10px, 1.25vw, 13px); padding: 5px 7px 4px }
 .induction .i-year .stk { white-space: nowrap }
 @media (max-width: 740px) { .induction .eoty { inset: -8px -6px -36px } }
 
@@ -1264,7 +1264,7 @@ const OP_CONTENT = (() => {
 })();
 
 
-// Bot players: saboteur modes, loyal temperaments, and each bot's memory of the table.
+// Bot players: disgruntled modes, loyal temperaments, and each bot's memory of the table.
 const OP_BOTS = (() => {
   // [memo belief, warning threshold, risk appetite, faith in a hidden card, faith in a stamp]
   const PERS = { trusting: [1, 0.5, 0.2, 0.2, 1.5], sceptic: [0.5, 1, -0.3, -0.5, 0.5], gossip: [1, 0.5, 0.1, 0, 1], beancounter: [0.75, 0.75, -0.2, -0.3, 0.75], yesman: [1, 1, 0, 0.1, 1.25] };
@@ -1379,7 +1379,7 @@ const OP_BOTS = (() => {
         stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : revealPositive(prop, left);
       } else if (prop.some(c => c.v === 'V')) { stamp = 'Risky'; rev = revealPositive(prop, left); } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.5 ? 'Rec' : 'Risky'; rev = revealPositive(prop, left); }
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
-      // a smart saboteur sends bad proposals in someone else's look
+      // a smart disgruntled bot sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
       return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, redeal }, hand];
     }
@@ -1864,7 +1864,7 @@ const OP = (() => {
     s.whistle = { votes: s.wb, count, named: winner === 'none' ? null : +winner };
     if (s.whistle.named != null) {
       const q = s.P[s.whistle.named];
-      // Clawback: reverse a caught saboteur's losses (min +3)
+      // Clawback: reverse a caught disgruntled player's losses (min +3)
       const lost = s.ledger.filter(l => l.author === q.id && !l.autopilot && l.actual < 0);
       const back = lost.reduce((a, l) => a - 2 * l.actual, 0);
       const swing = q.sab ? Math.max(3, back) : -3;
@@ -1876,7 +1876,7 @@ const OP = (() => {
     scoreStaff(s);
     log(s, E, 'system', s.win ? `Final profit ${fmt(s.profit)} against a target of +${s.target}. Target met.` : `Final profit ${fmt(s.profit)} against a target of +${s.target}. Target missed.`);
   }
-  // personal records: loyal staff +1 per money-maker someone else approved, minus their losses; saboteurs score their losses
+  // personal records: loyal staff +1 per money-maker someone else approved, minus their losses; the disgruntled score their losses
   function scoreStaff(s) {
     s.scores = s.P.map(p => s.ledger.filter(l => l.author === p.id && !l.autopilot).reduce((a, l) => a + (p.sab ? Math.max(0, -l.actual) : l.actual < 0 ? l.actual : l.actual > 0 && l.ceo !== p.id ? 1 : 0), 0));
     const side = s.P.filter(p => p.sab !== s.win);
@@ -2370,10 +2370,10 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     if (!ui.debug) return '';
     const sus = S.P.map(p => `<span class="pill ${p.sab ? 'red' : 'green'}">${esc(p.name)} · ${p.sab ? (p.ruthless ? 'SAB · ruthless' : 'SAB') : `LOYAL · ${OP.PERS_SAY[p.pers]}`} · sus ${OP.suspicion(S, p).toFixed(1)}</span>`).join('');
     return `<section class="observer"><div class="section-head" style="margin:0;border-bottom-width:1px"><h2>Observer view</h2><span class="label">Hidden from players</span></div>
-      <div style="font-size:13.5px">Headcount Memo: <b>${S.nSab} saboteur${S.nSab === 1 ? '' : 's'}</b>. Loyal bots play <b>${TIER[S.loyalTier]}</b>; saboteur bots play <b>${TIER[S.sabTier]}</b>. Seed <span class="mono">${S.seed}</span>.
+      <div style="font-size:13.5px">Headcount Memo: <b>${S.nSab} disgruntled</b>. Loyal bots play <b>${TIER[S.loyalTier]}</b>; disgruntled bots play <b>${TIER[S.sabTier]}</b>. Seed <span class="mono">${S.seed}</span>.
       ${S.nextStyle ? ` Designer has set next quarter: ${S.nextStyle.tpl} in ${S.nextStyle.font}.` : ''}</div>
       <div class="observer-grid">${sus}</div>
-      <div class="hint">Debug strips show allegiance · bot mode (loyal, good = saboteur playing clean, disguised, bad) · true value · what the table would estimate · tokens spent. "sus" is the end-of-game Whistleblower score the bots use.</div></section>`;
+      <div class="hint">Debug strips show allegiance · bot mode (loyal, good = disgruntled playing clean, disguised, bad) · true value · what the table would estimate · tokens spent. "sus" is the end-of-game Whistleblower score the bots use.</div></section>`;
   }
   function exitHTML() {
     const rounds = S.history.map(h => {
@@ -2472,7 +2472,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
       if (S.r && S.ceo === p.id && live) meta.push('<i class="tag-tape">CEO</i>');
       if (p.leave) meta.push('<i class="tag-tape grey">Stood down</i>');
       if (p.spec && ui.debug) meta.push(`<i class="tag-tape gold">${p.spec}</i>`);
-      if (ui.debug || S.phase === 'end') meta.push(`<i class="tag-tape ${p.sab ? 'red' : 'green'}">${p.sab ? 'Saboteur' : 'Loyal'}</i>`);
+      if (ui.debug || S.phase === 'end') meta.push(`<i class="tag-tape ${p.sab ? 'red' : 'green'}">${p.sab ? 'Disgruntled' : 'Loyal'}</i>`);
       const dept = S.r && ui.debug ? `<small class="tag-dept">${OP.DEPTS[p.dept]}</small>` : '';
       return `<div class="nametag staff-tag${p.leave ? ' down' : ''}" style="--r:${((p.id * 5) % 7 - 3) * .7}deg"><span class="hello">Hello<small>my name is</small></span>
         <b>${p.id === ME && mine() && ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : esc(p.name)}</b>${dept}${meta.length ? `<span class="tag-tapes">${meta.join('')}</span>` : ''}${stickers(p)}</div>`;
@@ -2568,7 +2568,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     const line = S.win ? 'Shareholders are mildly pleased. Bonuses have been deferred.' : sabs.length ? 'The company sank, with help.' : 'The company failed entirely on its own merits.';
     const body = `<div class="sheet letter"><div class="role ${S.win ? 'loyal' : 'sab'}">${youWon == null ? (S.win ? 'Target met' : 'Target missed') : youWon ? 'You win' : 'You lose'}</div>
       <div class="num big">${fmt(S.profit)} <small>/ +${S.target}</small></div><div>${line}</div>
-      <div class="hint">${sabs.length ? `Saboteur${sabs.length > 1 ? 's' : ''}: <b>${sabs.map(p => esc(p.name)).join(', ')}</b>` : 'No saboteur'}</div></div>`;
+      <div class="hint">${sabs.length ? `Disgruntled: <b>${sabs.map(p => esc(p.name)).join(', ')}</b>` : 'Nobody disgruntled'}</div></div>`;
     return deskWrap('Final figures', body, { foot: `<div class="two-keys"><button class="btn back" data-a="quit">Settings</button>${key('again', 'Again')}</div>` });
   }
   function desk() {
@@ -2576,13 +2576,13 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     const p = me(), ph = S.phase;
     if (ph === 'brief') {
       // a typed memo on letterhead; the only thing that matters is the rubber stamp
-      const fine = p.sab ? 'Make sure it misses. Quietly.' : S.n >= 6 ? 'Up to two saboteurs. Possibly none.' : 'Possibly a saboteur. Possibly not.';
+      const fine = p.sab ? 'Make sure it misses. Quietly.' : S.n >= 6 ? 'Up to two disgruntled. Possibly none.' : 'Possibly someone disgruntled. Possibly not.';
       const body = `<div class="memo-sheet">
         <div class="lh"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="lh-name"><span class="brand-name">${esc(brand().name)}</span> ${esc(brand().suffix)}<small>People &amp; Culture</small></span><span class="lh-ref">Q0 / HR / ${String(S.seed % 1000).padStart(3, '0')}</span></div>
         <div class="memo-row"><span>To</span>${ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : '<b>You</b>'}</div>
         <div class="memo-row"><span>Re</span><b>Your allegiance</b></div>
         <div class="memo-row"><span>Target</span><b>+${S.target}</b> by Q5</div>
-        <div class="memo-stamp ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Saboteur' : 'Loyal'}</div>
+        <div class="memo-stamp ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Disgruntled' : 'Loyal'}</div>
         ${p.spec ? `<div class="memo-spec">${p.spec}<small>${p.spec === 'Auditor' ? 'you see who wrote every proposal' : 'you choose next quarter’s cover page'}</small></div>` : ''}
         <div class="memo-fine">${fine}</div>
         <svg class="memo-sig" viewBox="0 0 160 40" aria-hidden="true"><path d="M4 30c10-18 18-24 22-16s-8 18 2 12 14-22 20-16-6 20 4 14 10-14 16-10 2 12 10 8 12-10 20-8 6 8 14 4 14-6 20-4"/></svg>
@@ -2615,7 +2615,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
         ${isCEO() ? filesHTML() : ''}<div class="tags one"><div class="nametag mine"><span class="hello">Hello<small>my name is</small></span><b>${esc(p.name)}</b>${got || '<span class="stickers"><i class="stk grey">Present</i></span>'}</div></div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
-      return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${signHTML('whistle', ui.sel != null)}`);
+      return deskWrap('Who’s disgruntled?', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${signHTML('whistle', ui.sel != null)}`);
     }
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');
@@ -2888,7 +2888,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
         <details class="lobby-options" ${ui.settings ? 'open' : ''}><summary>Company &amp; game settings</summary><div class="options-body"><div class="field"><span class="label">Your seat</span>${seg('spectate', [[false,'Play'],[true,'Watch the bots']])}</div>
           <div class="field"><span class="label">Company</span>${seg('brand', BRANDS.map(b => [b.id,b.name]))}</div>
           <div class="field"><span class="label">Loyal bots</span>${seg('loyalTier', [['smart','Smart'],['basic','Basic'],['naive','Gullible']])}</div>
-          <div class="field"><span class="label">Saboteur bots</span>${seg('sabTier', [['smart','Smart'],['patient','Patient'],['blatant','Blatant']])}</div>
+          <div class="field"><span class="label">Disgruntled bots</span>${seg('sabTier', [['smart','Smart'],['patient','Patient'],['blatant','Blatant']])}</div>
           <div class="field"><span class="label">Cards</span>${seg('cards', [['paper','Paper'],['colour','Colour']])}</div>
           <div class="field"><span class="label">Target</span>${seg('easy', [[false,'Standard'],[true,'Easy mode (−3)']])}</div>
           <div class="field"><label class="label" for="seed">Replay a deal (optional seed)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}"></div></div></details><p class="lobby-fine">No experience necessary.<br>Accountability negotiable.</p></div></section></main>`;
@@ -3076,12 +3076,12 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
       const e = h.envs.find(x => x.id === h.pick); if (!e) return '';
       const q = S.P[e.author], sab = !e.autopilot && q.sab;
       return `<figure class="rp-pg"><span class="rp-q">Q${h.r}</span><div class="rp-cover">${coverHTML(e, { k: .5, list: h.envs })}
-        ${sab ? '<i class="rp-stamp sab">Saboteur</i>' : ''}${claw.has(h.r) ? '<i class="rp-stamp back">Reversed</i>' : ''}</div>
+        ${sab ? '<i class="rp-stamp sab">Disgruntled</i>' : ''}${claw.has(h.r) ? '<i class="rp-stamp back">Reversed</i>' : ''}</div>
         ${lineHTML(e)}<figcaption>${e.autopilot ? 'Autopilot' : esc(q.name)}</figcaption></figure>`;
     }).join('');
     const named = q => S.whistle && S.whistle.named === q.id ? `<span class="stickers"><i class="stk ${S.whistle.correct ? 'gold' : 'red'}">Named ${fmt(S.whistle.swing)}</i></span>` : '';
     const score = q => S.scores ? `<span class="rp-score ${tone(S.scores[q.id])}" aria-label="Record ${fmt(S.scores[q.id])}">${fmt(S.scores[q.id])}</span>` : '';
-    const staff = S.P.map(q => `<div class="nametag rp-tag${S.eoty === q.id ? ' eoty' : ''}"><span class="hello">Hello<small>my name is</small></span>${score(q)}<b>${esc(q.name)}</b><i class="rp-stamp ${q.sab ? 'sab' : 'ok'}">${q.sab ? 'Saboteur' : 'Loyal'}</i>${named(q)}${S.eoty === q.id ? ROSETTE : ''}</div>`).join('');
+    const staff = S.P.map(q => `<div class="nametag rp-tag${S.eoty === q.id ? ' eoty' : ''}"><span class="hello">Hello<small>my name is</small></span>${score(q)}<b>${esc(q.name)}</b><i class="rp-stamp ${q.sab ? 'sab' : 'ok'}">${q.sab ? 'Disgruntled' : 'Loyal'}</i>${named(q)}${S.eoty === q.id ? ROSETTE : ''}</div>`).join('');
     return `<section class="report"><div class="rp-pages">${pages}</div>
       <div class="rp-total"><span class="num">${fmt(S.profit)}<small>/ +${S.target}</small></span><i class="rp-stamp big ${S.win ? 'ok' : 'sab'}">${S.win ? 'Target met' : 'Target missed'}</i></div>
       <div class="rp-staff">${staff}</div></section>`;
@@ -3091,7 +3091,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
   const LESSONS = [
     ['welcome', 'Welcome', 'Welcome aboard. Please enjoy this mandatory induction. Enjoyment is also mandatory.', 5],
     ['goal', 'The target', 'The company has five quarters to hit its profit target. Hit it, and everyone keeps their job. Probably.', 6],
-    ['saboteurs', 'Liabilities', 'Some of you are Liabilities, hired to quietly sink the company. Your role memo will say if it’s you. Maybe it’s nobody, and we’re just bad at our jobs.', 8],
+    ['saboteurs', 'Disgruntled', 'Some of you are Disgruntled, and want the company to sink. Your role memo will say if it’s you. Maybe it’s nobody, and we’re just bad at our jobs.', 8],
     ['inherit', 'Handover', 'Every quarter, you move to a new department and inherit the last manager’s three cards. Nobody can prove they weren’t yours. Congratulations.', 8],
     ['policy', 'Policy', 'Three cards make a proposal: an Action, a Target and a Modifier. Read as one sentence, the worse it sounds, the more it makes.', 8],
     ['overtime', 'Overtime', 'You also get spares. Spend overtime hours to swap one in, or turn a card face up so people trust you. The hours are unpaid.', 8],
@@ -3100,7 +3100,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     ['ceo', 'The CEO', 'Each quarter, someone takes a turn as CEO. They read the pile and pick one.', 5],
     ['board', 'The Board', 'Everyone else is the Board. Rubber-stamp the pick, or open it up. If there was a better one, that goes through instead, and the dud’s author is named.', 9],
     ['approved', 'Approved', 'Whatever goes through hits the books, and its author is named. Everyone acts like they saw it coming.', 6],
-    ['endgame', 'Year end', 'After quarter five, you vote on who the Liability was. Right, and their damage is undone. Wrong, and they sue for unfair dismissal. Then we count the money.', 9],
+    ['endgame', 'Year end', 'After quarter five, you vote on who was Disgruntled. Right, and their damage is undone. Wrong, and the innocent one sues for unfair dismissal. Then we count the money.', 9],
     ['signoff', 'Sign-off', 'That concludes your induction. The clock starts now. Please look busy.', 5]
   ];
   // recorded lines drop in as assets/audio/induction/welcome.mp3 (or vo-01-welcome.mp3) and so on
@@ -3156,7 +3156,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     let seat = 0;
     const tag = (n, extra, cls = '') => `<div class="i-year ${cls}">${demoTag(n, .02 * seat++, extra, cls !== 'star')}</div>`;
     return `<div class="i-staff year">
-      ${tag('Gary', `<span class="rubber red b thump" ${at(.22)}>Saboteur</span>`)}
+      ${tag('Gary', `<span class="rubber red b thump" ${at(.22)}>Disgruntled</span>`)}
       ${tag('Denise', `<div class="stickers b slap" ${at(.58)}><span class="stk beige">See me</span></div>`)}
       ${tag('Trevor', `<div class="stickers b slap" ${at(.62)}><span class="stk gold">Great work!</span><span class="stk blue" style="--r:4deg">Team player</span></div><span class="eoty b frame-in" ${at(.76)}><span>Employee of the Year</span></span>`, 'star')}
       ${tag('Moira', `<div class="stickers b slap" ${at(.66)}><span class="stk grey">Noted</span></div>`)}</div>`;
@@ -3189,7 +3189,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     if (id === 'goal') return `<div class="calc i-calc b rise"><div class="lcd"><div class="ann"><span>PROFIT</span><span>TARGET +${target}</span></div><div class="val" data-count="${target}">${lcd(0)}</div></div></div>
       <div class="i-qtabs">${[1, 2, 3, 4, 5].map(q => `<span class="b fan-in" ${at(.3 + q * .06)}>Q${q}</span>`).join('')}</div>`;
     if (id === 'saboteurs') return `<div class="i-staff">${['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'You'].map((n, k) => `<div class="i-seat">${demoTag(n, k * .03)}
-      <div class="i-role b ${k === 2 ? 'peek' : ''}" style="--at:${.74 + k * .025}"><i class="face back">${brandMark()}</i><i class="face front">Loyal</i>${k === 2 ? `<i class="under">Sabot</i>` : ''}</div></div>`).join('')}</div>`;
+      <div class="i-role b ${k === 2 ? 'peek' : ''}" style="--at:${.74 + k * .025}"><i class="face back">${brandMark()}</i><i class="face front">Loyal</i>${k === 2 ? `<i class="under">Disgr</i>` : ''}</div></div>`).join('')}</div>`;
     if (id === 'inherit') return `<div class="i-leaver b exit-left" ${at(.08)}>${demoTag('Gary')}</div>${cardRow(cs.map((c, k) => flipCard(c, .28 + k * .08, k)).join(''))}`;
     if (id === 'policy') return cardRow(cs.map((c, k) => cardHTML(c, 'b pop', '', at(.3 + k * .1, vt('vt-c' + k)))).join('') + cardHTML({ s: 2, v: 'V', w: 'Going Forward' }, 'b spin-in coin', '', at(.78)));
     if (id === 'overtime') return overtimeProp(cs);

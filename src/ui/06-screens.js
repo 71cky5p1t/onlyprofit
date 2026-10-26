@@ -13,7 +13,7 @@
     const line = S.win ? 'Shareholders are mildly pleased. Bonuses have been deferred.' : sabs.length ? 'The company sank, with help.' : 'The company failed entirely on its own merits.';
     const body = `<div class="sheet letter"><div class="role ${S.win ? 'loyal' : 'sab'}">${youWon == null ? (S.win ? 'Target met' : 'Target missed') : youWon ? 'You win' : 'You lose'}</div>
       <div class="num big">${fmt(S.profit)} <small>/ +${S.target}</small></div><div>${line}</div>
-      <div class="hint">${sabs.length ? `Saboteur${sabs.length > 1 ? 's' : ''}: <b>${sabs.map(p => esc(p.name)).join(', ')}</b>` : 'No saboteur'}</div></div>`;
+      <div class="hint">${sabs.length ? `Disgruntled: <b>${sabs.map(p => esc(p.name)).join(', ')}</b>` : 'Nobody disgruntled'}</div></div>`;
     return deskWrap('Final figures', body, { foot: `<div class="two-keys"><button class="btn back" data-a="quit">Settings</button>${key('again', 'Again')}</div>` });
   }
   function desk() {
@@ -21,13 +21,13 @@
     const p = me(), ph = S.phase;
     if (ph === 'brief') {
       // a typed memo on letterhead; the only thing that matters is the rubber stamp
-      const fine = p.sab ? 'Make sure it misses. Quietly.' : S.n >= 6 ? 'Up to two saboteurs. Possibly none.' : 'Possibly a saboteur. Possibly not.';
+      const fine = p.sab ? 'Make sure it misses. Quietly.' : S.n >= 6 ? 'Up to two disgruntled. Possibly none.' : 'Possibly someone disgruntled. Possibly not.';
       const body = `<div class="memo-sheet">
         <div class="lh"><span class="logo-mark" aria-hidden="true">${brandMark()}</span><span class="lh-name"><span class="brand-name">${esc(brand().name)}</span> ${esc(brand().suffix)}<small>People &amp; Culture</small></span><span class="lh-ref">Q0 / HR / ${String(S.seed % 1000).padStart(3, '0')}</span></div>
         <div class="memo-row"><span>To</span>${ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : '<b>You</b>'}</div>
         <div class="memo-row"><span>Re</span><b>Your allegiance</b></div>
         <div class="memo-row"><span>Target</span><b>+${S.target}</b> by Q5</div>
-        <div class="memo-stamp ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Saboteur' : 'Loyal'}</div>
+        <div class="memo-stamp ${p.sab ? 'sab' : 'loyal'}">${p.sab ? 'Disgruntled' : 'Loyal'}</div>
         ${p.spec ? `<div class="memo-spec">${p.spec}<small>${p.spec === 'Auditor' ? 'you see who wrote every proposal' : 'you choose next quarter’s cover page'}</small></div>` : ''}
         <div class="memo-fine">${fine}</div>
         <svg class="memo-sig" viewBox="0 0 160 40" aria-hidden="true"><path d="M4 30c10-18 18-24 22-16s-8 18 2 12 14-22 20-16-6 20 4 14 10-14 16-10 2 12 10 8 12-10 20-8 6 8 14 4 14-6 20-4"/></svg>
@@ -60,7 +60,7 @@
         ${isCEO() ? filesHTML() : ''}<div class="tags one"><div class="nametag mine"><span class="hello">Hello<small>my name is</small></span><b>${esc(p.name)}</b>${got || '<span class="stickers"><i class="stk grey">Present</i></span>'}</div></div>`, { foot: key('advance', S.r < 5 ? `Start Q${S.r + 1}` : 'Whistleblower') });
     }
     if (ph === 'whistle') {
-      return deskWrap('Name a saboteur', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${signHTML('whistle', ui.sel != null)}`);
+      return deskWrap('Who’s disgruntled?', `<div class="slips">${slip(`<b class="pos">+</b> · <b class="neg">−3</b>`)}</div>${nameTags(S.P.filter(q => q.id !== ME), ui.sel, 'Nobody')}${signHTML('whistle', ui.sel != null)}`);
     }
     if (ph === 'end') return deskEnd();
     return deskWrap(PHASE[ph], '');

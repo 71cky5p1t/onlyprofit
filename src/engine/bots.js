@@ -1,4 +1,4 @@
-// Bot players: saboteur modes, loyal temperaments, and each bot's memory of the table.
+// Bot players: disgruntled modes, loyal temperaments, and each bot's memory of the table.
 const OP_BOTS = (() => {
   // [memo belief, warning threshold, risk appetite, faith in a hidden card, faith in a stamp]
   const PERS = { trusting: [1, 0.5, 0.2, 0.2, 1.5], sceptic: [0.5, 1, -0.3, -0.5, 0.5], gossip: [1, 0.5, 0.1, 0, 1], beancounter: [0.75, 0.75, -0.2, -0.3, 0.75], yesman: [1, 1, 0, 0.1, 1.25] };
@@ -113,7 +113,7 @@ const OP_BOTS = (() => {
         stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : revealPositive(prop, left);
       } else if (prop.some(c => c.v === 'V')) { stamp = 'Risky'; rev = revealPositive(prop, left); } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.5 ? 'Rec' : 'Risky'; rev = revealPositive(prop, left); }
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
-      // a smart saboteur sends bad proposals in someone else's look
+      // a smart disgruntled bot sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
       return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, redeal }, hand];
     }
