@@ -5,7 +5,7 @@
     ['saboteurs', 'Moles', 'Some of you are evil, manipulative little Moles, here to sink the company. Your role memo will say if it’s you. Maybe it’s nobody, and we’re just bad at our jobs.', 8],
     ['inherit', 'Handover', 'Every quarter, you move to a new department and inherit the last manager’s three cards. Nobody can prove they weren’t yours. Congratulations.', 8],
     ['policy', 'Policy', 'Three cards make a proposal: an Action, a Target and a Modifier. Read as one sentence, the worse it sounds, the more it makes.', 8],
-    ['overtime', 'Overtime', 'You also get spares. Spend overtime hours to swap one in, or turn a card face up so people trust you. The hours are unpaid.', 8],
+    ['overtime', 'Your input', 'You also draw a few extra cards. Spend an input to swap one into your proposal, or black one out so nobody can read it. Your input matters.', 8],
     ['stamp', 'The stamp', 'Then stamp it: Recommended, Risky, or Not. The pencil tick marks the honest one. You can lie, but the CEO can check. Get caught, and you’re on a Performance Improvement Plan.', 9],
     ['cover', 'Cover page', 'Give it a cover page and drop it in the pile. No names. Nobody knows who wrote what.', 6],
     ['ceo', 'The CEO', 'Each quarter, someone takes a turn as CEO. They read the pile and pick one.', 5],
