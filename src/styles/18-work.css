@@ -27,11 +27,6 @@
 .said .line { flex: 1; min-width: 0; transform: none; box-shadow: none; border-radius: 2px 0 0 2px; font-size: 16px; text-align: left; padding: 10px 12px 9px }
 .t-worth { display: grid; place-items: center; background: var(--stock); color: var(--ink); font: 400 24px/1 var(--f-seg); border-left: 1.5px dashed rgba(20,20,20,.22); padding: 0 12px; border-radius: 0 2px 2px 0; font-variant-numeric: tabular-nums; white-space: nowrap }
 .t-worth.pos { color: var(--good) } .t-worth.neg { color: var(--red) } .t-worth small { font-size: 11px; color: var(--sunset); margin-left: 2px }
-/* re-deal: a paper token beside the fan */
-.t-redeal { flex: none; display: grid; justify-items: center; gap: 4px; width: 56px; margin-bottom: 18px; padding: 9px 3px 7px; border: 0; border-radius: 3px; background: var(--stock); color: var(--ink); font: 800 10.5px/1 var(--f-body); letter-spacing: .04em; text-transform: uppercase; cursor: pointer; transform: rotate(3deg); box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 12px -8px rgba(0,0,0,.7); transition: transform .18s var(--bounce) }
-.t-redeal .rd-ic { font: 900 20px/1 var(--f-body); font-style: normal }
-.t-redeal:hover:not(:disabled) { transform: rotate(0) translateY(-3px) }
-.t-redeal:disabled { opacity: .5; cursor: not-allowed }
 /* every pick-one bar (stamps, Board) is one paper strip of rubber stamps: all inked faintly in their colour, the chosen one slammed down */
 .bar3 { background: var(--stock); box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); border-radius: 2px; padding: 8px 6px; transform: rotate(.4deg) }
 .bar3 button { color: var(--ink-2); background: none; padding: 6px 2px; font-size: 10.5px; letter-spacing: .03em; opacity: .6; transition: opacity .15s, transform .15s var(--bounce) }

@@ -22,7 +22,7 @@ function work(OP, s, st) {
   const { evs, ev, workResult, workCost } = OP;
   let best = null;
   for (const o of options(s)) {
-    const w = { swaps: o.swaps, picks: o.picks, reveals: [], redeal: false };
+    const w = { swaps: o.swaps, picks: o.picks, reveals: [], discards: [] };
     if (workCost(w) > 3) continue;
     const prop = workResult(s, 0, w).prop, v = evs(prop), left = 3 - workCost(w);
     const rev = [0, 1, 2].filter(su => ev(prop[su]) > 0).sort((a, b) => ev(prop[b]) - ev(prop[a])).slice(0, left);

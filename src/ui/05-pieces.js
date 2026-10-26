@@ -33,7 +33,7 @@
     if (e.audited) tags.push('<span class="pill blue">Audited</span>');
     if (e.autopilot) tags.push('<span class="pill grey">Autopilot</span>');
     if (e.unmasked && !e.approved) tags.push(`<span class="pill red">Overruled · ${e.author === S.ceo ? 'the CEO’s own' : esc(nm(e.author))}</span>`);
-    const dbg = ui.debug ? `<div class="env-dbg">${S.P[e.author].sab ? 'SAB' : 'LOYAL'} · ${esc(e.mode)} · true ${fmt(evs(e.cards))} · table est ${OP.estimate(e, S.loyalTier, false).toFixed(1)} · spent ${e.cost}${e.redeal ? ' · re-dealt' : ''}</div>` : '';
+    const dbg = ui.debug ? `<div class="env-dbg">${S.P[e.author].sab ? 'SAB' : 'LOYAL'} · ${esc(e.mode)} · true ${fmt(evs(e.cards))} · table est ${OP.estimate(e, S.loyalTier, false).toFixed(1)} · spent ${e.cost}${e.shredded ? ` · shredded ${e.shredded}` : ''}</div>` : '';
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
     if (fresh) ui.stamped = `${S.r}${e.id}`;

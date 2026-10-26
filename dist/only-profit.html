@@ -281,8 +281,6 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
   100% { transform: none; opacity: 1 } }
 @keyframes deal-back { 0%, 71.9% { opacity: 1 } 72%, 100% { opacity: 0 } }
 @keyframes pop-in { from { opacity: 0; transform: scale(.4) } }
-.play.redeal .fan .tag,
-.play.redeal .fan .card, .play.redeal .fan .card::before, .play.redeal .fan .card::after { animation: none }
 
   background: repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 3px), var(--ink); box-shadow: 0 1px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15) }
 /* stamps */
@@ -559,11 +557,6 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .said .line { flex: 1; min-width: 0; transform: none; box-shadow: none; border-radius: 2px 0 0 2px; font-size: 16px; text-align: left; padding: 10px 12px 9px }
 .t-worth { display: grid; place-items: center; background: var(--stock); color: var(--ink); font: 400 24px/1 var(--f-seg); border-left: 1.5px dashed rgba(20,20,20,.22); padding: 0 12px; border-radius: 0 2px 2px 0; font-variant-numeric: tabular-nums; white-space: nowrap }
 .t-worth.pos { color: var(--good) } .t-worth.neg { color: var(--red) } .t-worth small { font-size: 11px; color: var(--sunset); margin-left: 2px }
-/* re-deal: a paper token beside the fan */
-.t-redeal { flex: none; display: grid; justify-items: center; gap: 4px; width: 56px; margin-bottom: 18px; padding: 9px 3px 7px; border: 0; border-radius: 3px; background: var(--stock); color: var(--ink); font: 800 10.5px/1 var(--f-body); letter-spacing: .04em; text-transform: uppercase; cursor: pointer; transform: rotate(3deg); box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 12px -8px rgba(0,0,0,.7); transition: transform .18s var(--bounce) }
-.t-redeal .rd-ic { font: 900 20px/1 var(--f-body); font-style: normal }
-.t-redeal:hover:not(:disabled) { transform: rotate(0) translateY(-3px) }
-.t-redeal:disabled { opacity: .5; cursor: not-allowed }
 /* every pick-one bar (stamps, Board) is one paper strip of rubber stamps: all inked faintly in their colour, the chosen one slammed down */
 .bar3 { background: var(--stock); box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); border-radius: 2px; padding: 8px 6px; transform: rotate(.4deg) }
 .bar3 button { color: var(--ink-2); background: none; padding: 6px 2px; font-size: 10.5px; letter-spacing: .03em; opacity: .6; transition: opacity .15s, transform .15s var(--bounce) }
@@ -711,7 +704,6 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 @keyframes chit { from { transform: translateY(-14px) rotate(-8deg); opacity: 0 } }
 .t-cost .hrs { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); transform: none; padding: 3px 4px }
 .t-cost .hrs b { width: 8px; height: 8px }
-.t-redeal:disabled .hrs { opacity: .5 }
 @media (prefers-reduced-motion: reduce) { .land .paid, .shown .paid { animation: none } }
 /* ---------- the policy as one sentence, highlighter in the suit colours ---------- */
 .line { margin: 0; max-width: 100%; padding: 9px 12px 8px; background: var(--stock); color: var(--ink); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6);
@@ -1030,7 +1022,7 @@ section > .label { color: var(--on-table-2) }
 .rstamp:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px }
 .rstamp.right::after { top: 2px; right: 0 }
 /* finalising: the sentence and hand clear off before the page lands */
-.play.stuff .said, .play.stuff .hand-row .t-redeal { transition: opacity .2s; opacity: 0 }
+.play.stuff .said, .play.stuff .hand-row .shredder { transition: opacity .2s; opacity: 0 }
 @media (prefers-reduced-motion: reduce) { .cig .paper i::before, .said-stamp { animation: none } }
 /* on a phone the desk fills the glass; other screens keep their pieces together at the top */
 .desk-body { flex: 1 0 auto; align-content: start }
@@ -1038,7 +1030,7 @@ section > .label { color: var(--on-table-2) }
 .desk-body:has(> .play) { align-content: space-evenly }
 @container (max-width: 520px) {
   .play { --cw: min(112px, calc((100cqw - 54px) / 3)) }
-  .fan { --cw: min(112px, calc((100cqw - 54px) / 3), calc((100cqw - 122px) / 2.4)); flex: none; padding-left: calc(var(--cw) * .42); padding-right: calc(var(--cw) * .24) }
+  .fan { --cw: min(112px, calc((100cqw - 54px) / 3), calc((100cqw - 128px) / 2.64)); flex: none; padding-left: calc(var(--cw) * .66); padding-right: calc(var(--cw) * .24) }
   .fan .slot { margin-left: calc(var(--cw) * -.42) }
   .fan .slot:nth-child(1) { transform: rotate(-7deg) translateY(6px) } .fan .slot:nth-child(3) { transform: rotate(7deg) translateY(6px); z-index: 2 }
   .said .line { font-size: 17px }
@@ -1077,6 +1069,44 @@ section > .label { color: var(--on-table-2) }
 .mast .chip-btn { border-color: var(--table-rule); color: var(--on-table) }
 /* on a phone the desk already carries the profit ticket */
 @media (max-width: 980px) { .mast .meter { display: none } }
+/* ---------- one light, top-left: everything standing on the desk leans a little and throws its shadow down-right ---------- */
+.rstamp { --rz: -4deg; transform: rotate(var(--rz)); filter: drop-shadow(5px 8px 4px rgba(0,0,0,.45)) drop-shadow(1px 2px 1px rgba(0,0,0,.35)) }
+.rstamp:nth-child(2) { --rz: 2.5deg } .rstamp:nth-child(3) { --rz: -1.5deg }
+.rstamp:hover { transform: rotate(var(--rz)) translateY(-4px) }
+.rstamp[aria-pressed="true"] { transform: rotate(var(--rz)) translateY(7px) scaleY(.96); filter: drop-shadow(2px 3px 2px rgba(0,0,0,.5)) }
+@keyframes want { 40% { transform: rotate(var(--rz)) translateY(-12px) rotate(-3deg) } }
+/* the block's top face, seen from above, so it reads as a solid thing rather than a sign */
+.rstamp .block { position: relative; margin-top: 6px }
+.rstamp .block::before { content: ""; position: absolute; left: 4px; right: 4px; top: -7px; height: 8px; background: linear-gradient(#C68A58, #A9693C); clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%) }
+.rstamp .neck { position: relative; z-index: 1; margin-bottom: -9px }
+.rstamp .knob { position: relative; z-index: 1 }
+/* the out tray sits square on the wood with a shadow under its front lip */
+.outtray { filter: drop-shadow(6px 8px 5px rgba(0,0,0,.5)) }
+.ot-in { background: linear-gradient(#1E0F07, #3E2010 60%, #5A3019); clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%) }
+
+/* ---------- the shredder, left of the fan: drop any card in, 1 input, a fresh one of that suit takes its place ---------- */
+.shredder { position: relative; flex: none; display: grid; justify-items: center; width: 60px; margin: 0 2px 16px 0; align-self: flex-end; transform: rotate(-4deg); filter: drop-shadow(5px 8px 4px rgba(0,0,0,.45)); transition: transform .18s var(--bounce) }
+.sh-top { position: relative; width: 60px; height: 22px; border-radius: 6px 6px 2px 2px; background: linear-gradient(#4A4D55, #2A2C32); box-shadow: inset 0 1px 0 rgba(255,255,255,.18) }
+.sh-mouth { position: absolute; left: 7px; right: 7px; top: 8px; height: 5px; border-radius: 2px; background: #07080A; box-shadow: inset 0 2px 2px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.12); transition: box-shadow .15s }
+.sh-body { position: relative; display: grid; justify-items: center; align-content: start; gap: 5px; width: 54px; height: 52px; padding-top: 7px; overflow: hidden;
+  background: linear-gradient(90deg, rgba(0,0,0,.12), transparent 30%, transparent 70%, rgba(0,0,0,.18)), linear-gradient(#D9D1BD, #B8AE96); clip-path: polygon(0 0, 100% 0, 94% 100%, 6% 100%) }
+.sh-body b { font: 900 8.5px/1 var(--f-body); letter-spacing: .2em; text-transform: uppercase; color: rgba(40,34,22,.55); text-shadow: 0 1px 0 rgba(255,255,255,.5) }
+.sh-body .t-cost .hrs { background: var(--stock) }
+/* what's been shredded this quarter piles up in the window, in its suit's colour */
+.sh-out { position: absolute; left: 10px; right: 10px; bottom: 4px; height: 12px; display: flex; justify-content: center; align-items: flex-end; gap: 1px; pointer-events: none }
+.sh-out i { width: 3px; height: calc(7px + var(--k) * 2px); background: var(--suit); border-radius: 1px; box-shadow: 4px 1px 0 var(--suit), -4px 2px 0 var(--suit), 8px 3px 0 var(--suit) }
+.shredder.ok .sh-mouth { box-shadow: inset 0 2px 2px rgba(0,0,0,.9), 0 0 0 2px var(--gold) }
+.shredder.hot { transform: rotate(-4deg) scale(1.1) }
+.shredder.hot .sh-mouth { box-shadow: inset 0 2px 2px rgba(0,0,0,.9), 0 0 0 3px var(--gold), 0 0 16px rgba(233,162,59,.7) }
+.shredder.broke { opacity: .55 }
+.shredder.chew { animation: chew .45s linear both }
+@keyframes chew { 0%, 100% { transform: rotate(-4deg) } 20%, 60% { transform: rotate(-4deg) translateX(-2px) } 40%, 80% { transform: rotate(-4deg) translateX(2px) } }
+.shredder.chew .sh-out i:last-child { animation: shreds .5s ease-out .2s both }
+@keyframes shreds { from { transform: translateY(-14px); opacity: 0 } }
+/* the replacement deals in from the shredder side */
+.play .card.fresh { animation: fresh .55s cubic-bezier(.2,.9,.25,1.1) .25s both }
+@keyframes fresh { from { transform: translate(-60px, 30px) rotate(-18deg) scale(.6); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .shredder.chew, .shredder.chew .sh-out i, .play .card.fresh { animation: none } }
 </style>
 <div id="app"></div>
 <script>
@@ -1180,7 +1210,7 @@ const OP_BOTS = (() => {
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const styleKey = st => st ? st.tpl + '/' + st.font : '';
   const make = K => {
-    const { rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
+    const { rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
     const pers = p => PERS[p.pers] || PERS.trusting;
 
     // ---------- memory ----------
@@ -1262,12 +1292,15 @@ const OP_BOTS = (() => {
       const p = s.P[i], L = s.loyalTier, tok = TOKENS;
       const mode = p.sab ? (p.ruthless && s.ceo === i ? 'bad' : sabMode(s, p)) : 'loyal';
       const tier = p.sab ? (s.sabTier === 'smart' ? 'smart' : 'basic') : L;
-      let cost, prop, hand, redeal = false;
+      let cost, prop, hand, shredded = 0;
       if (mode === 'loyal' || mode === 'good') {
         [cost, prop, hand] = argmax(plans(I, D), x => [evs(x[1]), -x[0]]);
-        if (evs(prop) <= -1) {
-          const R = draw3(s); discard(s, I); redeal = true;
-          [cost, prop, hand] = argmax(plans(R, D, 1), x => [evs(x[1]), -x[0]]); cost += 2;
+        // a bad hand: shred the worst inherited card and look again
+        const J = I.slice();
+        while (evs(prop) <= -1 && shredded < 2) {
+          const su = argmax([0, 1, 2], k => [-ev(J[k])]);
+          discard(s, [J[su]]); J[su] = draw(s, su); shredded++;
+          [cost, prop, hand] = argmax(plans(J, D, 1), x => [evs(x[1]), -x[0]]); cost += shredded;
         }
       } else if (mode === 'bad') {
         [cost, prop, hand] = argmax(plans(I, D), x => [-evs(x[1]), -x[0]]);
@@ -1289,7 +1322,7 @@ const OP_BOTS = (() => {
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
       // a smart saboteur sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
-      return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, redeal }, hand];
+      return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
     }
     function autopilot(s, i, I, D) {
       const cards = draw3(s); discard(s, I);
@@ -1569,7 +1602,7 @@ const OP = (() => {
   }
 
   const pubEst = (s, e) => estimate(e, s.loyalTier, false);
-  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
+  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
 
   // ---------- round flow ----------
   function startRound(s, E) {
@@ -1583,7 +1616,8 @@ const OP = (() => {
       p.dept = d; p.inh = inh;
       const D = draw3(s);
       if (p.leave) { const [e, h] = autopilot(s, i, inh.cards, D); e.dept = d; s.envs.push(e); s.left[d] = h; continue; }
-      if (isHuman(s, i)) { s.work[i] = { D, R: draw3(s) }; continue; }
+      // three replacements per suit wait under the shredder
+      if (isHuman(s, i)) { s.work[i] = { D, X: [0, 1, 2].map(su => [draw(s, su), draw(s, su), draw(s, su)]) }; continue; }
       botInheritMemo(s, i, inh);
       const [e, h] = botWork(s, i, inh.cards, D); e.dept = d; s.envs.push(e); s.left[d] = h;
     }
@@ -1604,26 +1638,28 @@ const OP = (() => {
     const p = s.P[q.t]; s.investigations.push(q);
     if (q.guilty) { p.pip = true; (s.accused[p.id] = s.accused[p.id] || []).push('table'); p.accusations++; log(s, E, 'event', `${who(s, p.id, 1)} ${p.human ? 'have' : 'has'} been placed on a Performance Improvement Plan.`, { target: p.id }); }
   }
-  function workCost(w) { return (w.redeal ? 2 : 0) + SWAP_COST[w.swaps.length] + w.reveals.length; }
+  // shredding a card costs 1 and brings a fresh one of its suit into the same spot (inherited or spare)
+  function workCost(w) { return SWAP_COST[w.swaps.length] + (w.discards || []).length + w.reveals.length; }
   function workResult(s, i, w) {
-    const inh = s.P[i].inh, wk = s.work[i];
-    const base = w.redeal ? wk.R : inh.cards;
-    const prop = base.map((c, su) => (w.swaps.includes(su) ? wk.D[su] : c));
-    const aside = wk.D.map((c, su) => (w.swaps.includes(su) ? base[su] : c));
-    return { prop, aside };
+    const wk = s.work[i], I = s.P[i].inh.cards.slice(), D = wk.D.slice(), used = [0, 0, 0], shred = [];
+    for (const d of w.discards || []) { const a = d.pile === 'spare' ? D : I; shred.push(a[d.su]); a[d.su] = wk.X[d.su][used[d.su]++]; }
+    const prop = I.map((c, su) => (w.swaps.includes(su) ? D[su] : c));
+    const aside = D.map((c, su) => (w.swaps.includes(su) ? I[su] : c));
+    return { prop, aside, shred, used };
   }
   function submitWork(s, i, a, E) {
-    const w = { redeal: !!a.redeal, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3) };
+    const discards = (Array.isArray(a.discards) ? a.discards : []).filter(d => d && ['inh', 'spare'].includes(d.pile) && [0, 1, 2].includes(d.su)).slice(0, TOKENS).map(d => ({ pile: d.pile, su: d.su }));
+    const w = { discards, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3) };
     if (workCost(w) > TOKENS) return 'Not enough work tokens.';
     if (!STAMP_LABEL[a.stamp]) return 'Stamp the cover page first.';
-    const p = s.P[i], wk = s.work[i], { prop, aside } = workResult(s, i, w);
-    discard(s, w.redeal ? p.inh.cards : wk.R);
+    const p = s.P[i], wk = s.work[i], { prop, aside, shred, used } = workResult(s, i, w);
+    discard(s, shred.concat(...wk.X.map((xs, su) => xs.slice(used[su]))));
     const subject = String(a.subject || '').trim().slice(0, 80) || randomSubject(s);
     const st = a.style || {}, style = s.reqStyle ? Object.assign({}, s.reqStyle) : { tpl: TEMPLATES.includes(st.tpl) ? st.tpl : 'memo', font: FONTS.includes(st.font) ? st.font : 'grotesk' };
     // alignment and clip-art are cosmetic
     if (['left', 'center', 'right'].includes(st.align)) style.align = st.align;
     if (typeof st.art === 'string') style.art = st.art.slice(0, 24);
-    const e = { author: i, cards: prop, stamp: a.stamp, revealed: w.reveals, subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), redeal: w.redeal, dept: p.dept };
+    const e = { author: i, cards: prop, stamp: a.stamp, revealed: w.reveals, subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), shredded: discards.length, dept: p.dept };
     s.envs.push(e); s.left[p.dept] = aside;
     const inh = p.inh;
     if (a.claim && inh.kind === 'rejected' && inh.author != null && inh.author !== i) {
@@ -1908,7 +1944,7 @@ const OP = (() => {
       inv: S.invq ? `${S.invq.r}:${S.invq.t}` : null,
       pips: S.P.filter(p => p.pip).length, warns: S.P.reduce((a, p) => a + p.warnings, 0),
       named: S.whistle ? S.whistle.named : undefined, correct: S.whistle && S.whistle.correct,
-      d: d ? { sw: d.swaps.length, rv: d.reveals.length, re: d.redeal, st: d.stamp, pg: d.page || 1 } : null,
+      d: d ? { sw: d.swaps.length, rv: d.reveals.length, sh: d.discards.length, st: d.stamp, pg: d.page || 1 } : null,
     };
   }
 
@@ -1949,8 +1985,8 @@ const OP = (() => {
     if (wipe) { sfx('music/06-stripe-wipe', 0, .8); duck(2.4); }
     // the desk
     const a = p.d, b = n.d;
-    if (b && (!a || (b.re && !a.re))) {
-      if (b.re && a) sfx('paper-shuffle');
+    if (a && b && b.sh > a.sh) { sfx('paper-shuffle'); sfx('desk-card-deal', .35, .8); sfx('desk-card-flip', .7, .7); }
+    if (b && !a) {
       [0, .12, .24].forEach((s, i) => { sfx('desk-card-deal', .45 + s, .8); sfx('desk-card-flip', .9 + i * .08, .7); });
     }
     if (a && b) {
@@ -2108,7 +2144,7 @@ const OP = (() => {
   }
   function newDraft() {
     const p = me(), inh = p.inh;
-    return { redeal: false, swaps: [], reveals: [], stamp: null, words: (S.subj || OP.SUBJ).map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
+    return { discards: [], swaps: [], reveals: [], stamp: null, words: (S.subj || OP.SUBJ).map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
       style: Object.assign({ tpl: 'memo', font: 'grotesk' }, p.fav, S.reqStyle), artSet: false, claim: { kind: 'none', val: evs(inh.cards), stamp: inh.stamp || 'Rec' }, nextStyle: null };
   }
   const subjectOf = d => (d.useCustom && d.custom.trim() ? d.custom.trim() : d.words.map((k, i) => (S.subj || OP.SUBJ)[i][k]).join(' '));
@@ -2346,7 +2382,7 @@ const OP = (() => {
     if (e.audited) tags.push('<span class="pill blue">Audited</span>');
     if (e.autopilot) tags.push('<span class="pill grey">Autopilot</span>');
     if (e.unmasked && !e.approved) tags.push(`<span class="pill red">Overruled · ${e.author === S.ceo ? 'the CEO’s own' : esc(nm(e.author))}</span>`);
-    const dbg = ui.debug ? `<div class="env-dbg">${S.P[e.author].sab ? 'SAB' : 'LOYAL'} · ${esc(e.mode)} · true ${fmt(evs(e.cards))} · table est ${OP.estimate(e, S.loyalTier, false).toFixed(1)} · spent ${e.cost}${e.redeal ? ' · re-dealt' : ''}</div>` : '';
+    const dbg = ui.debug ? `<div class="env-dbg">${S.P[e.author].sab ? 'SAB' : 'LOYAL'} · ${esc(e.mode)} · true ${fmt(evs(e.cards))} · table est ${OP.estimate(e, S.loyalTier, false).toFixed(1)} · spent ${e.cost}${e.shredded ? ` · shredded ${e.shredded}` : ''}</div>` : '';
     const tag = opt.click ? 'button' : 'div';
     const fresh = e.approved && ui.stamped !== `${S.r}${e.id}`;
     if (fresh) ui.stamped = `${S.r}${e.id}`;
@@ -2511,10 +2547,12 @@ const OP = (() => {
   function seal() {
     const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
     stopTimer();
-    dispatch({ type: 'submitWork', redeal: draft.redeal, swaps: draft.swaps, reveals: draft.reveals, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
+    dispatch({ type: 'submitWork', discards: draft.discards, swaps: draft.swaps, reveals: draft.reveals, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
       claim: null, nextStyle: draft.nextStyle });
     toast('Sealed.');
   }
+  // the card that just came out of the shredder deals in
+  const fresh = (zone, su) => ui.fresh && ui.fresh.zone === zone && ui.fresh.su === su;
   function deskWork() {
     const p = me(), inh = p.inh, wr = OP.workResult(S, ME, draft), cost = OP.workCost(draft);
     if (draft.page === 2) return deskTemplates(p);
@@ -2529,7 +2567,7 @@ const OP = (() => {
       const c0 = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
       const hit = su < 2 && fx && c0.v !== 'V' && after(fx, c0.v) !== c0.v, c = hit ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0;
       const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
-      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
+      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${fresh('env', su) ? ' fresh' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
         `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 input'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
@@ -2537,13 +2575,12 @@ const OP = (() => {
       const next = on ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su);
       const price = on ? 0 : OP.SWAP_COST[next.length] - OP.SWAP_COST[draft.swaps.length];
       const ok = costWith({ swaps: next }) <= 3;
-      return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}`, on ? '<span class="tag back">↺</span>' : `<span class="tag">${hrs(price)}</span>`,
+      return slot('hand', su, cardHTML(c, `drag${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${fresh('hand', su) ? ' fresh' : ''}`, on ? '<span class="tag back">↺</span>' : `<span class="tag">${hrs(price)}</span>`,
         `data-drag="hand" data-su="${su}" role="button" tabindex="0" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${on ? 'Swap back for free' : `Swap in for ${price} input${price === 1 ? '' : 's'}`}"`));
     }).join('');
-    ui.land = null;
+    ui.land = null; const shredding = !!ui.fresh; ui.fresh = null;
     const v = evs(wr.prop), vol = wr.prop.some(c => c.v === 'V');
-    const canRedeal = !draft.redeal && costWith({ redeal: true }) <= 3;
-    const left = Math.max(0, 3 - cost), dealCls = ui.deal ? (ui.deal === 'redeal' ? ' deal redeal' : ' deal') : '';
+    const left = Math.max(0, 3 - cost), dealCls = ui.deal ? ' deal' : '';
     // a fresh quarter waits for the stripe wipe to clear before dealing
     const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
     ui.deal = false;
@@ -2552,11 +2589,13 @@ const OP = (() => {
     const said = { cards: wr.prop.map((c0, su) => su < 2 && fx && c0.v !== 'V' ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0), revealed: [0, 1, 2] };
     const src = inhSource(inh);
     const head = `<div class="said">${src ? `<span class="said-src">${src}</span>` : ''}<div class="said-row">${lineHTML(said, { all: true }).replace(/<\/p>$/, `<b class="sum ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<sup>?</sup>' : ''}</b></p>`)}${draft.stamp ? `<span class="said-stamp env-stamp ${draft.stamp}" aria-hidden="true">${STAMP[draft.stamp]}</span>` : ''}</div></div>`;
-    const redeal = `<button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 inputs"><i class="rd-ic" aria-hidden="true">↻</i><span>${draft.redeal ? 'Re-dealt' : 'Re-deal'}</span><span class="t-cost">${hrs(2)}</span></button>`;
+    // the shredder: drop any card in, pay 1 input, a fresh one of that suit takes its place
+    const shreds = wr.shred.map((c, k) => `<i class="s-${c.s}" style="--k:${k}"></i>`).join('');
+    const bin = `<div class="shredder${shredding ? ' chew' : ''}${costWith({ discards: draft.discards.concat({ pile: 'inh', su: 0 }) }) > 3 ? ' broke' : ''}" data-drop="bin" role="img" aria-label="Shredder: drop a card in to replace it for 1 input"><span class="sh-top"><i class="sh-mouth"></i></span><span class="sh-body"><b>Shred</b><span class="t-cost">${hrs(1)}</span></span><span class="sh-out">${shreds}</span></div>`;
     const honest = OP.rightStamp(wr.prop);
     // three rubber stamps standing on the blotter; the one you use leaves its mark on the sentence
     const stamps = `<div class="stampstrip rstamps" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="rstamp s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><i class="knob"></i><i class="neck"></i><span class="block"><span>${STAMP[k]}</span></span><i class="pad"></i></button>`).join('')}</div>`;
-    const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.redeal ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div>${redeal}</div></div>${stamps}`;
+    const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.discards.length ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row">${bin}<div class="fan">${hand}</div></div></div>${stamps}`;
     return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="outtray" data-a="finalise"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
@@ -2844,7 +2883,7 @@ const OP = (() => {
         <div class="field"><span class="label">Target</span>${seg('easy', [[false, 'Standard'], [true, 'Easy mode (−3)']])}</div>
         <div class="field"><label class="label" for="seed">Seed (optional, to replay a deal)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}" style="max-width:200px"></div>
         <details class="rules"><summary>The quarter, in brief</summary><ol>
-          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Punch your 3 inputs: swap a card in (1, then 2), re-deal all three (2), or show one card to the table (1). Stamp it, then make a cover page: template, subject line, font, clip-art.</li>
+          <li><b>Work.</b> The 3 cards you inherit are your proposal. Draw 3 more. Punch your 3 inputs: swap a card in (1, then 2), shred any card for a fresh one (1 each), or show one card to the table (1). Stamp it, then make a cover page: template, subject line, font, clip-art.</li>
           <li><b>Decide + Reveal.</b> Proposals land shuffled and anonymous, and memos on the bulletin board say who left whom a mess. The CEO nominates one; the Board (everyone else) ratifies it or opens it. If an opened nominee disappoints, the best-looking proposal goes through instead, the nominee is unmasked, and a CEO caught pushing their own sits out their next turn as CEO. Profit moves and the approved author is unmasked. Rejected proposals pass, unopened, to that department's next manager. The table may issue a Written Warning; two means you're stood down.</li>
           <li><b>Effect Modifiers.</b> Four Modifiers rewrite the other two cards: ∅ cancels them, ×2 doubles them, ≥0 stops them losing, ⇅ flips them. Each also has its own value.</li>
           <li><b>After Q5.</b> The table may name a saboteur. Right, and Clawback reverses every losing policy they wrote (at least +3). Wrong costs −3. Audit and Whistleblower ties are drawn at random (a tied Whistleblower names nobody).</li></ol></details>
@@ -2906,7 +2945,6 @@ const OP = (() => {
       case 'advance': dispatch({ type: 'advance' }); break;
       case 'swap': { const su = +d.su; draft.swaps = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su); render(); break; }
       case 'reveal': { const su = +d.su; draft.reveals = draft.reveals.includes(su) ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su); render(); break; }
-      case 'redeal': draft.redeal = true; ui.deal = 'redeal'; toast('Inherited cards shredded. Three fresh ones dealt.'); render(); break;
       case 'stamp': draft.stamp = d.v; render(); break;
       case 'finalise': finalise(); break;
       case 'back': draft.page = draft.page === 3 && !S.reqStyle ? 2 : 1; render(); break;
@@ -2943,6 +2981,13 @@ const OP = (() => {
     if (costWith({ reveals: next }) > 3) return refuse(su);
     draft.reveals = next; render();
   }
+  // a shredded card is replaced in place; which pile it came from depends on whether its suit is swapped
+  function shredCard(zone, su) {
+    const pile = (zone === 'env') !== draft.swaps.includes(su) ? 'inh' : 'spare', next = draft.discards.concat({ pile, su });
+    const reveals = zone === 'env' ? draft.reveals.filter(x => x !== su) : draft.reveals;
+    if (costWith({ discards: next, reveals }) > 3) return refuse(su);
+    draft.discards = next; draft.reveals = reveals; ui.fresh = { zone, su }; render();
+  }
   function refuse(su) {
     toast('Your input has been noted.');
     document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
@@ -2953,10 +2998,10 @@ const OP = (() => {
     if (!drag) return;
     if (drag.clone) drag.clone.remove();
     drag.el.classList.remove('lifted');
-    document.querySelectorAll('.slot.ok, .slot.hot').forEach(x => x.classList.remove('ok', 'hot'));
+    document.querySelectorAll('.slot.ok, .slot.hot, .shredder.ok, .shredder.hot').forEach(x => x.classList.remove('ok', 'hot'));
     drag = null;
   }
-  const slotAt = (x, y) => { const el = document.elementFromPoint(x, y); return el && el.closest('.slot'); };
+  const slotAt = (x, y) => { const el = document.elementFromPoint(x, y); return el && el.closest('.slot, .shredder'); };
   $app.addEventListener('pointerdown', ev => {
     const el = ev.target.closest('.card[data-drag]'); if (!el || !draft || ev.button > 0) return;
     const r = el.getBoundingClientRect();
@@ -2972,7 +3017,7 @@ const OP = (() => {
       c.style.width = drag.w + 'px'; c.style.height = drag.h + 'px';
       document.body.appendChild(c); drag.clone = c; drag.el.classList.add('lifted');
       const other = drag.zone === 'hand' ? 'env' : 'hand';
-      document.querySelectorAll(`.slot[data-drop="${other}"][data-su="${drag.su}"]`).forEach(x => x.classList.add('ok'));
+      document.querySelectorAll(`.slot[data-drop="${other}"][data-su="${drag.su}"], .shredder:not(.broke)`).forEach(x => x.classList.add('ok'));
     }
     ev.preventDefault();
     drag.clone.style.transform = `translate(${ev.clientX - drag.ox}px, ${ev.clientY - drag.oy}px) rotate(${Math.max(-8, Math.min(8, (ev.clientX - drag.x) / 18))}deg) scale(1.06)`;
@@ -2986,12 +3031,13 @@ const OP = (() => {
     const t = clone && slotAt(ev.clientX, ev.clientY);
     const hit = t && t.classList.contains('ok');
     endDrag();
-    if (!clone) tapCard(zone, su); else if (hit) swapSuit(su);
+    if (!clone) tapCard(zone, su); else if (hit && t.classList.contains('shredder')) shredCard(zone, su); else if (hit) swapSuit(su);
   });
   window.addEventListener('pointercancel', endDrag);
   $app.addEventListener('keydown', ev => {
     const el = ev.target.closest && ev.target.closest('.card[data-drag]');
     if (el && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); tapCard(el.dataset.drag, +el.dataset.su); }
+    if (el && (ev.key === 'Delete' || ev.key === 'Backspace')) { ev.preventDefault(); shredCard(el.dataset.drag, +el.dataset.su); }
     if (ev.target.id === 'name-in' && ev.key === 'Enter') { ev.preventDefault(); const b = document.querySelector('[data-a="name-go"]'); if (b && !b.disabled) b.click(); }
   });
   $app.addEventListener('input', ev => {

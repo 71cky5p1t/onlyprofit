@@ -6,7 +6,7 @@ const OP_BOTS = (() => {
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const styleKey = st => st ? st.tpl + '/' + st.font : '';
   const make = K => {
-    const { rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
+    const { rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
     const pers = p => PERS[p.pers] || PERS.trusting;
 
     // ---------- memory ----------
@@ -88,12 +88,15 @@ const OP_BOTS = (() => {
       const p = s.P[i], L = s.loyalTier, tok = TOKENS;
       const mode = p.sab ? (p.ruthless && s.ceo === i ? 'bad' : sabMode(s, p)) : 'loyal';
       const tier = p.sab ? (s.sabTier === 'smart' ? 'smart' : 'basic') : L;
-      let cost, prop, hand, redeal = false;
+      let cost, prop, hand, shredded = 0;
       if (mode === 'loyal' || mode === 'good') {
         [cost, prop, hand] = argmax(plans(I, D), x => [evs(x[1]), -x[0]]);
-        if (evs(prop) <= -1) {
-          const R = draw3(s); discard(s, I); redeal = true;
-          [cost, prop, hand] = argmax(plans(R, D, 1), x => [evs(x[1]), -x[0]]); cost += 2;
+        // a bad hand: shred the worst inherited card and look again
+        const J = I.slice();
+        while (evs(prop) <= -1 && shredded < 2) {
+          const su = argmax([0, 1, 2], k => [-ev(J[k])]);
+          discard(s, [J[su]]); J[su] = draw(s, su); shredded++;
+          [cost, prop, hand] = argmax(plans(J, D, 1), x => [evs(x[1]), -x[0]]); cost += shredded;
         }
       } else if (mode === 'bad') {
         [cost, prop, hand] = argmax(plans(I, D), x => [-evs(x[1]), -x[0]]);
@@ -115,7 +118,7 @@ const OP_BOTS = (() => {
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
       // a smart saboteur sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
-      return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, redeal }, hand];
+      return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
     }
     function autopilot(s, i, I, D) {
       const cards = draw3(s); discard(s, I);
