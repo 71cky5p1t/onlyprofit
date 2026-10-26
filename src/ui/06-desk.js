@@ -37,9 +37,15 @@
     return `<div class="fuse" role="timer" aria-label="Time left"><span class="ashtray"></span><span class="cig"><span class="filter"></span><span class="paper"><i style="width:${pct}%"></i></span></span></div>`;
   }
   // Finalise: the hand drops away, the policy squares up into a pile and a blank cover page lands on it
-  function finalise() {
+  // the tray won't take an unstamped page; if the clock runs out first, it's filed honestly
+  function finalise(auto) {
     if (!draft || draft.page > 1 || ui.stuffing) return;
-    if (!draft.stamp) draft.stamp = 'Rec';
+    if (!draft.stamp && auto !== true) {
+      const st = document.querySelector('.rstamps');
+      if (st) { st.classList.remove('want'); void st.offsetWidth; st.classList.add('want'); }
+      return;
+    }
+    if (!draft.stamp) draft.stamp = OP.rightStamp(OP.workResult(S, ME, draft).prop);
     stopTimer();
     const next = S.reqStyle ? 3 : 2, play = document.querySelector('.play');
     if (!play || still()) { draft.page = next; render(); return; }
@@ -98,7 +104,7 @@
     // three rubber stamps standing on the blotter; the one you use leaves its mark on the sentence
     const stamps = `<div class="stampstrip rstamps" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="rstamp s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><i class="knob"></i><i class="neck"></i><span class="block"><span>${STAMP[k]}</span></span><i class="pad"></i></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.redeal ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div>${redeal}</div></div>${stamps}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: '<button class="outtray" data-a="finalise"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button>' });
+    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="outtray" data-a="finalise"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
   const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', revealed: [], author: ME, dept: p.dept });
