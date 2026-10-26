@@ -71,8 +71,9 @@
   // the CEO sticker: a dog-eared one for this quarter, and a peeled-off gummy patch for every term before it
   function ceoMarks(p, live) {
     const past = S.history.filter(h => h.ceo === p.id).map(h => h.r);
-    const gone = past.map(r => `<i class="ceo-gone" style="--k:${(p.id * 3 + r * 5) % 7}" aria-hidden="true"></i>`).join('');
-    const now = S.r && S.ceo === p.id && live ? '<i class="ceo-stk">CEO</i>' : '';
+    const at = (r, k) => `style="--rot:${((p.id * 7 + r * 13) % 15) - 7 + (k ? 8 : 0)}deg;--dx:${((p.id + r * 3) % 5) * 3}px;--dy:${((p.id * 2 + r) % 4) * 3}px"`;
+    const gone = past.map((r, k) => `<span class="peel" ${at(r, 0)}>${peelSVG(p.id * 10 + r, S.r - r)}</span>`).join('');
+    const now = S.r && S.ceo === p.id && live ? `<span class="peel now" ${at(S.r, 1)}>${ceoStickerSVG(p.id * 10 + S.r)}</span>` : '';
     return gone || now ? `<span class="ceo-marks"${past.length ? ` aria-label="CEO ${past.length} time${past.length > 1 ? 's' : ''} before"` : ''}>${gone}${now}</span>` : '';
   }
   // staff are the name tags from the phone; the CEO rotation is a row of desk name plates

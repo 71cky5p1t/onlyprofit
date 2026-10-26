@@ -12,19 +12,8 @@
 .nametag .stickers { min-height: 18px; margin-top: 2px }
 .staff-meta .stickers { justify-content: flex-end; padding: 0 }
 .staff .stk { font-size: 8px }
-/* CEO: a dog-eared sticker slapped on the corner; past terms leave torn paper and gummy adhesive */
+/* CEO: a sticker slapped on the corner of the tag; every past term leaves its peel marks in about the same spot */
 .ceo-marks { position: absolute; inset: 0; pointer-events: none }
-.ceo-stk { position: absolute; right: 6px; top: 20px; z-index: 2; font: 900 11px/1 var(--f-body); font-style: normal; letter-spacing: .14em; color: #241B0B; padding: 7px 12px 6px 9px; border-radius: 3px;
-  background: linear-gradient(#F0D58C, #D9B25A); transform: rotate(9deg); box-shadow: 0 2px 3px rgba(0,0,0,.35);
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%) }
-.ceo-stk::after { content: ""; position: absolute; right: 0; bottom: 0; width: 11px; height: 11px; background: linear-gradient(135deg, rgba(0,0,0,.3) 0 50%, #FFF6DC 50%); box-shadow: -1px -1px 2px rgba(0,0,0,.2) }
-.ceo-gone { --k: 0; position: absolute; width: 44px; height: 22px; right: calc(6px + var(--k) * 4px); top: calc(44px + var(--k) * 5px); transform: rotate(calc(var(--k) * 11deg - 30deg)); border-radius: 4px 6px 3px 7px; opacity: .9;
-  background:
-    linear-gradient(90deg, transparent 0 58%, rgba(255,250,235,.95) 58% 64%, transparent 64%) 0 0 / 100% 7px no-repeat,
-    radial-gradient(ellipse at 30% 40%, rgba(120,100,60,.32), transparent 60%),
-    radial-gradient(circle at 70% 70%, rgba(90,80,60,.14) 0 .8px, transparent 1.2px) 0 0 / 9px 7px,
-    linear-gradient(100deg, transparent 30%, rgba(255,255,255,.35) 38%, transparent 46%),
-    linear-gradient(rgba(190,175,135,.34), rgba(160,140,100,.28));
-  clip-path: polygon(3% 12%, 22% 0, 48% 8%, 70% 2%, 98% 14%, 94% 46%, 100% 78%, 72% 100%, 44% 90%, 18% 100%, 0 70%, 6% 42%) }
-/* a curl of the sticker that wouldn't come off */
-.ceo-gone::after { content: ""; position: absolute; left: 4px; top: 3px; width: 13px; height: 9px; background: linear-gradient(#E6C778, #CFA74C); clip-path: polygon(0 0, 100% 20%, 70% 100%, 10% 80%); opacity: .85 }
+.peel { position: absolute; right: calc(-2px + var(--dx, 0px) * .6); top: calc(6px + var(--dy, 0px) * .7); width: 62px; transform: rotate(var(--rot, 6deg)) }
+.peel svg { display: block; width: 100%; height: auto; overflow: visible }
+.peel.now { z-index: 2 }
