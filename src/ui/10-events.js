@@ -17,7 +17,7 @@
       case 'begin': dispatch({ type: 'begin' }); break;
       case 'advance': dispatch({ type: 'advance' }); break;
       case 'swap': { const su = +d.su; draft.swaps = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su); render(); break; }
-      case 'reveal': { const su = +d.su; draft.reveals = draft.reveals.includes(su) ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su); render(); break; }
+      case 'reveal': { const su = +d.su; draft.redacts = draft.redacts.includes(su) ? draft.redacts.filter(x => x !== su) : draft.redacts.concat(su); render(); break; }
       case 'stamp': draft.stamp = d.v; render(); break;
       case 'finalise': finalise(); break;
       case 'back': draft.page = draft.page === 3 && !S.reqStyle ? 2 : 1; render(); break;

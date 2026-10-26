@@ -17,8 +17,8 @@
 .card.broke .tag .hrs { opacity: .85 }
 /* inputs already put into a card: a punched chit pinned to its corner */
 .paid { position: absolute; right: -7px; top: -8px; z-index: 2 }
-.land .paid, .shown .paid { animation: chit .4s var(--bounce) both }
+.land .paid, .redacted .paid { animation: chit .4s var(--bounce) both }
 @keyframes chit { from { transform: translateY(-14px) rotate(-8deg); opacity: 0 } }
 .t-cost .hrs { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); transform: none; padding: 3px 4px }
 .t-cost .hrs b { width: 8px; height: 8px }
-@media (prefers-reduced-motion: reduce) { .land .paid, .shown .paid { animation: none } }
+@media (prefers-reduced-motion: reduce) { .land .paid, .redacted .paid, .card.redacted .word > span { animation: none } }

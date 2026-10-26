@@ -5,7 +5,7 @@ const OP = (() => {
   const B = typeof OP_BOTS !== 'undefined' ? OP_BOTS : require('./bots.js');
   const { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, TEMPLATES, FONTS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };
+  const TARGETS = { 4: 20, 5: 21, 6: 22, 7: 23, 8: 24 };
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
@@ -14,6 +14,8 @@ const OP = (() => {
   const SWAP_COST = [0, 1, 3, 6];
   const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);
   const TOKENS = 3, ROUNDS = 5, SLACK = 2;
+  // chance the table reads a word's worth right
+  const READ = 0.6;
 
   const lexOf = s => LEX[s.brand] || LEX.op;
 
@@ -81,17 +83,25 @@ const OP = (() => {
     }
     return out;
   }
-  // believed worth; seeRev = CEO view
+  // believed worth from the words on show; seeRev = CEO view
+  const shown = e => [0, 1, 2].filter(su => !(e.redacted || []).includes(su));
+  const readAt = (e, su) => (e.read ? e.read[su] : ev(e.cards[su]));
+  function tableRead(s, c) {
+    if (c.v === 'V') return 0;
+    const v = ev(c);
+    return rand(s) < READ ? v : Math.max(-2, Math.min(2, v + (rand(s) < 0.5 ? 1 : -1)));
+  }
   function estimate(e, tier, seeRev) {
     if (e.audited || e.autopilot) return evs(e.cards);
-    const rv = e.revealed;
-    const known = rv.reduce((a, su) => a + ev(e.cards[su]), 0);
+    const rv = shown(e);
+    const known = rv.reduce((a, su) => a + readAt(e, su), 0);
     const mu = MU - (tier === 'smart' ? 0.4 : 0);
     return known + (3 - rv.length) * mu + STAMP_W[tier] * STAMP_ADJ[e.stamp];
   }
-  function revealPositive(prop, tokens, all) {
-    const order = [0, 1, 2].sort((a, b) => ev(prop[b]) - ev(prop[a]));
-    return (all ? order : order.filter(su => ev(prop[su]) > 0)).slice(0, Math.max(0, tokens));
+  // black out the worst losing card, if there's an input left
+  function redactPick(prop, tokens) {
+    const bad = [0, 1, 2].filter(su => ev(prop[su]) < 0).sort((a, b) => ev(prop[a]) - ev(prop[b]));
+    return tokens > 0 && bad.length ? [bad[0]] : [];
   }
   const subjLists = s => SUBJ.map((l, i) => (i === 1 ? l.concat(lexOf(s).subj, lexOf(s).subj) : l));
   const randomSubject = s => subjLists(s).map(l => pickOne(s, l)).join(' ');
@@ -168,7 +178,7 @@ const OP = (() => {
   }
 
   const pubEst = (s, e) => estimate(e, s.loyalTier, false);
-  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
+  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw, draw3, discard, redactPick, readAt, shown, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
 
   // ---------- round flow ----------
   function startRound(s, E) {
@@ -205,7 +215,7 @@ const OP = (() => {
     if (q.guilty) { p.pip = true; (s.accused[p.id] = s.accused[p.id] || []).push('table'); p.accusations++; log(s, E, 'event', `${who(s, p.id, 1)} ${p.human ? 'have' : 'has'} been placed on a Performance Improvement Plan.`, { target: p.id }); }
   }
   // shredding a card costs 1 and brings a fresh one of its suit into the same spot (inherited or spare)
-  function workCost(w) { return SWAP_COST[w.swaps.length] + (w.discards || []).length + w.reveals.length; }
+  function workCost(w) { return SWAP_COST[w.swaps.length] + (w.discards || []).length + w.redacts.length; }
   function workResult(s, i, w) {
     const wk = s.work[i], I = s.P[i].inh.cards.slice(), D = wk.D.slice(), used = [0, 0, 0], shred = [];
     for (const d of w.discards || []) { const a = d.pile === 'spare' ? D : I; shred.push(a[d.su]); a[d.su] = wk.X[d.su][used[d.su]++]; }
@@ -215,7 +225,7 @@ const OP = (() => {
   }
   function submitWork(s, i, a, E) {
     const discards = (Array.isArray(a.discards) ? a.discards : []).filter(d => d && ['inh', 'spare'].includes(d.pile) && [0, 1, 2].includes(d.su)).slice(0, TOKENS).map(d => ({ pile: d.pile, su: d.su }));
-    const w = { discards, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3) };
+    const w = { discards, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), redacts: [...new Set(a.redacts || [])].filter(x => x >= 0 && x < 3) };
     if (workCost(w) > TOKENS) return 'Not enough work tokens.';
     if (!STAMP_LABEL[a.stamp]) return 'Stamp the cover page first.';
     const p = s.P[i], wk = s.work[i], { prop, aside, shred, used } = workResult(s, i, w);
@@ -225,7 +235,7 @@ const OP = (() => {
     // alignment and clip-art are cosmetic
     if (['left', 'center', 'right'].includes(st.align)) style.align = st.align;
     if (typeof st.art === 'string') style.art = st.art.slice(0, 24);
-    const e = { author: i, cards: prop, stamp: a.stamp, revealed: w.reveals, subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), shredded: discards.length, dept: p.dept };
+    const e = { author: i, cards: prop, stamp: a.stamp, redacted: w.redacts, revealed: [0, 1, 2].filter(x => !w.redacts.includes(x)), subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), shredded: discards.length, dept: p.dept };
     s.envs.push(e); s.left[p.dept] = aside;
     const inh = p.inh;
     if (a.claim && inh.kind === 'rejected' && inh.author != null && inh.author !== i) {
@@ -244,6 +254,7 @@ const OP = (() => {
     botDesign(s);
     // PIP: open to the CEO only
     for (const e of s.envs) if (!e.autopilot && s.P[e.author].pip) e.openTo = [s.ceo];
+    for (const e of s.envs) e.read = e.cards.map(c => tableRead(s, c));
     s.envs = shuffle(s, s.envs);
     const ids = shuffle(s, range(26).map(k => String.fromCharCode(65 + k))).slice(0, s.envs.length).sort();
     s.envs.forEach((e, k) => { e.id = ids[k]; });

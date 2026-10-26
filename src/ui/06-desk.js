@@ -58,7 +58,7 @@
   function seal() {
     const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
     stopTimer();
-    dispatch({ type: 'submitWork', discards: draft.discards, swaps: draft.swaps, reveals: draft.reveals, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
+    dispatch({ type: 'submitWork', discards: draft.discards, swaps: draft.swaps, redacts: draft.redacts, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
       claim: null, nextStyle: draft.nextStyle });
     toast('Sealed.');
   }
@@ -70,16 +70,16 @@
     if (draft.page === 3) return deskTweak(p);
     const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
     // tokens are inputs: hole chits on the hand, punched chits pinned to the policy cards they bought
-    const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.reveals.includes(su) ? 1 : 0);
+    const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.redacts.includes(su) ? 1 : 0);
     // an effect Modifier rewrites the other two right here, before you commit
     const fx = wr.prop[2].fx, blink = fx && ui.fxw !== wr.prop[2].w;
     ui.fxw = fx ? wr.prop[2].w : null;
     const env = [0, 1, 2].map(su => {
-      const c0 = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
+      const c0 = wr.prop[su], rv = draft.redacts.includes(su), n = paid(su);
       const hit = su < 2 && fx && c0.v !== 'V' && after(fx, c0.v) !== c0.v, c = hit ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0;
-      const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
-      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${fresh('env', su) ? ' fresh' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
-        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 input'}"`));
+      const ok = rv || costWith({ redacts: draft.redacts.concat(su) }) <= 3;
+      return slot('env', su, cardHTML(c, `drag${rv ? ' redacted' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${fresh('env', su) ? ' fresh' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
+        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Blacked out' : 'Black out for 1 input'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
       const c = wr.aside[su], on = draft.swaps.includes(su);
@@ -110,7 +110,7 @@
     return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
-  const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', revealed: [], author: ME, dept: p.dept });
+  const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', redacted: draft.redacts, author: ME, dept: p.dept });
   function deskTemplates(p) {
     const arrive = ui.arrive ? ' arrive' : ''; ui.arrive = false;
     const tiles = OP.TEMPLATES.map(t => `<button class="tpl" data-a="tpl" data-v="${t}" aria-pressed="${draft.style.tpl === t}" aria-label="${TPL[t].name}">${coverHTML(Object.assign(mockPage(p), { style: { tpl: t, art: draft.artSet ? draft.style.art : TPL[t].art } }), { k: .35, note: false })}</button>`).join('');
@@ -155,7 +155,7 @@
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
       const open = e.openTo && mine() && e.openTo.includes(ME);
-      const peek = open || e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => open || e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
+      const peek = open || e.audited ? `<span class="peek">${e.cards.map((c, su) => open || e.audited ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
       return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
         ${coverHTML(e, { k: .35 })}${peek}${tagFor(e)}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;

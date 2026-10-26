@@ -4,7 +4,7 @@
 .line .ph { white-space: nowrap; position: relative }
 .line mark { color: inherit; padding: 0 3px; border-radius: 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; white-space: normal;
   background: linear-gradient(100deg, transparent 0 2px, color-mix(in srgb, var(--suit) 42%, transparent) 4px calc(100% - 3px), transparent) }
-.line .hid mark { background: none; color: var(--ink); letter-spacing: -.12em; font-weight: 400 }
+.line .hid mark { background: #141414; color: transparent; border-radius: 35% 10% 30% 12% / 40% 30% 50% 25%; transform: rotate(-1.5deg); display: inline-block; letter-spacing: -.12em; font-weight: 400 }
 .line .v { font: 900 .68em/1 var(--f-body); vertical-align: .55em; margin-left: 1px }
 .line .v.pos { color: var(--good) } .line .v.neg { color: var(--red) } .line .v.gold { color: var(--sunset) }
 .line .fxs { font: 400 .7em/1 var(--f-seg); font-style: normal; vertical-align: .5em; margin-left: 3px; background: #1B1C1B; color: #fff; padding: 2px 3px 1px; border-radius: 2px }

@@ -6,7 +6,7 @@ const OP_BOTS = (() => {
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const styleKey = st => st ? st.tpl + '/' + st.font : '';
   const make = K => {
-    const { rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
+    const { rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw, draw3, discard, redactPick, readAt, shown, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
     const pers = p => PERS[p.pers] || PERS.trusting;
 
     // ---------- memory ----------
@@ -102,27 +102,27 @@ const OP_BOTS = (() => {
         [cost, prop, hand] = argmax(plans(I, D), x => [-evs(x[1]), -x[0]]);
       } else {
         [cost, prop, hand] = argmax(plans(I, D), ([c, pr]) => {
-          // a trap: looks good on the cards shown, loses money
-          const shown = revealPositive(pr, tok - c).reduce((a, su) => a + ev(pr[su]), 0);
-          return [evs(pr) <= -1 ? 1 : 0, 1.5 * shown - evs(pr)];
+          // a trap: reads well once the worst card is blacked out, loses money
+          const hid = redactPick(pr, tok - c), seen = [0, 1, 2].filter(su => !hid.includes(su)).reduce((a, su) => a + ev(pr[su]), 0);
+          return [evs(pr) <= -1 ? 1 : 0, 1.5 * seen - evs(pr)];
         });
       }
       const left = tok - cost, v = evs(prop);
       let stamp, rev;
       if (mode === 'loyal' || mode === 'good') {
         stamp = rightStamp(prop);
-        rev = tier === 'naive' ? [] : v >= 1 ? revealPositive(prop, left, tier === 'smart') : [];
+        rev = [];
       } else if (mode === 'bad') {
-        stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : revealPositive(prop, left);
-      } else if (prop.some(c => c.v === 'V')) { stamp = 'Risky'; rev = revealPositive(prop, left); } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.5 ? 'Rec' : 'Risky'; rev = revealPositive(prop, left); }
+        stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : redactPick(prop, left);
+      } else if (prop.some(c => c.v === 'V')) { stamp = 'Risky'; rev = redactPick(prop, left); } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.5 ? 'Rec' : 'Risky'; rev = redactPick(prop, left); }
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
       // a smart saboteur sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
-      return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
+      return [{ author: i, cards: prop, stamp, redacted: rev, revealed: [0, 1, 2].filter(x => !rev.includes(x)), subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
     }
     function autopilot(s, i, I, D) {
       const cards = draw3(s); discard(s, I);
-      return [{ author: i, cards, stamp: 'Risky', revealed: [], autopilot: true, subject: 'Interim Management Update', style: { tpl: 'memo', font: 'typewriter' }, mode: 'autopilot', cost: 0 }, D];
+      return [{ author: i, cards, stamp: 'Risky', redacted: [], revealed: [0, 1, 2], autopilot: true, subject: 'Interim Management Update', style: { tpl: 'memo', font: 'typewriter' }, mode: 'autopilot', cost: 0 }, D];
     }
     function botInheritMemo(s, i, inh) {
       const p = s.P[i];
@@ -147,10 +147,10 @@ const OP_BOTS = (() => {
     function feel(s, i, e) {
       if (e.openTo && e.openTo.includes(i)) return evs(e.cards);
       if (e.author === i || e.audited || e.autopilot) return viewValue(s, i, e);
-      const g = guess(s, i, e), unk = 3 - e.revealed.length;
+      const g = guess(s, i, e), unk = 3 - shown(e).length;
       const behind = s.r > 1 ? s.profit / (s.r - 1) * 5 < s.target - 2 : false;
       const risk = s.P[i].mind.risk + (behind ? 0.4 : s.profit >= s.target ? -0.3 : 0);
-      const w = pers(s.P[i]), read = e.revealed.reduce((a, su) => a + ev(e.cards[su]), 0) + unk * w[3] + w[4] * STAMP_ADJ[e.stamp];
+      const w = pers(s.P[i]), read = shown(e).reduce((a, su) => a + readAt(e, su), 0) + unk * w[3] + w[4] * STAMP_ADJ[e.stamp];
       return read + (g == null ? 0 : 0.5 * clamp(trust(s, i, g), -3, 1) * unk / 3) + 0.35 * risk * unk + (rand(s) - 0.5) * 0.8;
     }
     function botPick(s) {
@@ -218,11 +218,11 @@ const OP_BOTS = (() => {
     }
     function botBoardVote(s, i) {
       const p = s.P[i], nom = s.envs.find(x => x.id === s.nominee);
-      if (p.sab || !nom || nom.author === i || nom.revealed.length === 3) return 'ratify';
+      if (p.sab || !nom || nom.author === i) return 'ratify';
       const f = new Map(s.envs.map(x => [x.id, feel(s, i, x)])), best = Math.max(...f.values());
-      // open it if it trails, wears the CEO's or a suspect's colours, or is Recommended with little shown
+      // open it if it trails, wears the CEO's or a suspect's colours, or is Recommended with words blacked out
       const g = guess(s, i, nom), tell = g != null && (g === s.ceo || trust(s, i, g) <= -2);
-      return tell || f.get(nom.id) <= best - 1 || (nom.stamp === 'Rec' && nom.revealed.length < 2 && pers(p)[4] < 1.2) ? 'open' : 'ratify';
+      return tell || f.get(nom.id) <= best - 1 || (nom.stamp === 'Rec' && (nom.redacted || []).length > 0 && pers(p)[4] < 1.2) ? 'open' : 'ratify';
     }
     return { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion };
   };

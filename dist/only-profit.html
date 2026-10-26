@@ -199,7 +199,10 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 /* two chips in the colours of the cards it rewrites */
 .dymo i { width: calc(10 * var(--u)); height: calc(13 * var(--u)); border-radius: 2px; box-shadow: 0 0 0 1.5px rgba(255,255,255,.85) }
 .dymo .m0 { background: var(--suit-0) } .dymo .m1 { background: var(--suit-1) }
-.card.shown { box-shadow: inset 0 3px 0 var(--suit), 0 0 0 3px var(--gold), 0 7px 14px -7px rgba(0,0,0,.55) }
+/* redacted: black marker over each line of the word */
+.card.redacted .word > span { color: transparent; background: linear-gradient(178deg, transparent 0 42%, rgba(255,255,255,.08) 44% 47%, transparent 49%), #141414; padding: 0 .12em; margin: 0 -.12em;
+  border-radius: .3em .08em .25em .1em / .45em .2em .5em .25em; -webkit-box-decoration-break: clone; box-decoration-break: clone; animation: niko .28s ease-out both }
+@keyframes niko { from { clip-path: inset(0 100% 0 0) } to { clip-path: inset(0 0 0 0) } }
 .card.spare { background: var(--stock-2); transform: scale(.94); opacity: .82 }
 .card.dim { opacity: .45 }
 /* colour cards: the whole face is the suit */
@@ -210,7 +213,6 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 [data-cards="colour"] .card .glyph { display: grid; place-items: center; min-width: 58%; aspect-ratio: 1.3; padding: 0 calc(6 * var(--u)); border-radius: 50%; background: #FBF6EA; box-shadow: inset 0 -2px 0 rgba(0,0,0,.12), 0 2px 3px rgba(0,0,0,.25); transform: rotate(-4deg) }
 [data-cards="colour"] .card .glyph.v-v { width: auto; height: auto; border: 0; aspect-ratio: 1.3; font-size: calc(26 * var(--u)) }
 [data-cards="colour"] .card .dymo i { box-shadow: 0 0 0 1.5px #FBF6EA }
-[data-cards="colour"] .card.shown { box-shadow: inset 0 0 0 3px rgba(251,246,234,.9), 0 0 0 3px var(--gold), 0 7px 14px -7px rgba(0,0,0,.55) }
 [data-cards="colour"] .card.spare { opacity: .7 }
 
 
@@ -249,7 +251,6 @@ h2 { font-size: 15px; font-weight: 800; letter-spacing: -.005em }
 @keyframes nope { 20%, 60% { transform: translateX(-5px) } 40%, 80% { transform: translateX(5px) } }
 .tag { position: absolute; right: -6px; top: -8px; display: flex; align-items: center; padding: 3px 4px; min-width: 24px; justify-content: center; border-radius: 12px; background: var(--ink); color: var(--stock); font: 800 12px/1 var(--f-body); box-shadow: 0 2px 4px rgba(0,0,0,.35); z-index: 2 }
 .tag.back { padding: 4px 7px }
-.card.shown { box-shadow: 0 0 0 3px var(--gold), 0 7px 14px -7px rgba(0,0,0,.55) }
 /* the tray between policy and hand: hours left, worth in the middle, re-deal right */
 .tray { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 12px 4px 10px }
 .worth { background: var(--stock); color: var(--ink); font: 400 22px/1 var(--f-seg); padding: 5px 10px 4px; border-radius: 3px; transform: rotate(-1.5deg); box-shadow: 0 3px 6px -2px rgba(0,0,0,.5); font-variant-numeric: tabular-nums }
@@ -700,18 +701,18 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .card.broke .tag .hrs { opacity: .85 }
 /* inputs already put into a card: a punched chit pinned to its corner */
 .paid { position: absolute; right: -7px; top: -8px; z-index: 2 }
-.land .paid, .shown .paid { animation: chit .4s var(--bounce) both }
+.land .paid, .redacted .paid { animation: chit .4s var(--bounce) both }
 @keyframes chit { from { transform: translateY(-14px) rotate(-8deg); opacity: 0 } }
 .t-cost .hrs { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); transform: none; padding: 3px 4px }
 .t-cost .hrs b { width: 8px; height: 8px }
-@media (prefers-reduced-motion: reduce) { .land .paid, .shown .paid { animation: none } }
+@media (prefers-reduced-motion: reduce) { .land .paid, .redacted .paid, .card.redacted .word > span { animation: none } }
 /* ---------- the policy as one sentence, highlighter in the suit colours ---------- */
 .line { margin: 0; max-width: 100%; padding: 9px 12px 8px; background: var(--stock); color: var(--ink); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6);
   font: 800 15px/1.55 var(--f-body); letter-spacing: -.01em; text-align: center; text-wrap: balance; transform: rotate(-.6deg) }
 .line .ph { white-space: nowrap; position: relative }
 .line mark { color: inherit; padding: 0 3px; border-radius: 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; white-space: normal;
   background: linear-gradient(100deg, transparent 0 2px, color-mix(in srgb, var(--suit) 42%, transparent) 4px calc(100% - 3px), transparent) }
-.line .hid mark { background: none; color: var(--ink); letter-spacing: -.12em; font-weight: 400 }
+.line .hid mark { background: #141414; color: transparent; border-radius: 35% 10% 30% 12% / 40% 30% 50% 25%; transform: rotate(-1.5deg); display: inline-block; letter-spacing: -.12em; font-weight: 400 }
 .line .v { font: 900 .68em/1 var(--f-body); vertical-align: .55em; margin-left: 1px }
 .line .v.pos { color: var(--good) } .line .v.neg { color: var(--red) } .line .v.gold { color: var(--sunset) }
 .line .fxs { font: 400 .7em/1 var(--f-seg); font-style: normal; vertical-align: .5em; margin-left: 3px; background: #1B1C1B; color: #fff; padding: 2px 3px 1px; border-radius: 2px }
@@ -1226,7 +1227,7 @@ const OP_BOTS = (() => {
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const styleKey = st => st ? st.tpl + '/' + st.font : '';
   const make = K => {
-    const { rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
+    const { rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw, draw3, discard, redactPick, readAt, shown, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
     const pers = p => PERS[p.pers] || PERS.trusting;
 
     // ---------- memory ----------
@@ -1322,27 +1323,27 @@ const OP_BOTS = (() => {
         [cost, prop, hand] = argmax(plans(I, D), x => [-evs(x[1]), -x[0]]);
       } else {
         [cost, prop, hand] = argmax(plans(I, D), ([c, pr]) => {
-          // a trap: looks good on the cards shown, loses money
-          const shown = revealPositive(pr, tok - c).reduce((a, su) => a + ev(pr[su]), 0);
-          return [evs(pr) <= -1 ? 1 : 0, 1.5 * shown - evs(pr)];
+          // a trap: reads well once the worst card is blacked out, loses money
+          const hid = redactPick(pr, tok - c), seen = [0, 1, 2].filter(su => !hid.includes(su)).reduce((a, su) => a + ev(pr[su]), 0);
+          return [evs(pr) <= -1 ? 1 : 0, 1.5 * seen - evs(pr)];
         });
       }
       const left = tok - cost, v = evs(prop);
       let stamp, rev;
       if (mode === 'loyal' || mode === 'good') {
         stamp = rightStamp(prop);
-        rev = tier === 'naive' ? [] : v >= 1 ? revealPositive(prop, left, tier === 'smart') : [];
+        rev = [];
       } else if (mode === 'bad') {
-        stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : revealPositive(prop, left);
-      } else if (prop.some(c => c.v === 'V')) { stamp = 'Risky'; rev = revealPositive(prop, left); } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.5 ? 'Rec' : 'Risky'; rev = revealPositive(prop, left); }
+        stamp = 'Rec'; rev = s.sabTier === 'naive' ? [] : redactPick(prop, left);
+      } else if (prop.some(c => c.v === 'V')) { stamp = 'Risky'; rev = redactPick(prop, left); } else { stamp = !p.accusations && !p.warnings && rand(s) < 0.5 ? 'Rec' : 'Risky'; rev = redactPick(prop, left); }
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
       // a smart saboteur sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
-      return [{ author: i, cards: prop, stamp, revealed: rev, subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
+      return [{ author: i, cards: prop, stamp, redacted: rev, revealed: [0, 1, 2].filter(x => !rev.includes(x)), subject: randomSubject(s), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
     }
     function autopilot(s, i, I, D) {
       const cards = draw3(s); discard(s, I);
-      return [{ author: i, cards, stamp: 'Risky', revealed: [], autopilot: true, subject: 'Interim Management Update', style: { tpl: 'memo', font: 'typewriter' }, mode: 'autopilot', cost: 0 }, D];
+      return [{ author: i, cards, stamp: 'Risky', redacted: [], revealed: [0, 1, 2], autopilot: true, subject: 'Interim Management Update', style: { tpl: 'memo', font: 'typewriter' }, mode: 'autopilot', cost: 0 }, D];
     }
     function botInheritMemo(s, i, inh) {
       const p = s.P[i];
@@ -1367,10 +1368,10 @@ const OP_BOTS = (() => {
     function feel(s, i, e) {
       if (e.openTo && e.openTo.includes(i)) return evs(e.cards);
       if (e.author === i || e.audited || e.autopilot) return viewValue(s, i, e);
-      const g = guess(s, i, e), unk = 3 - e.revealed.length;
+      const g = guess(s, i, e), unk = 3 - shown(e).length;
       const behind = s.r > 1 ? s.profit / (s.r - 1) * 5 < s.target - 2 : false;
       const risk = s.P[i].mind.risk + (behind ? 0.4 : s.profit >= s.target ? -0.3 : 0);
-      const w = pers(s.P[i]), read = e.revealed.reduce((a, su) => a + ev(e.cards[su]), 0) + unk * w[3] + w[4] * STAMP_ADJ[e.stamp];
+      const w = pers(s.P[i]), read = shown(e).reduce((a, su) => a + readAt(e, su), 0) + unk * w[3] + w[4] * STAMP_ADJ[e.stamp];
       return read + (g == null ? 0 : 0.5 * clamp(trust(s, i, g), -3, 1) * unk / 3) + 0.35 * risk * unk + (rand(s) - 0.5) * 0.8;
     }
     function botPick(s) {
@@ -1438,11 +1439,11 @@ const OP_BOTS = (() => {
     }
     function botBoardVote(s, i) {
       const p = s.P[i], nom = s.envs.find(x => x.id === s.nominee);
-      if (p.sab || !nom || nom.author === i || nom.revealed.length === 3) return 'ratify';
+      if (p.sab || !nom || nom.author === i) return 'ratify';
       const f = new Map(s.envs.map(x => [x.id, feel(s, i, x)])), best = Math.max(...f.values());
-      // open it if it trails, wears the CEO's or a suspect's colours, or is Recommended with little shown
+      // open it if it trails, wears the CEO's or a suspect's colours, or is Recommended with words blacked out
       const g = guess(s, i, nom), tell = g != null && (g === s.ceo || trust(s, i, g) <= -2);
-      return tell || f.get(nom.id) <= best - 1 || (nom.stamp === 'Rec' && nom.revealed.length < 2 && pers(p)[4] < 1.2) ? 'open' : 'ratify';
+      return tell || f.get(nom.id) <= best - 1 || (nom.stamp === 'Rec' && (nom.redacted || []).length > 0 && pers(p)[4] < 1.2) ? 'open' : 'ratify';
     }
     return { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion };
   };
@@ -1455,7 +1456,7 @@ const OP = (() => {
   const B = typeof OP_BOTS !== 'undefined' ? OP_BOTS : require('./bots.js');
   const { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, TEMPLATES, FONTS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
-  const TARGETS = { 4: 19, 5: 21, 6: 22, 7: 23, 8: 23 };
+  const TARGETS = { 4: 20, 5: 21, 6: 22, 7: 23, 8: 24 };
   const MEMO = { 4: [[0, .2], [1, .8]], 5: [[0, .2], [1, .8]], 6: [[0, .2], [1, .4], [2, .4]], 7: [[0, .2], [1, .4], [2, .4]], 8: [[0, .2], [1, .4], [2, .4]] };
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
@@ -1464,6 +1465,8 @@ const OP = (() => {
   const SWAP_COST = [0, 1, 3, 6];
   const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);
   const TOKENS = 3, ROUNDS = 5, SLACK = 2;
+  // chance the table reads a word's worth right
+  const READ = 0.6;
 
   const lexOf = s => LEX[s.brand] || LEX.op;
 
@@ -1531,17 +1534,25 @@ const OP = (() => {
     }
     return out;
   }
-  // believed worth; seeRev = CEO view
+  // believed worth from the words on show; seeRev = CEO view
+  const shown = e => [0, 1, 2].filter(su => !(e.redacted || []).includes(su));
+  const readAt = (e, su) => (e.read ? e.read[su] : ev(e.cards[su]));
+  function tableRead(s, c) {
+    if (c.v === 'V') return 0;
+    const v = ev(c);
+    return rand(s) < READ ? v : Math.max(-2, Math.min(2, v + (rand(s) < 0.5 ? 1 : -1)));
+  }
   function estimate(e, tier, seeRev) {
     if (e.audited || e.autopilot) return evs(e.cards);
-    const rv = e.revealed;
-    const known = rv.reduce((a, su) => a + ev(e.cards[su]), 0);
+    const rv = shown(e);
+    const known = rv.reduce((a, su) => a + readAt(e, su), 0);
     const mu = MU - (tier === 'smart' ? 0.4 : 0);
     return known + (3 - rv.length) * mu + STAMP_W[tier] * STAMP_ADJ[e.stamp];
   }
-  function revealPositive(prop, tokens, all) {
-    const order = [0, 1, 2].sort((a, b) => ev(prop[b]) - ev(prop[a]));
-    return (all ? order : order.filter(su => ev(prop[su]) > 0)).slice(0, Math.max(0, tokens));
+  // black out the worst losing card, if there's an input left
+  function redactPick(prop, tokens) {
+    const bad = [0, 1, 2].filter(su => ev(prop[su]) < 0).sort((a, b) => ev(prop[a]) - ev(prop[b]));
+    return tokens > 0 && bad.length ? [bad[0]] : [];
   }
   const subjLists = s => SUBJ.map((l, i) => (i === 1 ? l.concat(lexOf(s).subj, lexOf(s).subj) : l));
   const randomSubject = s => subjLists(s).map(l => pickOne(s, l)).join(' ');
@@ -1618,7 +1629,7 @@ const OP = (() => {
   }
 
   const pubEst = (s, e) => estimate(e, s.loyalTier, false);
-  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw, draw3, discard, revealPositive, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
+  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw, draw3, discard, redactPick, readAt, shown, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
 
   // ---------- round flow ----------
   function startRound(s, E) {
@@ -1655,7 +1666,7 @@ const OP = (() => {
     if (q.guilty) { p.pip = true; (s.accused[p.id] = s.accused[p.id] || []).push('table'); p.accusations++; log(s, E, 'event', `${who(s, p.id, 1)} ${p.human ? 'have' : 'has'} been placed on a Performance Improvement Plan.`, { target: p.id }); }
   }
   // shredding a card costs 1 and brings a fresh one of its suit into the same spot (inherited or spare)
-  function workCost(w) { return SWAP_COST[w.swaps.length] + (w.discards || []).length + w.reveals.length; }
+  function workCost(w) { return SWAP_COST[w.swaps.length] + (w.discards || []).length + w.redacts.length; }
   function workResult(s, i, w) {
     const wk = s.work[i], I = s.P[i].inh.cards.slice(), D = wk.D.slice(), used = [0, 0, 0], shred = [];
     for (const d of w.discards || []) { const a = d.pile === 'spare' ? D : I; shred.push(a[d.su]); a[d.su] = wk.X[d.su][used[d.su]++]; }
@@ -1665,7 +1676,7 @@ const OP = (() => {
   }
   function submitWork(s, i, a, E) {
     const discards = (Array.isArray(a.discards) ? a.discards : []).filter(d => d && ['inh', 'spare'].includes(d.pile) && [0, 1, 2].includes(d.su)).slice(0, TOKENS).map(d => ({ pile: d.pile, su: d.su }));
-    const w = { discards, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), reveals: [...new Set(a.reveals || [])].filter(x => x >= 0 && x < 3) };
+    const w = { discards, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), redacts: [...new Set(a.redacts || [])].filter(x => x >= 0 && x < 3) };
     if (workCost(w) > TOKENS) return 'Not enough work tokens.';
     if (!STAMP_LABEL[a.stamp]) return 'Stamp the cover page first.';
     const p = s.P[i], wk = s.work[i], { prop, aside, shred, used } = workResult(s, i, w);
@@ -1675,7 +1686,7 @@ const OP = (() => {
     // alignment and clip-art are cosmetic
     if (['left', 'center', 'right'].includes(st.align)) style.align = st.align;
     if (typeof st.art === 'string') style.art = st.art.slice(0, 24);
-    const e = { author: i, cards: prop, stamp: a.stamp, revealed: w.reveals, subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), shredded: discards.length, dept: p.dept };
+    const e = { author: i, cards: prop, stamp: a.stamp, redacted: w.redacts, revealed: [0, 1, 2].filter(x => !w.redacts.includes(x)), subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), shredded: discards.length, dept: p.dept };
     s.envs.push(e); s.left[p.dept] = aside;
     const inh = p.inh;
     if (a.claim && inh.kind === 'rejected' && inh.author != null && inh.author !== i) {
@@ -1694,6 +1705,7 @@ const OP = (() => {
     botDesign(s);
     // PIP: open to the CEO only
     for (const e of s.envs) if (!e.autopilot && s.P[e.author].pip) e.openTo = [s.ceo];
+    for (const e of s.envs) e.read = e.cards.map(c => tableRead(s, c));
     s.envs = shuffle(s, s.envs);
     const ids = shuffle(s, range(26).map(k => String.fromCharCode(65 + k))).slice(0, s.envs.length).sort();
     s.envs.forEach((e, k) => { e.id = ids[k]; });
@@ -1960,7 +1972,7 @@ const OP = (() => {
       inv: S.invq ? `${S.invq.r}:${S.invq.t}` : null,
       pips: S.P.filter(p => p.pip).length, warns: S.P.reduce((a, p) => a + p.warnings, 0),
       named: S.whistle ? S.whistle.named : undefined, correct: S.whistle && S.whistle.correct,
-      d: d ? { sw: d.swaps.length, rv: d.reveals.length, sh: d.discards.length, st: d.stamp, pg: d.page || 1 } : null,
+      d: d ? { sw: d.swaps.length, rv: d.redacts.length, sh: d.discards.length, st: d.stamp, pg: d.page || 1 } : null,
     };
   }
 
@@ -2161,7 +2173,7 @@ const OP = (() => {
   }
   function newDraft() {
     const p = me(), inh = p.inh;
-    return { discards: [], swaps: [], reveals: [], stamp: null, words: (S.subj || OP.SUBJ).map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
+    return { discards: [], swaps: [], redacts: [], stamp: null, words: (S.subj || OP.SUBJ).map(l => Math.floor(Math.random() * l.length)), custom: '', useCustom: false,
       style: Object.assign({ tpl: 'memo', font: 'grotesk' }, p.fav, S.reqStyle), artSet: false, claim: { kind: 'none', val: evs(inh.cards), stamp: inh.stamp || 'Rec' }, nextStyle: null };
   }
   const subjectOf = d => (d.useCustom && d.custom.trim() ? d.custom.trim() : d.words.map((k, i) => (S.subj || OP.SUBJ)[i][k]).join(' '));
@@ -2276,14 +2288,15 @@ const OP = (() => {
   function lineHTML(e, o) {
     o = o || {};
     const all = o.all || e.audited || e.autopilot || e.approved || ui.debug || (mine() && e.author === ME);
-    const vis = su => all || e.revealed.includes(su);
+    // words show unless blacked out; worth only once it's out in the open
+    const vis = su => all || !(e.redacted || []).includes(su);
     if (![0, 1, 2].some(vis)) return '';
     const fx = e.cards[2].fx, live = o.anim && e.resolved;
     const ph = e.cards.map((c, su) => {
       if (!vis(su)) return `<span class="ph s-${su} hid"><mark aria-label="Hidden ${OP.SUITS[su]}">${'█'.repeat(5)}</mark></span>`;
       const v = e.resolved ? e.resolved[su] : c.v;
       const change = live && su < 2 && fx && after(fx, v) !== v;
-      const mark = change ? `<b class="v ${tone(v)} was">${val(v)}</b><b class="v ${tone(after(fx, v))} now">${val(after(fx, v))}</b>` : `<b class="v ${tone(v)}">${val(v)}</b>`;
+      const mark = !all ? '' : change ? `<b class="v ${tone(v)} was">${val(v)}</b><b class="v ${tone(after(fx, v))} now">${val(after(fx, v))}</b>` : `<b class="v ${tone(v)}">${val(v)}</b>`;
       return `<span class="ph s-${su}${su === 2 ? ' mod' : ''}"><mark>${esc(c.w)}</mark>${mark}${c.fx ? `<i class="fxs">${FXSYM[c.fx]}</i>` : ''}${su === 2 && live ? `<i class="sfx" aria-hidden="true">${sfxOf(c, v)}</i>` : ''}</span>`;
     }).join(' ');
     const sum = e.resolved ? `<b class="sum ${tone(OP.total(e.resolved, e.cards))}">= ${fmt(OP.total(e.resolved, e.cards))}</b>` : '';
@@ -2386,7 +2399,7 @@ const OP = (() => {
   const fit = w => { const L = Math.max(...w.split(/\s+/).map(x => x.length)); return Math.min(1, 10.5 / L, Math.sqrt(30 / Math.max(30, w.length))).toFixed(2); };
   function cardHTML(c, cls, extra, attrs) {
     const face = c.fx ? `${glyph(c.v)}<span class="dymo" title="${FXSAY[c.fx]}"><i class="m0"></i><i class="m1"></i><b>${FXSYM[c.fx]}</b></span>` : glyph(c.v);
-    return `<div class="card s-${c.s} ${c.fx ? 'has-fx' : ''} ${cls || ''}" ${attrs || ''}><div class="cf" style="--fit:${fit(c.w)}"><span class="word">${esc(c.w)}</span><div class="fx">${face}</div></div>${extra || ''}</div>`;
+    return `<div class="card s-${c.s} ${c.fx ? 'has-fx' : ''} ${cls || ''}" ${attrs || ''}><div class="cf" style="--fit:${fit(c.w)}"><span class="word"><span>${esc(c.w)}</span></span><div class="fx">${face}</div></div>${extra || ''}</div>`;
   }
   // the table is a shared screen: authors appear only once approved
   const authorVisible = e => e.approved || ui.debug;
@@ -2564,7 +2577,7 @@ const OP = (() => {
   function seal() {
     const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
     stopTimer();
-    dispatch({ type: 'submitWork', discards: draft.discards, swaps: draft.swaps, reveals: draft.reveals, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
+    dispatch({ type: 'submitWork', discards: draft.discards, swaps: draft.swaps, redacts: draft.redacts, stamp: draft.stamp || 'Rec', subject: subjectOf(draft), style: draft.style,
       claim: null, nextStyle: draft.nextStyle });
     toast('Sealed.');
   }
@@ -2576,16 +2589,16 @@ const OP = (() => {
     if (draft.page === 3) return deskTweak(p);
     const slot = (zone, su, card) => `<div class="slot" data-drop="${zone}" data-su="${su}">${card}</div>`;
     // tokens are inputs: hole chits on the hand, punched chits pinned to the policy cards they bought
-    const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.reveals.includes(su) ? 1 : 0);
+    const paid = su => (draft.swaps.indexOf(su) + 1) + (draft.redacts.includes(su) ? 1 : 0);
     // an effect Modifier rewrites the other two right here, before you commit
     const fx = wr.prop[2].fx, blink = fx && ui.fxw !== wr.prop[2].w;
     ui.fxw = fx ? wr.prop[2].w : null;
     const env = [0, 1, 2].map(su => {
-      const c0 = wr.prop[su], rv = draft.reveals.includes(su), n = paid(su);
+      const c0 = wr.prop[su], rv = draft.redacts.includes(su), n = paid(su);
       const hit = su < 2 && fx && c0.v !== 'V' && after(fx, c0.v) !== c0.v, c = hit ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0;
-      const ok = rv || costWith({ reveals: draft.reveals.concat(su) }) <= 3;
-      return slot('env', su, cardHTML(c, `drag${rv ? ' shown' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${fresh('env', su) ? ' fresh' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
-        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Shown to the table' : 'Show to the table for 1 input'}"`));
+      const ok = rv || costWith({ redacts: draft.redacts.concat(su) }) <= 3;
+      return slot('env', su, cardHTML(c, `drag${rv ? ' redacted' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${fresh('env', su) ? ' fresh' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
+        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Blacked out' : 'Black out for 1 input'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
       const c = wr.aside[su], on = draft.swaps.includes(su);
@@ -2616,7 +2629,7 @@ const OP = (() => {
     return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
-  const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', revealed: [], author: ME, dept: p.dept });
+  const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', redacted: draft.redacts, author: ME, dept: p.dept });
   function deskTemplates(p) {
     const arrive = ui.arrive ? ' arrive' : ''; ui.arrive = false;
     const tiles = OP.TEMPLATES.map(t => `<button class="tpl" data-a="tpl" data-v="${t}" aria-pressed="${draft.style.tpl === t}" aria-label="${TPL[t].name}">${coverHTML(Object.assign(mockPage(p), { style: { tpl: t, art: draft.artSet ? draft.style.art : TPL[t].art } }), { k: .35, note: false })}</button>`).join('');
@@ -2661,7 +2674,7 @@ const OP = (() => {
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
       const open = e.openTo && mine() && e.openTo.includes(ME);
-      const peek = open || e.audited || e.revealed.length ? `<span class="peek">${e.cards.map((c, su) => open || e.audited || e.revealed.includes(su) ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
+      const peek = open || e.audited ? `<span class="peek">${e.cards.map((c, su) => open || e.audited ? `<b class="s-${su} ${tone(c.v)}">${GLYPH[c.v]}</b>` : `<i class="s-${su}">${brandMark()}</i>`).join('')}</span>` : '';
       return `<button class="mini" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
         ${coverHTML(e, { k: .35 })}${peek}${tagFor(e)}</button>`;
     }).join('')}${none ? `<button class="mini none" data-a="sel" data-id="none" aria-pressed="${current === 'none'}">${none}</button>` : ''}</div>`;
@@ -2961,7 +2974,7 @@ const OP = (() => {
       case 'begin': dispatch({ type: 'begin' }); break;
       case 'advance': dispatch({ type: 'advance' }); break;
       case 'swap': { const su = +d.su; draft.swaps = draft.swaps.includes(su) ? draft.swaps.filter(x => x !== su) : draft.swaps.concat(su); render(); break; }
-      case 'reveal': { const su = +d.su; draft.reveals = draft.reveals.includes(su) ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su); render(); break; }
+      case 'reveal': { const su = +d.su; draft.redacts = draft.redacts.includes(su) ? draft.redacts.filter(x => x !== su) : draft.redacts.concat(su); render(); break; }
       case 'stamp': draft.stamp = d.v; render(); break;
       case 'finalise': finalise(); break;
       case 'back': draft.page = draft.page === 3 && !S.reqStyle ? 2 : 1; render(); break;
@@ -2993,23 +3006,24 @@ const OP = (() => {
     if (costWith({ swaps: next }) > 3) return refuse(su);
     draft.swaps = next; ui.land = su; render();
   }
-  function revealSuit(su) {
-    const next = draft.reveals.includes(su) ? draft.reveals.filter(x => x !== su) : draft.reveals.concat(su);
-    if (costWith({ reveals: next }) > 3) return refuse(su);
-    draft.reveals = next; render();
+  // tap a policy card to black it out with the marker
+  function redactSuit(su) {
+    const next = draft.redacts.includes(su) ? draft.redacts.filter(x => x !== su) : draft.redacts.concat(su);
+    if (costWith({ redacts: next }) > 3) return refuse(su);
+    draft.redacts = next; render();
   }
   // a shredded card is replaced in place; which pile it came from depends on whether its suit is swapped
   function shredCard(zone, su) {
     const pile = (zone === 'env') !== draft.swaps.includes(su) ? 'inh' : 'spare', next = draft.discards.concat({ pile, su });
-    const reveals = zone === 'env' ? draft.reveals.filter(x => x !== su) : draft.reveals;
-    if (costWith({ discards: next, reveals }) > 3) return refuse(su);
-    draft.discards = next; draft.reveals = reveals; ui.fresh = { zone, su }; render();
+    const redacts = zone === 'env' ? draft.redacts.filter(x => x !== su) : draft.redacts;
+    if (costWith({ discards: next, redacts }) > 3) return refuse(su);
+    draft.discards = next; draft.redacts = redacts; ui.fresh = { zone, su }; render();
   }
   function refuse(su) {
     toast('Your input has been noted.');
     document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
   }
-  const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : revealSuit(su));
+  const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : redactSuit(su));
   let drag = null;
   function endDrag() {
     if (!drag) return;

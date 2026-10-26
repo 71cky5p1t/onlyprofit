@@ -12,7 +12,7 @@
       inv: S.invq ? `${S.invq.r}:${S.invq.t}` : null,
       pips: S.P.filter(p => p.pip).length, warns: S.P.reduce((a, p) => a + p.warnings, 0),
       named: S.whistle ? S.whistle.named : undefined, correct: S.whistle && S.whistle.correct,
-      d: d ? { sw: d.swaps.length, rv: d.reveals.length, sh: d.discards.length, st: d.stamp, pg: d.page || 1 } : null,
+      d: d ? { sw: d.swaps.length, rv: d.redacts.length, sh: d.discards.length, st: d.stamp, pg: d.page || 1 } : null,
     };
   }
 
