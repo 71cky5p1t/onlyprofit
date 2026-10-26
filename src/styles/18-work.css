@@ -1,30 +1,48 @@
-/* ---------- Work screen, one material: cream paper on felt, overtime hours, red only for ink and the main key ---------- */
-/* the same card everywhere: the hand only leans a little */
-.fan .slot { margin-inline: 4px }
-.fan .slot:nth-child(1) { transform: rotate(-4deg) translateY(3px) }
-.fan .slot:nth-child(3) { transform: rotate(4deg) translateY(3px) }
-.fan .slot { transform-origin: 50% 100% }
+/* ---------- Work screen, one material: cream paper on felt, inputs, red only for ink and the main key ---------- */
+/* the hand: fanned and overlapping at the bottom, re-deal beside it */
+.hand-row { display: flex; align-items: flex-end; justify-content: center; gap: 4px; margin-top: 18px }
+.fan { padding: 10px 0 14px 26px }
+.fan .slot { margin-left: -26px; margin-right: 0; transform-origin: 50% 160% }
+.fan .slot:nth-child(1) { transform: rotate(-10deg) translateY(8px) }
+.fan .slot:nth-child(2) { transform: translateY(-2px) }
+.fan .slot:nth-child(3) { transform: rotate(10deg) translateY(8px) }
+.fan .card.drag:hover, .fan .card.drag:focus-visible { transform: translateY(-16px) }
+/* first quarter: the middle spare lifts toward its slot, once, to show the cards move */
+.play.nudge .fan .slot:nth-child(2) .card { animation: nudge 1.5s cubic-bezier(.3,.7,.3,1) calc(var(--wait, 0s) + 1.6s) 2 both }
+.play.nudge .policy .slot:nth-child(2)::before { content: ""; position: absolute; inset: -5px; border-radius: 11px; border: 2px dashed var(--gold); opacity: 0; animation: nudge-ring 1.5s ease calc(var(--wait, 0s) + 1.6s) 2 }
+@keyframes nudge { 0%, 100% { transform: none } 40%, 55% { transform: translateY(-34px) rotate(-2deg) } }
+@keyframes nudge-ring { 0%, 100% { opacity: 0 } 40%, 60% { opacity: .9 } }
+/* press a spare and its slot opens up */
+.policy .slot.ok { box-shadow: none; background: none }
+.policy .slot.ok::before { content: ""; position: absolute; inset: -5px; border-radius: 11px; border: 2px dashed var(--gold); z-index: -1 }
+.policy .slot.hot::before { border-style: solid; background: rgba(233,162,59,.18) }
 .tag { background: none; box-shadow: none; padding: 0; min-width: 0; right: -7px; top: -8px }
 .tag.back { width: 22px; height: 22px; border-radius: 50%; background: var(--stock); color: var(--ink); font-size: 12px; display: grid; place-items: center; box-shadow: 0 1px 3px rgba(0,0,0,.4) }
-/* adding-machine tape between the policy and the hand */
-.tape { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0; margin: 14px 2px 12px; background: var(--stock); color: var(--ink); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); transform: rotate(-.5deg);
-  -webkit-mask-image: radial-gradient(circle at 50% 0, transparent 2.5px, #000 3px) 0 0 / 9px 100%, linear-gradient(#000, #000); mask-image: none }
-.tape > * { padding: 8px 10px 7px; min-width: 0 }
-.t-src { font: 700 11.5px/1.2 var(--f-body); color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center }
-.t-src b { color: var(--ink) }
-.t-src .env-stamp { font-size: 8.5px; padding: 2px 4px; border-width: 1.5px }
-.t-worth { font: 400 24px/1 var(--f-seg); border-inline: 1.5px dashed rgba(20,20,20,.2); padding-inline: 14px; font-variant-numeric: tabular-nums }
+/* the sentence on top: highlighter words, worth punched on the end */
+.said { display: grid; gap: 6px; margin: 0 2px 16px; justify-items: start }
+.said-src { font: 700 11px/1.2 var(--f-body); color: var(--on-table-2); display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center }
+.said-src b { color: var(--on-table) }
+.said-src .env-stamp { font-size: 8.5px; padding: 2px 4px; border-width: 1.5px; mix-blend-mode: normal }
+.said-row { display: flex; align-items: stretch; width: 100%; transform: rotate(-.5deg); filter: drop-shadow(0 6px 8px rgba(0,0,0,.35)) }
+.said .line { flex: 1; min-width: 0; transform: none; box-shadow: none; border-radius: 2px 0 0 2px; font-size: 16px; text-align: left; padding: 10px 12px 9px }
+.t-worth { display: grid; place-items: center; background: var(--stock); color: var(--ink); font: 400 24px/1 var(--f-seg); border-left: 1.5px dashed rgba(20,20,20,.22); padding: 0 12px; border-radius: 0 2px 2px 0; font-variant-numeric: tabular-nums; white-space: nowrap }
 .t-worth.pos { color: var(--good) } .t-worth.neg { color: var(--red) } .t-worth small { font-size: 11px; color: var(--sunset); margin-left: 2px }
-.t-redeal { justify-self: end; display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--ink); font: 800 11.5px/1 var(--f-body); cursor: pointer }
-.t-redeal:hover:not(:disabled) { text-decoration: underline }
-.t-redeal:disabled { color: var(--ink-3); cursor: not-allowed }
-/* every pick-one bar (stamps, Ratify/Overrule) is the same paper strip: the chosen one inked, the rest ghosts */
-.bar3 { background: var(--stock); box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); border-radius: 2px; padding: 6px; transform: rotate(.4deg) }
-.bar3 button { color: rgba(20,20,20,.32); background: none; padding: 8px 2px }
-.bar3 button span { border: 2px dashed rgba(20,20,20,.18); border-radius: 3px; padding: 4px 5px }
-.bar3 button:hover { color: var(--ink-2) }
-.bar3 button[aria-pressed="true"] { background: none; box-shadow: none }
-.bar3 button[aria-pressed="true"] span { border-style: solid; border-color: currentColor; transform: rotate(-4deg); mix-blend-mode: multiply }
+/* re-deal: a paper token beside the fan */
+.t-redeal { flex: none; display: grid; justify-items: center; gap: 4px; width: 56px; margin-bottom: 18px; padding: 9px 3px 7px; border: 0; border-radius: 3px; background: var(--stock); color: var(--ink); font: 800 10.5px/1 var(--f-body); letter-spacing: .04em; text-transform: uppercase; cursor: pointer; transform: rotate(3deg); box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 12px -8px rgba(0,0,0,.7); transition: transform .18s var(--bounce) }
+.t-redeal .rd-ic { font: 900 20px/1 var(--f-body); font-style: normal }
+.t-redeal:hover:not(:disabled) { transform: rotate(0) translateY(-3px) }
+.t-redeal:disabled { opacity: .5; cursor: not-allowed }
+/* every pick-one bar (stamps, Board) is one paper strip of rubber stamps: all inked faintly in their colour, the chosen one slammed down */
+.bar3 { background: var(--stock); box-shadow: 0 1px 0 rgba(0,0,0,.15), 0 8px 14px -10px rgba(0,0,0,.6); border-radius: 2px; padding: 8px 6px; transform: rotate(.4deg) }
+.bar3 button { color: var(--ink-2); background: none; padding: 6px 2px; font-size: 10.5px; letter-spacing: .03em; opacity: .6; transition: opacity .15s, transform .15s var(--bounce) }
+.bar3 button span { border: 2.5px solid currentColor; border-radius: 3px; padding: 5px 5px 4px; mix-blend-mode: multiply }
+.bar3 .s-Rec, .bar3 .b-ratify { color: var(--good) } .bar3 .s-Risky { color: #B4561C } .bar3 .s-Not, .bar3 .b-open { color: var(--red) }
+.bar3 button:hover { opacity: .85; transform: translateY(-1px) }
+.bar3:has([aria-pressed="true"]) button:not([aria-pressed="true"]) { opacity: .3 }
+.bar3 button[aria-pressed="true"] { background: none; box-shadow: none; opacity: 1 }
+.bar3 button[aria-pressed="true"] span { transform: rotate(-5deg) scale(1.12); animation: slam .28s var(--bounce) both; background: color-mix(in srgb, currentColor 10%, transparent) }
+@keyframes slam { from { transform: rotate(-9deg) scale(1.5); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .bar3 button[aria-pressed="true"] span, .play.nudge .fan .slot:nth-child(2) .card, .play.nudge .policy .slot:nth-child(2)::before { animation: none } }
 /* the header keeps its rail; nothing else on the screen is dark */
 /* phones: the desk scrolls with the page (this has to come after the desk's own sticky rule) */
 @media (max-width: 980px) { .desk { position: static; max-height: none; overflow: visible } }

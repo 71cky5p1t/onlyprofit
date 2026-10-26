@@ -11,7 +11,7 @@
   // a price is empty punch holes; paid ones are punched through
   const hrs = (n, paid) => `<i class="hrs${paid ? ' paid-h' : ''}" aria-hidden="true">${'<b></b>'.repeat(n)}</i>`;
   function inhSource(inh) {
-    if (inh.kind === 'legacy') return 'Legacy';
+    if (inh.kind === 'legacy') return '';
     if (inh.kind === 'cleanup') return `Leftovers <b>${inh.author === ME ? 'yours' : esc(nm(inh.author))}</b>`;
     if (inh.kind === 'autopilot') return 'Autopilot';
     return `From <b>${inh.author === ME ? 'yourself' : esc(nm(inh.author))}</b>${stampMark(inh.stamp)}`;
@@ -85,13 +85,14 @@
     const wait = ui.deal === true && ui.lastKey !== `${S.r}|${PHASE[S.phase]}` ? .85 : 0;
     ui.deal = false;
     const purse = `<span class="purse" role="img" aria-label="${left} of 3 inputs left"><span class="pc-band"><i class="pc-mk"></i><b>Your Input<br>Matters*</b></span><span class="pc-holes">${[0, 1, 2].map(k => `<i class="slotbox${k < 3 - left ? ' punched' : ''}"></i>`).join('')}</span><small>*3 per quarter</small></span>`;
-    // one strip of adding-machine tape between the policy and the hand: where it came from, what it's worth, re-deal
-    const tray = `<div class="tape"><span class="t-src">${inhSource(inh)}</span>
-        <span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span>
-        <button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 inputs">${draft.redeal ? 'Re-dealt' : '↻ Re-deal'}<span class="t-cost">${hrs(2)}</span></button></div>`;
+    // the sentence on top: what the three cards say, coloured by suit, with the effect applied
+    const said = { cards: wr.prop.map((c0, su) => su < 2 && fx && c0.v !== 'V' ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0), revealed: [0, 1, 2] };
+    const src = inhSource(inh);
+    const head = `<div class="said">${src ? `<span class="said-src">${src}</span>` : ''}<div class="said-row">${lineHTML(said, { all: true })}<span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span></div></div>`;
+    const redeal = `<button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 inputs"><i class="rd-ic" aria-hidden="true">↻</i><span>${draft.redeal ? 'Re-dealt' : 'Re-deal'}</span><span class="t-cost">${hrs(2)}</span></button>`;
     const honest = OP.rightStamp(wr.prop);
     const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
-    const body = `<div class="play${dealCls}" style="--wait:${wait}s"><div class="policy">${env}</div>${tray}<div class="fan">${hand}</div></div>${stamps}`;
+    const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.redeal ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div>${redeal}</div></div>${stamps}`;
     return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: key('finalise', 'Finalise') });
   }
   // the cover page: pick a template, then dress it. One timer across both

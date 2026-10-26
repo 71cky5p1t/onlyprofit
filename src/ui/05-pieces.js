@@ -68,18 +68,24 @@
       ${rows}${wb}<div class="tr-total"><span>TOTAL</span><b class="${S.profit < 0 ? 'neg' : ''}">${fmt(S.profit)}</b></div>
       <div class="tr-foot">TARGET +${S.target}${S.easy ? ' (EASY)' : ''}<br>** THANK YOU FOR YOUR SERVICE **</div></div></section>`;
   }
+  // the CEO sticker: a dog-eared one for this quarter, and a peeled-off gummy patch for every term before it
+  function ceoMarks(p, live) {
+    const past = S.history.filter(h => h.ceo === p.id).map(h => h.r);
+    const gone = past.map(r => `<i class="ceo-gone" style="--k:${(p.id * 3 + r * 5) % 7}" aria-hidden="true"></i>`).join('');
+    const now = S.r && S.ceo === p.id && live ? '<i class="ceo-stk">CEO</i>' : '';
+    return gone || now ? `<span class="ceo-marks"${past.length ? ` aria-label="CEO ${past.length} time${past.length > 1 ? 's' : ''} before"` : ''}>${gone}${now}</span>` : '';
+  }
   // staff are the name tags from the phone; the CEO rotation is a row of desk name plates
   function staffHTML() {
     const live = S.phase !== 'end' && S.phase !== 'whistle';
     const tags = S.P.map(p => {
       const meta = [];
-      if (S.r && S.ceo === p.id && live) meta.push('<i class="tag-tape">CEO</i>');
       if (p.leave) meta.push('<i class="tag-tape grey">Stood down</i>');
       if (p.spec && ui.debug) meta.push(`<i class="tag-tape gold">${p.spec}</i>`);
       if (ui.debug || S.phase === 'end') meta.push(`<i class="tag-tape ${p.sab ? 'red' : 'green'}">${p.sab ? 'Saboteur' : 'Loyal'}</i>`);
       const dept = S.r && ui.debug ? `<small class="tag-dept">${OP.DEPTS[p.dept]}</small>` : '';
       return `<div class="nametag staff-tag${p.leave ? ' down' : ''}" style="--r:${((p.id * 5) % 7 - 3) * .7}deg"><span class="hello">Hello<small>my name is</small></span>
-        <b>${p.id === ME && mine() && ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : esc(p.name)}</b>${dept}${meta.length ? `<span class="tag-tapes">${meta.join('')}</span>` : ''}${stickers(p)}</div>`;
+        <b>${p.id === ME && mine() && ui.badge ? `<img class="ink-name" src="${ui.badge}" alt="You">` : esc(p.name)}</b>${dept}${meta.length ? `<span class="tag-tapes">${meta.join('')}</span>` : ''}${stickers(p)}${ceoMarks(p, live)}</div>`;
     }).join('');
     const plates = OP.ceoSchedule(S).map(c => `<div class="plate-n${c.r === S.r && live ? ' now' : c.r < S.r ? ' past' : ''}"><small>Q${c.r}</small><b>${c.who == null ? esc(c.note) : esc(nm(c.who))}</b></div>`).join('');
     return `<section class="staff-desk" aria-label="Staff"><div class="staff-tags">${tags}</div><div class="plates" aria-label="CEO rotation">${plates}</div></section>`;

@@ -27,6 +27,8 @@
     const el = ev.target.closest('.card[data-drag]'); if (!el || !draft || ev.button > 0) return;
     const r = el.getBoundingClientRect();
     drag = { el, zone: el.dataset.drag, su: +el.dataset.su, x: ev.clientX, y: ev.clientY, ox: ev.clientX - r.left, oy: ev.clientY - r.top, w: r.width, h: r.height, clone: null };
+    // pressing a spare opens its slot in the policy
+    if (drag.zone === 'hand') document.querySelectorAll(`.slot[data-drop="env"][data-su="${drag.su}"]`).forEach(x => x.classList.add('ok'));
   });
   window.addEventListener('pointermove', ev => {
     if (!drag) return;
