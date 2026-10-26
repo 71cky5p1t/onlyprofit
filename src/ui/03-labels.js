@@ -25,7 +25,8 @@
     for (let k = 0; k < warns; k++) out.push(['red', 'See me']);
     if (q.accusations && !r) out.push(['grey', `Noted ×${q.accusations}`]);
     if (!out.length) return '';
-    return `<span class="stickers">${out.map(([c, t], k) => `<i class="stk ${c}" style="--r:${((q.id * 7 + k * 13) % 11) - 5}deg">${t}</i>`).join('')}</span>`;
+    // slapped on top of each other in one spot, so the tag never grows
+    return `<span class="stickers">${out.map(([c, t], k) => `<i class="stk ${c}" style="--r:${((q.id * 7 + k * 13) % 11) - 5}deg;--x:${k ? ((q.id * 11 + k * 23) % 9 - 4) * 5 : 0}px;--y:${k ? ((q.id * 3 + k * 7) % 5 - 2) * 2 : 0}px">${t}</i>`).join('')}</span>`;
   }
   const isCEO = () => mine() && S.ceo === ME;
   const STAMP = OP.STAMP_LABEL;
