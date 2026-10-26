@@ -1,8 +1,10 @@
   // ---------- desk: your phone. Objects on the felt, same as the TV; almost no prose ----------
-  // a bakelite header bar (nameplate, time card, timer tape) and a footer bar that holds the one key that matters
+  // a real desk: nameplate, input card, ashtray timer and profit ticket on the wood; work happens on the blotter
+  const ticket = () => S && S.r ? `<span class="ticket" role="img" aria-label="Company profit ${fmt(S.profit)} of ${S.target}"><small>Profit</small><b class="${tone(S.profit)}">${fmt(S.profit)}</b><small>of ${S.target}</small></span>` : '';
   function deskWrap(title, body, o) {
     o = o || {};
-    return `<aside class="desk" aria-label="Your desk"><div class="desk-head"><div class="bar-row"><h3 class="plate">${title}</h3>${o.right || ''}</div>${o.fuse || ''}</div>
+    const tk = ticket();
+    return `<aside class="desk" aria-label="Your desk"><div class="desk-head"><div class="bar-row"><h3 class="plate">${title}</h3>${o.right || tk}</div>${o.fuse || (o.right && tk) ? `<div class="bar-row two">${o.fuse || '<span></span>'}${o.right ? tk : ''}</div>` : ''}</div>
       <div class="desk-body">${body}${err ? `<div class="err" role="alert">${esc(err)}</div>` : ''}</div>${o.foot ? `<div class="desk-foot">${o.foot}</div>` : ''}</aside>`;
   }
   const slip = html => `<span class="slip">${html}</span>`;
@@ -31,7 +33,8 @@
       }, 200);
     }
     const pct = window.__opFreeze ? 64 : Math.max(0, (timer.end - Date.now()) / timer.total * 100);
-    return `<div class="fuse" role="timer" aria-label="Time left"><i style="width:${pct}%"></i></div>`;
+    // a cigarette burning down in an ashtray; the unburnt paper is the time left
+    return `<div class="fuse" role="timer" aria-label="Time left"><span class="ashtray"></span><span class="cig"><span class="filter"></span><span class="paper"><i style="width:${pct}%"></i></span></span></div>`;
   }
   // Finalise: the hand drops away, the policy squares up into a pile and a blank cover page lands on it
   function finalise() {
@@ -41,7 +44,8 @@
     const next = S.reqStyle ? 3 : 2, play = document.querySelector('.play');
     if (!play || still()) { draft.page = next; render(); return; }
     ui.stuffing = true;
-    play.insertAdjacentHTML('beforeend', '<i class="stuff" aria-hidden="true"></i>');
+    const pol = play.querySelector('.policy');
+    play.insertAdjacentHTML('beforeend', `<i class="stuff" aria-hidden="true" style="top:${pol ? pol.offsetTop + 2 : 2}px"></i>`);
     play.classList.add('stuff');
     setTimeout(() => { ui.stuffing = false; if (draft && S.phase === 'work') { draft.page = next; ui.arrive = true; render(); } }, 1250);
   }
@@ -88,12 +92,13 @@
     // the sentence on top: what the three cards say, coloured by suit, with the effect applied
     const said = { cards: wr.prop.map((c0, su) => su < 2 && fx && c0.v !== 'V' ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0), revealed: [0, 1, 2] };
     const src = inhSource(inh);
-    const head = `<div class="said">${src ? `<span class="said-src">${src}</span>` : ''}<div class="said-row">${lineHTML(said, { all: true })}<span class="t-worth ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<small>±2</small>' : ''}</span></div></div>`;
+    const head = `<div class="said">${src ? `<span class="said-src">${src}</span>` : ''}<div class="said-row">${lineHTML(said, { all: true }).replace(/<\/p>$/, `<b class="sum ${tone(v)}" aria-label="Policy worth ${fmt(v)}${vol ? ', volatile' : ''}">${fmt(v)}${vol ? '<sup>?</sup>' : ''}</b></p>`)}${draft.stamp ? `<span class="said-stamp env-stamp ${draft.stamp}" aria-hidden="true">${STAMP[draft.stamp]}</span>` : ''}</div></div>`;
     const redeal = `<button class="t-redeal" data-a="redeal" ${canRedeal ? '' : 'disabled'} aria-label="Re-deal the inherited three for 2 inputs"><i class="rd-ic" aria-hidden="true">↻</i><span>${draft.redeal ? 'Re-dealt' : 'Re-deal'}</span><span class="t-cost">${hrs(2)}</span></button>`;
     const honest = OP.rightStamp(wr.prop);
-    const stamps = `<div class="bar3 stampstrip" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><span>${STAMP[k]}</span></button>`).join('')}</div>`;
+    // three rubber stamps standing on the blotter; the one you use leaves its mark on the sentence
+    const stamps = `<div class="stampstrip rstamps" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="rstamp s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><i class="knob"></i><i class="neck"></i><span class="block"><span>${STAMP[k]}</span></span><i class="pad"></i></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.redeal ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div>${redeal}</div></div>${stamps}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: key('finalise', 'Finalise') });
+    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, finalise), foot: '<button class="outtray" data-a="finalise"><span class="ot-in"></span><span class="ot-front"><b>Out</b></span></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
   const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', revealed: [], author: ME, dept: p.dept });
