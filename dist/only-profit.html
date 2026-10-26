@@ -1780,7 +1780,7 @@ const OP = (() => {
     const best = argmax(s.envs, x => [pubEst(s, x)]);
     const overruled = opened && best.id !== nom.id && pubEst(s, nom) < pubEst(s, best) - 1;
     s.board = { nominee: nom.id, votes: s.bvotes, no, opened, overruled };
-    if (!overruled) { log(s, E, 'event', opened ? `It stands. Proposal ${nom.id} goes through.` : `The Board ratified proposal ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
+    if (!overruled) { log(s, E, 'event', opened ? `It stands. Proposal ${nom.id} goes through.` : `The Board rubber-stamped proposal ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
     const own = nom.author === s.ceo && !nom.autopilot;
     nom.unmasked = true; s.board.own = own; s.board.author = nom.autopilot ? null : nom.author;
     log(s, E, 'event', `The Board overruled ${who(s, s.ceo)}. Proposal ${nom.id} was written by ${nom.autopilot ? 'interim management' : own ? 'the CEO' : who(s, nom.author)}. Proposal ${best.id} goes through instead.`, { target: s.ceo });
@@ -2599,7 +2599,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     if (ph === 'board') {
       const nom = S.envs.find(e => e.id === S.nominee);
       const body = `<div class="slips">${slip(`${esc(nm(S.ceo))} nominated ${icon(S.nominee)}${auditor() && !nom.autopilot ? ` · by <b>${nom.author === ME ? 'you' : esc(nm(nom.author))}</b>` : ''}`)}</div><div class="board-nom">${coverHTML(nom, { k: .6 })}${lineHTML(nom, { all: nom.openTo && nom.openTo.includes(ME) })}</div>
-        <div class="bar3 two" role="radiogroup" aria-label="Board vote">${['ratify', 'open'].map(v => `<button class="b-${v}" role="radio" data-a="sel" data-id="${v}" aria-checked="${ui.sel === v}" aria-pressed="${ui.sel === v}"><span>${v === 'ratify' ? 'Ratify' : 'Open it'}</span></button>`).join('')}</div>`;
+        <div class="bar3 two" role="radiogroup" aria-label="Board vote">${['ratify', 'open'].map(v => `<button class="b-${v}" role="radio" data-a="sel" data-id="${v}" aria-checked="${ui.sel === v}" aria-pressed="${ui.sel === v}"><span>${v === 'ratify' ? 'Rubber-stamp' : 'Open it'}</span></button>`).join('')}</div>`;
       return deskWrap('Board vote', `${leave}${body}${signHTML('board', ui.sel === 'ratify' || ui.sel === 'open')}`);
     }
     if (ph === 'reveal') {
@@ -2637,7 +2637,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     return `<div class="tags">${list.map(q => `<button class="nametag" data-a="sel" data-id="${q.id}" aria-pressed="${String(current) === String(q.id)}"><span class="hello">Hello<small>my name is</small></span><b>${esc(q.name)}</b>${stickers(q)}</button>`).join('')}
       ${none ? `<button class="nametag none" data-a="sel" data-id="none" aria-pressed="${String(current) === 'none'}"><b>${none}</b></button>` : ''}</div>`;
   }
-  const boardSlip = () => S.board ? slip(S.board.overruled ? `Board overruled ${icon(S.board.nominee)} · ${S.board.own ? 'the CEO’s own' : S.board.author == null ? 'autopilot' : esc(nm(S.board.author))}` : S.board.opened ? `Opened ${icon(S.board.nominee)} · it stands` : `Board ratified ${icon(S.board.nominee)}`) : '';
+  const boardSlip = () => S.board ? slip(S.board.overruled ? `Board overruled ${icon(S.board.nominee)} · ${S.board.own ? 'the CEO’s own' : S.board.author == null ? 'autopilot' : esc(nm(S.board.author))}` : S.board.opened ? `Opened ${icon(S.board.nominee)} · it stands` : `Board rubber-stamped ${icon(S.board.nominee)}`) : '';
   function resultSlip() {
     if (!S.result) return '';
     const e = S.envs.find(x => x.id === S.result.id); if (!e) return '';
@@ -3091,16 +3091,16 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
   const LESSONS = [
     ['welcome', 'Welcome', 'Welcome aboard. Please enjoy this mandatory induction. Enjoyment is also mandatory.', 5],
     ['goal', 'The target', 'The company has five quarters to hit its profit target. Hit it, and everyone keeps their job. Probably.', 6],
-    ['saboteurs', 'Saboteurs', 'Some of you were hired to quietly sink the company. Your role memo will say if it’s you. Maybe it’s nobody, and we’re just like this.', 8],
+    ['saboteurs', 'Liabilities', 'Some of you are Liabilities, hired to quietly sink the company. Your role memo will say if it’s you. Maybe it’s nobody, and we’re just bad at our jobs.', 8],
     ['inherit', 'Handover', 'Every quarter, you move to a new department and inherit the last manager’s three cards. Nobody can prove they weren’t yours. Congratulations.', 8],
     ['policy', 'Policy', 'Three cards make a proposal: an Action, a Target and a Modifier. Read as one sentence, the worse it sounds, the more it makes.', 8],
     ['overtime', 'Overtime', 'You also get spares. Spend overtime hours to swap one in, or turn a card face up so people trust you. The hours are unpaid.', 8],
-    ['stamp', 'The stamp', 'Then stamp it: Recommended, Risky, or Not. The pencil tick marks the honest one. You can lie. The CEO can check. That’s a Performance Improvement Plan.', 9],
+    ['stamp', 'The stamp', 'Then stamp it: Recommended, Risky, or Not. The pencil tick marks the honest one. You can lie, but the CEO can check. Get caught, and you’re on a Performance Improvement Plan.', 9],
     ['cover', 'Cover page', 'Give it a cover page and drop it in the pile. No names. Nobody knows who wrote what.', 6],
     ['ceo', 'The CEO', 'Each quarter, someone takes a turn as CEO. They read the pile and pick one.', 5],
-    ['board', 'The Board', 'Everyone else is the Board. Ratify the pick, or open it up. If there was a better one, that goes through instead, and the dud’s author is named.', 9],
+    ['board', 'The Board', 'Everyone else is the Board. Rubber-stamp the pick, or open it up. If there was a better one, that goes through instead, and the dud’s author is named.', 9],
     ['approved', 'Approved', 'Whatever goes through hits the books, and its author is named. Everyone acts like they saw it coming.', 6],
-    ['endgame', 'Year end', 'After quarter five, you vote on who the saboteur was. Right, and their damage is undone. Wrong, and they sue for unfair dismissal. Then we count the money.', 9],
+    ['endgame', 'Year end', 'After quarter five, you vote on who the Liability was. Right, and their damage is undone. Wrong, and they sue for unfair dismissal. Then we count the money.', 9],
     ['signoff', 'Sign-off', 'That concludes your induction. The clock starts now. Please look busy.', 5]
   ];
   // recorded lines drop in as assets/audio/induction/welcome.mp3 (or vo-01-welcome.mp3) and so on
@@ -3143,7 +3143,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
     if (id === 'board') {
       const side = (word, names, f) => `<div class="i-vote"><span class="vote-word b thump" ${at(f)}>${word}</span>${names.map((n, k) => `<div class="i-signer">${demoTag(n, f + k * .04)}${squiggle(f + .06 + k * .05)}</div>`).join('')}</div>`;
       const bad = [{ s: 0, v: -2, w: 'Outsource' }, { s: 1, v: -1, w: 'Customer Trust' }, cs[2]];
-      return `<div class="i-votes">${side('Ratify', ['Gary', 'Moira'], .05)}${side('Open it', ['Trevor', 'Clive', 'You'], .18)}</div>
+      return `<div class="i-votes">${side('Rubber-stamp', ['Gary', 'Moira'], .05)}${side('Open it', ['Trevor', 'Clive', 'You'], .18)}</div>
         <div class="i-duel"><div class="leaf b deal nominee" ${at(.45)}>${page('memo', { id: 'n', subject: 'Outsource Customer Trust (Off the Books)', cards: bad, k: .4, tilt: -2 })}<p class="line b type" ${at(.52)}>${bad.map((c, su) => `<span class="ph s-${su}"><mark>${esc(c.w)}</mark><b class="v ${tone(c.v)}">${GLYPH[c.v]}</b></span>`).join(' ')}</p><span class="rubber red b thump" ${at(.64)}>Overruled</span></div>
         <div class="leaf b deal rival" style="--at:.48">${page('fax', { id: 'r', subject: SUBJECTS[0], k: .4, tilt: 3 })}</div></div>`;
     }
@@ -3375,7 +3375,7 @@ window.__opVoiceFiles=["j-auditor","j-cleanup","j-designer","j-fx-flip","j-fx-nu
       const fx = cards.find(c => c.fx && !TEACH.seen.has(c.fx));
       if (fx) offer(fx.fx, `${fx.w}: ${FXSAY[fx.fx].toLowerCase()}. Its own value still counts.`);
     }
-    if (S.phase === 'board') offer('board', 'Ratify keeps the policy sealed. A majority voting Open reveals it and may overturn the CEO’s choice.');
+    if (S.phase === 'board') offer('board', 'Rubber-stamping keeps the policy sealed. A majority voting Open reveals it and may overturn the CEO’s choice.');
     if (S.phase === 'reveal') offer('warning', 'Pick someone for a Written Warning, or Nobody, then sign. A second warning stands them down.');
     if (S.phase === 'review' && isCEO()) offer('investigate', 'As CEO, you may pull one file and sign to investigate its stamp. A dishonest stamp can mean a PIP next quarter.');
     if (S.P.some(p => p.pip)) offer('pip', 'A Performance Improvement Plan makes that person’s future proposals visible to the CEO. Everyone else still sees a sealed page.');

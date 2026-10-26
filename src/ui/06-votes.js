@@ -14,7 +14,7 @@
     return `<div class="tags">${list.map(q => `<button class="nametag" data-a="sel" data-id="${q.id}" aria-pressed="${String(current) === String(q.id)}"><span class="hello">Hello<small>my name is</small></span><b>${esc(q.name)}</b>${stickers(q)}</button>`).join('')}
       ${none ? `<button class="nametag none" data-a="sel" data-id="none" aria-pressed="${String(current) === 'none'}"><b>${none}</b></button>` : ''}</div>`;
   }
-  const boardSlip = () => S.board ? slip(S.board.overruled ? `Board overruled ${icon(S.board.nominee)} · ${S.board.own ? 'the CEO’s own' : S.board.author == null ? 'autopilot' : esc(nm(S.board.author))}` : S.board.opened ? `Opened ${icon(S.board.nominee)} · it stands` : `Board ratified ${icon(S.board.nominee)}`) : '';
+  const boardSlip = () => S.board ? slip(S.board.overruled ? `Board overruled ${icon(S.board.nominee)} · ${S.board.own ? 'the CEO’s own' : S.board.author == null ? 'autopilot' : esc(nm(S.board.author))}` : S.board.opened ? `Opened ${icon(S.board.nominee)} · it stands` : `Board rubber-stamped ${icon(S.board.nominee)}`) : '';
   function resultSlip() {
     if (!S.result) return '';
     const e = S.envs.find(x => x.id === S.result.id); if (!e) return '';

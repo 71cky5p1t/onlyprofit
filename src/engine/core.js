@@ -285,7 +285,7 @@ const OP = (() => {
     const best = argmax(s.envs, x => [pubEst(s, x)]);
     const overruled = opened && best.id !== nom.id && pubEst(s, nom) < pubEst(s, best) - 1;
     s.board = { nominee: nom.id, votes: s.bvotes, no, opened, overruled };
-    if (!overruled) { log(s, E, 'event', opened ? `It stands. Proposal ${nom.id} goes through.` : `The Board ratified proposal ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
+    if (!overruled) { log(s, E, 'event', opened ? `It stands. Proposal ${nom.id} goes through.` : `The Board rubber-stamped proposal ${nom.id} (${voters - no}–${no}).`); return approve(s, nom.id, E); }
     const own = nom.author === s.ceo && !nom.autopilot;
     nom.unmasked = true; s.board.own = own; s.board.author = nom.autopilot ? null : nom.author;
     log(s, E, 'event', `The Board overruled ${who(s, s.ceo)}. Proposal ${nom.id} was written by ${nom.autopilot ? 'interim management' : own ? 'the CEO' : who(s, nom.author)}. Proposal ${best.id} goes through instead.`, { target: s.ceo });

@@ -18,7 +18,7 @@
     if (id === 'board') {
       const side = (word, names, f) => `<div class="i-vote"><span class="vote-word b thump" ${at(f)}>${word}</span>${names.map((n, k) => `<div class="i-signer">${demoTag(n, f + k * .04)}${squiggle(f + .06 + k * .05)}</div>`).join('')}</div>`;
       const bad = [{ s: 0, v: -2, w: 'Outsource' }, { s: 1, v: -1, w: 'Customer Trust' }, cs[2]];
-      return `<div class="i-votes">${side('Ratify', ['Gary', 'Moira'], .05)}${side('Open it', ['Trevor', 'Clive', 'You'], .18)}</div>
+      return `<div class="i-votes">${side('Rubber-stamp', ['Gary', 'Moira'], .05)}${side('Open it', ['Trevor', 'Clive', 'You'], .18)}</div>
         <div class="i-duel"><div class="leaf b deal nominee" ${at(.45)}>${page('memo', { id: 'n', subject: 'Outsource Customer Trust (Off the Books)', cards: bad, k: .4, tilt: -2 })}<p class="line b type" ${at(.52)}>${bad.map((c, su) => `<span class="ph s-${su}"><mark>${esc(c.w)}</mark><b class="v ${tone(c.v)}">${GLYPH[c.v]}</b></span>`).join(' ')}</p><span class="rubber red b thump" ${at(.64)}>Overruled</span></div>
         <div class="leaf b deal rival" style="--at:.48">${page('fax', { id: 'r', subject: SUBJECTS[0], k: .4, tilt: 3 })}</div></div>`;
     }
