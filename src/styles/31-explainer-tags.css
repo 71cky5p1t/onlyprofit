@@ -1,0 +1,13 @@
+/* induction name badges: the red-framed sticker, names in marker, slapped on crooked */
+.induction .nametag { border-radius: 9px; padding-bottom: 15px; background: #FCFAF4; box-shadow: inset 0 0 0 4px var(--red), inset 0 -12px 0 var(--red), 0 1px 1px rgba(0,0,0,.25), 0 12px 18px -12px rgba(0,0,0,.75) }
+.induction .nametag .hello { padding-top: 8px }
+.induction .nametag b { font: 700 clamp(26px, 3vw, 36px)/.9 Caveat, var(--f-body); letter-spacing: 0; color: #20242C; padding: 8px 6px 0; transform: rotate(-4deg) }
+.induction .i-signer .nametag { border-radius: 7px; padding-bottom: 10px; box-shadow: inset 0 0 0 3px var(--red), inset 0 -8px 0 var(--red), 0 8px 12px -8px rgba(0,0,0,.75) }
+.induction .i-signer .nametag b { font-size: clamp(18px, 2.3vw, 26px); padding-top: 4px }
+.i-signer:nth-child(3n+1) .nametag, .i-year:nth-child(odd) .nametag, .i-leaver .nametag { rotate: -2.5deg }
+.i-signer:nth-child(3n+2) .nametag, .i-year:nth-child(even) .nametag, .i-ceo .nametag { rotate: 2deg }
+/* stickers sit on the bottom edge, so every badge stays the same size */
+.induction .i-year .stickers { position: absolute; left: -10px; right: -10px; top: 100%; translate: 0 -9px; flex-wrap: nowrap; min-height: 0; margin: 0 }
+.induction .i-year .rubber { top: 58% }
+.induction .i-year .stk { white-space: nowrap }
+@media (max-width: 740px) { .induction .eoty { inset: -8px -6px -36px } }

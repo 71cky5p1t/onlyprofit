@@ -1,17 +1,17 @@
   // [id, tab name, narrator line, seconds]. The line is the caption and the voice script, word for word.
   const LESSONS = [
     ['welcome', 'Welcome', 'Welcome aboard. Please enjoy this mandatory induction. Enjoyment is also mandatory.', 5],
-    ['goal', 'The target', 'You’ve got five quarters to hit the profit target. Hit it, and everyone keeps their job. Probably.', 7],
-    ['saboteurs', 'Saboteurs', 'Some of your colleagues may be quietly sinking the company. Maybe one. Maybe two. Maybe nobody, and we’re just like this.', 8],
-    ['inherit', 'Handover', 'Each quarter, you run a department. You inherit the last manager’s work. It’s yours now. Congratulations.', 8],
-    ['policy', 'Policy', 'One Action. One Target. One Modifier. Read together, that’s a policy. Add up the marks. A question mark is a coin toss.', 8],
-    ['overtime', 'Overtime', 'You’ll draw some spares. Overtime hours buy you swaps, or show a card to the whole table. You get three hours. They’re unpaid.', 9],
-    ['stamp', 'The stamp', 'Then stamp it. The pencil tick marks the honest answer. You can lie. You can also be put on a Performance Improvement Plan.', 8],
-    ['cover', 'Cover page', 'Dress it up with a cover page. Nobody knows who wrote what. That’s the whole point.', 7],
-    ['ceo', 'The CEO', 'Each quarter, someone has a go as CEO, and picks one proposal from the pile.', 6],
-    ['board', 'The Board', 'Everyone else is the Board. Ratify it, or open it up. If it’s dodgy, a better one goes through instead. The CEO has some explaining to do.', 10],
-    ['approved', 'Approved', 'Only the approved policy gets a name on it. Profit moves. Everyone acts like they saw it coming.', 7],
-    ['endgame', 'Year end', 'After quarter five, the table names a saboteur. Get it right, and their damage is reversed. Get it wrong, and that’s an unfair dismissal claim. Best record on the winning side is Employee of the Year.', 12],
+    ['goal', 'The target', 'The company has five quarters to hit its profit target. Hit it, and everyone keeps their job. Probably.', 6],
+    ['saboteurs', 'Saboteurs', 'Some of you were hired to quietly sink the company. Your role memo will say if it’s you. Maybe it’s nobody, and we’re just like this.', 8],
+    ['inherit', 'Handover', 'Every quarter, you move to a new department and inherit the last manager’s three cards. Nobody can prove they weren’t yours. Congratulations.', 8],
+    ['policy', 'Policy', 'Three cards make a proposal: an Action, a Target and a Modifier. Read as one sentence, the worse it sounds, the more it makes.', 8],
+    ['overtime', 'Overtime', 'You also get spares. Spend overtime hours to swap one in, or turn a card face up so people trust you. The hours are unpaid.', 8],
+    ['stamp', 'The stamp', 'Then stamp it: Recommended, Risky, or Not. The pencil tick marks the honest one. You can lie. The CEO can check. That’s a Performance Improvement Plan.', 9],
+    ['cover', 'Cover page', 'Give it a cover page and drop it in the pile. No names. Nobody knows who wrote what.', 6],
+    ['ceo', 'The CEO', 'Each quarter, someone takes a turn as CEO. They read the pile and pick one.', 5],
+    ['board', 'The Board', 'Everyone else is the Board. Ratify the pick, or open it up. If there was a better one, that goes through instead, and the dud’s author is named.', 9],
+    ['approved', 'Approved', 'Whatever goes through hits the books, and its author is named. Everyone acts like they saw it coming.', 6],
+    ['endgame', 'Year end', 'After quarter five, you vote on who the saboteur was. Right, and their damage is undone. Wrong, and they sue for unfair dismissal. Then we count the money.', 9],
     ['signoff', 'Sign-off', 'That concludes your induction. The clock starts now. Please look busy.', 5]
   ];
   // recorded lines drop in as assets/audio/induction/welcome.mp3 (or vo-01-welcome.mp3) and so on
