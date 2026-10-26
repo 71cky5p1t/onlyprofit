@@ -1,3 +1,6 @@
-Model: `mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-4bit` (mlx-audio 0.6.0, local), take C prompt, seed 3003 (3103 for the lines in `RESEED`). Base-model cloning from `../samples/C-welcome.mp3` was tried (`MODE=clone`) and dropped: pitch drifted off C and pace ran ~30% fast.
-Tempo: ffmpeg `atempo=1.12` (pitch-preserving), then 80 ms silence trim, two-pass loudnorm I=-16 TP=-1.5, MP3 44.1 kHz mono 128k.
-Run: `"~/Coding/Joel Archive/work/qwen-voice/venv/bin/python" generate.py <wav_dir>` (all lines) or `... <wav_dir> id=seed ...`.
+Model: `mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-4bit` (mlx-audio 0.6.0, local), O2 tradie-foreman prompt (see `../samples/OCKER.md` on the auditions branch).
+Reel (`vo-*`): all 13 lines from `src/explainer/00-lessons.js` in ONE take, seed 4012 (4002 slurred "Mole was"), so the cadence holds across clips. Whole take kept in `take/reel-4012.mp3`.
+Post: `atempo=1.12` and one two-pass loudnorm I=-16 TP=-1.5 over the whole take, then `cut.py` splits it at the middle of each between-line silence (Whisper word times, snapped to the real silence), keeping 80 ms either side. Speed is baked in, so `VO_RATE` is 1.
+Stingers (`j-*`) are still the older take-C voice; `generate.py <dir> stingers` records them the same way from the table in `docs/how-to-play/script.md`.
+Run: `"~/Coding/Joel Archive/work/qwen-voice/venv/bin/python" generate.py <wav_dir> reel 4012`, then tempo/loudnorm, then `cut.py <take.wav> reel .` with the faster-whisper venv (`Joel Archive/work/video-research-venv`), then `tools/vo/build.sh` and `node tools/vo/timings.js`.
+Tape: run `tools/vo/build.sh` with Homebrew ffmpeg first on PATH; the static build in `~/.local/bin` has a broken `vibrato` that randomly blows clips up to NaN.

@@ -20,7 +20,7 @@
   const voiced = k => { const f = window.__opVoiceFiles || [], [id, , line] = LESSONS[k], vt = VO_TIMES[id];
     return vt && vt.times.length === line.split(' ').length ? [id, voiceClip(k)].find(n => f.includes(n)) : undefined; };
   // played a touch quick, pitch held
-  const VO_RATE = 1.14;
+  const VO_RATE = 1;
   const chapterLen = k => voiced(k) ? VO_TIMES[LESSONS[k][0]].dur / VO_RATE + .6 : LESSONS[k][3];
   const tapeAt = () => LESSONS.slice(0, TRAIN.i).reduce((n, l, k) => n + chapterLen(k), 0) + TRAIN.elapsed;
   function wordTimes(k) {

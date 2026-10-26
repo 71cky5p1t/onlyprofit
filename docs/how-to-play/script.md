@@ -35,7 +35,7 @@ Shot ids double as audio file names: `assets/audio/vo/<id>.mp3`.
 3. **vo-03-saboteurs** — Some of you are evil, manipulative little Moles, here to sink the company. Your role memo will say if it's you. Maybe it's nobody, and we're just bad at our jobs.
 4. **vo-04-inherit** — Every quarter, you move to a new department and inherit the last manager's three cards. Nobody can prove they weren't yours. Congratulations.
 5. **vo-05-policy** — Three cards make a proposal: an Action, a Target and a Modifier. Read as one sentence, the worse it sounds, the more it makes.
-6. **vo-06-overtime** — You also get spares. Spend overtime hours to swap one in, or turn a card face up so people trust you. The hours are unpaid.
+6. **vo-06-overtime** — You also draw a few extra cards. Spend an input to swap one into your proposal, or black one out so nobody can read it. Your input matters.
 7. **vo-07-stamp** — Then stamp it: Recommended, Risky, or Not. The pencil tick marks the honest one. You can lie, but the CEO can check. Get caught, and you're on a Performance Improvement Plan.
 8. **vo-08-cover** — Give it a cover page and drop it in the pile. No names. Nobody knows who wrote what.
 9. **vo-09-ceo** — Each quarter, someone takes a turn as CEO. They read the pile and pick one.
