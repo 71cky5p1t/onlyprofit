@@ -59,7 +59,8 @@
     }
     if (a && b) {
       if (b.sw > a.sw) { sfx('desk-stapler'); sfx('desk-card-drop', .12, .7); }
-      if (b.sw < a.sw || b.rv > a.rv) sfx('desk-card-flip');
+      if (b.sw < a.sw) sfx('desk-card-flip');
+      if (b.rv > a.rv) sfx('desk-sign', 0, .8);
       if (b.st && b.st !== a.st) sfx('desk-stamp');
       if (b.pg !== a.pg) sfx('paper-pull', 0, .8);
     }

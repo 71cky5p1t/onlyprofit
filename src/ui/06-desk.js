@@ -36,6 +36,8 @@
     // a cigarette burning down in an ashtray; the unburnt paper is the time left
     return `<div class="fuse" role="timer" aria-label="Time left"><span class="ashtray"></span><span class="cig"><span class="filter"></span><span class="paper"><i style="width:${pct}%"></i></span></span></div>`;
   }
+  // the marker lives on the desk; capped until you've blacked something out
+  const marker = open => `<span class="marker${open ? ' open' : ''}" aria-hidden="true"><svg viewBox="0 0 120 26"><g class="pen"><path d="M6 13 L14 9.5 V16.5 Z" fill="#0B0B0D"/><rect x="14" y="8" width="10" height="10" rx="1.5" fill="#8E9197"/><rect x="24" y="6" width="84" height="14" rx="3" fill="#1B1C21"/><rect x="24" y="6" width="84" height="4" rx="2" fill="#fff" opacity=".12"/><rect x="50" y="7" width="34" height="12" fill="#ECE8DD"/><text x="67" y="15.6" text-anchor="middle" font-family="Schibsted Grotesk, Arial, sans-serif" font-weight="900" font-size="5.6" letter-spacing=".6" fill="#1B1C21">PERMANENT</text><rect x="106" y="7.5" width="6" height="11" rx="2" fill="#2A2B31"/></g><g class="cap"><rect x="2" y="5" width="36" height="16" rx="4" fill="#15161A"/><rect x="2" y="5" width="36" height="4.5" rx="2.5" fill="#fff" opacity=".14"/><rect x="30" y="2.5" width="5" height="21" rx="1.5" fill="#22232A"/></g></svg></span>`;
   // Finalise: the hand drops away, the policy squares up into a pile and a blank cover page lands on it
   // the tray won't take an unstamped page; if the clock runs out first, it's filed honestly
   function finalise(auto) {
@@ -107,7 +109,7 @@
     // three rubber stamps standing on the blotter; the one you use leaves its mark on the sentence
     const stamps = `<div class="stampstrip rstamps" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="rstamp s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><i class="knob"></i><i class="neck"></i><span class="block"><span>${STAMP[k]}</span></span><i class="pad"></i></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.discards.length ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div></div>${bin}</div>${stamps}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
+    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)) + marker(draft.redacts.length > 0), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
   const mockPage = p => ({ id: '·', style: draft.style, subject: subjectOf(draft), stamp: draft.stamp || 'Rec', redacted: draft.redacts, author: ME, dept: p.dept });
@@ -152,6 +154,11 @@
   // your own page, and every author for the Auditor; phone only
   const auditor = () => mine() && me().spec === 'Auditor' && !me().leave;
   const tagFor = e => !mine() || e.autopilot ? '' : e.author === ME ? '<i class="yours">You</i>' : auditor() ? `<i class="yours">${esc(nm(e.author))}</i>` : '';
+  // the CEO reads the sentences: each page as a row, cover beside what it says
+  function rows(list, current) {
+    return `<div class="prows">${list.map(e => `<button class="prow" data-a="sel" data-id="${e.id}" aria-pressed="${current === e.id}" aria-label="${ICON_NAMES[iconIdx(e.id)]}: ${esc(e.subject)}">
+      ${coverHTML(e, { k: .27, note: false })}${lineHTML(e, { all: e.openTo && mine() && e.openTo.includes(ME) }) || '<p class="line nil">█████ █████ █████</p>'}${tagFor(e)}</button>`).join('')}</div>`;
+  }
   function minis(list, current, none) {
     return `<div class="minis">${list.map(e => {
       const open = e.openTo && mine() && e.openTo.includes(ME);
@@ -219,9 +226,9 @@
     if (ph === 'work' && draft) return deskWork();
     const leave = p.leave ? slip('Stood down') : '';
     if (ph === 'decide') {
-      if (isCEO()) return deskWrap('You are CEO', `${minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Nominate ${icon(ui.sel)}` : 'Nominate', !!ui.sel) });
+      if (isCEO()) return deskWrap('You are CEO', `${rows(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), ui.sel)}`, { foot: key('approve', ui.sel ? `Nominate ${icon(ui.sel)}` : 'Nominate', !!ui.sel) });
       const own = S.envs.find(e => !e.autopilot && e.author === ME);
-      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}${auditor() ? minis(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), null) : own ? `<div class="board-nom own">${coverHTML(own, { k: .6 })}${lineHTML(own)}</div>` : ''}`, { foot: key('advance', 'See the decision') });
+      return deskWrap(`${esc(nm(S.ceo))} is CEO`, `${leave}${auditor() ? rows(S.envs.slice().sort((a, b) => a.id.localeCompare(b.id)), null) : own ? `<div class="board-nom own">${coverHTML(own, { k: .6 })}${lineHTML(own)}</div>` : ''}`, { foot: key('advance', 'See the decision') });
     }
     if (ph === 'board') {
       const nom = S.envs.find(e => e.id === S.nominee);
