@@ -15,10 +15,19 @@
     signoff: [[.4, 'desk-stamp']]
   };
   const clock = s => { s = Math.floor(s); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
-  const tapeAt = () => LESSONS.slice(0, TRAIN.i).reduce((n, l) => n + l[3], 0) + TRAIN.elapsed;
+  // a recorded line sets the chapter's length; its words land when they're spoken
+  const voiced = k => { const f = window.__opVoiceFiles || [], id = LESSONS[k][0]; return [id, voiceClip(k)].find(n => f.includes(n)); };
+  const chapterLen = k => voiced(k) && VO_TIMES[LESSONS[k][0]] ? VO_TIMES[LESSONS[k][0]].dur + .6 : LESSONS[k][3];
+  const tapeAt = () => LESSONS.slice(0, TRAIN.i).reduce((n, l, k) => n + chapterLen(k), 0) + TRAIN.elapsed;
+  function wordTimes(k) {
+    const [id, , line] = LESSONS[k], w = line.split(' ');
+    if (voiced(k) && VO_TIMES[id] && VO_TIMES[id].times.length === w.length) return VO_TIMES[id].times;
+    const total = line.length; let acc = 0;
+    return w.map(x => { const t = acc / total * .8 * TRAIN.duration; acc += x.length + 1; return t; });
+  }
   function subtitle(line) {
-    const w = line.split(' '), span = .82 / w.length;
-    return w.map((x, k) => `<span style="--at:${(k * span).toFixed(3)}">${esc(x)}</span>`).join(' ');
+    const t = wordTimes(TRAIN.i);
+    return line.split(' ').map((x, k) => `<span data-t="${t[k].toFixed(2)}"${t[k] <= TRAIN.elapsed + .06 ? ' class="on"' : ''}>${esc(x)}</span>`).join(' ');
   }
   function tabsHTML() {
     return LESSONS.map((l, k) => `<button class="itab${k < TRAIN.i ? ' past' : ''}" data-a="induction-chapter" data-i="${k}" aria-label="${l[1]}" ${k === TRAIN.i ? 'aria-current="step"' : ''}><span>${String(k + 1).padStart(2, '0')}</span>${k === TRAIN.i ? '<i></i>' : ''}</button>`).join('');
@@ -41,9 +50,9 @@
     if (TRAIN.outro) return;
     if (i >= LESSONS.length) return inductionExit();
     clearInterval(TRAIN.tick); if (TRAIN.audio) TRAIN.audio.pause(); TRAIN.audio = null;
-    TRAIN.i = Math.max(0, i); TRAIN.demo = {}; TRAIN.touched = false; TRAIN.fired = 0; TRAIN.elapsed = 0; TRAIN.duration = LESSONS[TRAIN.i][3];
+    TRAIN.i = Math.max(0, i); TRAIN.demo = {}; TRAIN.touched = false; TRAIN.fired = 0; TRAIN.elapsed = 0; TRAIN.duration = chapterLen(TRAIN.i);
     music('music/05-hold-music-clean'); hold(true); sfx('paper-pull', 0, .4);
-    const files = window.__opVoiceFiles || [], clip = [LESSONS[TRAIN.i][0], voiceClip(TRAIN.i)].find(n => files.includes(n));
+    const clip = voiced(TRAIN.i);
     voDuck(false);
     if (clip) {
       const a = TRAIN.audio = new Audio(AU_BASE + 'induction/' + clip + '.mp3'); a.muted = !AU.on;
@@ -53,7 +62,7 @@
       if (!TRAIN.pause) a.play().catch(() => { if (TRAIN.audio === a) TRAIN.audio = null; });
     }
     TRAIN.last = performance.now(); flow(render);
-    TRAIN.tick = setInterval(step, 100);
+    TRAIN.tick = setInterval(step, 40);
   }
   // the music bed sits about 7 dB under the narrator, and comes back when the line ends
   function voDuck(on) {
@@ -83,6 +92,7 @@
     while (TRAIN.fired < beats.length && beats[TRAIN.fired][0] <= f) sfx(beats[TRAIN.fired++][1], 0, .7);
     const m = document.querySelector('.induction'); if (!m) return;
     const bar = m.querySelector('.itab[aria-current] i'); if (bar) bar.style.width = Math.min(100, f * 100) + '%';
+    m.querySelectorAll('.i-sub span:not(.on)').forEach(s => { if (+s.dataset.t <= TRAIN.elapsed + .06) s.classList.add('on'); });
     const osd = m.querySelector('.i-osd span'); if (osd) osd.textContent = clock(tapeAt());
     const n = m.querySelector('[data-count]'); if (n) n.innerHTML = lcd(Math.round(+n.dataset.count * Math.min(1, f / .42)));
     if (f >= 1) inductionChapter(TRAIN.i + 1);

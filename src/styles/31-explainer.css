@@ -18,7 +18,8 @@
 
 /* the narrator's line, word by word, as a subtitle on the felt */
 .i-sub { margin: 0 auto; max-width: 34em; min-height: 2.8em; padding: 0 12px; text-align: center; text-wrap: balance; font: 600 clamp(17px, 2.1vw, 25px)/1.38 var(--f-body); letter-spacing: -.01em; color: var(--on-table); text-shadow: 0 1px 0 rgba(0,0,0,.35), 0 0 22px var(--baize-lo) }
-.i-sub span { display: inline-block; animation: word .4s ease both; animation-delay: calc(var(--dur) * var(--at) - var(--played)) }
+.i-sub span { display: inline-block; opacity: 0; transform: translateY(.18em) }
+.i-sub span.on { opacity: 1; transform: none; transition: opacity .07s linear, transform .16s var(--bounce) }
 
 /* chapters are the binder's index tabs, peeking up from the bottom edge */
 .i-tabs { display: flex; justify-content: center; align-items: flex-end; gap: 4px; padding-top: 18px; height: 64px }
@@ -47,7 +48,6 @@
 .tc-face .flap::after { content: attr(data-b); animation: flap-in .16s ease-out 1.64s both }
 .tc-face i { font-style: normal; opacity: .7; margin: 0 -2px; animation: osd-blink 1s steps(2) infinite }
 
-@keyframes word { from { opacity: 0; transform: translateY(.25em); filter: blur(3px) } }
 @keyframes osd-blink { 50% { opacity: .15 } }
 @keyframes sweep { to { transform: translateY(75svh) rotate(5deg); opacity: 0 } }
 @keyframes sink { to { transform: translateY(80px) } }
@@ -58,4 +58,4 @@
 @keyframes flap-in { from { transform: rotateX(90deg) } }
 
 @media (max-width: 740px) { .induction { padding: 54px 12px 0 } .i-osd { top: 16px; left: 14px; font-size: 12px } .i-skip { top: 12px; right: 12px } .i-tabs { gap: 3px; height: 58px } .itab { font-size: 9px } }
-@media (prefers-reduced-motion: reduce) { .induction .b, .i-sub span, .tclock, .tc-body { animation-duration: .01s !important } }
+@media (prefers-reduced-motion: reduce) { .induction .b, .tclock, .tc-body { animation-duration: .01s !important } }
