@@ -33,7 +33,7 @@
     toast('Your input has been noted.');
     document.querySelectorAll(`.card[data-su="${su}"]`).forEach(el => { el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope'); });
   }
-  const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : redactSuit(su));
+  const tapCard = (zone, su) => (zone === 'hand' ? swapSuit(su) : OP.inkChosen(S) && redactSuit(su));
   let drag = null;
   function endDrag() {
     if (!drag) return;

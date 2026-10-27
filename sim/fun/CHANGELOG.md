@@ -139,3 +139,17 @@ Card values used to be dealt at random onto words, so a sentence never predicted
 | words carry value | 55.4% | 53.3% | 46.0% | 44.7% | 52.1% |
 
 `compare.js 1500` against main: saboteur named 97–99% at 4–5p and 79–90% at 6–8p on both.
+
+## Random blackouts (2026-10-27, Joel: "try a mode where no one chooses what they redact")
+
+`node sim/fun/ink.js <games> [mode]` runs each blackout rule (engine option `ink`) on the same seeds. 1,000–2,000 games per size at main's targets:
+
+| mode | what happens | bots win | scripted Mole (company wins) | Mole named right | loyal warned | Mole hid a losing word |
+|---|---|---|---|---|---|---|
+| choose (main) | author picks, 1 input a word | 46–59% | 41–57% | 88–90% | 5–14% | 50–55% |
+| paid | author pays 1 input, the word is random | 43–58% | 42–56% | 83–88% | 5–15% | 19–24% (almost nobody pays) |
+| one | one random word on every page, free, inked at hand-in | 35–51% | 34–49% | 87–88% | 2–14% | 36–43% |
+| odds | each word 1 in 3, free | 33–49% | 36–50% | 86–90% | 3–14% | 30–35% |
+| slot | one word per desk inked before work starts | 33–49% | 35–47% | 87–92% | 3–13% | 47–53% (Mole parks the loser there) |
+
+Spotting the Mole barely moves in any mode. Free random ink blinds every CEO a little, so the company wins less; the Mole loses its tool more than the table loses its read. `one` is the cleanest: a single blind word per page, nobody knows which until it's handed in. Built as the setup option "Blackouts: Luck of the draw" with targets −1 at 4, 7 and 8 players (19/21/22/22/23): bots 45–55%, scripted Moles 44–56%, Mole named 87–89%. In this mode the Board stops treating ink as a tell and the CEO stops discounting hidden words. `paid`, `odds` and `slot` stay in the engine for the sim only.

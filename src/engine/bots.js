@@ -6,7 +6,7 @@ const OP_BOTS = (() => {
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const styleKey = st => st ? st.tpl + '/' + st.font : '';
   const make = K => {
-    const { rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw, draw3, discard, redactPick, readAt, shown, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
+    const { Ink, rightStamp, rand, pickOne, argmax, ev, evs, estimate, STAMP_ADJ, plans, draw, draw3, discard, redactPick, readAt, shown, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK } = K;
     const pers = p => PERS[p.pers] || PERS.trusting;
 
     // ---------- memory ----------
@@ -103,7 +103,7 @@ const OP_BOTS = (() => {
       } else {
         [cost, prop, hand] = argmax(plans(I, D), ([c, pr]) => {
           // a trap: reads well once the worst card is blacked out, loses money
-          const hid = redactPick(pr, tok - c), seen = [0, 1, 2].filter(su => !hid.includes(su)).reduce((a, su) => a + ev(pr[su]), 0);
+          const hid = Ink.planned(s, i, redactPick(pr, tok - c)), seen = [0, 1, 2].filter(su => !hid.includes(su)).reduce((a, su) => a + ev(pr[su]), 0);
           return [evs(pr) <= -1 ? 1 : 0, 1.5 * seen - evs(pr)];
         });
       }
@@ -118,7 +118,8 @@ const OP_BOTS = (() => {
       let style = s.reqStyle || (rand(s) < 0.75 ? p.fav : randomStyle(s));
       // a smart saboteur sends bad proposals in someone else's look
       if (!s.reqStyle && p.sab && tier === 'smart' && mode !== 'good' && rand(s) < 0.5) style = pickOne(s, s.P.filter(q => q.id !== i)).fav;
-      return [{ author: i, cards: prop, stamp, redacted: rev, revealed: [0, 1, 2].filter(x => !rev.includes(x)), subject: prop.map(c => c.w).join(' '), style: Object.assign({}, style), mode, cost: cost + rev.length, shredded }, hand];
+      const want = Ink.chosen(s) ? rev : [], red = Ink.apply(s, rand, i, want);
+      return [{ author: i, cards: prop, stamp, redacted: red, revealed: [0, 1, 2].filter(x => !red.includes(x)), luck: !Ink.chosen(s) || undefined, subject: prop.map(c => c.w).join(' '), style: Object.assign({}, style), mode, cost: cost + want.length, shredded }, hand];
     }
     function autopilot(s, i, I, D) {
       const cards = draw3(s); discard(s, I);
@@ -222,7 +223,7 @@ const OP_BOTS = (() => {
       const f = new Map(s.envs.map(x => [x.id, feel(s, i, x)])), best = Math.max(...f.values());
       // open it if it trails, wears the CEO's or a suspect's colours, or is Recommended with words blacked out
       const g = guess(s, i, nom), tell = g != null && (g === s.ceo || trust(s, i, g) <= -2);
-      return tell || f.get(nom.id) <= best - 1 || (nom.stamp === 'Rec' && (nom.redacted || []).length > 0 && pers(p)[4] < 1.2) ? 'open' : 'ratify';
+      return tell || f.get(nom.id) <= best - 1 || (Ink.chosen(s) && nom.stamp === 'Rec' && (nom.redacted || []).length > 0 && pers(p)[4] < 1.2) ? 'open' : 'ratify';
     }
     return { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion };
   };

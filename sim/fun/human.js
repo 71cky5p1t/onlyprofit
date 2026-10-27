@@ -26,7 +26,7 @@ function work(OP, s, st) {
     if (workCost(w) > 3) continue;
     const prop = workResult(s, 0, w).prop, v = evs(prop), left = 3 - workCost(w);
     // black out the losing cards it can afford, worst first
-    const rev = [0, 1, 2].filter(su => ev(prop[su]) < 0).sort((a, b) => ev(prop[a]) - ev(prop[b])).slice(0, left);
+    const rev = OP.inkChosen(s) ? [0, 1, 2].filter(su => ev(prop[su]) < 0).sort((a, b) => ev(prop[a]) - ev(prop[b])).slice(0, left) : [];
     const shown = [0, 1, 2].filter(su => !rev.includes(su)).reduce((a, su) => a + ev(prop[su]), 0);
     const key = st.aim === 'min' ? [-v, shown] : [v <= -1 && v >= -2 ? 2 : v === 0 ? 1 : 0, shown - v];
     if (!best || key[0] > best.key[0] || (key[0] === best.key[0] && key[1] > best.key[1])) best = { key, o, rev };
@@ -55,9 +55,9 @@ function warn(s) {
   const c = Object.keys(s.accused).map(Number).filter(t => t !== 0 && !s.P[t].leave && !s.P[t].sab);
   return c.length ? String(c[0]) : 'none';
 }
-function play(OP, n, seed, strat) {
+function play(OP, n, seed, strat, o = {}) {
   const st = STRATS[strat];
-  let s = OP.newGame({ players: n, seed });
+  let s = OP.newGame(Object.assign({ players: n, seed }, o));
   if (!s.P[0].sab) { const o = s.P.find(p => p.sab); if (o) o.sab = false; else s.nSab = 1; s.P[0].sab = true; }
   const go = a => { const r = OP.apply(s, 0, a); if (r.error) throw new Error(s.phase + ' ' + r.error); s = r.state; };
   go({ type: 'begin' });
