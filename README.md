@@ -15,7 +15,7 @@ No dependencies. The page loads its fonts from Google Fonts (fallbacks offline) 
 
 ## Live
 
-https://profit.licky.com.au serves `dist/` from `main` through Cloudflare Pages (no build step; `dist/` is committed, so rebuild before merging). See `docs/hosting.md`.
+https://profit.licky.com.au serves `dist/` from `main` through a Cloudflare Worker (`wrangler.jsonc`, no build step; `dist/` is committed, so rebuild before merging). See `docs/hosting.md`.
 
 ## Layout
 
