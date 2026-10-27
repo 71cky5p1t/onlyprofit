@@ -10,7 +10,7 @@ const OP = (() => {
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
   const STAMP_CLAIM = { Rec: 2.5, Risky: 0.5, Not: -1 };
-  const STAMP_LABEL = { Rec: 'Recommended', Risky: 'Risky', Not: 'Not Recommended' };
+  const STAMP_LABEL = { Rec: 'Recommended', Risky: 'Risky', Not: 'Avoid' };
   const SWAP_COST = [0, 1, 3, 6];
   const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);
   const TOKENS = 3, ROUNDS = 5, SLACK = 2;
