@@ -28,6 +28,9 @@
 /* a blacked-out word on a cover page */
 .cp-ink { display: inline-block; color: transparent; padding: 0 .1em; background: var(--ink-fill); -webkit-mask: var(--ink-mask) 0 0 / 100% 100%; mask: var(--ink-mask) 0 0 / 100% 100%; transform: rotate(-1.5deg); letter-spacing: -.12em; line-height: 1 }
 .cp-arc span.ink { color: #101114; text-shadow: none }
+/* your own sealed page: the ink is there, but you can read through it */
+.cp-ink.see { color: #EDE6D6; letter-spacing: normal; padding: 0 .16em }
+.cp-arc span.ink.see { color: #101114; opacity: .5 }
 
 /* TV: the sentence on each cover is the punchline, read out one page at a time; once the worth is out it's stapled underneath */
 .pg-under .line { position: relative; z-index: 2; width: 112%; margin-top: -8px; font-size: 17px; line-height: 1.45 }

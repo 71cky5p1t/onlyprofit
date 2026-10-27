@@ -79,9 +79,9 @@
     const env = [0, 1, 2].map(su => {
       const c0 = wr.prop[su], rv = draft.redacts.includes(su), n = paid(su);
       const hit = su < 2 && fx && c0.v !== 'V' && after(fx, c0.v) !== c0.v, c = hit ? Object.assign({}, c0, { v: after(fx, c0.v) }) : c0;
-      const ok = rv || costWith({ redacts: draft.redacts.concat(su) }) <= 3;
+      const ok = rv || !OP.inkChosen(S) || costWith({ redacts: draft.redacts.concat(su) }) <= 3;
       return slot('env', su, cardHTML(c, `drag${rv ? ' redacted' : ''}${ok ? '' : ' broke'}${ui.land === su ? ' land' : ''}${fresh('env', su) ? ' fresh' : ''}${hit ? ` fxd fx-${fx}${blink ? ' blink' : ''}` : ''}`, `${n ? `<span class="paid">${hrs(n, true)}</span>` : ''}${hit ? `<s class="was ${tone(c0.v)}" aria-hidden="true">${fmt(c0.v)}</s>` : ''}`,
-        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Blacked out' : 'Black out for 1 input'}"`));
+        `data-drag="env" data-su="${su}" role="button" tabindex="0" aria-pressed="${rv}" aria-label="${esc(c.w)}, ${fmt(c.v)}. ${rv ? 'Blacked out' : OP.inkChosen(S) ? 'Black out for 1 input' : 'In the policy'}"`));
     }).join('');
     const hand = [0, 1, 2].map(su => {
       const c = wr.aside[su], on = draft.swaps.includes(su);
@@ -109,7 +109,7 @@
     // three rubber stamps standing on the blotter; the one you use leaves its mark on the sentence
     const stamps = `<div class="stampstrip rstamps" role="radiogroup" aria-label="Stamp">${Object.keys(STAMP).map(k => `<button class="rstamp s-${k}${k === honest ? ' right' : ''}" role="radio" data-a="stamp" data-v="${k}" aria-checked="${draft.stamp === k}" aria-pressed="${draft.stamp === k}"><i class="knob"></i><i class="neck"></i><span class="block"><span>${STAMP[k]}</span></span><i class="pad"></i></button>`).join('')}</div>`;
     const body = `<div class="play${dealCls}${S.r === 1 && !draft.swaps.length && !draft.discards.length ? ' nudge' : ''}" style="--wait:${wait}s">${head}<div class="policy">${env}</div><div class="hand-row"><div class="fan">${hand}</div></div>${bin}</div>${stamps}`;
-    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)) + marker(draft.redacts.length > 0), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
+    return deskWrap(OP.DEPTS[p.dept], body, { right: purse, fuse: fuse(`${S.r}-cards`, TIME.cards, () => finalise(true)) + (OP.inkChosen(S) ? marker(draft.redacts.length > 0) : ''), foot: '<button class="coverstack" data-a="finalise" aria-label="Cover it: put a cover page on the policy"><i class="cs-sheet"></i><i class="cs-sheet"></i><span class="cs-top"><i class="cs-band"></i><i class="cs-rule"></i><i class="cs-rule"></i></span><b class="cs-note">Cover it</b></button>' });
   }
   // the cover page: pick a template, then dress it. One timer across both
   const mockPage = p => ({ id: '·', style: draft.style, cards: OP.workResult(S, ME, draft).prop, stamp: draft.stamp || 'Rec', redacted: draft.redacts, author: ME, dept: p.dept });

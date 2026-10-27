@@ -23,13 +23,14 @@
   const seesAll = (e, o) => inOpen(e, o) || (mine() && e.author === ME);
   const BLOT = '█████';
   // the cover says the policy: its three card words, blacked-out ones inked over
-  const wordsOf = (e, all) => e.cards.map((c, su) => all || !(e.redacted || []).includes(su) ? { w: c.w } : { w: BLOT, ink: true });
+  // see: the author's own sealed page, ink they can read through
+  const wordsOf = (e, all, see) => e.cards.map((c, su) => !(e.redacted || []).includes(su) || (all && !see) ? { w: c.w } : all ? { w: c.w, ink: 'see' } : { w: BLOT, ink: true });
   const sayOf = (e, o) => wordsOf(e, seesAll(e, o || {})).map(p => p.ink ? 'blacked out' : p.w).join(' ');
   // the sentence sized to fill its box: short ones get big, no word wider than the box
   function subjHTML(parts, font, align, base, w, h) {
     const text = parts.map(p => p.w).join(' '), long = Math.max(...text.split(/\s+/).map(x => x.length)), W = FW[font];
     const fs = Math.max(12, Math.min(base * 1.7, Math.sqrt(w * h / (Math.max(6, text.length) * W * 1.2)), w / (long * W * 1.08)));
-    return `<div class="cp-subj f-${font}" style="text-align:${align};font-size:${fs.toFixed(1)}px">${parts.map(p => p.ink ? `<mark class="cp-ink" aria-label="blacked out">${BLOT}</mark>` : esc(p.w)).join(' ')}</div>`;
+    return `<div class="cp-subj f-${font}" style="text-align:${align};font-size:${fs.toFixed(1)}px">${parts.map(p => p.ink === 'see' ? `<mark class="cp-ink see">${esc(p.w)}</mark>` : p.ink ? `<mark class="cp-ink" aria-label="blacked out">${BLOT}</mark>` : esc(p.w)).join(' ')}</div>`;
   }
   // WordArt: short lines, each on a gentle arc in one solid colour with a block shadow
   function arcHTML(parts, font) {
@@ -44,20 +45,20 @@
     const W = FW[font], long = Math.max(...lines.map(len)), fs = Math.max(14, Math.min(40, 236 / (W * long)));
     const R = 300, gap = fs * 1.2, sag = R - Math.sqrt(R * R - 118 * 118);
     const out = lines.map((line, li) => {
-      const chars = line.flatMap((x, k) => [...(k ? ' ' : '') + x.w].map(c => ({ c, ink: x.ink && c !== ' ' })));
+      const chars = line.flatMap((x, k) => [...(k ? ' ' : '') + x.w].map(c => ({ c, ink: x.ink && c !== ' ' ? (x.ink === 'see' ? 'ink see' : 'ink') : '' })));
       const step = (fs * W * 1.06) / R, start = -((chars.length - 1) * step) / 2;
       return chars.map(({ c, ink }, k) => {
         const t = start + k * step, x = 128 + R * Math.sin(t), y = fs / 2 + li * gap + R * (1 - Math.cos(t));
-        return `<span class="l${li % 3}${ink ? ' ink' : ''}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;transform:translate(-50%,-50%) rotate(${(t * 180 / Math.PI).toFixed(1)}deg)">${esc(c)}</span>`;
+        return `<span class="l${li % 3}${ink ? ' ' + ink : ''}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;transform:translate(-50%,-50%) rotate(${(t * 180 / Math.PI).toFixed(1)}deg)">${esc(c)}</span>`;
       }).join('');
     }).join('');
-    return `<div class="cp-arc f-${font}" role="img" aria-label="${esc(parts.map(p => p.ink ? 'blacked out' : p.w).join(' '))}" style="font-size:${fs.toFixed(1)}px;height:${(lines.length * gap + sag).toFixed(0)}px">${out}</div>`;
+    return `<div class="cp-arc f-${font}" role="img" aria-label="${esc(parts.map(p => p.ink === true ? 'blacked out' : p.w).join(' '))}" style="font-size:${fs.toFixed(1)}px;height:${(lines.length * gap + sag).toFixed(0)}px">${out}</div>`;
   }
   const artBox = (id, cls) => `<span class="cp-art ${cls || ''}">${artSVG(id)}</span>`;
   const redact = w => `<i class="cp-redact" style="width:${w}"></i>`;
   // nothing on the page but the template's look, the sentence and the stamp
-  function coverInner(e, L, all) {
-    const s = wordsOf(e, all);
+  function coverInner(e, L, all, see) {
+    const s = wordsOf(e, all, see);
     const sub = (base, w, h) => subjHTML(s, L.font, L.align, base, w, h);
     switch (L.tpl) {
       case 'fax': return `<div class="cp-in"><div class="fax-h"></div><div class="grow">${sub(24, 236, 190)}</div></div>`;
@@ -75,7 +76,7 @@
   function coverHTML(e, o) {
     o = o || {};
     const L = lookOf(e), tilt = o.tilt == null ? ((hash(e.id + plain(e)) % 7) - 3) * .6 : o.tilt;
-    return `<div class="cp-w" style="${o.k ? `--k:${o.k};` : ''}--t:${tilt}deg"><div class="cp t-${L.tpl}">${coverInner(e, L, seesAll(e, o))}
+    return `<div class="cp-w" style="${o.k ? `--k:${o.k};` : ''}--t:${tilt}deg"><div class="cp t-${L.tpl}">${coverInner(e, L, seesAll(e, o), !inOpen(e, o))}
       ${o.note === false ? '' : `<span class="cp-note">${icon(e.id, o.list)}</span>`}<span class="env-stamp cp-stamp ${e.stamp}">${STAMP[e.stamp]}</span>
       ${e.approved ? `<span class="big-stamp${o.fresh ? '' : ' no-anim'}" aria-hidden="true">Approved</span>` : ''}</div></div>`;
   }

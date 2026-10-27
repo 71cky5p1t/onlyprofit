@@ -46,6 +46,7 @@ Seat 0 is the human. With `spectate: true` every seat is a bot and the game move
 Logged round by round in `sim/fun/CHANGELOG.md`.
 - Whoever inherits a rejected proposal learns who wrote it, which makes complaint memos possible. Memos are public and unverifiable, and the human may lie.
 - Cards shown with inputs are public, so the Board can judge the nominee.
+- Setup option `ink: 'one'` (Blackouts: Luck of the draw): nobody picks what's blacked out. One random word on every page is inked when it's handed in, free; targets drop 1 at 4, 7 and 8 players. `src/engine/ink.js` holds every blackout rule.
 - The Board votes Ratify or Open it on the CEO's nominee. An opened nominee that trails the best-looking proposal by more than 1 is overruled; a CEO caught on their own sits out a CEO turn.
 - Stamps have a right answer. The CEO may privately investigate one stamp a quarter; a wrong one puts that player on a Performance Improvement Plan (announced, never explained), and their proposals open to the CEO only.
 - Two Written Warnings and you're stood down (your department runs on autopilot). After Q5 the table names a saboteur: right reverses their losing policies (at least +3, the Clawback), wrong costs −3.

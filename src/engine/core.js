@@ -3,6 +3,7 @@
 const OP = (() => {
   const C = typeof OP_CONTENT !== 'undefined' ? OP_CONTENT : require('./content.js');
   const B = typeof OP_BOTS !== 'undefined' ? OP_BOTS : require('./bots.js');
+  const Ink = typeof OP_INK !== 'undefined' ? OP_INK : require('./ink.js');
   const { DISPUTE, SUITS, WORDS, VALUES, FX, NAMES, DEPTS, TEMPLATES, FONTS, SUBJ, LEX } = C, { PERS, PERS_SAY } = B;
   const MU = VALUES.reduce((a, v) => a + (v === 'V' ? 0 : v), 0) / VALUES.length;
   const TARGETS = { 4: 20, 5: 21, 6: 22, 7: 23, 8: 24 };
@@ -95,7 +96,7 @@ const OP = (() => {
     if (e.audited || e.autopilot) return evs(e.cards);
     const rv = shown(e);
     const known = rv.reduce((a, su) => a + readAt(e, su), 0);
-    const mu = MU - (tier === 'smart' ? 0.4 : 0);
+    const mu = MU - (tier === 'smart' && !e.luck ? 0.4 : 0);
     return known + (3 - rv.length) * mu + STAMP_W[tier] * STAMP_ADJ[e.stamp];
   }
   // black out the worst losing card, if there's an input left
@@ -113,10 +114,11 @@ const OP = (() => {
     const s = {
       v: 1, rs: (opts.seed >>> 0) || 1, seed: opts.seed >>> 0, n, spectate: !!opts.spectate,
       brand: LEX[opts.brand] ? opts.brand : 'op',
-      loyalTier: opts.loyalTier || 'smart', sabTier: opts.sabTier || 'smart', easy: !!opts.easy,
+      ink: Ink.MODES.includes(opts.ink) ? opts.ink : 'choose', loyalTier: opts.loyalTier || 'smart', sabTier: opts.sabTier || 'smart', easy: !!opts.easy,
       target: TARGETS[n] - (opts.easy ? 3 : 0), profit: 0, r: 0, phase: 'brief',
       feed: [], ledger: [], history: [], investigations: [], memos: [], accused: {}, envs: [], left: {}, work: {},
     };
+    s.target += Ink.shift(s, n);
     s.subj = subjLists(s);
     s.deck = newDeck(s);
     // Headcount Memo
@@ -178,7 +180,7 @@ const OP = (() => {
   }
 
   const pubEst = (s, e) => estimate(e, s.loyalTier, false);
-  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw, draw3, discard, redactPick, readAt, shown, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
+  const { initMind, observe, botDisputes, botWork, autopilot, botInheritMemo, botPick, botWarnVote, botWhistle, botDesign, botBoardVote, suspicion } = B.make({ Ink, rand, pickOne, argmax, ev, STAMP_ADJ, evs, rightStamp, estimate, plans, draw, draw3, discard, redactPick, readAt, shown, randomSubject, randomStyle, isHuman, accuse, pubEst, TOKENS, SLACK });
 
   // ---------- round flow ----------
   function startRound(s, E) {
@@ -192,6 +194,7 @@ const OP = (() => {
       p.dept = d; p.inh = inh;
       const D = draw3(s);
       if (p.leave) { const [e, h] = autopilot(s, i, inh.cards, D); e.dept = d; s.envs.push(e); s.left[d] = h; continue; }
+      Ink.deal(s, rand, i);
       // three replacements per suit wait under the shredder
       if (isHuman(s, i)) { s.work[i] = { D, X: [0, 1, 2].map(su => [draw(s, su), draw(s, su), draw(s, su)]) }; continue; }
       botInheritMemo(s, i, inh);
@@ -225,7 +228,7 @@ const OP = (() => {
   }
   function submitWork(s, i, a, E) {
     const discards = (Array.isArray(a.discards) ? a.discards : []).filter(d => d && ['inh', 'spare'].includes(d.pile) && [0, 1, 2].includes(d.su)).slice(0, TOKENS).map(d => ({ pile: d.pile, su: d.su }));
-    const w = { discards, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), redacts: [...new Set(a.redacts || [])].filter(x => x >= 0 && x < 3) };
+    const w = { discards, swaps: [...new Set(a.swaps || [])].filter(x => x >= 0 && x < 3), redacts: Ink.chosen(s) ? [...new Set(a.redacts || [])].filter(x => x >= 0 && x < 3) : [] };
     if (workCost(w) > TOKENS) return 'Not enough work tokens.';
     if (!STAMP_LABEL[a.stamp]) return 'Stamp the cover page first.';
     const p = s.P[i], wk = s.work[i], { prop, aside, shred, used } = workResult(s, i, w);
@@ -236,7 +239,8 @@ const OP = (() => {
     // alignment and clip-art are cosmetic
     if (['left', 'center', 'right'].includes(st.align)) style.align = st.align;
     if (typeof st.art === 'string') style.art = st.art.slice(0, 24);
-    const e = { author: i, cards: prop, stamp: a.stamp, redacted: w.redacts, revealed: [0, 1, 2].filter(x => !w.redacts.includes(x)), subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), shredded: discards.length, dept: p.dept };
+    const red = Ink.apply(s, rand, i, w.redacts);
+    const e = { author: i, cards: prop, stamp: a.stamp, redacted: red, revealed: [0, 1, 2].filter(x => !red.includes(x)), luck: !Ink.chosen(s) || undefined, subject, style, mode: p.sab ? 'human-sab' : 'human', cost: workCost(w), shredded: discards.length, dept: p.dept };
     s.envs.push(e); s.left[p.dept] = aside;
     const inh = p.inh;
     if (a.claim && inh.kind === 'rejected' && inh.author != null && inh.author !== i) {
@@ -428,6 +432,6 @@ const OP = (() => {
   }
 
   return { PERS_SAY, apply, newGame, workResult, workCost, estimate, evs, ev, total, rightStamp, fmt, FX, ceoSchedule, suspicion, randomSubject: s => randomSubject(s), rand,
-    SUITS, SUBJ, LEX, TEMPLATES, FONTS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU };
+    SUITS, SUBJ, LEX, TEMPLATES, FONTS, DEPTS, STAMP_LABEL, SWAP_COST, TOKENS, ROUNDS, TARGETS, MU, INK: Ink.MODES, inkChosen: Ink.chosen };
 })();
 if (typeof module !== 'undefined') module.exports = OP;

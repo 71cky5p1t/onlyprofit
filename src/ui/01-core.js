@@ -1,7 +1,7 @@
   const $app = document.getElementById('app');
   const ME = 0;
   let S = null, draft = null, err = '', toastT = null;
-  let setup = { players: 4, loyalTier: 'smart', sabTier: 'smart', easy: false, spectate: false, seed: '', brand: window.__opBrand || 'op', cards: window.__opCards || 'colour' };
+  let setup = { players: 4, loyalTier: 'smart', sabTier: 'smart', easy: false, ink: 'choose', spectate: false, seed: '', brand: window.__opBrand || 'op', cards: window.__opCards || 'colour' };
   const ui = { debug: false, sel: null, deal: false, land: null, printed: 0, stamped: '', lastKey: null, shown: null, tick: null };
   try { ui.debug = localStorage.getItem('op-debug') === '1'; } catch (e) {}
 

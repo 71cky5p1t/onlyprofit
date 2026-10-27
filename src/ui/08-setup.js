@@ -11,6 +11,7 @@
         <div class="field"><span class="label">Saboteur bots</span>${seg('sabTier', [['smart', 'Smart'], ['patient', 'Patient'], ['blatant', 'Blatant']])}</div>
         <div class="field"><span class="label">Company</span>${seg('brand', BRANDS.map(b => [b.id, b.name]))}</div>
         <div class="field"><span class="label">Cards</span>${seg('cards', [['paper', 'Paper'], ['colour', 'Colour']])}</div>
+        <div class="field"><span class="label">Blackouts</span>${seg('ink', [['choose', 'You pick'], ['one', 'Luck of the draw']])}</div>
         <div class="field"><span class="label">Target</span>${seg('easy', [[false, 'Standard'], [true, 'Easy mode (−3)']])}</div>
         <div class="field"><label class="label" for="seed">Seed (optional, to replay a deal)</label><input class="input" id="seed" data-in="seed" inputmode="numeric" placeholder="Random" value="${esc(setup.seed)}" style="max-width:200px"></div>
         <details class="rules"><summary>The quarter, in brief</summary><ol>
