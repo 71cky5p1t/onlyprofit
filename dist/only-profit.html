@@ -607,7 +607,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .cp-w::before, .cp-w::after { content: ""; position: absolute; inset: 0; background: #F3EEE2; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,.25) }
 .cp-w::before { transform: rotate(2.2deg) translate(2px, 2px) } .cp-w::after { transform: rotate(-1.4deg) translate(-2px, 3px); background: #EAE3D2 }
 .cp-w > .cp { z-index: 1 }
-.cp-in { position: relative; height: 100%; box-sizing: border-box; padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 12px }
+.cp-in { position: relative; height: 100%; box-sizing: border-box; padding: 24px 22px 86px; display: flex; flex-direction: column; gap: 12px }
 .cp-in.center { align-items: center; text-align: center }
 .cp .grow { flex-grow: 1; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 0 }
 .cp .grow.end { align-items: flex-end; justify-content: flex-end }
@@ -620,16 +620,21 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .cp-art.small .px { width: 66px; height: 66px }
 .cp-note { position: absolute; right: 12px; top: 12px; width: 34px; height: 34px; display: grid; place-items: center; background: #F3D36B; color: var(--ink); transform: rotate(5deg); box-shadow: 0 2px 3px rgba(0,0,0,.25); z-index: 2 }
 .cp-note .ico { width: 21px; height: 21px }
-.cp-stamp { position: absolute; right: 14px; bottom: 16px; z-index: 2; font-size: 11px; padding: 5px 7px; transform: rotate(-7deg) }
+.cp-stamp { position: absolute; left: 50%; bottom: 22px; z-index: 2; font-size: 25px; letter-spacing: .06em; padding: 8px 13px 6px; border-width: 4.5px; border-radius: 5px; white-space: nowrap; transform: translateX(-50%) rotate(-6deg); opacity: .9;
+  /* inked unevenly, the way a real stamp lands */
+  -webkit-mask: radial-gradient(circle at 68% 58%, #000 30%, rgba(0,0,0,.72) 95%); mask: radial-gradient(circle at 68% 58%, #000 30%, rgba(0,0,0,.72) 95%) }
+/* the short words get a bigger block */
+.cp-stamp.Risky, .cp-stamp.Not { font-size: 33px; padding: 8px 16px 6px }
 .cp .big-stamp { right: 18px; top: 120px; font-size: 26px; border-width: 5px; z-index: 3 }
 /* fax */
 .t-fax { background: repeating-linear-gradient(transparent 0 3px, rgba(0,0,0,.035) 3px 4px), #FBF8F1 }
-.fax-h { background: var(--ink); color: #FBF8F1; font-weight: 900; font-size: 15px; letter-spacing: .22em; padding: 9px 10px 8px; margin-right: 40px }
+.fax-h { height: 14px; margin-right: 44px; background: repeating-linear-gradient(90deg, var(--ink) 0 18px, transparent 18px 22px), var(--ink); box-shadow: 0 6px 0 -4px rgba(0,0,0,.35) }
 .fax-g { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 7px 8px; font: 12px/1.2 var(--f-type); align-items: center }
 .fax-g span { border-bottom: 1px solid var(--ink) }
 .fax-f { font: 9px/1.3 var(--f-type); color: #4E4A40; border-top: 1px dashed var(--ink); padding-top: 6px; margin-right: 70px }
 /* memo */
-.memo-h { display: flex; align-items: center; gap: 9px; padding-bottom: 10px; border-bottom: 2px solid var(--ink); font-weight: 900; font-size: 12.5px; line-height: 1.1; margin-right: 38px }
+.memo-h { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 3px double var(--ink); margin-right: 38px }
+.memo-rule { flex: 1; height: 6px; background: var(--brand); opacity: .8 }
 .memo-h small { display: block; font-size: 8px; font-weight: 700; letter-spacing: .14em; color: #857D6B; text-transform: uppercase }
 .memo-seal { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--brand); color: var(--brand-ink) }
 .memo-seal .mk { width: 19px; height: 19px; fill: currentColor } .memo-seal .mk .s { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round }
@@ -640,48 +645,53 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .memo-lines { display: grid; gap: 5px; margin-right: 90px } .memo-lines i { height: 4px; background: rgba(0,0,0,.12) } .memo-lines i:nth-child(2) { width: 86% } .memo-lines i:nth-child(3) { width: 60% }
 /* WordArt */
 .t-wordart { background: linear-gradient(rgba(63,99,184,.08) 1px, transparent 1px) 0 0 / 14px 14px, linear-gradient(90deg, rgba(63,99,184,.08) 1px, transparent 1px) 0 0 / 14px 14px, #fff }
-.t-wordart .cp-in { padding: 26px 12px 18px; gap: 4px }
+.t-wordart .cp-in { padding: 26px 12px 86px; gap: 4px }
 .cp-arc { position: relative; width: 256px; flex: none; margin-top: 6px }
 .cp-arc span { position: absolute; line-height: 1; text-transform: uppercase; white-space: pre; font-weight: 900; text-shadow: .04em .04em 0 var(--ink), .08em .08em 0 var(--ink) }
 .cp-arc.f-poster span { font-weight: 400 }
 .cp-arc .l0 { color: #D9261C } .cp-arc .l1 { color: #E0732C } .cp-arc .l2 { color: #3F63B8 }
 /* Good news clip-art */
 .t-clipart { background: radial-gradient(circle, rgba(217,38,28,.35) 0 1.6px, transparent 2px) 0 0 / 26px 26px, radial-gradient(circle, rgba(63,99,184,.35) 0 1.6px, transparent 2px) 13px 13px / 26px 26px, #FFF6CF }
-.t-clipart .cp-in { padding-top: 28px }
+.t-clipart .cp-in { padding-top: 34px }
 .clip-h { font: 700 34px/1 var(--f-comic); color: var(--red); transform: rotate(-4deg) }
 /* quarterly report: the company's colour */
 .t-report { background: var(--brand) }
 .t-report::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 22px; background: radial-gradient(circle at 11px 50%, #2B2C2A 0 4px, transparent 4.5px) 0 0 / 22px 18px, rgba(0,0,0,.18) }
-.cp-in.report { padding: 28px 22px 22px 40px; gap: 14px; color: var(--brand-ink) }
+.cp-in.report { padding: 30px 22px 86px 40px; gap: 14px; color: var(--brand-ink) }
 .rep-h { font-size: 10px; font-weight: 800; letter-spacing: .3em }
 .rep-box { background: #FBF8F1; color: var(--ink); padding: 14px 14px 16px; box-shadow: 0 2px 0 rgba(0,0,0,.2); margin-right: 26px }
 .rep-f { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; margin-right: 92px } .rep-f .cp-redact { height: 9px; flex: none }
 /* dossier */
 .t-dossier { background: #E5D3A4 }
 .t-dossier::before { content: ""; position: absolute; left: 18px; top: 0; width: 92px; height: 16px; background: #D8C38E; border-radius: 0 0 6px 6px }
-.cp-in.dos { padding-top: 34px; gap: 14px; font-family: var(--f-type) }
+.cp-in.dos { padding-top: 38px; gap: 14px; font-family: var(--f-type) }
 .dos-stamp { align-self: flex-start; color: var(--red); border: 4px solid var(--red); border-radius: 4px; padding: 6px 10px 4px; font: 900 19px/1 var(--f-body); letter-spacing: .1em; transform: rotate(-7deg); mix-blend-mode: multiply; box-shadow: inset 0 0 0 2px #E5D3A4, inset 0 0 0 4px var(--red) }
 .dos-ref { font-size: 10.5px; display: grid; gap: 3px }
 .dos-bars { display: grid; gap: 6px; margin-right: 80px }
 /* overhead transparency */
 .t-overhead { background: #2B2C2A }
 .t-overhead::before { content: ""; position: absolute; inset: 14px; background: linear-gradient(125deg, rgba(255,255,255,.75) 0 18%, rgba(255,255,255,0) 30%), #DCE9F2; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15) }
-.cp-in.oh { padding: 34px 32px 30px; gap: 14px }
+.cp-in.oh { padding: 38px 32px 92px; gap: 14px }
 .oh .cp-subj { color: #3F63B8; font-weight: 900; line-height: 1.05; padding-right: 34px }
 .oh-rule { height: 3px; background: var(--red); border-radius: 2px; transform: rotate(-1deg) }
 .oh-list { display: grid; gap: 7px; font: 700 15px/1.2 var(--f-comic) }
-.t-overhead .cp-stamp { bottom: 26px; right: 26px }
-.t-overhead .grow.end { justify-content: flex-start }
+.t-overhead .cp-stamp { bottom: 30px }
+.t-overhead .grow.end { justify-content: flex-end }
 /* certificate */
 .t-certificate { background: #FBF4E2 }
 .t-certificate::before { content: ""; position: absolute; inset: 10px; border: 5px double var(--brand) }
 .t-certificate::after { content: ""; position: absolute; inset: 20px; border: 1px dashed var(--brand) }
-.cp-in.cert { padding: 38px 30px 30px; gap: 10px }
+.cp-in.cert { padding: 40px 30px 92px; gap: 10px }
 .cert-h { font: 700 10.5px/1 var(--f-serif); letter-spacing: .16em; color: var(--brand); margin-right: 28px }
 .cert-i { font: italic 600 12px/1.2 var(--f-serif); color: #4E4A40 }
 .cert-seal { align-self: flex-start; width: 58px; height: 58px; flex: none; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 38% 32%, #F7D38A, #E9A23B 50%, #A86A16); box-shadow: 0 0 0 4px #E9A23B, 0 0 0 5px #A86A16 }
 .cert-seal .px { width: 36px; height: 36px }
-.t-certificate .cp-stamp { right: 30px; bottom: 30px }
+.t-certificate .cp-stamp { bottom: 32px }
+.t-certificate .cert-seal { position: absolute; left: 24px; top: 24px; z-index: 1; width: 46px; height: 46px } .t-certificate .cert-seal .px { width: 28px; height: 28px }
+/* clip-art under the sentence shrinks to whatever room is left above the stamp */
+.cp .grow:has(> .cp-art) { overflow: hidden } .cp .grow > .cp-art { height: 100%; max-height: 112px } .cp .grow > .cp-art .px { width: auto; height: 100%; max-height: 112px; aspect-ratio: 1 }
+.cp .grow > .cp-art.small, .cp .grow > .cp-art.small .px { max-height: 66px }
+.rep-box { flex: none }
 /* ---------- tokens are inputs: a branded card you punch, hole chits on the cards ---------- */
 .purse { justify-self: start; display: inline-grid; grid-template-columns: auto auto; align-items: center; gap: 3px 6px; width: 132px; padding: 0 7px 4px 0; border-radius: 5px; overflow: hidden; background: var(--stock); color: var(--ink); transform: rotate(-2deg);
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.1), 0 3px 6px rgba(0,0,0,.45) }
@@ -1478,7 +1488,7 @@ const OP = (() => {
   const STAMP_W = { naive: 1.5, basic: 1.5, smart: 0.5 };
   const STAMP_ADJ = { Rec: 1, Risky: 0, Not: -1.5 };
   const STAMP_CLAIM = { Rec: 2.5, Risky: 0.5, Not: -1 };
-  const STAMP_LABEL = { Rec: 'Recommended', Risky: 'Risky', Not: 'Not Recommended' };
+  const STAMP_LABEL = { Rec: 'Recommended', Risky: 'Risky', Not: 'Avoid' };
   const SWAP_COST = [0, 1, 3, 6];
   const FX_SLOTS = VALUES.reduce((a, v, k) => (v === 0 ? a.concat(k) : a), []);
   const TOKENS = 3, ROUNDS = 5, SLACK = 2;
@@ -2272,26 +2282,20 @@ const OP = (() => {
   }
   const artBox = (id, cls) => `<span class="cp-art ${cls || ''}">${artSVG(id)}</span>`;
   const redact = w => `<i class="cp-redact" style="width:${w}"></i>`;
+  // nothing on the page but the template's look, the sentence and the stamp
   function coverInner(e, L, all) {
-    const s = wordsOf(e, all), q = `Q${Math.max(1, S ? S.r : 1)}`, b = brand();
+    const s = wordsOf(e, all);
     const sub = (base, w, h) => subjHTML(s, L.font, L.align, base, w, h);
     switch (L.tpl) {
-      case 'fax': return `<div class="cp-in"><div class="fax-h">FAX COVER SHEET</div>
-        <div class="fax-g"><b>TO:</b><span>The CEO</span><b>FROM:</b>${redact('100%')}<b>PAGES:</b><span>3 (incl. this one)</span></div>
-        <div class="grow">${sub(23, 236, 150)}</div><div class="fax-f">If you received this in error, please shred yourself.</div></div>`;
-      case 'memo': return `<div class="cp-in"><div class="memo-h"><span class="memo-seal">${brandMark()}</span><span>${esc(b.name)}<small>${esc(b.suffix)}</small></span></div>
-        <div class="memo-t">MEMORANDUM</div><div class="memo-g"><b>TO</b><span>All staff</span><b>FROM</b>${redact('70%')}<b>DATE</b><span>${q}</span></div>
-        <div class="grow ruled">${sub(24, 236, 140)}</div><div class="memo-lines"><i></i><i></i><i></i></div></div>`;
+      case 'fax': return `<div class="cp-in"><div class="fax-h"></div><div class="grow">${sub(24, 236, 190)}</div></div>`;
+      case 'memo': return `<div class="cp-in"><div class="memo-h"><span class="memo-seal">${brandMark()}</span><i class="memo-rule"></i></div>
+        <div class="grow ruled">${sub(25, 236, 180)}</div><div class="memo-lines"><i></i><i></i><i></i></div></div>`;
       case 'wordart': return `<div class="cp-in center">${arcHTML(s, L.font)}<div class="grow">${artBox(L.art, 'big')}</div></div>`;
-      case 'clipart': return `<div class="cp-in center"><div class="clip-h">Good news!</div>${artBox(L.art, 'big')}<div class="grow">${sub(22, 236, 120)}</div></div>`;
-      case 'report': return `<div class="cp-in report"><div class="rep-h">QUARTERLY REPORT</div><div class="rep-box">${sub(23, 164, 110)}</div>
-        <div class="grow">${artBox(L.art, 'big')}</div><div class="rep-f">${q} · PREPARED BY ${redact('70px')}</div></div>`;
-      case 'dossier': return `<div class="cp-in dos"><div class="dos-stamp">CONFIDENTIAL</div><div class="dos-ref"><span>FILE NO. ${String(hash(plain(e)) % 9000 + 1000)}-B</span><span>EYES ONLY</span></div>
-        <div class="grow">${sub(22, 236, 130)}</div><div class="dos-bars">${redact('100%')}${redact('64%')}${redact('82%')}</div></div>`;
-      case 'overhead': return `<div class="cp-in oh">${sub(25, 182, 110)}<div class="oh-rule"></div><div class="oh-list"><span>• Profit</span><span>• More profit</span><span>• Questions (none)</span></div>
-        <div class="grow end">${artBox(L.art, 'small')}</div></div>`;
-      default: return `<div class="cp-in center cert"><div class="cert-h">CERTIFICATE OF POLICY</div><div class="cert-i">this is to certify that</div>
-        <div class="grow">${sub(24, 220, 120)}</div><div class="cert-i">is a good idea</div><div class="cert-seal">${artBox(L.art, 'small')}</div></div>`;
+      case 'clipart': return `<div class="cp-in center">${artBox(L.art, 'big')}<div class="grow">${sub(23, 236, 140)}</div></div>`;
+      case 'report': return `<div class="cp-in report"><div class="rep-box">${sub(22, 180, 130)}</div><div class="grow">${artBox(L.art, 'big')}</div></div>`;
+      case 'dossier': return `<div class="cp-in dos"><div class="grow">${sub(23, 236, 170)}</div><div class="dos-bars">${redact('100%')}${redact('64%')}${redact('82%')}</div></div>`;
+      case 'overhead': return `<div class="cp-in oh">${sub(26, 170, 150)}<div class="oh-rule"></div><div class="grow end">${artBox(L.art, 'small')}</div></div>`;
+      default: return `<div class="cp-in center cert"><div class="grow">${sub(25, 210, 170)}</div><div class="cert-seal">${artBox(L.art, 'small')}</div></div>`;
     }
   }
   // the page itself: sticky note with the proposal's office icon, stamp in the corner

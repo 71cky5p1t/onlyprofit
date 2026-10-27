@@ -55,26 +55,20 @@
   }
   const artBox = (id, cls) => `<span class="cp-art ${cls || ''}">${artSVG(id)}</span>`;
   const redact = w => `<i class="cp-redact" style="width:${w}"></i>`;
+  // nothing on the page but the template's look, the sentence and the stamp
   function coverInner(e, L, all) {
-    const s = wordsOf(e, all), q = `Q${Math.max(1, S ? S.r : 1)}`, b = brand();
+    const s = wordsOf(e, all);
     const sub = (base, w, h) => subjHTML(s, L.font, L.align, base, w, h);
     switch (L.tpl) {
-      case 'fax': return `<div class="cp-in"><div class="fax-h">FAX COVER SHEET</div>
-        <div class="fax-g"><b>TO:</b><span>The CEO</span><b>FROM:</b>${redact('100%')}<b>PAGES:</b><span>3 (incl. this one)</span></div>
-        <div class="grow">${sub(23, 236, 150)}</div><div class="fax-f">If you received this in error, please shred yourself.</div></div>`;
-      case 'memo': return `<div class="cp-in"><div class="memo-h"><span class="memo-seal">${brandMark()}</span><span>${esc(b.name)}<small>${esc(b.suffix)}</small></span></div>
-        <div class="memo-t">MEMORANDUM</div><div class="memo-g"><b>TO</b><span>All staff</span><b>FROM</b>${redact('70%')}<b>DATE</b><span>${q}</span></div>
-        <div class="grow ruled">${sub(24, 236, 140)}</div><div class="memo-lines"><i></i><i></i><i></i></div></div>`;
+      case 'fax': return `<div class="cp-in"><div class="fax-h"></div><div class="grow">${sub(24, 236, 190)}</div></div>`;
+      case 'memo': return `<div class="cp-in"><div class="memo-h"><span class="memo-seal">${brandMark()}</span><i class="memo-rule"></i></div>
+        <div class="grow ruled">${sub(25, 236, 180)}</div><div class="memo-lines"><i></i><i></i><i></i></div></div>`;
       case 'wordart': return `<div class="cp-in center">${arcHTML(s, L.font)}<div class="grow">${artBox(L.art, 'big')}</div></div>`;
-      case 'clipart': return `<div class="cp-in center"><div class="clip-h">Good news!</div>${artBox(L.art, 'big')}<div class="grow">${sub(22, 236, 120)}</div></div>`;
-      case 'report': return `<div class="cp-in report"><div class="rep-h">QUARTERLY REPORT</div><div class="rep-box">${sub(23, 164, 110)}</div>
-        <div class="grow">${artBox(L.art, 'big')}</div><div class="rep-f">${q} · PREPARED BY ${redact('70px')}</div></div>`;
-      case 'dossier': return `<div class="cp-in dos"><div class="dos-stamp">CONFIDENTIAL</div><div class="dos-ref"><span>FILE NO. ${String(hash(plain(e)) % 9000 + 1000)}-B</span><span>EYES ONLY</span></div>
-        <div class="grow">${sub(22, 236, 130)}</div><div class="dos-bars">${redact('100%')}${redact('64%')}${redact('82%')}</div></div>`;
-      case 'overhead': return `<div class="cp-in oh">${sub(25, 182, 110)}<div class="oh-rule"></div><div class="oh-list"><span>• Profit</span><span>• More profit</span><span>• Questions (none)</span></div>
-        <div class="grow end">${artBox(L.art, 'small')}</div></div>`;
-      default: return `<div class="cp-in center cert"><div class="cert-h">CERTIFICATE OF POLICY</div><div class="cert-i">this is to certify that</div>
-        <div class="grow">${sub(24, 220, 120)}</div><div class="cert-i">is a good idea</div><div class="cert-seal">${artBox(L.art, 'small')}</div></div>`;
+      case 'clipart': return `<div class="cp-in center">${artBox(L.art, 'big')}<div class="grow">${sub(23, 236, 140)}</div></div>`;
+      case 'report': return `<div class="cp-in report"><div class="rep-box">${sub(22, 180, 130)}</div><div class="grow">${artBox(L.art, 'big')}</div></div>`;
+      case 'dossier': return `<div class="cp-in dos"><div class="grow">${sub(23, 236, 170)}</div><div class="dos-bars">${redact('100%')}${redact('64%')}${redact('82%')}</div></div>`;
+      case 'overhead': return `<div class="cp-in oh">${sub(26, 170, 150)}<div class="oh-rule"></div><div class="grow end">${artBox(L.art, 'small')}</div></div>`;
+      default: return `<div class="cp-in center cert"><div class="grow">${sub(25, 210, 170)}</div><div class="cert-seal">${artBox(L.art, 'small')}</div></div>`;
     }
   }
   // the page itself: sticky note with the proposal's office icon, stamp in the corner
