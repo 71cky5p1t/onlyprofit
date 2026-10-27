@@ -13,6 +13,10 @@ open dist/only-profit.html
 
 No dependencies. The page loads its fonts from Google Fonts (fallbacks offline) and its sound from `dist/audio/`, so serve `dist/` as a folder.
 
+## Live
+
+https://profit.licky.com.au serves `dist/` from `main` through Cloudflare Pages (no build step; `dist/` is committed, so rebuild before merging). See `docs/hosting.md`.
+
 ## Layout
 
 | Path | What it is |
@@ -23,7 +27,7 @@ No dependencies. The page loads its fonts from Google Fonts (fallbacks offline) 
 | `src/styles/*.css` | Styles, in cascade order (tokens in `01-base.css`). |
 | `src/viewer.html` | Screens viewer; embeds the built game. |
 | `assets/audio/` | Music and SFX, with the tools that generate them. |
-| `build.sh` | Builds `dist/only-profit.html`, `dist/viewer.html` and `dist/audio/`. |
+| `build.sh` | Builds `dist/only-profit.html` (copied to `dist/index.html`), `dist/viewer.html` and `dist/audio/`. |
 | `sim/fun/` | Balance and fun harness against the live engine; `CHANGELOG.md` logs each rule round. |
 | `tools/sentences.js` | Lists every Action × Target × Modifier sentence per company with its value (`deal=SEED` for one real deck), to audit that monstrous sentences pay and decent ones cost. |
 | `sim/playtest/`, `sim/*.py` | Historical: scripted playtests on the PR #2 engine, and the original Python sims the bots were ported from. Their rules and targets are out of date. |
