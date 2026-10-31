@@ -9,3 +9,4 @@
 - Player-facing words are current game terms in Australian English: proposal and cover page (not envelope), inputs, punched from the "Your Input Matters" card (not overtime, tokens or coins), stood down, Board Ratify / Open it, Performance Improvement Plan. Code names like `envs` and `TOKENS` stay.
 - Rules change only when Joel agrees. Log rule rounds in `sim/fun/CHANGELOG.md` and keep the README rule list current. `sim/playtest/` and `sim/*.py` are historical.
 - Style: two-space indent, single quotes, terse comments, matching the existing code.
+- Location scenes live in `src/scenes/` (kit, times, props by family, backdrops, locations, renderer, mount). `OPS.render(id, { time, seed })` is pure and returns one SVG; tint and lights are computed per hour, idle loops are CSS. Run `node test/scenes.js` after scene changes; `./build.sh` writes the gallery to `dist/scenes.html`.

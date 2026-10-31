@@ -24,6 +24,12 @@ for m in 01-water-cooler 04-q5-overtime 05-hold-music-clean 06-stripe-wipe; do c
   echo '<script>'; sed '/^if (typeof module/d' src/petty/engine/cards.js src/petty/engine/bots.js src/petty/engine/core.js; echo '</script>'
   echo '<script>'; echo '(() => {'; cat src/petty/ui/*.js; echo '})();'; echo '</script>'
 } > dist/petty-cash.html
+# location scene gallery (src/scenes)
+node -e '
+const fs = require("fs"), d = "src/scenes/", js = fs.readdirSync(d).filter(f => /^\d.*\.js$/.test(f)).sort().map(f => fs.readFileSync(d + f, "utf8")).join("\n");
+const html = fs.readFileSync(d + "gallery.html", "utf8").replace("/*SCENES_CSS*/", () => fs.readFileSync(d + "scenes.css", "utf8"))
+  .replace("/*SCENES_JS*/", () => js).replace("/*GALLERY_JS*/", () => fs.readFileSync(d + "gallery.js", "utf8"));
+fs.writeFileSync("dist/scenes.html", html);'
 # the site root serves the game
 cp dist/only-profit.html dist/index.html
-echo "Built dist/only-profit.html, dist/index.html, dist/petty-cash.html, dist/viewer.html and dist/audio"
+echo "Built dist/only-profit.html, dist/index.html, dist/viewer.html, dist/petty-cash.html, dist/scenes.html and dist/audio"
