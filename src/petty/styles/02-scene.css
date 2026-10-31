@@ -1,0 +1,17 @@
+/* Company scene: colours per company, light per time of day. Hooks: body[data-co], body[data-tod]. Scene art can replace .scene later. */
+.scene { position: fixed; inset: 0; z-index: -1; background: var(--sky); transition: background 1.2s ease }
+.scene::before { content: ""; position: absolute; inset: 0; background: var(--motif); opacity: .5 }
+.scene::after { content: ""; position: absolute; inset: 0; background: var(--tod, transparent); transition: background 1.2s ease; mix-blend-mode: multiply }
+body { --sky: radial-gradient(120% 90% at 50% 0%, #46705F, #35574A 45%, #22392F); --motif: none; --accent: var(--halo) }
+body[data-co="party"] { --sky: radial-gradient(120% 90% at 50% 0%, #F6B6C8, #E86F8F 40%, #8E2F5A);
+  --motif: repeating-conic-gradient(from 0deg at 50% -40%, rgba(255,255,255,.12) 0 6deg, transparent 6deg 12deg); --accent: #FFD23F }
+body[data-co="funeral"] { --sky: radial-gradient(120% 90% at 50% 0%, #6B6A75, #3D3C46 45%, #1E1D24);
+  --motif: repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 40px, transparent 40px 80px); --accent: #C9B37E }
+body[data-co="mining"] { --sky: radial-gradient(120% 90% at 50% 0%, #E9A15B, #B4552B 45%, #4A2414);
+  --motif: repeating-linear-gradient(-12deg, rgba(0,0,0,.08) 0 14px, transparent 14px 46px); --accent: #F2D04B }
+body[data-tod="morning"] { --tod: linear-gradient(180deg, rgba(255,240,200,.25), transparent) }
+body[data-tod="smoko"] { --tod: transparent }
+body[data-tod="lunch"] { --tod: linear-gradient(180deg, rgba(255,255,255,.12), transparent) }
+body[data-tod="arvo"] { --tod: linear-gradient(180deg, rgba(255,170,90,.35), rgba(120,60,20,.15)) }
+body[data-tod="knockoff"] { --tod: linear-gradient(180deg, rgba(120,70,140,.55), rgba(60,20,40,.35)) }
+body[data-tod="late"] { --tod: linear-gradient(180deg, rgba(20,24,60,.75), rgba(10,10,25,.6)) }

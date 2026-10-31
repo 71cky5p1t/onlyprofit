@@ -1,0 +1,27 @@
+/* Layout: the scene fills the screen; the TV strip and table sit on it, your desk is docked at the bottom. One look, no dark variant. */
+:root {
+  color-scheme: light;
+  --paper: #F3ECDA; --paper-2: #E6DCC1; --thermal: #FBFAF5; --rule: #CFC3A4;
+  --ink: #1C1B19; --ink-2: #5E5A50; --ink-3: #8C8576;
+  --red: #C8241B; --red-lo: #8E160F; --good: #2C6A4E; --gold: #C9A227; --halo: #E9C46A;
+  --who: #3F63B8; --what: #C9A227; --act: #C8241B; --cash: #2C6A4E;
+  --lcd: #AEBB9E; --lcd-ink: #1E261A; --housing: #2B2C2A;
+  --wood: #6E4A2E; --wood-hi: #8A5E3B; --wood-lo: #4A3020;
+  --lift: 0 1px 0 rgba(0,0,0,.18), 0 10px 18px -10px rgba(0,0,0,.6);
+  --f-body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-seg: "Share Tech Mono", ui-monospace, Menlo, monospace;
+  --f-type: "Courier Prime", "Courier New", monospace;
+  --f-hand: "Caveat", "Comic Sans MS", cursive;
+  --bounce: cubic-bezier(.34, 1.56, .64, 1);
+}
+* { box-sizing: border-box }
+html, body { height: 100% }
+body { margin: 0; background: #22392F; color: var(--paper); font: 15px/1.45 var(--f-body); -webkit-font-smoothing: antialiased; overflow-x: hidden }
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; padding: 0 }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--halo); outline-offset: 2px }
+button:disabled { cursor: default; opacity: .45 }
+.num { font-family: var(--f-seg); font-variant-numeric: tabular-nums }
+.label { font: 700 11px/1.2 var(--f-type); letter-spacing: .1em; text-transform: uppercase }
+#app { position: relative; min-height: 100%; display: flex; flex-direction: column;
+  padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: max(14px, env(safe-area-inset-right, 0px)) }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important } }
