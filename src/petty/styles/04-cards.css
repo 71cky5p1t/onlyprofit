@@ -1,0 +1,23 @@
+/* Hand cards: blue who/how, gold what, red action. Write-ins in handwriting. */
+.card { position: relative; flex: 0 0 auto; width: 112px; min-height: 150px; padding: 0 9px 9px; display: flex; flex-direction: column; text-align: left;
+  background: var(--paper); color: var(--ink); border-radius: 9px; box-shadow: 0 1px 0 rgba(0,0,0,.25), 0 10px 14px -8px rgba(0,0,0,.65);
+  transition: transform .2s var(--bounce), box-shadow .2s; --band: var(--ink-3) }
+.card::before { content: ""; height: 7px; margin: 0 -9px 8px; border-radius: 9px 9px 0 0; background: var(--band) }
+.card .label { font-size: 9px; color: var(--band) }
+.card .nm { margin-top: 4px; font: 800 16px/1.12 var(--f-body); letter-spacing: -.01em; overflow-wrap: break-word }
+.card .nm .wi { font-size: 22px; line-height: .95; font-weight: 700 }
+/* squeeze long words to fit rather than break them */
+.card { container-type: inline-size }
+.card.long .nm { font-size: min(16px, calc((100cqi - 20px) / (var(--len) * .64))) }
+.card.long .nm .wi { font-size: min(22px, calc((100cqi - 20px) / (var(--len) * .42))) }
+.card .v { margin-top: auto; padding-top: 6px; font-size: 18px; color: var(--band) }
+.card .desc { margin-top: 5px; font: 12px/1.3 var(--f-body); color: var(--ink-2) }
+.card.k-who { --band: var(--who) }
+.card.k-what { --band: #9C7B12 }
+.card.k-what::before { background: var(--what) }
+.card.k-act { --band: var(--act); background: #FFF6EE }
+.card:hover { transform: translateY(-4px) }
+.card.sel { transform: translateY(-12px) rotate(-1.5deg); box-shadow: 0 0 0 3px var(--accent), 0 20px 20px -10px rgba(0,0,0,.7) }
+.card.new { animation: dealt .55s var(--bounce) both }
+.card.new:nth-child(2n) { animation-delay: .08s }
+@keyframes dealt { from { transform: translate(40px, -60px) rotate(14deg) scale(.7); opacity: 0 } }

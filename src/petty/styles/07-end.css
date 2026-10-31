@@ -1,0 +1,33 @@
+/* The end of the financial year. */
+.end { width: 100%; max-width: 760px; margin: 0 auto; padding: 36px 0 40px; display: grid; gap: 16px }
+.verdict { padding: 24px 24px 20px; background: #FFFDF6; color: var(--ink); border-radius: 4px; box-shadow: 0 22px 34px -18px rgba(0,0,0,.75); text-align: center; border-top: 8px solid var(--accent);
+  animation: hang .9s var(--bounce) both }
+.verdict.bust { border-color: var(--red) }
+.verdict h1 { margin: 6px 0; font: 900 clamp(32px, 7vw, 52px)/1 var(--f-body); letter-spacing: -.03em }
+.verdict.bust h1 { color: var(--red); text-transform: uppercase }
+.verdict p { margin: 0; font-size: 16px }
+.rank { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px }
+.rank li { display: grid; grid-template-columns: 28px 1fr auto; grid-template-areas: "pl nm b" "pl st badge"; align-items: center; column-gap: 10px; padding: 8px 14px;
+  background: var(--paper); color: var(--ink); border-radius: 5px; box-shadow: var(--lift) }
+.rank .pl { grid-area: pl; font-size: 22px; color: var(--ink-3) }
+.rank .nm { grid-area: nm; font-weight: 800; font-size: 17px }
+.rank .st { grid-area: st; font: 12px var(--f-type); color: var(--ink-2) }
+.rank b { grid-area: b; font-size: 20px; text-align: right }
+.rank .badge { grid-area: badge; justify-self: end; font: 700 10px var(--f-type); text-transform: uppercase; letter-spacing: .08em; padding: 2px 6px; border: 2px solid currentColor; border-radius: 3px; transform: rotate(-3deg) }
+.rank .winner { box-shadow: 0 0 0 3px var(--accent), var(--lift) }
+.rank .winner .badge { color: var(--good) }
+.rank .jailed .badge { color: var(--red) }
+.rank .me { background: #FFFDF6 }
+.ledger { background: var(--thermal); color: var(--ink); padding: 14px 14px 20px; box-shadow: var(--lift); font-family: var(--f-type) }
+.ledger h2 { margin: 0 0 8px; font: 800 18px var(--f-body) }
+.ledger .scroll { overflow-x: auto }
+.ledger table { width: 100%; border-collapse: collapse; font-size: 13px }
+.ledger th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); border-bottom: 2px solid var(--ink); padding: 4px 6px }
+.ledger td { padding: 6px; border-bottom: 1px dotted var(--rule); vertical-align: top }
+.ledger .it { font-family: var(--f-body); font-weight: 700; min-width: 150px }
+.ledger .it small { display: block; font: 11px var(--f-type); color: var(--ink-3) }
+.ledger .it .wi { font-size: 1.25em }
+.ledger tr.padded td:nth-child(4) { color: var(--red) }
+.o { font-style: normal; font-size: 11px; font-weight: 700; text-transform: uppercase; white-space: nowrap }
+.o.caught { color: var(--red) } .o.halo { color: #8C6A10 } .o.pad { color: var(--red-lo) } .o.ok { color: var(--good) } .o.shred { color: var(--ink-2) }
+.again { display: flex; gap: 10px; justify-content: center; align-items: center }

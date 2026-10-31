@@ -17,6 +17,13 @@ fs.writeFileSync("dist/viewer.html", v);'
 # audio is fetched from dist/audio beside the page
 rm -rf dist/audio && mkdir -p dist/audio/music && cp -r assets/audio/sfx dist/audio/
 for m in 01-water-cooler 04-q5-overtime 05-hold-music-clean 06-stripe-wipe; do cp "assets/audio/mp3/$m.mp3" dist/audio/music/; done
+# Petty Cash: its own page
+{
+  cat src/petty/head.html; echo '<style>'; cat src/petty/styles/*.css; echo '</style>'
+  echo '<div class="scene"></div><div id="app"></div><div id="ov" aria-live="polite"></div>'
+  echo '<script>'; sed '/^if (typeof module/d' src/petty/engine/cards.js src/petty/engine/bots.js src/petty/engine/core.js; echo '</script>'
+  echo '<script>'; echo '(() => {'; cat src/petty/ui/*.js; echo '})();'; echo '</script>'
+} > dist/petty-cash.html
 # the site root serves the game
 cp dist/only-profit.html dist/index.html
-echo "Built dist/only-profit.html, dist/index.html, dist/viewer.html and dist/audio"
+echo "Built dist/only-profit.html, dist/index.html, dist/petty-cash.html, dist/viewer.html and dist/audio"
