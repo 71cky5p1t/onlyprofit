@@ -17,6 +17,12 @@ fs.writeFileSync("dist/viewer.html", v);'
 # audio is fetched from dist/audio beside the page
 rm -rf dist/audio && mkdir -p dist/audio/music && cp -r assets/audio/sfx dist/audio/
 for m in 01-water-cooler 04-q5-overtime 05-hold-music-clean 06-stripe-wipe; do cp "assets/audio/mp3/$m.mp3" dist/audio/music/; done
+# location scene gallery (src/scenes)
+node -e '
+const fs = require("fs"), d = "src/scenes/", js = fs.readdirSync(d).filter(f => /^\d.*\.js$/.test(f)).sort().map(f => fs.readFileSync(d + f, "utf8")).join("\n");
+const html = fs.readFileSync(d + "gallery.html", "utf8").replace("/*SCENES_CSS*/", () => fs.readFileSync(d + "scenes.css", "utf8"))
+  .replace("/*SCENES_JS*/", () => js).replace("/*GALLERY_JS*/", () => fs.readFileSync(d + "gallery.js", "utf8"));
+fs.writeFileSync("dist/scenes.html", html);'
 # the site root serves the game
 cp dist/only-profit.html dist/index.html
-echo "Built dist/only-profit.html, dist/index.html, dist/viewer.html and dist/audio"
+echo "Built dist/only-profit.html, dist/index.html, dist/viewer.html, dist/scenes.html and dist/audio"

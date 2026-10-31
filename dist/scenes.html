@@ -1,0 +1,1215 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Location Scenes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@800..900&family=Schibsted+Grotesk:wght@400..900&family=Share+Tech+Mono&family=Courier+Prime:wght@700&display=swap">
+<style>
+/* Scene engine: idle loops. Every loop reads --t (period) and --d (phase); --clock keeps phase across re-renders. */
+.ops-stage { position: relative; overflow: hidden; aspect-ratio: 16 / 9; background: #0c1136 }
+.ops-layer { position: absolute; inset: 0; transition: opacity 1.2s ease }
+.ops-layer.ops-in { opacity: 0 }
+.ops-scene { display: block; width: 100%; height: 100% }
+.ops-scene * { transform-box: fill-box }
+/* zero specificity so each loop below can set its own easing */
+:where(.ops-scene) :where([class^="a-"], .drive, .drift, .eye) {
+  animation-duration: var(--t, 4s); animation-delay: calc(var(--d, 0s) - var(--clock, 0s));
+  animation-iteration-count: infinite; animation-timing-function: ease-in-out }
+
+.a-bob { animation-name: ops-bob; transform-origin: 50% 100% }
+.a-sway { animation-name: ops-sway; transform-origin: 50% 100% }
+.a-breathe { animation-name: ops-breathe; transform-origin: 50% 100% }
+.a-nod { animation-name: ops-nod; transform-origin: 50% 100% }
+.a-peck { animation-name: ops-peck; transform-origin: 30% 100% }
+.a-wag { animation-name: ops-wag; transform-origin: 100% 100% }
+.a-flap { animation-name: ops-flap; transform-origin: 50% 50% }
+.a-glide { animation-name: ops-glide; animation-timing-function: linear }
+.a-puff { animation-name: ops-puff; animation-timing-function: ease-out; transform-origin: 50% 50% }
+.a-dust { animation-name: ops-dust; animation-timing-function: ease-out; transform-origin: 50% 100% }
+.a-rain { animation-name: ops-rain; animation-timing-function: linear }
+.a-rainfall { animation-name: ops-rainfall; animation-timing-function: linear }
+.a-rotor { animation-name: ops-rotor; animation-timing-function: linear; transform-origin: 50% 50% }
+.a-wheel { animation: none; transform-origin: 50% 50% }
+.drive .a-wheel { animation: ops-spin .7s linear infinite }
+.a-dig { animation-name: ops-dig; transform-origin: 0% 100% }
+.a-wave, .a-flagwave { animation-name: ops-flag; transform-origin: 0% 50% }
+.a-wobble { animation-name: ops-wobble; transform-origin: 50% 100% }
+.a-deflate { animation-name: ops-deflate; transform-origin: 50% 100% }
+.a-rise { animation-name: ops-rise; animation-timing-function: linear }
+.a-zzz { animation-name: ops-zzz; animation-timing-function: ease-out }
+.a-shimmer { animation-name: ops-shimmer }
+.a-flicker { animation-name: ops-flicker; animation-timing-function: steps(1) }
+.a-neonno { animation-name: ops-neonno; animation-timing-function: steps(1) }
+.a-flash { animation-name: ops-flash; animation-timing-function: steps(1) }
+.a-blink { animation-name: ops-flash; animation-timing-function: steps(1) }
+.a-tv { animation-name: ops-tv; animation-timing-function: steps(1) }
+.a-flame { animation-name: ops-flame; transform-origin: 50% 100% }
+.a-twinkle { animation-name: ops-twinkle }
+.a-fly { animation-name: ops-fly; animation-timing-function: linear }
+.a-spin3 { animation-name: ops-spin3; transform-origin: 50% 50% }
+.a-wander { animation-name: ops-wander; animation-timing-function: linear }
+.eye { animation-name: ops-blink; animation-duration: 5s; transform-origin: 50% 50% }
+.drive { animation-name: ops-drive; animation-timing-function: linear }
+.drift { animation-name: ops-drift; animation-timing-function: linear }
+
+@keyframes ops-bob { 50% { transform: translateY(-6px) } }
+@keyframes ops-sway { 50% { transform: rotate(1.6deg) } }
+@keyframes ops-breathe { 50% { transform: scaleY(1.035) } }
+@keyframes ops-nod { 0%, 80%, 100% { transform: none } 88% { transform: rotate(5deg) } }
+@keyframes ops-peck { 0%, 60%, 100% { transform: none } 70%, 78% { transform: rotate(28deg) } 74% { transform: rotate(18deg) } }
+@keyframes ops-wag { 50% { transform: rotate(-22deg) } }
+@keyframes ops-flap { 50% { transform: scaleY(-.6) } }
+@keyframes ops-glide { from { transform: translateX(-120px) } 50% { transform: translate(0, -14px) } to { transform: translateX(120px) } }
+@keyframes ops-puff { from { transform: translate(0, 0) scale(.4); opacity: .95 } to { transform: translate(28px, -140px) scale(2.2); opacity: 0 } }
+@keyframes ops-dust { from { transform: scale(.3); opacity: .8 } to { transform: translate(40px, -20px) scale(2); opacity: 0 } }
+@keyframes ops-rain { from { transform: translateY(-6px); opacity: 0 } 30% { opacity: 1 } to { transform: translate(-10px, 40px); opacity: 0 } }
+@keyframes ops-rainfall { from { transform: translate(0, -120px) } to { transform: translate(-40px, 120px) } }
+@keyframes ops-rotor { 50% { transform: scaleX(.08) } }
+@keyframes ops-spin { to { transform: rotate(360deg) } }
+@keyframes ops-dig { 0%, 100% { transform: rotate(0) } 40%, 55% { transform: rotate(14deg) } }
+@keyframes ops-flag { 50% { transform: skewY(6deg) scaleX(.94) } }
+@keyframes ops-wobble { 25% { transform: scale(1.015, .985) } 75% { transform: scale(.99, 1.01) } }
+@keyframes ops-deflate { 0%, 100% { transform: none } 50%, 70% { transform: scale(1.08, .72) skewX(-4deg) } }
+@keyframes ops-rise { from { transform: translate(0, 0); opacity: 1 } 85% { opacity: 1 } to { transform: translate(120px, -760px); opacity: 0 } }
+@keyframes ops-zzz { from { transform: translate(0, 10px); opacity: 0 } 30% { opacity: 1 } to { transform: translate(14px, -30px); opacity: 0 } }
+@keyframes ops-shimmer { 50% { transform: translateX(10px); opacity: .4 } }
+@keyframes ops-flicker { 0%, 10%, 14%, 60%, 63% { opacity: 1 } 11%, 13%, 61%, 62% { opacity: .1 } 66% { opacity: .55 } 70% { opacity: 1 } }
+@keyframes ops-neonno { 0%, 40% { opacity: 1 } 41%, 44%, 72% { opacity: .08 } 43%, 70% { opacity: 1 } 74%, 100% { opacity: .08 } }
+@keyframes ops-flash { 0%, 49% { opacity: 1 } 50%, 100% { opacity: .15 } }
+@keyframes ops-tv { 0% { opacity: 1 } 20% { opacity: .7 } 45% { opacity: .95 } 60% { opacity: .55 } 80% { opacity: .9 } }
+@keyframes ops-flame { 25% { transform: scale(.9, 1.08) rotate(-3deg) } 50% { transform: scale(1.05, .94) } 75% { transform: scale(.94, 1.06) rotate(3deg) } }
+@keyframes ops-twinkle { 50% { opacity: .25 } }
+@keyframes ops-fly { 0% { transform: translate(-14px, -6px) } 25% { transform: translate(10px, -20px) } 50% { transform: translate(16px, 4px) } 75% { transform: translate(-8px, 12px) } 100% { transform: translate(-14px, -6px) } }
+@keyframes ops-spin3 { 0%, 70%, 100% { transform: none } 80% { transform: rotate(-8deg) } 90% { transform: rotate(8deg) } }
+@keyframes ops-wander { 0% { transform: translateX(0) } 46% { transform: translateX(110px) } 50% { transform: translateX(110px) scaleX(-1) } 96% { transform: translateX(0) scaleX(-1) } 100% { transform: translateX(0) } }
+@keyframes ops-blink { 0%, 93%, 100% { transform: none } 95% { transform: scaleY(.1) } }
+@keyframes ops-drive { from { transform: translateX(var(--from)) } to { transform: translateX(var(--to)) } }
+@keyframes ops-drift { from { transform: translateX(var(--from)) } to { transform: translateX(var(--to)) } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ops-scene *, .ops-scene .drive, .ops-scene .drift { animation-play-state: paused !important }
+}
+
+:root { --baize: #35574A; --baize-hi: #46705F; --baize-lo: #284338; --stock: #F1E9D4; --stock-2: #E7DCC0; --ink: #141414; --ink-2: #4E4A40; --ink-3: #857D6B; --red: #D9261C; --manila: #E5D3A4; --f: "Schibsted Grotesk", system-ui, sans-serif }
+* { box-sizing: border-box }
+html { background: var(--baize-lo) }
+body { margin: 0; min-height: 100vh; color: var(--stock); font: 15px/1.45 var(--f); -webkit-font-smoothing: antialiased;
+  background: radial-gradient(90% 70% at 40% 0%, var(--baize-hi), var(--baize) 45%, var(--baize-lo) 100%) no-repeat, var(--baize-lo) }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 28px 16px 64px }
+.tv { position: relative; border-radius: 18px; padding: 12px; background: linear-gradient(#2a2a30, #18181c); box-shadow: 0 2px 0 rgba(255,255,255,.06) inset, 0 30px 60px -24px rgba(0,0,0,.7), 0 8px 18px -10px rgba(0,0,0,.6) }
+.tv .ops-stage { border-radius: 8px }
+/* company name tag after the reveal */
+.tag { position: absolute; left: 34px; top: 30px; z-index: 3; display: flex; flex-direction: column; gap: 2px; padding: 12px 18px 12px 16px; border-radius: 6px;
+  background: var(--stock); color: var(--ink); box-shadow: 0 10px 24px -12px rgba(0,0,0,.7); transform-origin: 0 0; transition: transform .6s var(--bounce, cubic-bezier(.34,1.56,.64,1)) .5s, opacity .3s .5s }
+.tag b { font: 900 clamp(16px, 2.4vw, 28px)/1 Nunito, var(--f); letter-spacing: -.01em; color: var(--brand) }
+.tag i { font: 700 12px/1.2 var(--f); font-style: normal; color: var(--ink-2) }
+.clock { position: absolute; right: 34px; top: 30px; z-index: 3; font: 700 13px/1 "Share Tech Mono", monospace; letter-spacing: .06em; padding: 8px 10px; border-radius: 4px; background: rgba(12,10,24,.55); color: #fff6dc; backdrop-filter: blur(6px) }
+/* the sealed file over the scene before round zero ends */
+.file { position: absolute; inset: 12px; z-index: 4; border-radius: 8px; overflow: hidden; pointer-events: none; display: grid; place-items: center;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.025) 0 2px, transparent 2px 5px), var(--manila); color: #5c4a2a; transition: transform .9s cubic-bezier(.7,0,.3,1), opacity .2s .8s }
+.file::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 22%; background: rgba(120,90,40,.08); clip-path: polygon(0 0, 30% 0, 34% 100%, 0 100%) }
+.file .q { font: 900 clamp(22px, 5vw, 64px)/1 Nunito, var(--f); letter-spacing: -.02em; text-align: center }
+.file .q span { background: #1c1a24; color: transparent; border-radius: 3px; padding: 0 .3em }
+.file .stamp { margin-top: 18px; font: 700 clamp(12px, 1.6vw, 18px)/1 "Courier Prime", monospace; letter-spacing: .2em; color: var(--red); border: 3px solid var(--red); padding: 8px 14px; transform: rotate(-4deg); opacity: .85 }
+.sealed .file { transform: none }
+.open .file { transform: translateY(104%); opacity: 0 }
+.sealed .tag { transform: scale(.6) rotate(-6deg); opacity: 0 }
+
+.controls { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: flex-end; justify-content: space-between; margin: 22px 4px 0 }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px }
+.tabs button { border: 0; padding: 9px 12px 8px; border-radius: 5px 5px 2px 2px; background: var(--stock-2); color: var(--ink-2); font: 800 12px/1 var(--f); letter-spacing: .02em;
+  box-shadow: inset 0 -3px 0 var(--sw), 0 4px 10px -6px rgba(0,0,0,.6); transition: transform .15s, background .15s }
+.tabs button:hover { transform: translateY(-2px) }
+.tabs button[aria-pressed="true"] { background: var(--stock); color: var(--ink); transform: translateY(-4px); box-shadow: inset 0 -5px 0 var(--sw), 0 8px 16px -8px rgba(0,0,0,.7) }
+.dial { display: flex; gap: 4px; padding: 5px; border-radius: 999px; background: rgba(0,0,0,.22); box-shadow: inset 0 1px 3px rgba(0,0,0,.35) }
+.dial button { border: 0; width: 44px; height: 32px; border-radius: 999px; background: transparent; display: grid; place-items: center; transition: background .2s }
+.dial button svg { width: 22px; height: 22px }
+.dial button[aria-pressed="true"] { background: var(--stock); box-shadow: 0 2px 6px -2px rgba(0,0,0,.6) }
+.acts { display: flex; gap: 8px }
+.acts button { border: 0; padding: 9px 14px; border-radius: 999px; background: rgba(241,233,212,.12); color: var(--stock); font: 700 12px/1 var(--f); letter-spacing: .04em }
+.acts button:hover { background: rgba(241,233,212,.22) }
+.acts button[aria-pressed="true"] { background: var(--stock); color: var(--ink) }
+h2 { font: 900 13px/1 var(--f); letter-spacing: .14em; text-transform: uppercase; color: rgba(241,233,212,.6); margin: 56px 4px 16px }
+.sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px }
+.card { margin: 0; background: var(--stock); border-radius: 8px; padding: 6px 6px 8px; box-shadow: 0 1px 0 rgba(0,0,0,.18), 0 10px 20px -14px rgba(0,0,0,.7); color: var(--ink) }
+.card svg { display: block; width: 100%; aspect-ratio: 1; border-radius: 5px; background: linear-gradient(#cfe6f6 0 68%, #9ccc7c 68%) }
+.card figcaption { display: flex; justify-content: space-between; gap: 6px; padding: 6px 4px 0; font: 800 11px/1.2 var(--f) }
+.card figcaption span { color: var(--ink-3); font-weight: 600 }
+.night .card svg { background: linear-gradient(#1a2150 0 68%, #2a3a40 68%) }
+@media (max-width: 640px) { .tag { left: 22px; top: 20px; padding: 8px 12px } .clock { right: 22px; top: 20px } .dial button { width: 36px } }
+</style>
+<div class="wrap">
+  <div class="tv sealed" id="tv">
+    <div id="stage"></div>
+    <div class="tag" id="tag"><b></b><i></i></div>
+    <div class="clock" id="clock"></div>
+    <div class="file" aria-hidden="true"><div><div class="q">Company: <span>Eternal Rest</span></div><div class="stamp">TO BE ANNOUNCED</div></div></div>
+  </div>
+  <div class="controls">
+    <div class="tabs" id="tabs" role="group" aria-label="Location"></div>
+    <div class="dial" id="dial" role="group" aria-label="Time of day"></div>
+    <div class="acts"><button id="reveal">Reveal</button><button id="cycle" aria-pressed="false">Run the day</button><button id="shuffle">Reseed</button></div>
+  </div>
+  <h2>Props</h2>
+  <div class="sheet" id="sheet"></div>
+</div>
+<script>
+// Scene kit: namespace, seeded rng, colour maths, SVG helpers. Pure, no DOM.
+var OPS = { props: {}, backs: {}, locs: {}, times: [], kit: {} };
+(() => {
+  const K = OPS.kit;
+  K.rng = seed => {
+    let a = (seed >>> 0) || 1;
+    const r = () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    r.pick = arr => arr[Math.floor(r() * arr.length)];
+    r.range = (lo, hi) => lo + r() * (hi - lo);
+    return r;
+  };
+  K.hash = s => { let h = 2166136261; for (const ch of String(s)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
+
+  // colour
+  const rgb = h => { h = h.slice(1); if (h.length === 3) h = h.replace(/./g, '$&$&'); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  const hex = a => '#' + a.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+  K.rgb = rgb; K.hex = hex;
+  K.mix = (a, b, k) => { const A = rgb(a), B = rgb(b); return hex(A.map((v, i) => v + (B[i] - v) * k)); };
+  // shadows lean violet, highlights lean warm
+  K.dk = (c, k = .2) => K.mix(c, '#241c48', k);
+  K.lt = (c, k = .2) => K.mix(c, '#fff8ea', k);
+  K.mul = (c, t, a) => { const A = rgb(c), T = rgb(t); return hex(A.map((v, i) => v * (1 - a + a * T[i] / 255))); };
+
+  // svg
+  const num = v => typeof v === 'number' ? +v.toFixed(1) : v;
+  const at = o => Object.keys(o).filter(k => o[k] != null && o[k] !== false).map(k => ` ${k}="${num(o[k])}"`).join('');
+  K.el = (tag, o, inner) => inner == null ? `<${tag}${at(o)}/>` : `<${tag}${at(o)}>${inner}</${tag}>`;
+  K.R = (x, y, w, h, f, r, o) => typeof r === 'object' ? K.R(x, y, w, h, f, 0, r) : K.el('rect', Object.assign({ x, y, width: w, height: h, rx: r || null, fill: f }, o));
+  K.C = (cx, cy, r, f, o) => K.el('circle', Object.assign({ cx, cy, r, fill: f }, o));
+  K.E = (cx, cy, rx, ry, f, o) => K.el('ellipse', Object.assign({ cx, cy, rx, ry, fill: f }, o));
+  K.P = (d, f, o) => K.el('path', Object.assign({ d, fill: f }, o));
+  K.L = (d, s, w, o) => K.el('path', Object.assign({ d, fill: 'none', stroke: s, 'stroke-width': w, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, o));
+  K.G = (inner, o) => K.el('g', o || {}, inner);
+  K.T = (x, y, s, size, f, o) => K.el('text', Object.assign({ x, y, 'font-size': size, fill: f, 'text-anchor': 'middle', 'font-family': 'Nunito, Schibsted Grotesk, sans-serif', 'font-weight': 900 }, o), String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'));
+  // font size that keeps a label inside maxW (Nunito 900 caps run ~0.68em)
+  K.fit = (s, maxW, size) => Math.min(size, maxW / (String(s).length * .68));
+  // animated group; t = period (s), d = phase offset (s)
+  K.A = (name, inner, t, d, o) => K.el('g', Object.assign({ class: 'a-' + name, style: `--t:${num(t)}s;--d:${num(-(d || 0))}s` }, o), inner);
+  K.eye = (x, y, r, d) => K.el('ellipse', { class: 'eye', cx: x, cy: y, rx: r || 2.6, ry: (r || 2.6) * 1.15, fill: '#1c1a2c', style: `--d:${num(-(d || 0))}s` });
+  // rounded-top shape (domes, tombstones, heads of things)
+  K.arch = (x, y, w, h, f, o) => K.P(`M${x} ${y + h}V${y + w / 2}a${w / 2} ${w / 2} 0 0 1 ${w} 0V${y + h}Z`, f, o);
+  // vertical wood/metal ribs
+  K.ribs = (x, y, w, h, n, f, sw) => { let s = ''; for (let i = 1; i < n; i++) s += K.L(`M${x + w * i / n} ${y}v${h}`, f, sw || 2); return s; };
+  // 0..1 lit fraction helper for window grids
+  K.lit = (r, t, p) => { const x = r(); return t.emit > 0 && x < (t.late ? p * .22 : p); };
+  // rng draws never depend on time of day, so a scene keeps its layout all day
+})();
+
+// Six laps, one per time of day. tint multiplies every body colour; emit/glow light windows, neon and candles.
+OPS.times = [
+  { id: 'morning', lap: 1, clock: '7:40 am', sky: ['#8cc2ef', '#ffd9bb'], tint: '#ffcfa6', ta: .16, emit: 0, glow: 0, stars: 0,
+    sun: [290, 430, '#fff3cf', 46], haze: ['#ffdcc0', .34], shadow: { dx: 1, len: 1.8, a: .2 } },
+  { id: 'midday', lap: 2, clock: '12:15 pm', sky: ['#3e9de9', '#c4e7ff'], tint: '#ffffff', ta: 0, emit: 0, glow: 0, stars: 0,
+    sun: [820, 130, '#fffbe6', 40], haze: ['#d2ecff', .3], shadow: { dx: .1, len: .9, a: .26 } },
+  { id: 'arvo', lap: 3, clock: '3:30 pm', sky: ['#4e95da', '#ffe0a2'], tint: '#ffc677', ta: .18, emit: 0, glow: 0, stars: 0,
+    sun: [1290, 330, '#fff0bd', 44], haze: ['#ffe4b0', .34], shadow: { dx: -1, len: 1.6, a: .22 } },
+  { id: 'dusk', lap: 4, clock: '6:50 pm', sky: ['#383a8a', '#ff8d5f'], tint: '#a95e9a', ta: .36, emit: .85, glow: .55, stars: .15,
+    sun: [1420, 610, '#ffa266', 58], haze: ['#ff9f7a', .42], shadow: { dx: -1, len: 2.8, a: .16 } },
+  { id: 'night', lap: 5, clock: '10:20 pm', sky: ['#0c1136', '#2c3b7d'], tint: '#272f6a', ta: .6, emit: 1, glow: 1, stars: .85,
+    moon: [1190, 160, '#f4f0d8', 30], haze: ['#2c3b7d', .45], shadow: { dx: 0, len: 1, a: .12 } },
+  { id: 'small', lap: 6, clock: '3:10 am', sky: ['#04050d', '#151b37'], tint: '#141a36', ta: .72, emit: 1, glow: 1, stars: 1, late: true,
+    moon: [330, 250, '#d8d6c4', 26], haze: ['#151b37', .5], shadow: { dx: 0, len: 1, a: .08 } }
+];
+OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1];
+
+// Nature props. Origin is bottom-centre; draw(v, c, r, t) returns SVG or { body, emit, glows }.
+(() => {
+  const { R, C, E, P, L, G, A, eye, dk, lt } = OPS.kit, P_ = OPS.props;
+
+  P_.cloud = { w: 200, sky: true, variants: ['puff', 'long', 'rain', 'storm'],
+    draw(v, c, r) {
+      const col = v === 'storm' ? '#a4abc0' : v === 'rain' ? '#e3e7f2' : '#ffffff', w = v === 'long' ? 280 : 180;
+      const blob = (f, dy) => R(-w / 2, -36 + dy, w, 36, f, 18) + C(-w * .2, -38 + dy, 34, f) + C(w * .08, -52 + dy, 46, f) + C(w * .3, -34 + dy, 28, f) + (v === 'long' ? C(-w * .38, -30 + dy, 22, f) : '');
+      let s = blob(dk(col, .14), 6) + blob(col, 0) + C(w * .02, -70, 14, lt(col, .6), { opacity: .6 });
+      if (v === 'rain' || v === 'storm') {
+        let d = '';
+        for (let i = 0; i < 9; i++) d += A('rain', L(`M${-w / 2 + 18 + i * (w - 36) / 8} 8l-5 16`, '#7d9cd6', 3), .9, r() * .9);
+        s = G(d) + s;
+      }
+      return s;
+    } };
+
+  P_.tree = { w: 90, ground: true, variants: ['gum', 'round', 'palm', 'dead'],
+    draw(v, c, r) {
+      if (v === 'palm') {
+        const tr = '#b98a5e';
+        let s = P('M-8 0C-6-60 2-130 18-190L28-188C14-128 8-60 8 0Z', tr) + L('M-6-40h14M-4-80h14M0-120h14M6-160h14', dk(tr, .25), 2.5);
+        let fr = '';
+        [[-70, 30], [-20, 50], [40, 34], [80, 10], [-90, -10]].forEach(([x, y], i) => {
+          fr += P(`M23-190Q${23 + x / 2}-${232 + y / 2} ${23 + x}-${190 - y / 3}Q${23 + x / 2}-${205 + y / 3} 23-190Z`, i % 2 ? '#4f9a5c' : '#3c8150');
+        });
+        return s + A('sway', fr + C(23, -188, 8, '#7a5236'), 5.2, r() * 5);
+      }
+      if (v === 'dead') {
+        const tr = '#8c7a6e';
+        return P('M-9 0C-8-50-6-90-4-120L4-120C6-90 8-50 9 0Z', tr) +
+          L('M-2-90Q-30-110-40-140M-1-70Q20-90 38-96M2-110Q14-130 10-150M-30-120q-12-4-16-14M30-92q8-12 6-22', tr, 6) +
+          L('M-2-90Q-30-110-40-140', dk(tr, .2), 2.5);
+      }
+      if (v === 'round') {
+        const g = '#5da55a';
+        return R(-7, -70, 14, 70, '#8a5d3b', 4) + A('sway', C(0, -110, 58, dk(g, .22)) + C(-10, -118, 52, g) + C(-26, -134, 16, lt(g, .25)), 6, r() * 6);
+      }
+      // gum: pale bark, clumpy olive canopy
+      const tr = '#e8ddcf', g = '#7f9b5c';
+      const can = [[-40, -150, 40], [10, -176, 46], [44, -140, 34], [-10, -128, 36]].map(([x, y, s]) => E(x, y + 8, s, s * .62, dk(g, .25))).join('') +
+        [[-40, -150, 40], [10, -176, 46], [44, -140, 34], [-10, -128, 36]].map(([x, y, s]) => E(x, y, s, s * .58, g)).join('') + E(4, -188, 18, 9, lt(g, .3));
+      return P('M-12 0C-10-40-8-80-24-130L-12-132C0-100 2-120 20-150L30-142C10-110 10-60 12 0Z', tr) +
+        P('M2 0C2-40 0-70 4-96L10-90C8-60 10-30 12 0Z', dk(tr, .12)) + A('sway', can, 6.5, r() * 6);
+    } };
+
+  P_.bush = { w: 90, ground: true, variants: ['round', 'flower', 'dry'],
+    draw(v, c, r) {
+      const g = v === 'dry' ? '#b4a46a' : '#5f9e55';
+      let s = E(0, -26, 48, 28, dk(g, .2)) + E(-14, -32, 32, 24, g) + E(18, -30, 28, 22, g) + E(-6, -46, 18, 9, lt(g, .25));
+      if (v === 'flower') for (let i = 0; i < 7; i++) s += C(r.range(-36, 36), r.range(-48, -14), 4.5, r.pick(['#ff7aa2', '#ffd45a', '#ffffff']));
+      return s;
+    } };
+
+  P_.rock = { w: 70, ground: true, variants: ['small', 'boulder'],
+    draw(v) {
+      const k = v === 'boulder' ? 1.8 : 1, g = '#9a8f88';
+      return G(P('M-36 0C-40-20-24-40 0-42C24-44 40-24 36 0Z', g) + P('M8-42C28-40 40-24 36 0H10C20-14 18-30 8-42Z', dk(g, .2)) + P('M-20-30q10-8 20-6', 'none', { stroke: lt(g, .3), 'stroke-width': 3, 'stroke-linecap': 'round' }), { transform: `scale(${k})` });
+    } };
+
+  // birds: the ibis is the bin chicken
+  P_.bird = { w: 40, ground: true, variants: ['ibis', 'gull', 'crow', 'flying'],
+    draw(v, c, r) {
+      if (v === 'flying') {
+        const w = A('flap', L('M-22-4Q-11-14 0 0Q11-14 22-4', '#2a2740', 4), .7, r() * .7);
+        return A('glide', w, 7, r() * 7);
+      }
+      if (v === 'ibis') {
+        const body = E(0, -38, 22, 15, '#f3f0ea') + P('M-20-40q-14 6-18 18l10-4z', '#2a2833') + E(4, -32, 16, 8, '#dad5cc');
+        const head = L('M14-46q8-12 10-24', '#2a2833', 6) + C(24, -72, 7, '#2a2833') + L('M29-72q16 6 22 28', '#2a2833', 3.5) + eye(25, -74, 1.8, r() * 4);
+        return L('M-4-24v24M6-24v24', '#2a2833', 3) + A('peck', body + head, 3.4, r() * 3);
+      }
+      if (v === 'gull') {
+        return L('M-4-16v16M4-16v16', '#f0a35a', 3) + A('peck', E(0, -28, 18, 13, '#ffffff') + P('M-16-30q10 8 26 0q-8 14-26 4z', '#a9b3c6') +
+          C(14, -42, 10, '#ffffff') + P('M22-43l12 3-12 3z', '#f5b13d') + eye(17, -44, 1.8, r() * 4), 4.2, r() * 4);
+      }
+      return L('M-3-16v16M5-16v16', '#2a2740', 3) + A('peck', E(0, -28, 18, 13, '#2c2a40') + C(14, -42, 10, '#2c2a40') + P('M22-44l12 4-12 2z', '#45405e') +
+        P('M-6-34q10-4 16 2', 'none', { stroke: '#5b5785', 'stroke-width': 2.5 }) + C(17, -44, 2.4, '#e9e4ff'), 3.8, r() * 4);
+    } };
+
+  P_.chicken = { w: 40, ground: true, variants: ['white', 'brown'],
+    draw(v, c, r) {
+      const f = v === 'brown' ? '#c7814a' : '#fbf7ef';
+      return L('M-4-14v14M6-14v14', '#f0a35a', 3) + A('peck', E(0, -28, 20, 16, f) + P('M-18-34q-12-10-10 4z', dk(f, .15)) + C(14, -44, 10, f) +
+        P('M10-54q2-8 6-2q2-6 6 1q-4 3-12 1z', '#e2463c') + P('M23-45l8 3-8 3z', '#f5b13d') + E(20, -36, 3, 5, '#e2463c') + eye(17, -46, 1.8, r() * 4) +
+        E(-2, -26, 10, 6, dk(f, .1)), 2.6, r() * 3);
+    } };
+
+  P_.smoke = { w: 40, variants: ['grey', 'white', 'black'],
+    draw(v, c, r) {
+      const f = { grey: '#b8b6c4', white: '#f4f2f6', black: '#4b4858' }[v];
+      let s = '';
+      for (let i = 0; i < 5; i++) s += A('puff', C(0, 0, 18 + i * 2, f), 5, i, { opacity: .9 });
+      return s;
+    } };
+
+  P_.dust = { w: 60, variants: ['brown', 'red'],
+    draw(v, c, r) {
+      const f = v === 'red' ? '#d08a5c' : '#c9ac86';
+      let s = '';
+      for (let i = 0; i < 4; i++) s += A('dust', E(0, -14, 30, 18, f), 3.2, i * .8);
+      return s;
+    } };
+})();
+
+// People: little bean staff. Gags land on adults; no kids drawn anywhere.
+(() => {
+  const { R, C, E, P, L, G, A, T, eye, dk, lt } = OPS.kit, P_ = OPS.props;
+  const SKIN = ['#f3c9a4', '#e0a77e', '#b97a52', '#84553a', '#f6d8bf'];
+  const HAIR = ['#2b2230', '#5a3a2a', '#b9874c', '#d8d2c8', '#7a2f22'];
+  const OUTFIT = {
+    suit: { top: '#36405e', leg: '#2b3350' },
+    hivis: { top: '#ffb21c', leg: '#3c4b6a' },
+    mourner: { top: '#2a2836', leg: '#22212c' },
+    dad: { top: '#eef0f2', leg: '#2f5f8c' },
+    nurse: { top: '#58b4a8', leg: '#58b4a8' },
+    chef: { top: '#f4f2ee', leg: '#3a3a44' },
+    dentist: { top: '#a8d4ee', leg: '#a8d4ee' },
+    retiree: { top: '#c98a8a', leg: '#8a8070' }
+  };
+
+  // body() is shared with the camp chair and scooter
+  const body = (v, c, r, o = {}) => {
+    const k = OUTFIT[v], skin = r.pick(SKIN), hair = v === 'retiree' ? r.pick(['#e9e6e0', '#cfcac2']) : r.pick(HAIR), d = r() * 5;
+    let s = '';
+    if (!o.seated) s += R(-11, -30, 9, 30, k.leg, 4) + R(2, -30, 9, 30, k.leg, 4) + E(-7, -1, 8, 3.5, '#2a2836') + E(7, -1, 8, 3.5, '#2a2836');
+    const torso = P('M-17-28C-18-52-14-66 0-66C14-66 18-52 17-28Z', k.top) + P('M6-66C14-64 18-52 17-28H8C10-44 10-58 6-66Z', dk(k.top, .14));
+    let extra = '';
+    if (v === 'suit') extra = P('M-2-64l2 22 2-22z', o.accent || '#d9261c') + P('M-6-66l6 8 6-8z', '#f4f2ee');
+    if (v === 'hivis') extra = R(-17, -46, 34, 4, '#e8eef2') + R(-17, -38, 34, 4, '#e8eef2');
+    if (v === 'mourner') extra = P('M-2-64l2 8 2-8z', '#f4f2ee');
+    if (v === 'dad') extra = P('M-9-66q9 10 18 0', 'none', { stroke: k.top, 'stroke-width': 0 }) + E(0, -36, 13, 9, '#f6d8bf', { opacity: .5 });
+    if (v === 'chef') extra = R(-15, -54, 30, 26, '#ffffff', 6);
+    if (v === 'nurse') extra = R(4, -56, 6, 8, '#ffffff', 2) + R(6, -54, 2, 4, '#e2463c');
+    if (v === 'retiree') extra = L('M-12-64v34M12-64v34', dk(k.top, .2), 2);
+    const arms = L('M-15-58q-8 12-6 24', k.top, 8) + C(-21, -33, 5, skin) + L('M15-58q8 12 6 24', dk(k.top, .1), 8) + C(21, -33, 5, skin);
+    let hold = '';
+    if (v === 'dad') hold = R(17, -46, 9, 14, '#c8cfd8', 2) + R(17, -42, 9, 5, '#2e7a3c');
+    if (v === 'suit' && r() < .5) hold = R(16, -40, 12, 18, '#2a2836', 2) + R(18, -38, 8, 12, '#7fc6ff', 1);
+    if (v === 'hivis') hold = R(16, -46, 14, 18, '#c49a62', 2) + R(18, -42, 10, 2, '#fff') + R(18, -38, 10, 2, '#fff');
+    if (v === 'dentist') hold = L('M22-36l6-14', '#b7c2cc', 2.5) + C(28, -52, 3, '#dfe8ef');
+    // head
+    let head = C(0, -80, 14, skin) + E(5, -76, 7, 9, dk(skin, .08), { opacity: .5 });
+    if (v === 'chef') head += R(-13, -100, 26, 12, '#ffffff', 6) + E(0, -98, 15, 6, '#ffffff');
+    else if (v === 'hivis') head += P('M-15-84a15 15 0 0 1 30 0z', '#fff3e0') + R(-17, -86, 34, 4, '#fff3e0', 2);
+    else if (v === 'retiree') head += C(-10, -90, 6, hair) + C(0, -94, 7, hair) + C(10, -90, 6, hair);
+    else if (v === 'dad') head += P('M-14-84a14 12 0 0 1 28 0q-6-6-14-6t-14 6z', hair) + R(-12, -82, 24, 4, '#2b2230', 2);
+    else head += P('M-14-82a14 14 0 0 1 28 0q-8-5-16-2t-12 2z', hair);
+    if (v === 'dentist') head += R(-10, -78, 20, 10, '#cfe8f6', 3);
+    head += eye(-5, -80, 2.2, d) + eye(5, -80, 2.2, d);
+    if (v === 'dad' && o.asleep) head = C(0, -80, 14, skin) + P('M-14-84a14 12 0 0 1 28 0q-6-6-14-6t-14 6z', hair) + L('M-8-80h5M3-80h5', '#1c1a2c', 2);
+    if (v === 'mourner') head += L('M-3-72q3 2 6 0', '#1c1a2c', 1.5);
+    return { s: s + A('breathe', torso + extra + arms + hold, 3.6, d) + A('nod', head, 6, d), skin, k };
+  };
+  OPS.kit.bean = body;
+
+  P_.person = { w: 40, ground: true, variants: Object.keys(OUTFIT),
+    draw(v, c, r) { return body(v, c, r, { accent: c.accent }).s; } };
+
+  P_.campchair = { w: 70, ground: true, variants: ['dad', 'empty'],
+    draw(v, c, r) {
+      const f = c.accent2 || '#3a7bd5';
+      let s = L('M-26 0l40-44M26 0l-40-44', '#9aa4b0', 3.5) + P('M-28-44h48l6-34h-48z', dk(f, .15)) + P('M-26-44h50v-10h-50z', f);
+      if (v === 'dad') {
+        const b = body('dad', c, r, { asleep: true, seated: true });
+        s += G(b.s, { transform: 'translate(0 -18) rotate(-12)' }) + L('M-8-44q14-4 30 6', '#2f5f8c', 9) + E(26, -34, 5, 3, '#2a2836') +
+          R(30, -16, 9, 14, '#c8cfd8', 2) + A('zzz', OPS.kit.T(10, -120, 'z', 18, '#ffffff', { opacity: .9 }), 3, 0) + A('zzz', OPS.kit.T(22, -134, 'z', 13, '#ffffff'), 3, 1.4);
+      }
+      return s;
+    } };
+})();
+
+// Vehicles face right. Wheels spin only under a 'drive' placement (CSS handles that).
+(() => {
+  const { R, C, E, P, L, G, A, T, eye, dk, lt } = OPS.kit, P_ = OPS.props;
+  const wheel = (x, y, rr) => A('wheel', C(x, y, rr, '#26243a') + C(x, y, rr * .5, '#b8bfcc') + R(x - 1.5, y - rr * .45, 3, rr * .9, '#7d8496'), 1, 0);
+  const lamp = (x, y, t, col = '#fff2b0') => ({ emit: E(x, y, 5, 4, col), glow: [x + 20, y, 40, col] });
+
+  P_.van = { w: 200, ground: true, variants: ['party', 'hearse', 'ute', 'ambulance', 'reefer'],
+    draw(v, c, r, t) {
+      const glows = [];
+      let body = '', emit = '';
+      if (v === 'hearse') {
+        const k = '#23222e';
+        body = P('M-110-22v-34q0-10 10-12l118-4q22 0 40 22l34 6q20 4 20 22z', k) + P('M-102-56l112-4q16 0 30 16h-142z', '#4a4860') +
+          R(-96, -56, 40, 12, '#e8dfe9', 2) + R(-48, -56, 40, 12, '#e8dfe9', 2) + P('M-96-50q20 6 40 0M-48-50q20 6 40 0', '#c9b9cc') +
+          R(-110, -26, 222, 4, '#c3c8d4') + T(-20, -28, 'ETERNAL', 8, '#c3c8d4', { 'letter-spacing': 3 }) + wheel(-72, -16, 16) + wheel(72, -16, 16);
+      } else if (v === 'ute') {
+        const k = '#f2f2ee';
+        body = P('M-96-20v-30h80v-26q0-6 8-6h34q12 0 20 14l12 14 34 4q8 2 8 12v18z', k) + P('M-10-78h28q8 0 14 12l6 12h-48z', '#7fb7e0') +
+          R(-96, -50, 80, 6, dk(k, .12)) + R(-90, -64, 20, 14, '#a07850', 2) + R(-66, -60, 26, 10, '#5b8fc0', 2) + wheel(-62, -14, 15) + wheel(62, -14, 15);
+      } else if (v === 'reefer') {
+        const k = c.accent;
+        body = R(-120, -112, 160, 92, '#f4f2ee', 6) + R(-120, -112, 160, 16, dk('#f4f2ee', .1), 6) + P('M44-20v-62q0-8 8-8h34q14 0 22 16l14 22q4 8 4 18v14z', k) +
+          P('M56-82h24q10 0 16 12l8 14h-48z', '#8cc6ec') + T(-40, -60, c.short || 'CO.', OPS.kit.fit(c.short || 'CO.', 140, 22), k) + T(-40, -40, 'FRESH DAILY*', 11, dk(k, .2), { 'letter-spacing': 2 }) +
+          R(-106, -128, 30, 16, '#c8ccd6', 3) + wheel(-90, -16, 16) + wheel(-50, -16, 16) + wheel(90, -16, 16);
+      } else {
+        const k = v === 'ambulance' ? '#f6f4ef' : c.accent;
+        body = P('M-100-20v-74q0-12 12-12h120q16 0 26 14l26 34 22 6q8 2 8 14v18z', k) + P('M42-98q10 0 18 12l18 24h-36z', '#8cc6ec') +
+          R(-88, -84, 50, 30, '#8cc6ec', 6) + R(-100, -32, 214, 6, dk(k, .15));
+        if (v === 'party') body += C(-6, -74, 12, '#ffd84d') + C(14, -80, 10, '#5fc3f0') + L('M-6-62q2 6 4 12M14-70q-2 8 0 14', '#ffffff', 1.5) +
+          T(-30, -40, c.short || 'PARTY', OPS.kit.fit(c.short || 'PARTY', 110, 13), '#ffffff');
+        else body += R(-20, -78, 10, 30, '#e2463c') + R(-30, -68, 30, 10, '#e2463c') + R(-100, -48, 214, 8, '#e2463c') + R(16, -112, 20, 8, '#e2463c', 3);
+        body += wheel(-60, -16, 16) + wheel(66, -16, 16);
+        if (v === 'ambulance') {
+          emit += A('flash', R(16, -112, 20, 8, '#ff5a4a', 3), .8, 0);
+          glows.push([26, -116, 70, '#ff4a3a']);
+        }
+      }
+      const hx = v === 'hearse' ? 148 : v === 'ute' ? 100 : 124, hy = v === 'reefer' ? -40 : -40;
+      body += E(hx - 4, hy, 5, 4, '#fff9e0');
+      const L1 = lamp(hx - 4, hy, t);
+      emit += L1.emit; glows.push(L1.glow);
+      return { body, emit, glows };
+    } };
+
+  P_.dumptruck = { w: 320, ground: true, variants: ['loaded', 'empty'],
+    draw(v, c, r) {
+      const y = '#f2b631';
+      let s = '';
+      if (v === 'loaded') s += P('M-150-150q30-50 80-40q30-30 70-4q40-10 60 44z', '#b56b48') + C(-60, -170, 14, '#c47c58') + C(10, -184, 10, '#9c5a3c');
+      s += P('M-170-150h220l-16 70h-200z', y) + P('M-170-150h220v14h-220z', dk(y, .12)) + K_ribs(-150, -136, 180, 56, 6) +
+        R(46, -168, 96, 88, '#f6c94a', 8) + R(66, -158, 46, 34, '#8cc6ec', 4) + R(46, -96, 110, 16, dk(y, .25), 4) + R(-140, -80, 290, 22, '#3d3b4c', 6) +
+        L('M136-150h20v-30', '#3d3b4c', 4) + C(156, -186, 6, '#ff9d3a');
+      [-110, -40, 100].forEach(x => { s += A('wheel', C(x, -44, 44, '#26243a') + C(x, -44, 22, '#9aa1ae') + R(x - 3, -64, 6, 40, '#6d7385'), 1.8, 0); });
+      return { body: s, emit: C(156, -186, 6, '#ffb24a'), glows: [[156, -186, 46, '#ff9d3a']] };
+    } };
+  const K_ribs = (x, y, w, h, n) => OPS.kit.ribs(x, y, w, h, n, '#d99a1c', 4);
+
+  P_.excavator = { w: 240, ground: true, variants: ['dig', 'idle'],
+    draw(v, c, r) {
+      const y = '#f2b631';
+      const tracks = R(-110, -40, 200, 40, '#3d3b4c', 20) + [-86, -50, -14, 22, 58].map(x => C(x, -20, 12, '#5d5b70')).join('');
+      const arm = P('M60-110l90-70 14 14-84 72z', dk(y, .05)) + P('M150-180l40 90-16 6-38-86z', y) + P('M168-96q28 0 30 26l-34 6z', '#5d5b70') + C(150, -176, 7, '#3d3b4c');
+      const cab = R(-90, -110, 160, 66, y, 10) + R(-90, -64, 160, 18, dk(y, .18)) + R(10, -150, 60, 48, y, 8) + R(20, -142, 40, 30, '#8cc6ec', 4) + R(-90, -120, 40, 16, '#3d3b4c', 4) + T(-30, -76, c.short || 'DIG', OPS.kit.fit(c.short || 'DIG', 110, 16), '#3d3b4c');
+      return tracks + cab + (v === 'dig' ? A('dig', arm, 5, r() * 5) : arm);
+    } };
+
+  P_.scooter = { w: 90, ground: true, variants: ['red', 'blue'],
+    draw(v, c, r) {
+      const f = v === 'blue' ? '#4f86d6' : '#e2463c';
+      const b = OPS.kit.bean('retiree', c, r, { seated: true });
+      return G(b.s, { transform: 'translate(-10 -26)' }) + P('M-40-14q0-26 26-26h40l16-40h6l-10 50q20 0 22 16z', f) + L('M44-80l6-60', '#9aa4b0', 2) +
+        A('wave', P('M50-140l26 8-26 8z', '#ff8a3a'), 1.6, 0) + R(-46, -34, 22, 16, '#7d8496', 3) + wheel(-26, -10, 10) + wheel(44, -10, 10);
+    } };
+
+  P_.boat = { w: 280, variants: ['trawler', 'tinnie'],
+    draw(v, c, r) {
+      if (v === 'tinnie') return A('bob', P('M-60-30h120l-14 30h-92z', '#b9c2cc') + R(-60, -34, 120, 6, '#8e98a6') + R(40, -50, 14, 20, '#3d3b4c', 3) +
+        G(OPS.kit.bean('dad', c, r, { seated: true }).s, { transform: 'translate(-10 -12) scale(.8)' }), 4, r() * 4);
+      const k = '#e9e4da';
+      return A('bob', P('M-140-60h290l-30 60h-230z', '#2f4f7a') + R(-140, -66, 290, 8, '#e2463c') + R(-40, -130, 100, 64, k, 6) + R(-28, -118, 30, 22, '#8cc6ec', 3) +
+        R(12, -118, 30, 22, '#8cc6ec', 3) + L('M-100-66v-110M-100-170l120 40', '#7d8496', 4) + P('M-100-176l-30 110h20z', '#8b9a7a', { opacity: .7 }) +
+        T(30, -24, c.short || 'CO.', OPS.kit.fit(c.short || 'CO.', 160, 16), '#f4f2ee'), 5, r() * 5);
+    } };
+
+  P_.helicopter = { w: 200, ground: true, variants: ['parked', 'hover'],
+    draw(v, c, r) {
+      const k = c.accent;
+      const body = P('M-60-30q-10-50 50-56h40q40 4 50 40l-10 16z', k) + P('M-50-50q0-26 30-28h20v28z', '#8cc6ec') + P('M80-50h90l6-12h-96z', dk(k, .2)) +
+        A('rotor', R(158, -78, 8, 36, '#3d3b4c', 3), .25, 0) + L('M-40-10h100M-30-10v-20M40-10v-20', '#5d5b70', 4) + R(10, -96, 8, 12, '#3d3b4c');
+      const rotor = A('rotor', R(-110, -100, 240, 6, '#3d3b4c', 3), v === 'hover' ? .2 : 2.4, 0);
+      return v === 'hover' ? A('bob', body + rotor, 3, 0) : body + rotor;
+    } };
+})();
+
+// Buildings. Windows return a day face in body and a lit face in emit, so night lighting is free.
+(() => {
+  const { R, C, E, P, L, G, A, T, eye, dk, lt, lit, ribs } = OPS.kit, P_ = OPS.props;
+  const WARM = '#ffe29a', FLUORO = '#e6fbff', TV = '#9fd8ff';
+  // a window: glass by day, light by night
+  const win = (x, y, w, h, r, t, p, o = {}) => {
+    const on = lit(r, t, p), ph = r() * 2, glass = o.glass || '#9cc8e6';
+    const body = R(x, y, w, h, glass, o.rx || 2) + P(`M${x + w * .2} ${y + h}l${w * .5} -${h}h${w * .18}l-${w * .5} ${h}z`, lt(glass, .35), { opacity: .7 });
+    if (!on) return { body, emit: '', glow: null };
+    const col = o.col || WARM;
+    const e = o.tv ? A('tv', R(x, y, w, h, col, o.rx || 2), 1.3, ph) : R(x, y, w, h, col, o.rx || 2);
+    return { body, emit: e + (o.curtain ? R(x, y, w * .22, h, dk(col, .25)) + R(x + w * .78, y, w * .22, h, dk(col, .25)) : ''), glow: [x + w / 2, y + h / 2, Math.max(w, h) * 1.4, col] };
+  };
+  // brand lettering: printed by day, lit by night
+  const sign = (txt, t, glow) => ({ body: txt, emit: t.emit ? txt : '', glow: t.emit ? glow : null });
+  OPS.kit.sign = sign;
+  const pack = parts => { const o = { body: '', emit: '', glows: [] }; parts.forEach(p => { if (typeof p === 'string') o.body += p; else { o.body += p.body; o.emit += p.emit || ''; if (p.glow) o.glows.push(p.glow); if (p.glows) o.glows.push(...p.glows); } }); return o; };
+
+  P_.chapel = { w: 380, ground: true, variants: ['chapel'],
+    draw(v, c, r, t, o) {
+      const wall = '#e2d6c8', roof = '#5a4860';
+      const rose = (() => {
+        const on = t.emit > 0, cols = ['#e2463c', '#ffd45a', '#5fc3f0', '#7ac36a', '#c06ad6', '#ff9a4a'];
+        let b = C(0, -230, 30, '#6d6582'), e = '';
+        for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3, a2 = a + Math.PI / 3; const d = `M0 -230L${30 * Math.cos(a)} ${-230 + 30 * Math.sin(a)}A30 30 0 0 1 ${30 * Math.cos(a2)} ${-230 + 30 * Math.sin(a2)}Z`; b += P(d, dk(cols[i], .35)); e += P(d, cols[i]); }
+        b += C(0, -230, 7, '#e2d6c8'); e += C(0, -230, 7, '#fff3c4');
+        return { body: b, emit: on ? e : '', glow: on ? [0, -230, 90, '#ffb36a'] : null };
+      })();
+      return pack([
+        R(-190, -170, 380, 170, wall), R(40, -170, 150, 170, dk(wall, .08)), P('M-210-166L0-290 210-166z', roof), P('M0-290L210-166h-30L0-270z', dk(roof, .2)),
+        R(-26, -370, 52, 90, wall), P('M-34-370L0-410 34-370z', roof), L('M0-410v-28M-10-428h20', '#c9a24a', 5), R(-12, -350, 24, 34, '#3d3650', 12),
+        rose, P('M-34 0v-70a34 34 0 0 1 68 0V0z', '#5a3e34'), L('M0-104V0', dk('#5a3e34', .3), 2), C(-8, -40, 3, '#c9a24a'), C(8, -40, 3, '#c9a24a'),
+        win(-160, -130, 40, 70, r, t, .9, { rx: 20, curtain: true }), win(-100, -130, 40, 70, r, t, .7, { rx: 20, curtain: true }),
+        win(70, -130, 40, 70, r, t, .6, { rx: 20, curtain: true }), win(130, -130, 40, 70, r, t, .9, { rx: 20, curtain: true }),
+        R(-190, -12, 380, 12, dk(wall, .18)), R(-120, -168, 240, 26, c.accent, 4), sign(T(0, -149, (o.txt || c.name).toUpperCase(), 13, '#fff8ea', { 'letter-spacing': 3 }), t, [0, -155, 140, c.accent])
+      ]);
+    } };
+
+  P_.tower = { w: 270, ground: true, variants: ['tall', 'wide'],
+    draw(v, c, r, t, o) {
+      const W = v === 'wide' ? 340 : 240, H = v === 'wide' ? 380 : 520, glass = '#6f9fc6', cols = v === 'wide' ? 8 : 6, rows = Math.floor((H - 80) / 34);
+      const parts = [R(-W / 2, -H, W, H, glass), R(W * .1, -H, W * .4, H, dk(glass, .14)), R(-W / 2 - 8, -H - 10, W + 16, 14, '#3d4a66')];
+      const cw = (W - 30) / cols;
+      for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++)
+        parts.push(win(-W / 2 + 15 + x * cw + 3, -H + 30 + y * 34, cw - 6, 22, r, t, .45, { glass: x / cols > .58 ? '#7aa8cc' : '#a6cbe6', col: r() < .3 ? FLUORO : WARM }));
+      parts.push(R(-W / 2, -60, W, 60, '#3d4a66'), R(-30, -54, 60, 54, '#9cc8e6'), L('M0-54V0', '#3d4a66', 3), R(-W / 2 + 20, -H + 6, W - 40, 0, 'none'));
+      parts.push(R(-60, -H - 60, 120, 44, c.accent, 6), sign(T(0, -H - 30, c.short || 'CO', 24, '#fff8ea', { 'letter-spacing': 2 }), t, [0, -H - 38, 120, c.accent]));
+      if (t.emit) parts.push({ body: '', emit: A('blink', C(W / 2 - 14, -H - 24, 5, '#ff4a3a'), 1.6, 0), glow: [W / 2 - 14, -H - 24, 26, '#ff4a3a'] });
+      parts.push(L(`M${W / 2 - 14} -${H + 10}v-12`, '#3d4a66', 3));
+      return pack(parts);
+    } };
+
+  P_.motel = { w: 480, ground: true, variants: ['motel'],
+    draw(v, c, r, t) {
+      const wall = '#f1dcb4', door = '#3f8f8a';
+      const parts = [R(-240, -180, 480, 180, wall), R(-240, -180, 480, 14, '#c9714a'), R(-240, -98, 480, 12, dk(wall, .2)), L('M-240-110h480', '#8a6a5a', 3), ribs(-240, -110, 480, 14, 24, '#8a6a5a', 2)];
+      for (let i = 0; i < 6; i++) {
+        const x = -220 + i * 76;
+        parts.push(R(x, -158, 24, 46, door, 2), C(x + 19, -134, 2, '#ffd45a'), T(x + 12, -162, String(i + 1), 9, '#8a6a5a'));
+        parts.push(win(x + 32, -152, 34, 28, r, t, .55, { curtain: true, tv: r() < .4, col: r() < .4 ? TV : WARM }));
+        parts.push(R(x, -72, 24, 72, door, 2), C(x + 19, -36, 2, '#ffd45a'), T(x + 12, -76, String(i + 11), 9, '#8a6a5a'));
+        parts.push(win(x + 32, -64, 34, 28, r, t, .5, { curtain: true, tv: r() < .4, col: r() < .4 ? TV : WARM }));
+      }
+      parts.push(R(-240, -6, 480, 6, dk(wall, .25)));
+      return pack(parts);
+    } };
+
+  P_.shed = { w: 360, ground: true, variants: ['factory', 'warehouse', 'crematorium'],
+    draw(v, c, r, t, o) {
+      const brick = v === 'crematorium', wall = brick ? '#c48a72' : '#cfd3da', roof = brick ? '#5a4860' : '#8f97a6';
+      const parts = [R(-180, -170, 360, 170, wall), P('M-190-166l190-40 190 40z', roof), R(-180, -170, 360, 10, dk(wall, .15))];
+      if (!brick) parts.push(ribs(-180, -160, 360, 160, 30, dk(wall, .1), 2));
+      else for (let y = -150; y < 0; y += 16) parts.push(L(`M-180 ${y}h360`, dk(wall, .1), 1.5));
+      if (v !== 'crematorium') {
+        parts.push(R(-140, -110, 110, 110, '#9aa1ae', 3), ribs(-140, -110, 110, 110, 1, '#9aa1ae'));
+        for (let y = -100; y < 0; y += 10) parts.push(L(`M-140 ${y}h110`, dk('#9aa1ae', .15), 2));
+        parts.push(R(20, -110, 110, 110, '#9aa1ae', 3));
+        for (let y = -100; y < -30; y += 10) parts.push(L(`M20 ${y}h110`, dk('#9aa1ae', .15), 2));
+        parts.push(R(20, -30, 110, 30, '#2a2836'));
+        parts.push(R(-170, -150, 140, 28, c.accent, 4), sign(T(-100, -130, (o.txt || c.short || 'CO').toUpperCase(), 15, '#fff8ea', { 'letter-spacing': 2 }), t, [-100, -136, 110, c.accent]));
+        parts.push(win(50, -150, 60, 24, r, t, .7, { col: FLUORO }));
+      } else {
+        parts.push(R(-40, -84, 80, 84, '#5a3e34', 4), R(-170, -140, 120, 40, '#e8ddcf', 3), T(-110, -115, o.txt || 'FAREWELL', 12, '#5a4860', { 'letter-spacing': 2 }));
+        parts.push(win(70, -120, 80, 40, r, t, .5, { curtain: true }));
+      }
+      if (v === 'factory' || brick) {
+        const cx = brick ? 120 : 130;
+        parts.push(R(cx - 18, -300, 36, 140, brick ? dk(wall, .12) : '#b6bcc8'), R(cx - 22, -306, 44, 12, dk(roof, .1), 3));
+        if (!brick) parts.push(R(cx - 18, -270, 36, 10, '#e2463c'), R(cx - 18, -240, 36, 10, '#e2463c'));
+        parts.push(G(P_.smoke.draw(brick ? 'grey' : 'white', c, r), { transform: `translate(${cx} -310)` }));
+        if (brick) parts.push(A('shimmer', E(cx, -320, 14, 8, '#ffbf8a', { opacity: .35 }), 1.2, 0));
+      }
+      return pack(parts);
+    } };
+
+  P_.shopfront = { w: 280, ground: true, variants: ['plain', 'dental', 'pawn'],
+    draw(v, c, r, t, o) {
+      const wall = v === 'pawn' ? '#e8d9b0' : '#efe7da', aw = c.accent;
+      let scal = '';
+      for (let i = 0; i < 10; i++) scal += C(-140 + 14 + i * 28, -136, 14, i % 2 ? '#fff8ea' : aw);
+      let stripes = '';
+      for (let i = 0; i < 10; i++) stripes += R(-140 + i * 28, -170, 28, 34, i % 2 ? '#fff8ea' : aw);
+      const label = (o.txt || (v === 'dental' ? 'SMILE DIRECT' : v === 'pawn' ? 'CASH 4 ANYTHING' : c.name)).toUpperCase();
+      return pack([
+        R(-140, -250, 280, 250, wall), R(40, -250, 100, 250, dk(wall, .07)), R(-140, -250, 280, 60, '#3d3a52'), sign(T(0, -212, label, label.length > 14 ? 17 : 22, '#fff8ea', { 'letter-spacing': 2 }), t, [0, -220, 150, c.accent]),
+        G(stripes + scal), win(-120, -110, 150, 90, r, t, .9, { col: v === 'dental' ? FLUORO : WARM, glass: '#a8cfe8' }),
+        R(50, -110, 60, 110, '#4d6a8a', 3), R(58, -100, 44, 60, '#a8cfe8', 2), C(98, -54, 3, '#ffd45a'), R(-140, -14, 280, 14, dk(wall, .2)),
+        v === 'pawn' ? T(-45, -50, 'WE BUY GOLD', 12, '#d9261c', { 'letter-spacing': 1 }) + T(-45, -34, '& TEETH', 10, '#d9261c') : '',
+        v === 'dental' ? T(-45, -36, 'NO GAP*', 14, '#2c6a8a') : ''
+      ]);
+    } };
+
+  P_.donga = { w: 220, ground: true, variants: ['office', 'crib'],
+    draw(v, c, r, t) {
+      const wall = '#ebe7dc';
+      return pack([
+        R(-110, -130, 220, 106, wall, 4), R(-110, -60, 220, 8, c.accent), R(-104, -24, 20, 24, '#7d8496'), R(84, -24, 20, 24, '#7d8496'),
+        R(-80, -110, 60, 40, '#5b5f6e', 3), win(-76, -106, 52, 32, r, t, .95, { col: FLUORO }), R(10, -116, 34, 92, '#7d8496', 3),
+        P('M10-24h-30l-6 24h36z', '#9aa1ae'), L('M-20-24v-14h30', '#9aa1ae', 3), R(60, -118, 40, 30, '#c8ccd6', 3),
+        A('rotor', C(80, -103, 11, '#7d8496'), .4, 0), C(80, -103, 3, '#3d3b4c'),
+        OPS.kit.T(-50, -36, v === 'crib' ? 'CRIB ROOM' : 'SITE OFFICE', 10, dk(c.accent, .3), { 'letter-spacing': 2 })
+      ]);
+    } };
+
+  P_.units = { w: 420, ground: true, variants: ['units', 'house'],
+    draw(v, c, r, t) {
+      const brick = '#c98e6c', roof = '#b5583c', n = v === 'house' ? 1 : 3, W = 140;
+      const parts = [];
+      for (let i = 0; i < n; i++) {
+        const x = -n * W / 2 + i * W;
+        parts.push(R(x + 4, -110, W - 8, 110, i % 2 ? dk(brick, .05) : brick), P(`M${x - 6} -106L${x + W / 2} -168 ${x + W + 6} -106z`, roof), P(`M${x + W / 2} -168L${x + W + 6} -106h-20L${x + W / 2} -152z`, dk(roof, .2)));
+        parts.push(R(x + 18, -70, 28, 70, '#e8ddcf', 2), win(x + 64, -84, 52, 38, r, t, .6, { curtain: true, col: r() < .35 ? TV : WARM, tv: r() < .4 }));
+        parts.push(R(x + 60, -44, 60, 6, '#e8ddcf'), T(x + 32, -78, `${i + 1}`, 10, '#6d4a3a'));
+        for (let k = 0; k < 4; k++) parts.push(C(x + 70 + k * 12, -36, 4, r.pick(['#ff7aa2', '#ffd45a', '#c06ad6'])));
+      }
+      return pack(parts);
+    } };
+})();
+
+// Street furniture and signage. Brand colour (c.accent) only goes on the company's own things.
+(() => {
+  const { R, C, E, P, L, G, A, T, dk, lt } = OPS.kit, P_ = OPS.props;
+
+  P_.lamp = { w: 30, ground: true, variants: ['street', 'flicker'],
+    draw(v, c, r, t) {
+      const ph = r() * 3, pole = '#5d6274', light = v === 'flicker' ? '#e6fbff' : '#ffd77a';
+      const body = R(-4, -220, 8, 220, pole, 3) + L('M0-214q0-16 30-16', pole, 7) + P('M18-236h34l-6 12h-22z', '#3d4152') + R(24, -226, 22, 5, '#d8dce6', 2);
+      if (!t.emit) return body;
+      const lamp = R(24, -226, 22, 5, light, 2) + P('M24-221h22l40 221h-102z', light, { opacity: .06 });
+      return { body, emit: v === 'flicker' ? A('flicker', lamp, 3.7, ph) : lamp, glows: [[35, -222, 70, light]] };
+    } };
+
+  P_.pole = { w: 30, ground: true, variants: ['power', 'stobie'],
+    draw(v) {
+      const w = v === 'stobie' ? '#9aa1ae' : '#8a6a52';
+      return R(-6, -300, 12, 300, w, 3) + R(-46, -280, 92, 8, dk(w, .2), 2) + C(-38, -286, 5, '#d8e4f0') + C(0, -286, 5, '#d8e4f0') + C(38, -286, 5, '#d8e4f0') +
+        L('M-38-286q-200 30-400 10M38-286q200 30 400 10', '#3d3b4c', 1.5) + R(-14, -200, 28, 20, '#a8aebb', 3);
+    } };
+
+  P_.sign = { w: 90, ground: true, variants: ['pylon', 'billboard', 'neon', 'aframe', 'tooth', 'bingo'],
+    draw(v, c, r, t, o) {
+      const txt = (o.txt || c.name).toUpperCase();
+      if (v === 'pylon') {
+        const name = c.short || txt, words = T(0, -240, name, OPS.kit.fit(name, 144, 28), '#fff8ea') + T(0, -197, (o.sub || c.slogan || '').toUpperCase(), OPS.kit.fit(o.sub || c.slogan || '', 170, 9), '#fff8ea', { 'letter-spacing': 1.5 });
+        const body = R(-6, -200, 12, 200, '#7d8496') + R(-80, -280, 160, 90, c.accent, 10) + R(-80, -214, 160, 24, dk(c.accent, .2), 0) + words;
+        return t.emit ? { body, emit: words, glows: [[0, -240, 130, c.accent]] } : body;
+      }
+      if (v === 'billboard') {
+        const body = R(-90, -160, 8, 160, '#7d8496') + R(82, -160, 8, 160, '#7d8496') + R(-160, -300, 320, 150, '#f4f0e6', 4) + R(-160, -300, 120, 150, c.accent, 4) +
+          T(-100, -210, c.short || 'CO', OPS.kit.fit(c.short || 'CO', 104, 30), '#fff8ea') + T(60, -240, txt, 18, '#2a2836') + T(60, -214, (o.sub || c.slogan || '').toUpperCase(), 11, dk(c.accent, .1), { 'letter-spacing': 1 }) +
+          L('M-150-160h300', '#5d6274', 4);
+        return t.emit ? { body, emit: '', glows: [[-60, -300, 80, '#ffe3a0'], [60, -300, 80, '#ffe3a0']] } : body;
+      }
+      if (v === 'neon') {
+        const n = '#ff4f8b', b = '#47e0ff', ph = r() * 4;
+        const body = R(-6, -150, 12, 150, '#7d8496') + R(-90, -300, 180, 150, '#2d2b3e', 10) + T(0, -250, txt, 26, dk(n, .45)) + T(-56, -180, 'NO', 22, dk(b, .5)) + T(22, -180, 'VACANCY', 18, dk(b, .5));
+        if (!t.emit) return body;
+        return { body, emit: T(0, -250, txt, 26, n) + A('neonno', T(-56, -180, 'NO', 22, b), 4.4, ph) + T(22, -180, 'VACANCY', 18, b), glows: [[0, -258, 120, n], [0, -186, 90, b]] };
+      }
+      if (v === 'aframe') return P('M-34 0l14-90h40L34 0h-8l-12-80h-28L-26 0z', '#8a6a52') + R(-22, -84, 44, 60, '#2d3a32', 2) +
+        T(0, -66, o.txt || 'SPECIALS', 8, '#f4f0e6') + T(0, -50, o.sub || 'TODAY', 7, '#ffd45a') + L('M-14-40h28', '#f4f0e6', 1.2);
+      if (v === 'tooth') return R(-6, -170, 12, 170, '#7d8496') + A('spin3', P('M-46-290c-20 0-26 30-20 60 6 30 10 60 22 60s10-30 14-30 4 30 14 30 18-30 22-60 0-60-20-60c-12 0-14 8-16 8s-4-8-16-8z', '#ffffff') +
+        P('M14-290c20 0 26 30 20 60s-10 60-22 60c0 0 6-40 2-80z', '#dfe5ee') + OPS.kit.eye(-12, -250, 3, 0) + OPS.kit.eye(8, -250, 3, 0) + L('M-10-232q8 8 16 0', '#1c1a2c', 2.5), 7, 0);
+      return R(-66, -170, 8, 170, '#7d8496') + R(58, -170, 8, 170, '#7d8496') + R(-90, -250, 180, 90, '#fff8ea', 6) + R(-90, -250, 180, 30, c.accent, 6) +
+        T(0, -229, 'BINGO', 20, '#fff8ea', { 'letter-spacing': 3 }) + T(0, -192, o.txt || 'TONIGHT 7PM', 15, '#2a2836') + T(0, -172, o.sub || 'BYO OXYGEN', 10, dk(c.accent, .2), { 'letter-spacing': 1 });
+    } };
+
+  P_.bin = { w: 44, ground: true, variants: ['wheelie', 'overflow', 'skip'],
+    draw(v, c, r) {
+      if (v === 'skip') return P('M-90-70h180l-20 70h-140z', '#f2b631') + R(-90, -74, 180, 8, dk('#f2b631', .2)) + P('M-70-74q10-30 40-20q20-26 40-6q24-10 30 26z', '#8a8070') +
+        R(-30, -100, 26, 30, '#c9a27a', 2, { transform: 'rotate(-14)' }) + T(0, -30, 'SKIP', 16, dk('#f2b631', .4));
+      const g = '#3e8a54', lid = v === 'overflow' ? '#e2463c' : '#f2c531';
+      let s = P('M-22-80h44l-4 72h-36z', g) + P('M8-80h14l-4 72h-10z', dk(g, .2)) + C(-14, -6, 7, '#26243a') + C(14, -6, 7, '#26243a');
+      if (v === 'overflow') {
+        s += C(-6, -86, 16, '#2a2836') + C(12, -92, 13, '#3d3b4c') + P('M-24-90l48-28 4 8-46 26z', lid);
+        for (let i = 0; i < 3; i++) s += A('fly', C(0, -110, 2.2, '#1c1a2c'), 1.6 + i * .4, i * .5);
+      } else s += R(-25, -86, 50, 8, lid, 3);
+      return s;
+    } };
+
+  P_.cone = { w: 30, ground: true, variants: ['up', 'down'],
+    draw(v) {
+      const s = P('M-6-48h12l10 44h-32z', '#ff7a2a') + R(-10, -34, 20, 6, '#f4f0e6') + R(-20, -6, 40, 6, '#e05f1a', 2);
+      return v === 'down' ? G(s, { transform: 'translate(0 -8) rotate(80)' }) : s;
+    } };
+
+  P_.fence = { w: 300, ground: true, variants: ['picket', 'chain', 'site'],
+    draw(v, c, r, t, o) {
+      const w = o.len || 300;
+      let s = '';
+      if (v === 'picket') { for (let x = -w / 2; x < w / 2; x += 18) s += P(`M${x} 0v-60l6-8 6 8v60z`, '#f4f0e6'); s += R(-w / 2, -48, w, 6, dk('#f4f0e6', .12)) + R(-w / 2, -20, w, 6, dk('#f4f0e6', .12)); }
+      if (v === 'chain') { s += R(-w / 2, -90, w, 90, '#9aa1ae', 0, { opacity: .35 }); for (let x = -w / 2; x <= w / 2; x += 60) s += R(x - 3, -96, 6, 96, '#7d8496', 2); s += L(`M${-w / 2} -90h${w}`, '#7d8496', 3); }
+      if (v === 'site') { for (let x = -w / 2; x < w / 2; x += 100) s += R(x, -80, 98, 80, c.accent, 0, { opacity: .85 }) + R(x, -80, 98, 4, '#9aa1ae') + R(x - 2, -84, 4, 84, '#7d8496') + R(x - 10, -6, 24, 6, '#d6913a', 2); }
+      return s;
+    } };
+
+  P_.vending = { w: 60, ground: true, variants: ['snacks', 'ice'],
+    draw(v, c, r, t) {
+      const k = v === 'ice' ? '#e9eef4' : '#d9261c';
+      let body = R(-30, -140, 60, 140, k, 6) + R(-22, -128, 30, 96, '#2a2836', 3) + R(14, -120, 10, 40, '#3d3b4c', 2) + R(-22, -26, 44, 14, '#26243a', 2);
+      if (v === 'ice') body = R(-30, -140, 60, 140, k, 6) + T(0, -110, 'ICE', 18, '#3f8f8a') + R(-22, -90, 44, 50, '#cfe1ee', 4) + R(-22, -26, 44, 14, '#26243a', 2);
+      else for (let i = 0; i < 4; i++) body += R(-18, -122 + i * 22, 22, 6, r.pick(['#ffd45a', '#5fc3f0', '#7ac36a', '#ff7aa2']), 1);
+      if (!t.emit) return body;
+      return { body, emit: v === 'ice' ? R(-22, -90, 44, 50, '#e6fbff', 4) : R(-22, -128, 30, 96, '#d9f3ff', 3, { opacity: .55 }), glows: [[0, -80, 90, v === 'ice' ? '#bff0ff' : '#ffd0c4']] };
+    } };
+
+  P_.flag = { w: 30, ground: true, variants: ['brand', 'halfmast'],
+    draw(v, c, r) {
+      const y = v === 'halfmast' ? -150 : -230;
+      return R(-3, -240, 6, 240, '#c3c8d4', 2) + C(0, -242, 5, '#c9a24a') + A('flagwave', P(`M3 ${y}q30-8 60 0t60 0v46q-30-8-60 0t-60 0z`, c.accent) + T(56, y + 28, c.short || '', OPS.kit.fit(c.short || '', 100, 12), '#fff8ea'), 2.2, r() * 2);
+    } };
+})();
+
+// Trade props: the stock each company actually sells (or quietly disposes of).
+(() => {
+  const { R, C, E, P, L, G, A, T, eye, dk, lt } = OPS.kit, P_ = OPS.props;
+  const BAL = ['#ff5d8f', '#ffd45a', '#5fc3f0', '#7ac36a', '#c06ad6', '#ff8a3a'];
+
+  P_.bouncycastle = { w: 300, ground: true, variants: ['castle', 'deflating'],
+    draw(v, c, r) {
+      const a = c.accent, b = '#ffd45a', d = '#5fc3f0';
+      const turret = (x, f) => R(x - 24, -230, 48, 150, f, 20) + C(x, -238, 26, f) + C(x, -238, 10, lt(f, .35)) + L(`M${x} -260v-34`, '#7d8496', 3) + A('flagwave', P(`M${x} -294l26 6-26 8z`, b), 1.4, r());
+      const s = R(-150, -60, 300, 60, dk(d, .1), 24) + R(-130, -180, 260, 130, a, 26) + P('M-80-50v-70a80 60 0 0 1 160 0v70z', dk(a, .35)) +
+        P('M-60-50v-56a60 44 0 0 1 120 0v56z', '#2b2240', { opacity: .8 }) + turret(-140, b) + turret(140, d) + R(-130, -200, 260, 30, lt(a, .2), 15) +
+        [-90, -45, 0, 45, 90].map(x => C(x, -204, 18, lt(a, .2))).join('') + R(-150, -24, 300, 24, d, 12);
+      return A(v === 'deflating' ? 'deflate' : 'wobble', s, v === 'deflating' ? 9 : 1.6, r() * 2);
+    } };
+
+  P_.balloon = { w: 30, variants: ['single', 'bunch', 'escaped', 'sad'],
+    draw(v, c, r) {
+      const one = (x, y, f) => L(`M${x} ${y + 30}q-6 20 ${-x * .8} ${-y - 30}`, '#e8e4dc', 1.5) + E(x, y, 22, 27, f) + E(x - 7, y - 9, 6, 9, lt(f, .5), { opacity: .7 }) + P(`M${x - 4} ${y + 27}h8l-4 6z`, dk(f, .1));
+      if (v === 'bunch') return A('bob', one(-22, -150, r.pick(BAL)) + one(20, -160, r.pick(BAL)) + one(0, -190, r.pick(BAL)), 3.2, r() * 3);
+      if (v === 'sad') return L('M0 0q10-6 18-14', '#e8e4dc', 1.5) + A('bob', E(28, -16, 16, 11, r.pick(BAL), { transform: 'rotate(30 28 -16)' }) + E(22, -20, 4, 3, '#ffffff', { opacity: .5 }), 7, r() * 3);
+      if (v === 'escaped') return A('rise', one(0, -160, r.pick(BAL)), 14, r() * 14);
+      return A('bob', one(0, -150, r.pick(BAL)), 2.8, r() * 3);
+    } };
+
+  P_.esky = { w: 60, ground: true, variants: ['blue', 'red', 'open'],
+    draw(v, c, r) {
+      const lid = v === 'red' ? '#e2463c' : '#3f7fd0';
+      let s = R(-34, -44, 68, 44, '#f4f2ee', 6) + R(-34, -10, 68, 10, dk('#f4f2ee', .12), 4) + L('M-20-44v-10h40v10', '#9aa1ae', 3);
+      if (v === 'open') s += [-18, -4, 10].map(x => R(x, -60, 10, 18, '#c8cfd8', 2) + R(x, -56, 10, 5, '#2e7a3c')).join('') + R(-40, -96, 10, 52, lid, 4);
+      else s += R(-36, -52, 72, 12, lid, 5);
+      return s;
+    } };
+
+  P_.coffin = { w: 140, ground: true, variants: ['closed', 'open', 'display', 'budget'],
+    draw(v, c, r, t, o) {
+      const k = v === 'budget' ? '#c9a27a' : v === 'display' ? '#7a3a2a' : '#8a5236';
+      const shape = 'M-70-36l20-20h100l20 20-20 20h-100z';
+      let s = P('M-70-36l20-20h100l20 20v20l-20 16h-100l-20-16z', dk(k, .25)) + P(shape, k);
+      if (v === 'budget') s += T(0, -32, 'THIS WAY UP ↑', 10, '#6d4a2a') + L('M-40-46h30M10-46h30', '#a37f5a', 2);
+      else s += L('M-50-36h100', lt(k, .15), 2) + C(-60, -36, 3, '#c9a24a') + C(60, -36, 3, '#c9a24a');
+      if (v === 'open') s = P('M-70-36l20-20h100l20 20v20l-20 16h-100l-20-16z', dk(k, .25)) + P(shape, '#f1e6f3') + E(-40, -38, 16, 10, '#ffffff') +
+        G(P('M0-56h50l20 20-20-6h-50z', k), { transform: 'rotate(-28 50 -56)' });
+      if (v === 'display') s += G(R(20, -84, 50, 30, '#fff8ea', 2) + T(45, -71, 'DISPLAY', 8, '#2a2836') + T(45, -60, o.price || '$4,999', 9, '#d9261c') + L('M30-54l-6 14', '#e8e4dc', 1.2), { transform: 'rotate(8 45 -70)' });
+      return s;
+    } };
+
+  P_.wreath = { w: 60, ground: true, variants: ['sorry', 'condolences'],
+    draw(v, c, r, t, o) {
+      let ring = '';
+      for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; ring += C(Math.cos(a) * 30, -110 + Math.sin(a) * 30, 12, i % 3 ? '#4f8a52' : '#3c7044'); }
+      for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + .3; ring += C(Math.cos(a) * 30, -110 + Math.sin(a) * 30, 6, r.pick(['#ffffff', '#f2c6d6', '#ffd45a'])); }
+      return L('M-24 0l20-80M24 0l-20-80M0 0v-70', '#8a6a52', 4) + ring + P('M-16-82l16 40 16-40z', c.accent2 || '#5a4860') +
+        R(-28, -120, 56, 18, '#fff8ea', 2) + T(0, -107, o.txt || (v === 'sorry' ? 'SORRY' : 'WITH SYMPATHY'), v === 'sorry' ? 10 : 6, '#2a2836');
+    } };
+
+  P_.candle = { w: 20, ground: true, variants: ['tall', 'short'],
+    draw(v, c, r, t) {
+      const h = v === 'tall' ? 90 : 46, ph = r() * 2;
+      const body = R(-14, -8, 28, 8, '#c9a24a', 2) + R(-8, -8 - h, 16, h, '#f6efe0', 3) + R(2, -8 - h, 6, h, '#e6dcc6', 2) + L(`M0 ${-8 - h}v-6`, '#2a2836', 1.5);
+      const flame = A('flame', P(`M0 ${-14 - h}c-6-6-6-14 0-22c6 8 6 16 0 22z`, '#ffb43a') + P(`M0 ${-16 - h}c-3-3-3-8 0-12c3 4 3 9 0 12z`, '#fff1b0'), .9, ph);
+      return { body, emit: flame, glows: [[0, -26 - h, t.emit ? 60 : 24, '#ffb46a']] };
+    } };
+
+  P_.headstone = { w: 60, ground: true, variants: ['round', 'cross', 'pet', 'cheap'],
+    draw(v, c, r, t, o) {
+      const g = '#a7a3b4';
+      if (v === 'cross') return R(-7, -110, 14, 110, g, 2) + R(-30, -84, 60, 14, g, 2) + R(1, -110, 6, 110, dk(g, .15)) + E(0, 0, 30, 6, '#5f8a4e');
+      if (v === 'pet') return OPS.kit.arch(-20, -40, 40, 40, g) + T(0, -14, o.txt || 'REX', 9, '#5a5670') + P('M-10-28h20M-10-28m-3 0a3 3 0 1 1 3-3M10-28m3 0a3 3 0 1 0-3-3', 'none', { stroke: '#5a5670', 'stroke-width': 2 }) + C(18, -4, 6, '#d9e04a');
+      if (v === 'cheap') return L('M0 0v-80M-22-58h44', '#a37f5a', 7) + R(-24, -72, 48, 18, '#fff8ea', 2) + T(0, -59, o.txt || 'TBC', 9, '#2a2836');
+      return OPS.kit.arch(-34, -96, 68, 96, g) + P('M8-96a34 34 0 0 1 26 34V0H14z', dk(g, .15)) + T(0, -50, o.txt || 'RIP', 15, '#5a5670') + E(0, 0, 40, 6, '#5f8a4e') +
+        C(-14, -6, 5, '#ff7aa2') + C(-6, -4, 5, '#ffd45a');
+    } };
+
+  P_.crate = { w: 80, ground: true, variants: ['fish', 'pallet', 'chooks'],
+    draw(v, c, r) {
+      if (v === 'pallet') return R(-50, -12, 100, 12, '#b98a5e', 2) + R(-46, -72, 44, 60, '#d9b98a', 2) + R(2, -72, 44, 60, '#cda878', 2) + R(-26, -120, 50, 48, '#d9b98a', 2) +
+        L('M-24-42h0M-24-100h0', '#000', 0) + R(-46, -50, 92, 6, c.accent, 0, { opacity: .8 }) + T(-24, -90, 'FRAGILE', 7, '#a33a2a');
+      if (v === 'chooks') {
+        let s = R(-50, -60, 100, 60, '#c79a5e', 4);
+        for (let i = 0; i < 3; i++) s += A('peck', C(-30 + i * 30, -66, 11, '#fbf7ef') + P(`M${-34 + i * 30} -76q2-6 6-2q2-5 6 1z`, '#e2463c') + eye(-27 + i * 30, -68, 1.6, i), 2.4, i * .7);
+        for (let x = -40; x <= 40; x += 16) s += R(x, -60, 6, 60, dk('#c79a5e', .25));
+        return s;
+      }
+      let s = R(-44, -46, 88, 46, '#3f7fd0', 4) + R(-44, -46, 88, 8, dk('#3f7fd0', .2), 4);
+      for (let i = 0; i < 4; i++) s += P(`M${-34 + i * 20} -46l-6-14 12 4z`, '#a8b8c8') + E(-28 + i * 20, -48, 8, 4, '#b8c8d6');
+      return s + R(-30, -30, 60, 10, dk('#3f7fd0', .15), 3);
+    } };
+
+  P_.pool = { w: 360, variants: ['clean', 'green'],
+    draw(v, c, r) {
+      const w = v === 'green' ? '#7fae5a' : '#5ec6e6';
+      let s = R(-180, -70, 360, 74, '#e9e3d6', 14) + R(-166, -62, 332, 58, w, 10) + R(-166, -62, 332, 10, dk(w, .2), 6);
+      for (let i = 0; i < 6; i++) s += A('shimmer', L(`M${-140 + i * 50} -32q10-6 20 0`, lt(w, .5), 3), 2.4, i * .4);
+      s += A('bob', G(E(50, -36, 12, 5, '#ff5d8f') + E(60, -36, 6, 3, '#f4f2ee'), { transform: 'rotate(-12 50 -36)' }), 4.4, 1);
+      if (v === 'green') s += A('bob', P('M-80-40q20-20 40-10q10-24 20-6l-10 16h-50z', '#ff8ab5', { opacity: .85 }), 6, 2);
+      return s + L('M150-70v-50h16M150-104h16M150-88h16', '#c3c8d4', 3);
+    } };
+
+  P_.bbq = { w: 80, ground: true, variants: ['snags', 'cold'],
+    draw(v, c, r) {
+      let s = L('M-30 0l6-50M30 0l-6-50', '#3d3b4c', 4) + R(-44, -66, 88, 18, '#3d3b4c', 4) + R(-44, -70, 88, 6, '#5d5b70', 2);
+      if (v === 'snags') {
+        for (let i = 0; i < 5; i++) s += R(-36 + i * 15, -78, 12, 6, '#a8583a', 3);
+        s += G(P_.smoke.draw('grey', c, r), { transform: 'translate(0 -90) scale(.6)' });
+      } else s += R(-40, -80, 80, 10, '#9aa1ae', 3);
+      return s;
+    } };
+})();
+
+(() => {
+  const { R, C, E, P, L, G, A, eye, dk } = OPS.kit;
+  // the dog waits outside. It always waits outside.
+  OPS.props.dog = { w: 60, ground: true, variants: ['kelpie', 'sausage'],
+    draw(v, c, r) {
+      const f = v === 'sausage' ? '#9a5a32' : '#b8743e', d = r() * 4;
+      const tail = A('wag', L(v === 'sausage' ? 'M-34-20q-14-6-16-16' : 'M-20-16q-18-4-20-22', f, 5), .5, d);
+      if (v === 'sausage') return tail + R(-36, -34, 66, 22, f, 11) + L('M-26-14v14M-10-14v14M8-14v14M22-14v14', dk(f, .2), 5) +
+        A('nod', C(34, -38, 13, f) + E(44, -34, 8, 6, dk(f, .15)) + E(28, -44, 6, 11, dk(f, .3), { transform: 'rotate(20 28 -44)' }) + eye(36, -42, 2.2, d) + C(51, -36, 2.6, '#1c1a2c'), 6, d);
+      return tail + P('M-20-6q-4-34 20-40q18 0 18 30v16z', f) + E(0, -6, 22, 8, dk(f, .15)) + E(6, -30, 8, 12, '#f2e2c8') +
+        A('nod', C(10, -54, 15, f) + P('M0-64l-4-16 12 8zM16-66l8-14 2 16z', dk(f, .3)) + E(22, -50, 9, 6, '#f2e2c8') + C(30, -51, 2.6, '#1c1a2c') + eye(8, -58, 2.2, d) + eye(17, -58, 2.2, d), 6, d);
+    } };
+})();
+
+// Backdrops (far layers) and grounds. Each backdrop returns [{ svg, depth, emit? }]; depth 1 = most haze.
+(() => {
+  const { R, C, E, P, L, G, A, dk, lt, lit } = OPS.kit, B = OPS.backs;
+  const W = 1600;
+  const ridge = (y, amp, n, r, f) => {
+    let d = `M0 900V${y}`;
+    const step = W / n;
+    for (let i = 0; i <= n; i++) d += `Q${i * step - step / 2} ${y - r.range(amp * .4, amp)} ${i * step} ${y - r.range(0, amp * .3)}`;
+    return P(d + 'V900Z', f);
+  };
+
+  B.hills = (c, r) => [
+    { depth: 1, svg: ridge(560, 90, 4, r, '#8bb0a0') },
+    { depth: .6, svg: ridge(600, 60, 6, r, '#76a46a') + [...Array(9)].map(() => { const x = r.range(0, W), y = r.range(560, 590); return E(x, y, 22, 14, '#5d8f58') + R(x - 2, y, 4, 14, '#7a6a5a'); }).join('') }
+  ];
+
+  B.range = (c, r) => [
+    { depth: 1, svg: P('M0 900V520L180 470 300 500 520 420 700 480 900 440 1100 500 1320 430 1600 500V900Z', '#c98a72') + P('M520 420L600 470 700 480 560 446Z', dk('#c98a72', .15)) },
+    { depth: .6, svg: ridge(600, 40, 5, r, '#c77a52') }
+  ];
+
+  B.city = (c, r, t) => {
+    let far = '', mid = '', emit = '';
+    for (let x = -20; x < W; x += r.range(60, 120)) { const h = r.range(120, 300), w = r.range(50, 100); far += R(x, 620 - h, w, h, '#90a6c8'); }
+    for (let x = -40; x < W; x += r.range(90, 160)) {
+      const h = r.range(80, 220), w = r.range(70, 130);
+      mid += R(x, 620 - h, w, h, '#7891b8') + R(x + w * .6, 620 - h, w * .4, h, dk('#7891b8', .1));
+      for (let yy = 620 - h + 14; yy < 600; yy += 20) for (let xx = x + 8; xx < x + w - 10; xx += 16) { const col = r() < .3 ? '#e6fbff' : '#ffe29a'; if (lit(r, t, .35)) emit += R(xx, yy, 8, 10, col); }
+    }
+    return [{ depth: 1, svg: far }, { depth: .65, svg: mid, emit }];
+  };
+
+  B.suburb = (c, r, t) => {
+    let s = '', emit = '';
+    for (let x = -30; x < W; x += r.range(110, 170)) {
+      const w = r.range(80, 120), y = 610, roof = r.pick(['#b5583c', '#8a6a8a', '#7a8aa0', '#a8583c']);
+      s += R(x, y - 50, w, 50, r.pick(['#e8d8c0', '#d8c4a8', '#c9b49a'])) + P(`M${x - 8} ${y - 46}L${x + w / 2} ${y - 86}L${x + w + 8} ${y - 46}Z`, roof);
+      if (lit(r, t, .5)) emit += R(x + w * .55, y - 36, 18, 14, '#ffe29a');
+      if (r() < .4) s += E(x + w + 10, y - 30, 26, 30, '#6d9a5a');
+    }
+    return [{ depth: 1, svg: ridge(560, 50, 3, r, '#a8c0b8') }, { depth: .55, svg: s, emit }];
+  };
+
+  B.sea = (c, r) => {
+    let s = R(0, 560, W, 220, '#3f8fc0') + R(0, 560, W, 14, lt('#3f8fc0', .25));
+    let waves = '';
+    for (let i = 0; i < 18; i++) waves += A('shimmer', L(`M${r.range(0, W)} ${r.range(590, 740)}q14-8 28 0`, lt('#3f8fc0', .35), 3), 3, r() * 3);
+    return [
+      { depth: 1, svg: P('M1100 562Q1250 480 1420 520T1600 540V562Z', '#7a9a80') },
+      { depth: .4, svg: s + waves }
+    ];
+  };
+
+  B.pit = (c, r) => {
+    const tiers = ['#d08a5c', '#c27a4e', '#b06a42', '#9a5a38'];
+    let s = '';
+    tiers.forEach((f, i) => { const y = 600 + i * 22, inset = 140 + i * 90; s += P(`M${inset} ${y}H${W - inset - 200}l-30 22H${inset + 30}Z`, f) + R(inset + 30, y + 20, W - 2 * inset - 260, 3, lt(f, .2)); });
+    return [{ depth: 1, svg: P('M0 900V530L260 490 460 520 760 470 1040 510 1300 460 1600 520V900Z', '#c98a72') }, { depth: .3, svg: R(0, 590, W, 310, '#c9845a') + s }];
+  };
+
+  OPS.grounds = {
+    grass: (y, f, r) => { let s = R(0, y, W, 900 - y, f) + R(0, y, W, 6, lt(f, .12)); for (let i = 0; i < 40; i++) { const x = r.range(0, W), yy = r.range(y + 20, 890); s += P(`M${x} ${yy}l4-12 3 12 4-9 2 9z`, dk(f, .14)); } return s; },
+    dirt: (y, f, r) => { let s = R(0, y, W, 900 - y, f); s += L(`M-40 ${y + 140}Q600 ${y + 90} 1640 ${y + 180}`, dk(f, .1), 26) + L(`M-40 ${y + 180}Q600 ${y + 130} 1640 ${y + 220}`, dk(f, .1), 26); for (let i = 0; i < 30; i++) s += E(r.range(0, W), r.range(y + 10, 890), r.range(3, 8), 3, dk(f, .18)); return s; },
+    carpark: (y, f, r) => { let s = R(0, y, W, 900 - y, f) + R(0, y, W, 16, '#b7bcc6'); for (let x = 60; x < W; x += 150) s += P(`M${x} ${y + 120}l-30 160h8l30-160z`, '#f4f0e6', { opacity: .75 }); s += R(0, y + 100, W, 6, '#f2c531', { opacity: .8 }); return s; },
+    wharf: (y, f) => { let s = R(0, y, W, 900 - y, f); for (let yy = y + 18; yy < 900; yy += 22) s += L(`M0 ${yy}H${W}`, dk(f, .14), 2); for (let x = 40; x < W; x += 180) s += R(x, y - 14, 18, 20, dk(f, .25), 4); return s; }
+  };
+})();
+
+// Ten companies. accent is the brand colour and only appears on things the company owns.
+// Placement: [prop, variant, x, y, opts]; y is the ground contact line, size scales with y unless opts.s says otherwise.
+// opts: s (scale ×), flip, a ('drive' | 'wander' | 'hover'), t (drive seconds), txt/sub/len/price (prop text).
+(() => {
+  const L = OPS.locs;
+
+  L.party = { name: 'Jumbo Joy Party Hire', short: 'JUMBO JOY', slogan: 'Fun for the whole family*', palette: { accent: '#ff4f8b', accent2: '#3f7fd0' },
+    back: 'suburb', ground: ['grass', '#7cbc5c'], sky: { clouds: 4, birds: 1 },
+    props: [
+      ['tree', 'gum', 150, 660, { s: 1.2 }], ['fence', 'picket', 520, 650, { len: 640 }], ['bouncycastle', 'castle', 760, 700, { s: 1.2 }],
+      ['balloon', 'bunch', 300, 652], ['balloon', 'escaped', 980, 640], ['tree', 'round', 1450, 662],
+      ['van', 'party', 1240, 730, { s: 1.1 }], ['bbq', 'snags', 470, 760], ['person', 'suit', 410, 790],
+      ['campchair', 'dad', 1010, 800, { s: 1.1 }], ['esky', 'open', 1100, 812], ['balloon', 'sad', 640, 840],
+      ['bin', 'overflow', 1460, 820], ['bird', 'ibis', 1530, 850], ['sign', 'aframe', 230, 850, { txt: 'CLOWN $49', sub: 'NO REFUNDS' }]
+    ] };
+
+  L.funeral = { name: 'Eternal Rest Funeral Group', short: 'ETERNAL REST', slogan: 'You go, we tidy', palette: { accent: '#6b4f8a', accent2: '#c9a24a' },
+    back: 'hills', ground: ['grass', '#6c9a5a'], sky: { clouds: 3, kind: 'rain', rain: true },
+    props: [
+      ['tree', 'dead', 230, 668, { s: 1.3 }], ['chapel', 'chapel', 800, 700, { s: 1.15 }], ['tree', 'gum', 1400, 668],
+      ['bird', 'crow', 262, 560, { s: .8 }], ['headstone', 'cross', 1210, 700], ['headstone', 'round', 1290, 712, { txt: 'GARY' }],
+      ['headstone', 'cheap', 1370, 724, { txt: 'TBC' }], ['lamp', 'street', 470, 730], ['van', 'hearse', 330, 790],
+      ['coffin', 'display', 1060, 800, { price: '$4,999' }], ['coffin', 'budget', 1240, 826], ['candle', 'tall', 640, 800], ['candle', 'short', 676, 806],
+      ['wreath', 'sorry', 960, 812], ['person', 'mourner', 560, 838], ['person', 'suit', 1120, 860], ['headstone', 'pet', 1480, 850, { txt: 'REX' }]
+    ] };
+
+  L.mine = { name: 'Deep Pit Resources', short: 'DEEP PIT', slogan: 'Digging deeper for you', palette: { accent: '#ff7a1a', accent2: '#3d3b4c' },
+    back: 'pit', ground: ['dirt', '#c9845a'], sky: { clouds: 2, birds: 2 },
+    props: [
+      ['excavator', 'dig', 1150, 680], ['dumptruck', 'loaded', 600, 700, { a: 'drive', t: 26 }], ['dust', 'brown', 1260, 690],
+      ['donga', 'office', 230, 720], ['flag', 'brand', 380, 724], ['lamp', 'flicker', 120, 760], ['fence', 'site', 900, 770, { len: 400 }],
+      ['person', 'hivis', 470, 800], ['person', 'hivis', 530, 812], ['cone', 'up', 700, 830], ['cone', 'down', 760, 840],
+      ['van', 'ute', 1360, 840], ['rock', 'boulder', 1530, 850], ['tree', 'dead', 1520, 770, { s: .7 }], ['bird', 'crow', 610, 860]
+    ] };
+
+  L.retire = { name: 'Sunny Acres Retirement Living', short: 'SUNNY ACRES', slogan: 'Waitlist moving quickly', palette: { accent: '#2f9e8a', accent2: '#ffd45a' },
+    back: 'suburb', ground: ['grass', '#82be62'], sky: { clouds: 3 },
+    props: [
+      ['units', 'units', 700, 690], ['tree', 'gum', 1170, 680], ['sign', 'bingo', 260, 710, { txt: 'TONIGHT 7PM', sub: 'BYO OXYGEN' }],
+      ['bush', 'flower', 420, 730], ['bush', 'flower', 990, 724], ['lamp', 'street', 1300, 744], ['van', 'ambulance', 1350, 800],
+      ['fence', 'picket', 640, 760, { len: 520 }], ['scooter', 'red', 300, 830, { a: 'drive', t: 70 }], ['person', 'nurse', 1010, 830],
+      ['person', 'retiree', 1080, 850], ['bird', 'ibis', 160, 860], ['headstone', 'cheap', 1550, 860, { txt: 'ROOM 4' }]
+    ] };
+
+  L.pets = { name: 'Rainbow Bridge Pet Cremation', short: 'RAINBOW BRIDGE', slogan: 'Same-day ashes', palette: { accent: '#e2617a', accent2: '#ffd45a' },
+    back: 'hills', ground: ['grass', '#78b25a'], sky: { clouds: 3 },
+    props: [
+      ['shed', 'crematorium', 820, 700, { txt: 'FAREWELL' }], ['tree', 'round', 380, 676], ['sign', 'pylon', 240, 720, { sub: 'Same-day ashes' }],
+      ['headstone', 'pet', 1120, 720, { txt: 'REX' }], ['headstone', 'pet', 1190, 726, { txt: 'MOGGY' }], ['headstone', 'pet', 1260, 732, { txt: 'FISH?' }],
+      ['bush', 'round', 1420, 726], ['van', 'ute', 520, 800], ['bin', 'overflow', 1080, 820], ['dog', 'kelpie', 760, 850],
+      ['dog', 'sausage', 1300, 850], ['person', 'suit', 940, 846], ['bird', 'crow', 1110, 812]
+    ] };
+
+  L.office = { name: 'Apex Synergy Holdings', short: 'APEX', slogan: 'Leveraging tomorrow, today', palette: { accent: '#2f6bff', accent2: '#ffd45a' },
+    back: 'city', ground: ['carpark', '#7c8294'], sky: { clouds: 3, birds: 1 },
+    props: [
+      ['tower', 'wide', 420, 650], ['tower', 'tall', 960, 660], ['helicopter', 'hover', 1300, 380, { s: .8 }], ['flag', 'brand', 700, 690],
+      ['flag', 'halfmast', 1220, 690], ['lamp', 'street', 230, 760], ['lamp', 'street', 1440, 760], ['vending', 'snacks', 1180, 790],
+      ['person', 'suit', 600, 820], ['person', 'suit', 660, 830], ['person', 'suit', 1290, 840], ['bin', 'wheelie', 1100, 840], ['bird', 'ibis', 1050, 870]
+    ] };
+
+  L.motel = { name: 'Sunset Motor Inn', short: 'SUNSET', slogan: 'Hourly rates available', palette: { accent: '#ff8a3a', accent2: '#3f8f8a' },
+    back: 'range', ground: ['carpark', '#8a8a96'], sky: { clouds: 2 },
+    props: [
+      ['motel', 'motel', 820, 700, { s: 1.15 }], ['tree', 'palm', 260, 700], ['sign', 'neon', 340, 730, { txt: 'SUNSET' }], ['tree', 'palm', 1420, 704],
+      ['vending', 'ice', 1220, 740], ['pool', 'green', 800, 800], ['lamp', 'flicker', 1340, 770], ['van', 'ute', 220, 850],
+      ['person', 'dad', 1160, 856], ['bin', 'overflow', 1490, 846], ['bird', 'gull', 520, 860]
+    ] };
+
+  L.chook = { name: 'Happy Hen Poultry', short: 'HAPPY HEN', slogan: 'Free range-ish', palette: { accent: '#e8a21c', accent2: '#e2463c' },
+    back: 'hills', ground: ['dirt', '#b9a06a'], sky: { clouds: 3 },
+    props: [
+      ['shed', 'factory', 760, 700, { txt: 'HAPPY HEN' }], ['fence', 'chain', 1230, 710, { len: 480 }], ['sign', 'billboard', 260, 720, { txt: 'Happy Hen', sub: 'Free range-ish' }],
+      ['flag', 'brand', 1040, 720], ['crate', 'chooks', 1000, 790], ['crate', 'chooks', 1090, 800], ['van', 'reefer', 500, 830, { a: 'drive', t: 34 }],
+      ['person', 'chef', 1180, 830], ['chicken', 'white', 1360, 850, { a: 'wander' }], ['chicken', 'brown', 300, 870, { a: 'wander' }], ['cone', 'up', 1500, 860]
+    ] };
+
+  L.dental = { name: 'Budget Smiles Dental', short: 'BUDGET SMILES', slogan: 'Gentle-ish since 2019', palette: { accent: '#2fb5d6', accent2: '#ff5d8f' },
+    back: 'suburb', ground: ['carpark', '#858a98'], sky: { clouds: 3, birds: 1 },
+    props: [
+      ['shopfront', 'dental', 650, 700, { txt: 'BUDGET SMILES' }], ['shopfront', 'pawn', 960, 700], ['sign', 'tooth', 300, 720], ['pole', 'power', 1240, 710],
+      ['tree', 'round', 1420, 712], ['sign', 'aframe', 470, 790, { txt: 'WHITENING', sub: '$19 OR BEST' }], ['person', 'dentist', 560, 810],
+      ['person', 'suit', 1110, 820], ['lamp', 'street', 160, 800], ['bin', 'wheelie', 840, 812], ['bird', 'gull', 1280, 860], ['van', 'ute', 1450, 870]
+    ] };
+
+  L.wharf = { name: "Neptune's Catch Seafood", short: "NEPTUNE'S", slogan: 'Fresh-ish from the ocean', palette: { accent: '#e2463c', accent2: '#2f6fae' },
+    back: 'sea', ground: ['wharf', '#b79a76'], groundY: 760, sky: { clouds: 3, birds: 3 },
+    props: [
+      ['boat', 'trawler', 520, 700], ['boat', 'tinnie', 1180, 680, { s: .8 }], ['sign', 'pylon', 1400, 790], ['van', 'reefer', 1160, 820],
+      ['crate', 'fish', 300, 800], ['crate', 'fish', 380, 808], ['bird', 'gull', 330, 760, { s: .9 }], ['lamp', 'street', 120, 820],
+      ['person', 'chef', 640, 840], ['bin', 'overflow', 860, 846], ['bird', 'gull', 900, 870], ['bird', 'gull', 760, 880]
+    ] };
+})();
+
+// Renderer: (location, time, seed) -> one SVG string. Pure and deterministic; the same seed keeps the layout all day.
+(() => {
+  const K = OPS.kit, { R, C, E, P, L, G, A } = K;
+  const W = 1600, H = 900;
+  let uidN = 0;
+
+  const placed = (loc, i) => { const [prop, v, x, y, o] = loc.props[i]; return { prop, v, x, y, o: o || {}, i }; };
+
+  OPS.render = (id, opts = {}) => {
+    const loc = OPS.locs[id];
+    if (!loc) throw new Error('unknown location ' + id);
+    const t = OPS.time(opts.time), seed = opts.seed != null ? opts.seed : K.hash(id), uid = 'ops' + (opts.uid || ++uidN);
+    const c = Object.assign({ name: loc.name, short: loc.short, slogan: loc.slogan }, loc.palette);
+    // authored on a 620 horizon; drawn 70 higher so the ground carries the frame
+    const DY = -70, gy = (loc.groundY || 620) + DY;
+    const tint = (h, k) => K.mul(k ? K.mix(h, t.haze[0], t.haze[1] * k) : h, t.tint, t.ta);
+    const paint = (s, k) => s.replace(/(fill|stroke)="(#[0-9a-fA-F]{3,6})"/g, (m, a, h) => `${a}="${tint(h, k)}"`);
+    const glows = [];
+    const glowCols = new Map();
+    const glowId = col => { if (!glowCols.has(col)) glowCols.set(col, `${uid}g${glowCols.size}`); return glowCols.get(col); };
+    let out = '';
+
+    // sky
+    out += R(0, 0, W, H, `url(#${uid}sky)`);
+    if (t.stars && !(loc.sky || {}).rain) {
+      const r = K.rng(seed ^ 0x51a7);
+      let s = '';
+      for (let i = 0; i < 70; i++) s += A('twinkle', C(r.range(0, W), r.range(0, gy - 120), r.range(.8, 2.2), '#ffffff'), r.range(2, 5), r() * 5);
+      out += G(s, { opacity: t.stars });
+    }
+    if (t.sun) out += C(t.sun[0], t.sun[1], t.sun[3] * 3.2, `url(#${uid}halo)`) + C(t.sun[0], t.sun[1], t.sun[3], t.sun[2]);
+    if (t.moon) { const [mx, my, mc, mr] = t.moon; out += C(mx, my, mr * 3, `url(#${uid}halo)`) + C(mx, my, mr, mc) + C(mx - mr * .3, my - mr * .2, mr * .22, K.dk(mc, .12)) + C(mx + mr * .35, my + mr * .3, mr * .15, K.dk(mc, .12)); }
+
+    // far layers
+    const bk = OPS.backs[loc.back] ? OPS.backs[loc.back](c, K.rng(seed ^ 0xbac), t) : [];
+    bk.forEach(l => { out += G(paint(l.svg, l.depth) + (l.emit ? G(l.emit, { opacity: t.emit }) : ''), { transform: `translate(0 ${DY})` }); });
+
+    // sky traffic
+    const sr = K.rng(seed ^ 0xc10d), sky = loc.sky || {};
+    for (let i = 0; i < (sky.clouds || 0); i++) {
+      const x = sr.range(0, W), y = sr.range(80, gy - 260), dur = sr.range(120, 200), s = sr.range(.6, 1.1);
+      const v = sky.kind && sr() < .7 ? sky.kind : sr.pick(['puff', 'long']);
+      const body = OPS.props.cloud.draw(v, c, K.rng(seed + i * 31), t);
+      out += G(K.el('g', { class: 'drift', style: `--from:${(-x - 320) | 0}px;--to:${(W + 320 - x) | 0}px;--t:${dur | 0}s;--d:${(-dur * (x + 320) / (W + 640)).toFixed(1)}s` }, paint(body, .5)), { transform: `translate(${x | 0} ${y | 0}) scale(${s.toFixed(2)})` });
+    }
+    for (let i = 0; i < (sky.birds || 0); i++) {
+      const x = sr.range(200, W - 200), y = sr.range(120, 300);
+      out += G(paint(OPS.props.bird.draw('flying', c, K.rng(seed + i * 77), t), .3), { transform: `translate(${x | 0} ${y | 0}) scale(.8)` });
+    }
+
+    // ground
+    const [gk, gc] = loc.ground || ['grass', '#7cbc5c'];
+    out += paint(OPS.grounds[gk](gy, gc, K.rng(seed ^ 0x9d)), 0);
+
+    // props, back to front
+    const items = loc.props.map((_, i) => placed(loc, i)).sort((a, b) => a.y - b.y || a.i - b.i);
+    items.forEach(p => {
+      const def = OPS.props[p.prop];
+      if (!def) throw new Error(`unknown prop ${p.prop} in ${id}`);
+      const v = def.variants.includes(p.v) ? p.v : def.variants[0];
+      const r = K.rng((seed + p.i * 7919) >>> 0);
+      let res = def.draw(v, c, r, t, p.o);
+      if (typeof res === 'string') res = { body: res };
+      const depth = Math.max(0, Math.min(1, (780 - p.y) / 200)) * .35, py = p.y + DY;
+      const s = (p.o.s || 1) * Math.max(.6, Math.min(1.45, .95 + (p.y - 620) / 260 * .45));
+      let inner = '';
+      if (def.ground && t.shadow) {
+        const sh = t.shadow, w = def.w;
+        inner += E(sh.dx * w * .22 * sh.len, 0, w * .5 * (.7 + .3 * sh.len), 8, '#1c1838', { opacity: sh.a });
+      }
+      inner += paint(res.body, depth) + (res.emit && t.emit ? G(res.emit, { opacity: t.emit }) : '');
+      const flip = p.o.flip ? -1 : 1;
+      let g = G(inner, { transform: `scale(${flip} 1)` });
+      if (p.o.a === 'drive') {
+        const dur = p.o.t || 30, dir = flip, from = dir > 0 ? -p.x - 400 : W - p.x + 400, to = dir > 0 ? W - p.x + 400 : -p.x - 400;
+        g = K.el('g', { class: 'drive', style: `--from:${from | 0}px;--to:${to | 0}px;--t:${dur}s;--d:${(-dur * (p.x + 400) / (W + 800)).toFixed(1)}s` }, g);
+      } else if (p.o.a === 'wander') g = A('wander', g, 9, r() * 9);
+      out += G(g, { transform: `translate(${p.x} ${py}) scale(${s.toFixed(3)})`, 'data-prop': p.prop });
+      (res.glows || []).forEach(([x, y, rr, col]) => glows.push([p.x + flip * x * s, py + y * s, rr * s, col]));
+    });
+
+    // weather
+    if (sky.rain) {
+      const rr = K.rng(seed ^ 0x7a1);
+      let s = '';
+      for (let i = 0; i < 60; i++) s += A('rainfall', L(`M${rr.range(0, W + 200) | 0} ${rr.range(-60, H) | 0}l-10 26`, '#cfe0ff', 2, { opacity: .5 }), rr.range(.7, 1.1), rr() * 1);
+      out += G(s);
+    }
+
+    // light: glows screen-blend over everything
+    if (t.glow) out += G(glows.map(([x, y, rr, col]) => C(x | 0, y | 0, rr | 0, `url(#${glowId(col)})`)).join(''), { style: 'mix-blend-mode:screen', opacity: t.glow });
+    out += R(0, 0, W, H, `url(#${uid}vig)`) + R(0, 0, W, H, '#000', 0, { filter: `url(#${uid}grain)`, opacity: .06 });
+
+    const defs = K.el('linearGradient', { id: uid + 'sky', x1: 0, y1: 0, x2: 0, y2: 1 }, K.el('stop', { offset: 0, 'stop-color': t.sky[0] }) + K.el('stop', { offset: .9, 'stop-color': t.sky[1] })) +
+      K.el('radialGradient', { id: uid + 'halo' }, K.el('stop', { offset: 0, 'stop-color': (t.sun || t.moon)[2], 'stop-opacity': .55 }) + K.el('stop', { offset: 1, 'stop-color': (t.sun || t.moon)[2], 'stop-opacity': 0 })) +
+      K.el('radialGradient', { id: uid + 'vig', r: .75 }, K.el('stop', { offset: .6, 'stop-color': '#120e24', 'stop-opacity': 0 }) + K.el('stop', { offset: 1, 'stop-color': '#120e24', 'stop-opacity': .22 + t.ta * .4 })) +
+      [...glowCols].map(([col, gid]) => K.el('radialGradient', { id: gid }, K.el('stop', { offset: 0, 'stop-color': col, 'stop-opacity': .55 }) + K.el('stop', { offset: 1, 'stop-color': col, 'stop-opacity': 0 }))).join('') +
+      K.el('filter', { id: uid + 'grain', x: 0, y: 0, width: 1, height: 1 }, K.el('feTurbulence', { type: 'fractalNoise', baseFrequency: .9, numOctaves: 2, stitchTiles: 'stitch' }) + K.el('feColorMatrix', { values: '0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.4 0' }));
+
+    return `<svg class="ops-scene" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" data-loc="${id}" data-time="${t.id}" style="--clock:${(opts.clock || 0).toFixed(2)}s" role="img" aria-label="${loc.name}, ${t.clock}"><defs>${defs}</defs>${out}</svg>`;
+  };
+
+  OPS.list = () => Object.keys(OPS.locs).map(id => ({ id, name: OPS.locs[id].name, short: OPS.locs[id].short, slogan: OPS.locs[id].slogan, accent: OPS.locs[id].palette.accent }));
+
+  // one prop on a plain card, for the prop sheet and tests
+  OPS.renderProp = (name, v, opts = {}) => {
+    const def = OPS.props[name], t = OPS.time(opts.time || 'midday'), c = Object.assign({ name: 'Only Profit', short: 'OP', slogan: 'Your input matters*', accent: '#d9261c', accent2: '#3f7fd0' }, opts.palette);
+    let res = def.draw(v, c, K.rng(opts.seed || 7), t, opts.o || {});
+    if (typeof res === 'string') res = { body: res };
+    return res.body + (res.emit && t.emit ? res.emit : '');
+  };
+})();
+
+// Browser glue: mount a scene, change the hour with a crossfade, keep idle loops in phase.
+(() => {
+  if (typeof document === 'undefined') return;
+  const t0 = performance.now();
+  const clock = () => (performance.now() - t0) / 1000;
+  OPS.mount = (el, id, opts = {}) => {
+    el.classList.add('ops-stage');
+    el._ops = Object.assign({ id, time: 'midday', seed: undefined }, el._ops, opts, { id });
+    const s = el._ops;
+    const holder = document.createElement('div');
+    holder.className = 'ops-layer';
+    holder.innerHTML = OPS.render(s.id, { time: s.time, seed: s.seed, clock: clock() });
+    const old = [...el.querySelectorAll('.ops-layer')];
+    el.appendChild(holder);
+    if (old.length && !opts.cut) {
+      holder.classList.add('ops-in');
+      requestAnimationFrame(() => requestAnimationFrame(() => holder.classList.remove('ops-in')));
+      setTimeout(() => old.forEach(o => o.remove()), 1300);
+    } else old.forEach(o => o.remove());
+    return el;
+  };
+  OPS.setTime = (el, time) => OPS.mount(el, el._ops.id, { time });
+})();
+
+</script>
+<script>
+// Gallery: pick a company, scrub the hour, replay the reveal, browse every prop.
+(() => {
+  const $ = s => document.querySelector(s);
+  const stage = $('#stage'), tv = $('#tv');
+  const state = { id: 'funeral', time: 'morning', seed: undefined, cycle: null };
+  const ICON = {
+    morning: '<circle cx="12" cy="15" r="5" fill="#ffb84a"/><path d="M3 17h18" stroke="#7a6a4a" stroke-width="2" stroke-linecap="round"/>',
+    midday: '<circle cx="12" cy="12" r="6" fill="#ffd23a"/>',
+    arvo: '<circle cx="12" cy="13" r="6" fill="#ff9d3a"/>',
+    dusk: '<circle cx="12" cy="16" r="6" fill="#ff6a4a"/><path d="M3 17h18" stroke="#5a3a6a" stroke-width="2" stroke-linecap="round"/>',
+    night: '<path d="M15 4a8 8 0 1 0 5 13A7 7 0 0 1 15 4z" fill="#f4f0d8"/>',
+    small: '<path d="M15 4a8 8 0 1 0 5 13A7 7 0 0 1 15 4z" fill="#8a8aa8"/><circle cx="6" cy="6" r="1.4" fill="#8a8aa8"/>'
+  };
+
+  const label = () => {
+    const L = OPS.locs[state.id], t = OPS.time(state.time);
+    $('#tag b').textContent = L.name; $('#tag i').textContent = L.slogan;
+    tv.style.setProperty('--brand', L.palette.accent);
+    $('#clock').textContent = `LAP ${t.lap} · ${t.clock.toUpperCase()}`;
+  };
+  const draw = cut => { OPS.mount(stage, state.id, { time: state.time, seed: state.seed, cut }); label(); sync(); };
+  const sync = () => {
+    document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === state.id));
+    document.querySelectorAll('#dial button').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === state.time));
+  };
+  const reveal = () => {
+    tv.classList.remove('open'); tv.classList.add('sealed');
+    $('.file .q span').textContent = OPS.locs[state.id].short;
+    setTimeout(() => { tv.classList.remove('sealed'); tv.classList.add('open'); }, 900);
+  };
+
+  OPS.list().forEach(l => {
+    const b = document.createElement('button');
+    b.dataset.id = l.id; b.textContent = l.short; b.style.setProperty('--sw', l.accent);
+    b.onclick = () => { state.id = l.id; state.seed = undefined; draw(true); reveal(); };
+    $('#tabs').appendChild(b);
+  });
+  OPS.times.forEach(t => {
+    const b = document.createElement('button');
+    b.dataset.id = t.id; b.title = `Lap ${t.lap}, ${t.clock}`; b.innerHTML = `<svg viewBox="0 0 24 24">${ICON[t.id]}</svg>`;
+    b.onclick = () => { state.time = t.id; draw(); };
+    $('#dial').appendChild(b);
+  });
+  $('#reveal').onclick = reveal;
+  $('#shuffle').onclick = () => { state.seed = (Math.random() * 1e9) | 0; draw(); };
+  $('#cycle').onclick = e => {
+    if (state.cycle) { clearInterval(state.cycle); state.cycle = null; e.target.setAttribute('aria-pressed', false); return; }
+    e.target.setAttribute('aria-pressed', true);
+    state.cycle = setInterval(() => { const i = OPS.times.findIndex(t => t.id === state.time); state.time = OPS.times[(i + 1) % OPS.times.length].id; draw(); }, 3200);
+  };
+
+  // prop sheet
+  const sheet = $('#sheet');
+  Object.keys(OPS.props).forEach(name => {
+    const def = OPS.props[name];
+    def.variants.forEach(v => {
+      const f = document.createElement('figure'); f.className = 'card';
+      f.innerHTML = `<svg class="ops-scene" style="--clock:0s"><g>${OPS.renderProp(name, v, { seed: 11 })}</g></svg><figcaption>${name}<span>${v}</span></figcaption>`;
+      sheet.appendChild(f);
+      // fit the viewBox to the drawing, ground line at 82%
+      const svg = f.querySelector('svg'), bb = svg.firstChild.getBBox(), side = Math.max(bb.width, bb.height / .82, 120) * 1.12;
+      svg.setAttribute('viewBox', `${bb.x + bb.width / 2 - side / 2} ${-side * .82} ${side} ${side}`);
+    });
+  });
+
+  draw(true);
+  setTimeout(reveal, 400);
+})();
+
+</script>
