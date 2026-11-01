@@ -73,6 +73,8 @@
       inner += paint(res.body, depth) + (res.emit && t.emit ? G(res.emit, { opacity: t.emit }) : '');
       const flip = p.o.flip ? -1 : 1;
       let g = G(inner, { transform: `scale(${flip} 1)` });
+      // walkers waddle while they travel; nothing turns around on the spot
+      if (def.walk && p.o.a === 'drive') g = A('walk', g, .55, 0);
       if (p.o.a === 'drive') {
         const dur = p.o.t || 30, dir = flip, from = dir > 0 ? -p.x - 400 : W - p.x + 400, to = dir > 0 ? W - p.x + 400 : -p.x - 400;
         g = K.el('g', { class: 'drive', style: `--from:${from | 0}px;--to:${to | 0}px;--t:${dur}s;--d:${(-dur * (p.x + 400) / (W + 800)).toFixed(1)}s` }, g);

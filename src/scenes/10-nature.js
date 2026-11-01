@@ -78,7 +78,7 @@
         P('M-6-34q10-4 16 2', 'none', { stroke: '#5b5785', 'stroke-width': 2.5 }) + C(17, -44, 2.4, '#e9e4ff'), 3.8, r() * 4);
     } };
 
-  P_.chicken = { w: 40, ground: true, variants: ['white', 'brown'],
+  P_.chicken = { w: 40, ground: true, walk: true, variants: ['white', 'brown'],
     draw(v, c, r) {
       const f = v === 'brown' ? '#c7814a' : '#fbf7ef';
       return L('M-4-14v14M6-14v14', '#f0a35a', 3) + A('peck', E(0, -28, 20, 16, f) + P('M-18-34q-12-10-10 4z', dk(f, .15)) + C(14, -44, 10, f) +

@@ -90,7 +90,8 @@
       const k = c.accent;
       const body = P('M-60-30q-10-50 50-56h40q40 4 50 40l-10 16z', k) + P('M-50-50q0-26 30-28h20v28z', '#8cc6ec') + P('M80-50h90l6-12h-96z', dk(k, .2)) +
         A('rotor', R(158, -78, 8, 36, '#3d3b4c', 3), .25, 0) + L('M-40-10h100M-30-10v-20M40-10v-20', '#5d5b70', 4) + R(10, -96, 8, 12, '#3d3b4c');
-      const rotor = A('rotor', R(-110, -100, 240, 6, '#3d3b4c', 3), v === 'hover' ? .2 : 2.4, 0);
+      // spinning blades read as a soft disc plus a blade that sweeps through it
+      const rotor = (v === 'hover' ? E(10, -97, 120, 7, '#3d3b4c', { opacity: .18 }) : '') + A('rotor', R(-110, -100, 240, 6, '#3d3b4c', 3), v === 'hover' ? .12 : 2.4, 0);
       return v === 'hover' ? A('bob', body + rotor, 3, 0) : body + rotor;
     } };
 })();
