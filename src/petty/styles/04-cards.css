@@ -18,6 +18,6 @@
 .card.k-act { --band: var(--act); background: #FFF6EE }
 .card:hover { transform: translateY(-4px) }
 .card.sel { transform: translateY(-12px) rotate(-1.5deg); box-shadow: 0 0 0 3px var(--accent), 0 20px 20px -10px rgba(0,0,0,.7) }
-.card.new { animation: dealt .55s var(--bounce) both }
-.card.new:nth-child(2n) { animation-delay: .08s }
+.card.new { animation: dealt .55s var(--bounce) both; animation-delay: max(0s, calc(var(--el, -9999ms) + 1.5s)) }
+.card.new:nth-child(2n) { animation-delay: max(0s, calc(var(--el, -9999ms) + 1.62s)) }
 @keyframes dealt { from { transform: translate(40px, -60px) rotate(14deg) scale(.7); opacity: 0 } }

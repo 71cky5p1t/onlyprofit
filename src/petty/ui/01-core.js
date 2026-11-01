@@ -1,11 +1,10 @@
 // Petty Cash UI: state, the bot driver, toasts. Screens live in the files after this one.
 const app = document.getElementById('app');
 const ov = document.getElementById('ov');
-const ui = { screen: 'title', s: null, opts: { players: 5, co: 'mystery' }, sel: {}, amt: 0, seen: new Set(), hold: 0, rolling: false, busy: false };
+const ui = { screen: 'title', s: null, opts: { players: 5, co: 'mystery' }, sel: {}, amt: 0, seen: new Set(), hold: 0, busy: false, rollAt: 0 };
 const TOD = ['morning', 'smoko', 'lunch', 'arvo', 'knockoff', 'late'];
 const TOD_NAME = { morning: 'Morning', smoko: 'Smoko', lunch: 'Lunch', arvo: 'Arvo', knockoff: 'Knock-off', late: 'After hours' };
 const SPEED = /fast/.test(location.search) ? 0.25 : 1;
-const FACES = ['', '⚀', '⚁', '⚂'];
 const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const money = n => (n < 0 ? '−$' : '$') + Math.abs(Math.round(n)).toLocaleString('en-AU');
 const co = () => PC.CO[ui.s.co];
@@ -34,7 +33,7 @@ function pump() {
   clearTimeout(pumpT);
   const s = ui.s;
   if (!s || s.phase === 'end' || s.phase === 'shop' || PC.needsHuman(s)) return;
-  const base = { roll: 650, pick: 1000, claim: 1200, audit: 900, shred: 900, rent: 600 }[s.phase] || 800;
+  const base = s.phase === 'flip' ? (s.cur.outcome ? 1500 : 1700) : { lodge: 2600, rent: 1600 }[s.phase] || 900;
   const d = Math.max(base, ui.hold - Date.now()) * SPEED;
   pumpT = setTimeout(() => {
     const r = PC.apply(ui.s, 0, { type: 'advance' });
@@ -44,9 +43,11 @@ function pump() {
 function onEvents(E) {
   for (const e of E) {
     if (e.kind === 'caught' || e.kind === 'halo' || e.kind === 'shred') ui.hold = Date.now() + 2600;
-    if (e.kind === 'lap') ui.hold = Math.max(ui.hold, Date.now() + 1200);
+    if (e.kind === 'roll') {
+      ui.rollAt = Date.now(); ui.hold = Date.now() + 3200;
+      setTimeout(() => { const r = ui.s.rolls && ui.s.rolls[0]; if (r && r.cash) toast(`Wages: +${money(r.cash)}`, 'cash'); }, 1500);
+    }
     if (e.to !== 0) {
-      if (e.kind === 'roll' && e.seat === 0 && e.cash) toast(`Wages: +${money(e.cash)}`, 'cash');
       if (e.kind === 'action' && e.target === 0) toast("Landlord's Letter. Your rent is doubled this lap.", 'bad');
       continue;
     }

@@ -112,3 +112,42 @@ i.letter { color: var(--ink-2) }
   .tag .cards { display: none }
   .tag.turn { transform: translateX(6px) rotate(-1deg) }
 }
+/* lap start: everyone's die tumbles at once, yours first */
+.dice { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 6px 0 2px }
+.dslot { display: grid; justify-items: center; gap: 4px; min-width: 58px }
+.dslot .nm { font: 700 12px var(--f-body); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.4) }
+.dslot b { font-size: 13px; color: var(--accent); text-shadow: 0 1px 2px rgba(0,0,0,.5) }
+.dslot.me .nm { color: var(--accent) }
+.die3 { --s: 40px; width: var(--s); height: var(--s); perspective: 400px; filter: drop-shadow(0 8px 6px rgba(0,0,0,.35)) }
+.dslot.me .die3 { --s: 54px }
+.cube { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transform: var(--end) }
+.die3.tumble .cube { animation: tumble3 1.3s cubic-bezier(.2, .7, .3, 1) both; animation-delay: calc(var(--el, 0ms) + var(--d)) }
+.die3.tumble { animation: hop 1.3s ease-out both; animation-delay: calc(var(--el, 0ms) + var(--d)) }
+@keyframes tumble3 {
+  0% { transform: rotateX(820deg) rotateY(-640deg) rotateZ(90deg) }
+  70% { transform: var(--end) rotateZ(-8deg) }
+  100% { transform: var(--end) }
+}
+@keyframes hop { 0% { transform: translateY(-70px); opacity: 0 } 15% { opacity: 1 } 45% { transform: translateY(0) } 62% { transform: translateY(-14px) } 80% { transform: translateY(0) } 90% { transform: translateY(-3px) } 100% { transform: none } }
+.f { position: absolute; inset: 0; border-radius: 18%; background-color: #FFFDF6; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08), inset 0 -3px 6px rgba(0,0,0,.12); backface-visibility: hidden;
+  --p: radial-gradient(circle, var(--ink) 0 calc(var(--s) * .085), transparent calc(var(--s) * .095)) }
+.f1 { background-image: radial-gradient(circle, var(--red) 0 calc(var(--s) * .12), transparent calc(var(--s) * .13)) }
+.f2 { background-image: var(--p), var(--p); background-size: 50% 50%; background-repeat: no-repeat; background-position: 0 0, 100% 100% }
+.f3 { background-image: var(--p), var(--p), var(--p); background-size: 50% 50%, 50% 50%, 50% 50%; background-repeat: no-repeat; background-position: 0 0, 50% 50%, 100% 100% }
+.fr { transform: translateZ(calc(var(--s) / 2)) }
+.bk { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)) }
+.rt { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)) }
+.lf { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)) }
+.tp { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)) }
+.bt { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)) }
+
+/* lodged receipts: a face-down pile, flipped one at a time */
+.pile { position: relative; height: 22px; width: min(330px, 92%); display: flex; align-items: center; gap: 0 }
+.pile i { width: 34px; height: 18px; margin-right: -22px; background: repeating-linear-gradient(-45deg, #EDE7D6 0 4px, #E2DAC4 4px 8px); border-radius: 2px; box-shadow: 0 2px 3px rgba(0,0,0,.35) }
+.pile .label { margin-left: 30px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.4) }
+.rcpt.flipin { animation: flipin .6s var(--bounce) both; transform-origin: center }
+@keyframes flipin { from { transform: perspective(700px) rotateY(-100deg) translateX(-60px); opacity: 0 } }
+.rcpt.sealed { opacity: .9; transform: rotate(-1deg) scale(.96) }
+.s-sealed { color: var(--ink-2); font-size: 18px }
+i.in { font: 700 9px/1 var(--f-type); text-transform: uppercase; letter-spacing: .06em; padding: 2px 4px; border-radius: 2px; background: var(--ink); color: var(--paper) }
+i.in.late { animation: printin .3s var(--bounce) both; animation-delay: calc(var(--el, 0ms) + var(--d)) }

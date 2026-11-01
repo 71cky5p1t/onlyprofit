@@ -110,5 +110,5 @@ function renderReveal() {
     <div class="items">${shown.map((a, k) => `<div class="mini" style="--d:${0.9 + k * 0.35}s"><span class="wi">${esc(a.text)}</span><b class="num">${money(c.tiers[PC.PROMPTS[a.q][1]])}</b></div>`).join('')}</div>` : `<p class="gotcha">You said nothing. Very professional.</p>`}
     <button class="go" id="go">Start the year</button>
   </main>`;
-  app.querySelector('#go').onclick = () => { ui.screen = 'game'; render(); pump(); };
+  app.querySelector('#go').onclick = () => { ui.screen = 'game'; onEvents([{ kind: 'roll' }]); render(); pump(); };
 }
