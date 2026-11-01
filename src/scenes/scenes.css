@@ -15,8 +15,7 @@
 .a-nod { animation-name: ops-nod; transform-origin: 50% 100% }
 .a-peck { animation-name: ops-peck; transform-origin: 30% 100% }
 .a-wag { animation-name: ops-wag; transform-origin: 100% 100% }
-.a-flap { animation-name: ops-flap; transform-origin: 50% 50% }
-.a-glide { animation-name: ops-glide; animation-timing-function: linear }
+.a-flapnear, .a-flapfar { animation-name: ops-flap; transform-origin: 90% 100%; animation-timing-function: ease-in-out }
 .a-puff { animation-name: ops-puff; animation-timing-function: ease-out; transform-origin: 50% 50% }
 .a-dust { animation-name: ops-dust; animation-timing-function: ease-out; transform-origin: 50% 100% }
 .a-rain { animation-name: ops-rain; animation-timing-function: linear }
@@ -52,8 +51,7 @@
 @keyframes ops-nod { 0%, 80%, 100% { transform: none } 88% { transform: rotate(5deg) } }
 @keyframes ops-peck { 0%, 60%, 100% { transform: none } 70%, 78% { transform: rotate(28deg) } 74% { transform: rotate(18deg) } }
 @keyframes ops-wag { 50% { transform: rotate(-22deg) } }
-@keyframes ops-flap { 50% { transform: scaleY(-.6) } }
-@keyframes ops-glide { from { transform: translateX(-120px) } 50% { transform: translate(0, -14px) } to { transform: translateX(120px) } }
+@keyframes ops-flap { 0%, 100% { transform: rotate(8deg) } 50% { transform: rotate(-115deg) scaleY(.75) } }
 @keyframes ops-puff { from { transform: translate(0, 0) scale(.4); opacity: .95 } to { transform: translate(28px, -140px) scale(2.2); opacity: 0 } }
 @keyframes ops-dust { from { transform: scale(.3); opacity: .8 } to { transform: translate(40px, -20px) scale(2); opacity: 0 } }
 @keyframes ops-rain { from { transform: translateY(-6px); opacity: 0 } 30% { opacity: 1 } to { transform: translate(-10px, 40px); opacity: 0 } }

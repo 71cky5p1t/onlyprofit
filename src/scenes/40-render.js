@@ -46,8 +46,10 @@
       out += G(K.el('g', { class: 'drift', style: `--from:${(-x - 320) | 0}px;--to:${(W + 320 - x) | 0}px;--t:${dur | 0}s;--d:${(-dur * (x + 320) / (W + 640)).toFixed(1)}s` }, paint(body, .5)), { transform: `translate(${x | 0} ${y | 0}) scale(${s.toFixed(2)})` });
     }
     for (let i = 0; i < (sky.birds || 0); i++) {
-      const x = sr.range(200, W - 200), y = sr.range(120, 300);
-      out += G(paint(OPS.props.bird.draw('flying', c, K.rng(seed + i * 77), t), .3), { transform: `translate(${x | 0} ${y | 0}) scale(.8)` });
+      // birds cross the sky left to right, never turning back
+      const x = sr.range(200, W - 200), y = sr.range(120, 300), dur = sr.range(26, 40);
+      out += G(K.el('g', { class: 'drift', style: `--from:${(-x - 100) | 0}px;--to:${(W + 100 - x) | 0}px;--t:${dur | 0}s;--d:${(-dur * (x + 100) / (W + 200)).toFixed(1)}s` },
+        A('bob', paint(OPS.props.bird.draw('flying', c, K.rng(seed + i * 77), t), .3), 2.4, i)), { transform: `translate(${x | 0} ${y | 0}) scale(1.1)` });
     }
 
     // ground

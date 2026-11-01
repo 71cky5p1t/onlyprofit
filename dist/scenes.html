@@ -23,8 +23,7 @@
 .a-nod { animation-name: ops-nod; transform-origin: 50% 100% }
 .a-peck { animation-name: ops-peck; transform-origin: 30% 100% }
 .a-wag { animation-name: ops-wag; transform-origin: 100% 100% }
-.a-flap { animation-name: ops-flap; transform-origin: 50% 50% }
-.a-glide { animation-name: ops-glide; animation-timing-function: linear }
+.a-flapnear, .a-flapfar { animation-name: ops-flap; transform-origin: 90% 100%; animation-timing-function: ease-in-out }
 .a-puff { animation-name: ops-puff; animation-timing-function: ease-out; transform-origin: 50% 50% }
 .a-dust { animation-name: ops-dust; animation-timing-function: ease-out; transform-origin: 50% 100% }
 .a-rain { animation-name: ops-rain; animation-timing-function: linear }
@@ -60,8 +59,7 @@
 @keyframes ops-nod { 0%, 80%, 100% { transform: none } 88% { transform: rotate(5deg) } }
 @keyframes ops-peck { 0%, 60%, 100% { transform: none } 70%, 78% { transform: rotate(28deg) } 74% { transform: rotate(18deg) } }
 @keyframes ops-wag { 50% { transform: rotate(-22deg) } }
-@keyframes ops-flap { 50% { transform: scaleY(-.6) } }
-@keyframes ops-glide { from { transform: translateX(-120px) } 50% { transform: translate(0, -14px) } to { transform: translateX(120px) } }
+@keyframes ops-flap { 0%, 100% { transform: rotate(8deg) } 50% { transform: rotate(-115deg) scaleY(.75) } }
 @keyframes ops-puff { from { transform: translate(0, 0) scale(.4); opacity: .95 } to { transform: translate(28px, -140px) scale(2.2); opacity: 0 } }
 @keyframes ops-dust { from { transform: scale(.3); opacity: .8 } to { transform: translate(40px, -20px) scale(2); opacity: 0 } }
 @keyframes ops-rain { from { transform: translateY(-6px); opacity: 0 } 30% { opacity: 1 } to { transform: translate(-10px, 40px); opacity: 0 } }
@@ -225,7 +223,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
 
 // Nature props. Origin is bottom-centre; draw(v, c, r, t) returns SVG or { body, emit, glows }.
 (() => {
-  const { R, C, E, P, L, G, A, eye, dk, lt } = OPS.kit, P_ = OPS.props;
+  const K = OPS.kit, { R, C, E, P, L, G, A, eye, dk, lt } = K, P_ = OPS.props;
 
   P_.cloud = { w: 200, sky: true, variants: ['puff', 'long', 'rain', 'storm'],
     draw(v, c, r) {
@@ -287,8 +285,11 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
   P_.bird = { w: 40, ground: true, variants: ['ibis', 'gull', 'crow', 'flying'],
     draw(v, c, r) {
       if (v === 'flying') {
-        const w = A('flap', L('M-22-4Q-11-14 0 0Q11-14 22-4', '#2a2740', 4), .7, r() * .7);
-        return A('glide', w, 7, r() * 7);
+        // side-on gull heading right: body, head, and two wings that beat from the shoulder
+        const d = r() * .6, k = '#2a2740';
+        return A('flapfar', P('M2-4q-6-14-20-18q6 10 10 20z', K.dk(k, .25)), .6, d) +
+          E(0, 0, 13, 5, k) + C(12, -3, 4.5, k) + P('M16-4l7 2-7 2z', '#f0a35a') + P('M-12-1l-10-5 2 7z', k) +
+          A('flapnear', P('M-2-3q-4-16-22-22q4 14 14 24z', k), .6, d);
       }
       if (v === 'ibis') {
         const body = E(0, -38, 22, 15, '#f3f0ea') + P('M-20-40q-14 6-18 18l10-4z', '#2a2833') + E(4, -32, 16, 8, '#dad5cc');
@@ -483,14 +484,16 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
         T(30, -24, c.short || 'CO.', OPS.kit.fit(c.short || 'CO.', 160, 16), '#f4f2ee'), 5, r() * 5);
     } };
 
-  P_.helicopter = { w: 200, ground: true, variants: ['parked', 'hover'],
+  P_.helicopter = { w: 200, variants: ['parked', 'hover'],
     draw(v, c, r) {
       const k = c.accent;
       const body = P('M-60-30q-10-50 50-56h40q40 4 50 40l-10 16z', k) + P('M-50-50q0-26 30-28h20v28z', '#8cc6ec') + P('M80-50h90l6-12h-96z', dk(k, .2)) +
-        A('rotor', R(158, -78, 8, 36, '#3d3b4c', 3), .25, 0) + L('M-40-10h100M-30-10v-20M40-10v-20', '#5d5b70', 4) + R(10, -96, 8, 12, '#3d3b4c');
+        A('rotor', R(158, -78, 8, 36, '#3d3b4c', 3), .25, 0) + L('M-30-26l-6 16M40-26l6 16', '#5d5b70', 3) + L('M-56-10h108q10 0 14-8', '#5d5b70', 4) + R(10, -96, 8, 12, '#3d3b4c');
       // spinning blades read as a soft disc plus a blade that sweeps through it
       const rotor = (v === 'hover' ? E(10, -97, 120, 7, '#3d3b4c', { opacity: .18 }) : '') + A('rotor', R(-110, -100, 240, 6, '#3d3b4c', 3), v === 'hover' ? .12 : 2.4, 0);
-      return v === 'hover' ? A('bob', body + rotor, 3, 0) : body + rotor;
+      // drawn nose-left; mirror so it flies nose-first to the right
+      const all = G(body + rotor, { transform: 'scale(-1 1)' });
+      return v === 'hover' ? A('bob', all, 3, 0) : all;
     } };
 })();
 
@@ -1060,8 +1063,10 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       out += G(K.el('g', { class: 'drift', style: `--from:${(-x - 320) | 0}px;--to:${(W + 320 - x) | 0}px;--t:${dur | 0}s;--d:${(-dur * (x + 320) / (W + 640)).toFixed(1)}s` }, paint(body, .5)), { transform: `translate(${x | 0} ${y | 0}) scale(${s.toFixed(2)})` });
     }
     for (let i = 0; i < (sky.birds || 0); i++) {
-      const x = sr.range(200, W - 200), y = sr.range(120, 300);
-      out += G(paint(OPS.props.bird.draw('flying', c, K.rng(seed + i * 77), t), .3), { transform: `translate(${x | 0} ${y | 0}) scale(.8)` });
+      // birds cross the sky left to right, never turning back
+      const x = sr.range(200, W - 200), y = sr.range(120, 300), dur = sr.range(26, 40);
+      out += G(K.el('g', { class: 'drift', style: `--from:${(-x - 100) | 0}px;--to:${(W + 100 - x) | 0}px;--t:${dur | 0}s;--d:${(-dur * (x + 100) / (W + 200)).toFixed(1)}s` },
+        A('bob', paint(OPS.props.bird.draw('flying', c, K.rng(seed + i * 77), t), .3), 2.4, i)), { transform: `translate(${x | 0} ${y | 0}) scale(1.1)` });
     }
 
     // ground

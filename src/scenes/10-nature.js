@@ -1,6 +1,6 @@
 // Nature props. Origin is bottom-centre; draw(v, c, r, t) returns SVG or { body, emit, glows }.
 (() => {
-  const { R, C, E, P, L, G, A, eye, dk, lt } = OPS.kit, P_ = OPS.props;
+  const K = OPS.kit, { R, C, E, P, L, G, A, eye, dk, lt } = K, P_ = OPS.props;
 
   P_.cloud = { w: 200, sky: true, variants: ['puff', 'long', 'rain', 'storm'],
     draw(v, c, r) {
@@ -62,8 +62,11 @@
   P_.bird = { w: 40, ground: true, variants: ['ibis', 'gull', 'crow', 'flying'],
     draw(v, c, r) {
       if (v === 'flying') {
-        const w = A('flap', L('M-22-4Q-11-14 0 0Q11-14 22-4', '#2a2740', 4), .7, r() * .7);
-        return A('glide', w, 7, r() * 7);
+        // side-on gull heading right: body, head, and two wings that beat from the shoulder
+        const d = r() * .6, k = '#2a2740';
+        return A('flapfar', P('M2-4q-6-14-20-18q6 10 10 20z', K.dk(k, .25)), .6, d) +
+          E(0, 0, 13, 5, k) + C(12, -3, 4.5, k) + P('M16-4l7 2-7 2z', '#f0a35a') + P('M-12-1l-10-5 2 7z', k) +
+          A('flapnear', P('M-2-3q-4-16-22-22q4 14 14 24z', k), .6, d);
       }
       if (v === 'ibis') {
         const body = E(0, -38, 22, 15, '#f3f0ea') + P('M-20-40q-14 6-18 18l10-4z', '#2a2833') + E(4, -32, 16, 8, '#dad5cc');

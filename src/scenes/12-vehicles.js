@@ -85,13 +85,15 @@
         T(30, -24, c.short || 'CO.', OPS.kit.fit(c.short || 'CO.', 160, 16), '#f4f2ee'), 5, r() * 5);
     } };
 
-  P_.helicopter = { w: 200, ground: true, variants: ['parked', 'hover'],
+  P_.helicopter = { w: 200, variants: ['parked', 'hover'],
     draw(v, c, r) {
       const k = c.accent;
       const body = P('M-60-30q-10-50 50-56h40q40 4 50 40l-10 16z', k) + P('M-50-50q0-26 30-28h20v28z', '#8cc6ec') + P('M80-50h90l6-12h-96z', dk(k, .2)) +
-        A('rotor', R(158, -78, 8, 36, '#3d3b4c', 3), .25, 0) + L('M-40-10h100M-30-10v-20M40-10v-20', '#5d5b70', 4) + R(10, -96, 8, 12, '#3d3b4c');
+        A('rotor', R(158, -78, 8, 36, '#3d3b4c', 3), .25, 0) + L('M-30-26l-6 16M40-26l6 16', '#5d5b70', 3) + L('M-56-10h108q10 0 14-8', '#5d5b70', 4) + R(10, -96, 8, 12, '#3d3b4c');
       // spinning blades read as a soft disc plus a blade that sweeps through it
       const rotor = (v === 'hover' ? E(10, -97, 120, 7, '#3d3b4c', { opacity: .18 }) : '') + A('rotor', R(-110, -100, 240, 6, '#3d3b4c', 3), v === 'hover' ? .12 : 2.4, 0);
-      return v === 'hover' ? A('bob', body + rotor, 3, 0) : body + rotor;
+      // drawn nose-left; mirror so it flies nose-first to the right
+      const all = G(body + rotor, { transform: 'scale(-1 1)' });
+      return v === 'hover' ? A('bob', all, 3, 0) : all;
     } };
 })();
