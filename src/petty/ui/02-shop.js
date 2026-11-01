@@ -12,18 +12,19 @@ function renderTitle() {
       <div class="opt"><span class="label">Staff</span><div class="seg">${seg('players', [[4, '4'], [5, '5'], [6, '6']])}</div></div>
       <div class="opt"><span class="label">Employer</span><div class="seg">${seg('co', [['mystery', 'Mystery'], ['party', 'Party hire'], ['funeral', 'Funeral'], ['mining', 'Mine']])}</div></div>
     </div>
-    <button class="go" id="go">Clock on</button>
+    <div class="starts"><button class="go" id="go">Clock on</button><button class="ghost" id="skip">Skip to the game</button></div>
     <details class="how"><summary>How it works</summary><ol>
       <li>Answer quick-fire questions. Don't think too hard.</li>
-      <li>Each turn, roll and draw that many cards. Wages go straight in your bank.</li>
-      <li>Lodge a receipt from your hand. A secret surcharge sets what it really cost. Claim whatever you like.</li>
-      <li>Anyone can audit. Padded: you're caught and the auditor pockets the difference. Honest: you get a halo and they pay a fine.</li>
+      <li>Each lap, everyone rolls and draws that many cards. Wages go straight in your bank.</li>
+      <li>Everyone lodges a receipt at once. A secret surcharge sets what it really cost. Claim whatever you like.</li>
+      <li>The receipts flip one by one and anyone can audit. Padded: you're caught and the auditor pockets the difference. Honest: you get a halo and they pay a fine.</li>
       <li>Rent goes up every lap. Six laps. If the tin survives, the richest wins. If it runs dry, the richest takes the fall and second place wins.</li>
     </ol></details>
   </main>`;
   app.querySelectorAll('[data-players]').forEach(b => b.onclick = () => { o.players = +b.dataset.players; renderTitle(); });
   app.querySelectorAll('[data-co]').forEach(b => b.onclick = () => { o.co = b.dataset.co; renderTitle(); });
   app.querySelector('#go').onclick = startGame;
+  app.querySelector('#skip').onclick = skipToGame;
 }
 
 function startGame() {
@@ -35,6 +36,19 @@ function startGame() {
   ui.screen = 'quick';
   setScene();
   render();
+}
+
+// straight into lap 1: the quick-fire is answered for you
+function skipToGame() {
+  startGame();
+  const pool = shuffled(PC_CARDS.ANSWERS);
+  ui.q.answers = ui.q.order.slice(0, 6).map((q, k) => ({ q, text: pool[k] }));
+  ui.s = PC.apply(ui.s, 0, { type: 'shop', answers: ui.q.answers }).state;
+  ui.screen = 'game';
+  setScene();
+  onEvents([{ kind: 'roll' }]);
+  render();
+  pump();
 }
 
 // ---------- quick-fire: answer until the clock runs out ----------
