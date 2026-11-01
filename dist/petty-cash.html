@@ -164,7 +164,47 @@ i.letter { color: var(--ink-2) }
   .tag { flex: 0 0 auto; max-width: none; padding: 11px 10px 6px }
   .tag .cards { display: none }
   .tag.turn { transform: translateX(6px) rotate(-1deg) }
-}/* Hand cards: blue who/how, gold what, red action. Write-ins in handwriting. */
+}
+/* lap start: everyone's die tumbles at once, yours first */
+.dice { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 6px 0 2px }
+.dslot { display: grid; justify-items: center; gap: 4px; min-width: 58px }
+.dslot .nm { font: 700 12px var(--f-body); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.4) }
+.dslot b { font-size: 13px; color: var(--accent); text-shadow: 0 1px 2px rgba(0,0,0,.5) }
+.dslot.me .nm { color: var(--accent) }
+.die3 { --s: 40px; width: var(--s); height: var(--s); perspective: 400px; filter: drop-shadow(0 8px 6px rgba(0,0,0,.35)) }
+.dslot.me .die3 { --s: 54px }
+.cube { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transform: var(--end) }
+.die3.tumble .cube { animation: tumble3 1.3s cubic-bezier(.2, .7, .3, 1) both; animation-delay: calc(var(--el, 0ms) + var(--d)) }
+.die3.tumble { animation: hop 1.3s ease-out both; animation-delay: calc(var(--el, 0ms) + var(--d)) }
+@keyframes tumble3 {
+  0% { transform: rotateX(820deg) rotateY(-640deg) rotateZ(90deg) }
+  70% { transform: var(--end) rotateZ(-8deg) }
+  100% { transform: var(--end) }
+}
+@keyframes hop { 0% { transform: translateY(-70px); opacity: 0 } 15% { opacity: 1 } 45% { transform: translateY(0) } 62% { transform: translateY(-14px) } 80% { transform: translateY(0) } 90% { transform: translateY(-3px) } 100% { transform: none } }
+.f { position: absolute; inset: 0; border-radius: 18%; background-color: #FFFDF6; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08), inset 0 -3px 6px rgba(0,0,0,.12); backface-visibility: hidden;
+  --p: radial-gradient(circle, var(--ink) 0 calc(var(--s) * .085), transparent calc(var(--s) * .095)) }
+.f1 { background-image: radial-gradient(circle, var(--red) 0 calc(var(--s) * .12), transparent calc(var(--s) * .13)) }
+.f2 { background-image: var(--p), var(--p); background-size: 50% 50%; background-repeat: no-repeat; background-position: 0 0, 100% 100% }
+.f3 { background-image: var(--p), var(--p), var(--p); background-size: 50% 50%, 50% 50%, 50% 50%; background-repeat: no-repeat; background-position: 0 0, 50% 50%, 100% 100% }
+.fr { transform: translateZ(calc(var(--s) / 2)) }
+.bk { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)) }
+.rt { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)) }
+.lf { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)) }
+.tp { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)) }
+.bt { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)) }
+
+/* lodged receipts: a face-down pile, flipped one at a time */
+.pile { position: relative; height: 22px; width: min(330px, 92%); display: flex; align-items: center; gap: 0 }
+.pile i { width: 34px; height: 18px; margin-right: -22px; background: repeating-linear-gradient(-45deg, #EDE7D6 0 4px, #E2DAC4 4px 8px); border-radius: 2px; box-shadow: 0 2px 3px rgba(0,0,0,.35) }
+.pile .label { margin-left: 30px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.4) }
+.rcpt.flipin { animation: flipin .6s var(--bounce) both; transform-origin: center }
+@keyframes flipin { from { transform: perspective(700px) rotateY(-100deg) translateX(-60px); opacity: 0 } }
+.rcpt.sealed { opacity: .9; transform: rotate(-1deg) scale(.96) }
+.s-sealed { color: var(--ink-2); font-size: 18px }
+i.in { font: 700 9px/1 var(--f-type); text-transform: uppercase; letter-spacing: .06em; padding: 2px 4px; border-radius: 2px; background: var(--ink); color: var(--paper) }
+i.in.late { animation: printin .3s var(--bounce) both; animation-delay: calc(var(--el, 0ms) + var(--d)) }
+/* Hand cards: blue who/how, gold what, red action. Write-ins in handwriting. */
 .card { position: relative; flex: 0 0 auto; width: 112px; min-height: 150px; padding: 0 9px 9px; display: flex; flex-direction: column; text-align: left;
   background: var(--paper); color: var(--ink); border-radius: 9px; box-shadow: 0 1px 0 rgba(0,0,0,.25), 0 10px 14px -8px rgba(0,0,0,.65);
   transition: transform .2s var(--bounce), box-shadow .2s; --band: var(--ink-3) }
@@ -184,8 +224,8 @@ i.letter { color: var(--ink-2) }
 .card.k-act { --band: var(--act); background: #FFF6EE }
 .card:hover { transform: translateY(-4px) }
 .card.sel { transform: translateY(-12px) rotate(-1.5deg); box-shadow: 0 0 0 3px var(--accent), 0 20px 20px -10px rgba(0,0,0,.7) }
-.card.new { animation: dealt .55s var(--bounce) both }
-.card.new:nth-child(2n) { animation-delay: .08s }
+.card.new { animation: dealt .55s var(--bounce) both; animation-delay: max(0s, calc(var(--el, -9999ms) + 1.5s)) }
+.card.new:nth-child(2n) { animation-delay: max(0s, calc(var(--el, -9999ms) + 1.62s)) }
 @keyframes dealt { from { transform: translate(40px, -60px) rotate(14deg) scale(.7); opacity: 0 } }
 /* Your desk: a slab of wood docked at the bottom, with real depth. */
 .desk { position: relative; margin: 0 -14px; padding: 12px 14px max(14px, env(safe-area-inset-bottom, 0px));
@@ -200,14 +240,6 @@ i.letter { color: var(--ink-2) }
 .mybank.debt b { color: var(--red) }
 .mydue b { display: block; font-size: 17px }
 .mybank .label, .mydue .label { font-size: 9px; color: var(--ink-3) }
-.die { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 8px; border-radius: 10px; background: var(--paper); color: var(--ink);
-  box-shadow: 0 4px 0 #B9AE92, var(--lift); transition: transform .12s }
-.die .face { font-size: 38px; line-height: 1 }
-.die.ready { background: #FFFDF6; box-shadow: 0 0 0 3px var(--accent), 0 4px 0 #B9AE92, var(--lift); animation: nudge 1.6s ease-in-out infinite }
-.die:disabled { opacity: .7 }
-.die.rolling .face { animation: tumble .65s cubic-bezier(.3, .7, .4, 1) }
-@keyframes tumble { 0% { transform: rotate(0) } 40% { transform: rotate(400deg) translateY(-10px) } 100% { transform: rotate(720deg) } }
-@keyframes nudge { 50% { transform: translateY(-2px) } }
 .hand { display: flex; gap: 8px; overflow-x: auto; padding: 18px 2px 10px; margin: 0 -2px; scrollbar-width: thin }
 .emptyhand { color: rgba(255,255,255,.7); font-style: italic; margin: 20px 0 }
 .ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; min-height: 8px }
@@ -256,7 +288,6 @@ i.letter { color: var(--ink-2) }
   .card .desc { font-size: 11px }
   .hand { padding-top: 14px }
   .mybank b { font-size: 20px }
-  .die .face { font-size: 32px }
 }
 /* Title, the quick-fire round, the employer reveal, and overlays. */
 .title, .quick, .reveal { flex: 1; width: 100%; max-width: 560px; margin: 0 auto; padding: 48px 0 40px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px }
@@ -520,7 +551,7 @@ const PC = (() => {
     const co = CO[opts.co] ? opts.co : 'party';
     const s = {
       v: 1, rs: (opts.seed >>> 0) || 1, seed: opts.seed >>> 0, n, co, spectate: !!opts.spectate,
-      lap: 1, phase: 'shop', turn: 0, start: 0, freeze: 0, cur: null, feed: [], claims: [], answers: [], pile: [], disc: [], end: null,
+      lap: 1, phase: 'shop', freeze: 0, cur: null, lodged: [], rolls: [], order: [], fi: -1, pend: null, rentAsk: false, feed: [], claims: [], answers: [], pile: [], disc: [], end: null,
     };
     const A = avgGuide(CO[co]);
     s.rent0 = round5(A * T.rent);
@@ -529,7 +560,6 @@ const PC = (() => {
     s.P = range(n).map(i => ({ id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate, bank: 0, hand: [], halo: 0, caught: 0, weasels: 0, key: false, letter: false, claims: 0, pads: 0, greed: 0.2 + 0.6 * rand(s) }));
     // bots answer the quick-fire
     for (const p of s.P) if (!p.human) for (let k = 0; k < 2 + ri(s, 2); k++) s.answers.push({ by: p.id, q: ri(s, PROMPTS.length), text: pickOne(s, ANSWERS) });
-    s.start = s.turn = ri(s, n);
     if (s.spectate) deal(s, []);
     return s;
   }
@@ -547,8 +577,8 @@ const PC = (() => {
     for (const p of s.P) for (const k of ['who', 'who', 'what', 'what']) {
       const at = s.pile.findIndex(c => c.k === k); p.hand.push(s.pile.splice(at, 1)[0]);
     }
-    s.phase = 'roll';
     log(s, E, 'lap', `Lap 1. Rent is $${rentFor(s, 0)}.`);
+    startLap(s, E);
   }
   const tidy = t => { t = String(t || '').trim().replace(/\s+/g, ' ').slice(0, 40); return t ? t[0].toUpperCase() + t.slice(1) : 'Something'; };
   function draw(s) {
@@ -563,17 +593,47 @@ const PC = (() => {
   const take = (p, id) => { const at = p.hand.findIndex(c => c.id === id); return at < 0 ? null : p.hand.splice(at, 1)[0]; };
   const has = (p, key) => p.hand.find(c => c.k === 'act' && c.v === key);
 
-  // ---------- turn ----------
-  function roll(s, E) {
-    const p = s.P[s.turn], k = pickOne(s, DIE), got = [];
-    for (let j = 0; j < k; j++) {
-      const c = draw(s); if (!c) break;
-      if (c.k === 'cash') { p.bank += c.v; s.disc.push(c); } else p.hand.push(c);
-      got.push(c);
+  // ---------- a lap: everyone rolls, everyone lodges, receipts flip one by one, everyone pays rent ----------
+  function startLap(s, E) {
+    s.rolls = []; s.lodged = s.P.map(() => null); s.pend = null; s.order = []; s.fi = -1; s.cur = null;
+    for (const p of s.P) {
+      const k = pickOne(s, DIE), got = [];
+      let cash = 0;
+      for (let j = 0; j < k; j++) {
+        const c = draw(s); if (!c) break;
+        if (c.k === 'cash') { p.bank += c.v; cash += c.v; s.disc.push(c); } else p.hand.push(c);
+        got.push(c.id);
+      }
+      s.rolls[p.id] = { k, got, cash };
     }
-    s.lastRoll = { seat: s.turn, k, got: got.map(c => c.id) };
-    log(s, E, 'roll', `${who(s, s.turn)} rolled ${k}.`, { seat: s.turn, k, cash: got.filter(c => c.k === 'cash').reduce((a, c) => a + c.v, 0) });
-    s.phase = 'pick';
+    log(s, E, 'roll', 'Everyone rolled: ' + s.P.map(p => `${p.name} ${s.rolls[p.id].k}`).join(', ') + '.', { rolls: s.rolls.map(r => r.k) });
+    s.phase = 'lodge';
+    // bots play their cards and lodge straight away
+    for (const p of s.P) if (!p.human) {
+      for (const a of B.plays(s, p.id)) { play(s, p.id, a, E); if (s.phase === 'end') return; }
+      lodgeBot(s, p.id);
+    }
+  }
+  // draw the secret surcharge for a receipt
+  function makeClaim(s, i, whoC, what) {
+    const p = s.P[i]; take(p, what.id); if (whoC) take(p, whoC.id);
+    const sur = pickOne(s, SUR), guide = guideOf(whoC, what);
+    return { seat: i, who: whoC, what, item: itemOf(whoC, what), guide, sur: sur[0], m: sur[1], real: round5(guide * sur[1]), claim: null, calls: {}, peeks: [], nephew: false, outcome: null };
+  }
+  function lodgeBot(s, i) {
+    const p = s.P[i], a = B.pick(s, i);
+    if (a.skip) { s.lodged[i] = { skip: true }; return; }
+    const c = makeClaim(s, i, a.who ? p.hand.find(x => x.id === a.who) : null, p.hand.find(x => x.id === a.what));
+    const was = s.cur; s.cur = c;
+    const d = B.claim(s, i, rand(s), rentFor(s, i));
+    s.cur = was;
+    fill(s, c, d.amount, d.nephew);
+    s.lodged[i] = c;
+  }
+  function fill(s, c, amt, nephew) {
+    const p = s.P[c.seat];
+    c.claim = amt; p.claims++; if (amt > c.real) p.pads++;
+    if (nephew) { const n = has(p, 'nephew'); if (n) { take(p, n.id); s.disc.push(n); c.nephew = true; } }
   }
   function play(s, i, a, E) {
     const p = s.P[i], c = p.hand.find(x => x.id === a.card);
@@ -588,43 +648,32 @@ const PC = (() => {
       log(s, E, 'action', `${who(s, i)} did some Creative Accounting. $${amt} left the tin.`, { seat: i, key });
     } else if (key === 'key') { p.key = true; log(s, E, 'action', `${who(s, i)} pocketed the Petty Cash Key.`, { seat: i, key }); }
     else if (key === 'peek') {
-      if (s.phase !== 'audit' || !s.cur || s.cur.seat === i) return 'Use it while a claim is open.';
+      if (s.phase !== 'flip' || !s.cur || s.cur.outcome || s.cur.seat === i) return 'Use it while a claim is open.';
       s.cur.peeks.push(i); log(s, E, 'peek', 'Payroll Peek.', { seat: i, key, to: i });
     } else return 'That card plays itself at the right time.';
     take(p, c.id); s.disc.push(c);
     if (s.tin < 0) return finish(s, E, true);
     return null;
   }
-  function pick(s, a, E) {
-    const p = s.P[s.turn];
-    if (a.skip) { log(s, E, 'skip', `${who(s, s.turn)} had nothing to claim.`, { seat: s.turn }); return toRent(s, E); }
-    const what = p.hand.find(c => c.id === a.what && c.k === 'what');
-    const whoC = a.who ? p.hand.find(c => c.id === a.who && c.k === 'who') : null;
-    if (!what) return 'Pick a what card.';
-    if (a.who && !whoC) return 'Pick a who/how card.';
-    take(p, what.id); if (whoC) take(p, whoC.id);
-    const sur = pickOne(s, SUR), guide = guideOf(whoC, what);
-    s.cur = { seat: s.turn, who: whoC, what, item: itemOf(whoC, what), guide, sur: sur[0], m: sur[1], real: round5(guide * sur[1]), claim: null, calls: {}, peeks: [], nephew: false, outcome: null };
-    s.phase = 'claim';
-    return null;
+  // everyone's in: shuffle the pile of receipts and start flipping
+  function startFlip(s, E) {
+    s.order = shuffle(s, range(s.n).filter(i => s.lodged[i] && !s.lodged[i].skip));
+    for (const i of range(s.n)) if (s.lodged[i] && s.lodged[i].skip) log(s, E, 'skip', `${who(s, i)} had nothing to claim.`, { seat: i });
+    s.phase = 'flip'; s.fi = -1;
+    return nextFlip(s, E);
   }
-  function claim(s, a, E) {
-    const c = s.cur, p = s.P[c.seat];
-    const amt = round5(+a.amount);
-    if (!(amt >= 0) || amt > c.guide * SMAX * 3) return 'Pick an amount.';
-    c.claim = amt; p.claims++; if (amt > c.real) p.pads++;
-    if (a.nephew) { const n = has(p, 'nephew'); if (!n) return 'No Nephew card.'; take(p, n.id); s.disc.push(n); c.nephew = true; }
+  function nextFlip(s, E) {
+    s.fi++;
+    if (s.fi >= s.order.length) return toRent(s, E);
+    const c = s.cur = s.lodged[s.order[s.fi]];
     s.claims.push(c);
-    log(s, E, 'claim', `${who(s, c.seat)} claimed $${amt} for ${c.item}.`, { seat: c.seat, item: c.item, amount: amt, guide: c.guide, nephew: c.nephew });
-    if (c.nephew) return settle(s, E);
-    s.phase = 'audit';
+    log(s, E, 'claim', `${who(s, c.seat)} claimed $${c.claim} for ${c.item}.`, { seat: c.seat, item: c.item, amount: c.claim, guide: c.guide, nephew: c.nephew });
+    if (c.nephew) return null;
     for (const q of s.P) if (q.id !== c.seat && !q.human) {
       let call = B.auditCall(s, q.id, rand(s));
-      // a bot peeks, then calls it straight
       if (call === 'peek') { const k = has(q, 'peek'); take(q, k.id); s.disc.push(k); c.peeks.push(q.id); call = c.claim > c.real ? 'audit' : 'sign'; }
       c.calls[q.id] = call;
     }
-    if (!needsHuman(s)) return settle(s, E);
     return null;
   }
   function settle(s, E) {
@@ -651,108 +700,114 @@ const PC = (() => {
       }
     }
     if (s.tin < 0) return finish(s, E, true);
-    return toRent(s, E);
+    return null;
   }
   function pay(s, i, amt) { s.tin -= amt; s.P[i].bank += amt; }
   function shred(s, use, E) {
     const c = s.cur, p = s.P[c.seat];
+    s.phase = 'flip';
     if (!use) { c.noShred = true; return settle(s, E); }
     const sh = has(p, 'shred'); take(p, sh.id); s.disc.push(sh);
     pay(s, c.seat, c.guide); c.outcome = 'shredded';
     log(s, E, 'shred', `${who(s, c.seat)} shredded the records. Paid the guide price, $${c.guide}. Nobody will ever know.`, { seat: c.seat });
     if (s.tin < 0) return finish(s, E, true);
-    return toRent(s, E);
-  }
-  function toRent(s, E) {
-    s.phase = 'rent';
-    const p = s.P[s.turn];
-    if (!(p.human && has(p, 'free'))) return payRent(s, p.human ? false : B.useFree(s, s.turn, rentFor(s, s.turn)), E);
     return null;
   }
-  function payRent(s, free, E) {
-    const i = s.turn, p = s.P[i], due = rentFor(s, i);
+  // rent: bots pay at once; you get asked only if you hold Free Rent
+  function toRent(s, E) {
+    s.cur = null; s.phase = 'rent'; s.rentAsk = false;
+    for (const p of s.P) {
+      if (p.human && has(p, 'free')) { s.rentAsk = true; continue; }
+      payRent(s, p.id, p.human ? false : B.useFree(s, p.id, rentFor(s, p.id)), E);
+    }
+    return null;
+  }
+  function payRent(s, i, free, E) {
+    const p = s.P[i], due = rentFor(s, i);
     if (free) { const f = has(p, 'free'); if (f) { take(p, f.id); s.disc.push(f); log(s, E, 'rent', `${who(s, i)} played Free Rent.`, { seat: i, free: true }); } else free = false; }
     if (!free) {
       p.bank -= due;
-      log(s, E, p.bank < 0 ? 'debt' : 'rent', p.bank < 0 ? `${who(s, i)} couldn't make rent. $${-p.bank} on the tab.` : `${who(s, i)} paid $${due} rent.`, { seat: i, due });
+      if (p.bank < 0) log(s, E, 'debt', `${who(s, i)} couldn't make rent. $${-p.bank} on the tab.`, { seat: i, due });
     }
     p.letter = false;
-    // hand limit
     while (p.hand.length > T.hand) s.disc.push(p.hand.splice(0, 1)[0]);
-    return nextTurn(s, E);
   }
-  function nextTurn(s, E) {
-    s.cur = null;
-    s.turn = (s.turn + 1) % s.n;
-    if (s.turn === s.start) {
-      s.lap++;
-      if (s.lap > T.laps) return finish(s, E, false);
-      log(s, E, 'lap', `Lap ${s.lap}. Rent is $${rentFor(s, s.turn)}${s.lap === T.laps ? '. Last lap' : ''}.`);
-    }
-    s.phase = 'roll';
+  function endLap(s, E) {
+    log(s, E, 'rent', `Rent day. Everyone paid up${s.P.some(p => p.bank < 0) ? ', or tried to' : ''}.`);
+    s.lap++;
+    if (s.lap > T.laps) return finish(s, E, false);
+    log(s, E, 'lap', `Lap ${s.lap}. Rent is $${rentFor(s, 0)}${s.lap === T.laps ? '. Last lap' : ''}.`);
+    startLap(s, E);
     return null;
   }
   function finish(s, E, bust) {
     const ranked = s.P.slice().sort((a, b) => b.bank - a.bank || a.id - b.id).map(p => p.id);
     s.end = { bust, ranked, winner: bust ? ranked[1] : ranked[0], jailed: bust ? ranked[0] : null };
-    s.phase = 'end'; s.cur = null;
+    s.phase = 'end';
     if (bust) log(s, E, 'bust', `The tin is empty. Royal Commission. ${who(s, ranked[0])} ${vb(s, ranked[0], 'takes', 'take')} the fall. ${who(s, ranked[1])} ${vb(s, ranked[1], 'walks', 'walk')} away clean.`);
     else log(s, E, 'win', `The company survived the year. ${who(s, ranked[0])} ${vb(s, ranked[0], 'is', 'are')} Employee of the Year.`);
     return null;
   }
 
-  // whose input the game is waiting for; -1 means a bot or the game itself
+  // is the game waiting on you?
   function needsHuman(s) {
     if (s.spectate || s.phase === 'end') return false;
-    if (s.phase === 'shop') return true;
-    if (s.phase === 'audit') return s.cur.seat !== 0 && !(0 in s.cur.calls);
-    if (['roll', 'pick', 'claim', 'shred', 'rent'].includes(s.phase)) return s.turn === 0;
+    if (s.phase === 'shop' || s.phase === 'shred') return true;
+    if (s.phase === 'lodge') return s.lodged[0] == null;
+    if (s.phase === 'flip') return !!s.cur && !s.cur.outcome && !s.cur.nephew && s.cur.seat !== 0 && !(0 in s.cur.calls);
+    if (s.phase === 'rent') return s.rentAsk;
     return false;
   }
 
   // ---------- the one entry point ----------
   function apply(state, seat, a) {
     const s = JSON.parse(JSON.stringify(state)), E = [];
-    // the open claim and its ledger line are one object
-    if (s.cur && s.cur.claim != null) s.claims[s.claims.length - 1] = s.cur;
+    // the open claim and its lodged slot are one object
+    if (s.cur) { s.lodged[s.cur.seat] = s.cur; if (s.claims.length && s.claims[s.claims.length - 1].seat === s.cur.seat) s.claims[s.claims.length - 1] = s.cur; }
     let err = null;
-    const mine = !s.spectate && seat === 0;
-    const myTurn = mine && s.turn === 0;
+    const mine = !s.spectate && seat === 0, p = s.P[0];
     switch (a.type) {
       case 'shop':
         if (s.phase !== 'shop' || !mine) { err = 'Not now.'; break; }
         for (const x of (a.answers || []).slice(0, 16)) if (x && PROMPTS[x.q] && String(x.text || '').trim()) s.answers.push({ by: 0, q: x.q, text: String(x.text) });
         deal(s, E); break;
-      case 'roll': if (s.phase !== 'roll' || !myTurn) err = 'Not your roll.'; else roll(s, E); break;
       case 'play':
-        if (!mine || !((s.phase === 'pick' && myTurn) || s.phase === 'audit')) { err = 'Not now.'; break; }
+        if (!mine || !((s.phase === 'lodge' && s.lodged[0] == null) || s.phase === 'flip')) { err = 'Not now.'; break; }
         err = play(s, 0, a, E); break;
-      case 'pick': if (s.phase !== 'pick' || !myTurn) err = 'Not your turn.'; else err = pick(s, a, E); break;
-      case 'claim': if (s.phase !== 'claim' || !myTurn) err = 'Not your claim.'; else err = claim(s, a, E); break;
+      case 'pick': {
+        if (!mine || s.phase !== 'lodge' || s.lodged[0] != null || s.pend) { err = 'Not now.'; break; }
+        if (a.skip) { s.lodged[0] = { skip: true }; break; }
+        const what = p.hand.find(c => c.id === a.what && c.k === 'what'), whoC = a.who ? p.hand.find(c => c.id === a.who && c.k === 'who') : null;
+        if (!what) { err = 'Pick a what card.'; break; }
+        if (a.who && !whoC) { err = 'Pick a who/how card.'; break; }
+        s.pend = makeClaim(s, 0, whoC, what); break;
+      }
+      case 'claim': {
+        if (!mine || s.phase !== 'lodge' || !s.pend) { err = 'Pick a receipt first.'; break; }
+        const amt = round5(+a.amount);
+        if (!(amt >= 0) || amt > s.pend.guide * SMAX * 3) { err = 'Pick an amount.'; break; }
+        if (a.nephew && !has(p, 'nephew')) { err = 'No Nephew card.'; break; }
+        fill(s, s.pend, amt, !!a.nephew); s.lodged[0] = s.pend; s.pend = null; break;
+      }
       case 'audit':
-        if (s.phase !== 'audit' || !mine || s.cur.seat === 0) { err = 'Nothing to audit.'; break; }
-        s.cur.calls[0] = a.call === 'audit' ? 'audit' : 'sign'; err = settle(s, E); break;
-      case 'shred': if (s.phase !== 'shred' || !myTurn) err = 'Not now.'; else err = shred(s, !!a.use, E); break;
-      case 'rent': if (s.phase !== 'rent' || !myTurn) err = 'Not now.'; else err = payRent(s, !!a.free, E); break;
+        if (!mine || !needsHuman(s) || s.phase !== 'flip') { err = 'Nothing to audit.'; break; }
+        s.cur.calls[0] = a.call === 'audit' ? 'audit' : 'sign'; break;
+      case 'shred': if (!mine || s.phase !== 'shred') err = 'Not now.'; else err = shred(s, !!a.use, E); break;
+      case 'rent':
+        if (!mine || s.phase !== 'rent' || !s.rentAsk) { err = 'Not now.'; break; }
+        payRent(s, 0, !!a.free, E); s.rentAsk = false; break;
       case 'advance': err = advance(s, E); break;
       default: err = 'Unknown action.';
     }
     return err ? { error: err } : { state: s, events: E };
   }
-  // one bot step for whoever the game is waiting on
+  // the game moves one beat
   function advance(s, E) {
     if (needsHuman(s)) return 'Waiting for you.';
-    const i = s.turn, p = s.P[i];
     switch (s.phase) {
-      case 'roll': roll(s, E); return null;
-      case 'pick': {
-        for (const a of B.plays(s, i)) { const e = play(s, i, a, E); if (s.phase === 'end') return null; if (e) break; }
-        return pick(s, B.pick(s, i), E);
-      }
-      case 'claim': return claim(s, B.claim(s, i, rand(s), rentFor(s, i)), E);
-      case 'audit': return settle(s, E);
-      case 'shred': return shred(s, true, E);
-      case 'rent': return payRent(s, B.useFree(s, i, rentFor(s, i)), E);
+      case 'lodge': return startFlip(s, E);
+      case 'flip': return s.cur.outcome ? nextFlip(s, E) : settle(s, E);
+      case 'rent': return endLap(s, E);
       default: return 'Nothing to do.';
     }
   }
@@ -765,11 +820,10 @@ const PC = (() => {
 // Petty Cash UI: state, the bot driver, toasts. Screens live in the files after this one.
 const app = document.getElementById('app');
 const ov = document.getElementById('ov');
-const ui = { screen: 'title', s: null, opts: { players: 5, co: 'mystery' }, sel: {}, amt: 0, seen: new Set(), hold: 0, rolling: false, busy: false };
+const ui = { screen: 'title', s: null, opts: { players: 5, co: 'mystery' }, sel: {}, amt: 0, seen: new Set(), hold: 0, busy: false, rollAt: 0 };
 const TOD = ['morning', 'smoko', 'lunch', 'arvo', 'knockoff', 'late'];
 const TOD_NAME = { morning: 'Morning', smoko: 'Smoko', lunch: 'Lunch', arvo: 'Arvo', knockoff: 'Knock-off', late: 'After hours' };
 const SPEED = /fast/.test(location.search) ? 0.25 : 1;
-const FACES = ['', '⚀', '⚁', '⚂'];
 const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const money = n => (n < 0 ? '−$' : '$') + Math.abs(Math.round(n)).toLocaleString('en-AU');
 const co = () => PC.CO[ui.s.co];
@@ -798,7 +852,7 @@ function pump() {
   clearTimeout(pumpT);
   const s = ui.s;
   if (!s || s.phase === 'end' || s.phase === 'shop' || PC.needsHuman(s)) return;
-  const base = { roll: 650, pick: 1000, claim: 1200, audit: 900, shred: 900, rent: 600 }[s.phase] || 800;
+  const base = s.phase === 'flip' ? (s.cur.outcome ? 1500 : 1700) : { lodge: 2600, rent: 1600 }[s.phase] || 900;
   const d = Math.max(base, ui.hold - Date.now()) * SPEED;
   pumpT = setTimeout(() => {
     const r = PC.apply(ui.s, 0, { type: 'advance' });
@@ -808,9 +862,11 @@ function pump() {
 function onEvents(E) {
   for (const e of E) {
     if (e.kind === 'caught' || e.kind === 'halo' || e.kind === 'shred') ui.hold = Date.now() + 2600;
-    if (e.kind === 'lap') ui.hold = Math.max(ui.hold, Date.now() + 1200);
+    if (e.kind === 'roll') {
+      ui.rollAt = Date.now(); ui.hold = Date.now() + 3200;
+      setTimeout(() => { const r = ui.s.rolls && ui.s.rolls[0]; if (r && r.cash) toast(`Wages: +${money(r.cash)}`, 'cash'); }, 1500);
+    }
     if (e.to !== 0) {
-      if (e.kind === 'roll' && e.seat === 0 && e.cash) toast(`Wages: +${money(e.cash)}`, 'cash');
       if (e.kind === 'action' && e.target === 0) toast("Landlord's Letter. Your rent is doubled this lap.", 'bad');
       continue;
     }
@@ -964,12 +1020,14 @@ function renderReveal() {
     <div class="items">${shown.map((a, k) => `<div class="mini" style="--d:${0.9 + k * 0.35}s"><span class="wi">${esc(a.text)}</span><b class="num">${money(c.tiers[PC.PROMPTS[a.q][1]])}</b></div>`).join('')}</div>` : `<p class="gotcha">You said nothing. Very professional.</p>`}
     <button class="go" id="go">Start the year</button>
   </main>`;
-  app.querySelector('#go').onclick = () => { ui.screen = 'game'; render(); pump(); };
+  app.querySelector('#go').onclick = () => { ui.screen = 'game'; onEvents([{ kind: 'roll' }]); render(); pump(); };
 }
-// The table: TV strip, name tags, the in-tray receipt, the till roll.
+// The table: TV strip, name tags, the tray (dice, then the flipping pile), the till roll.
 function renderGame() {
   const s = ui.s;
-  app.innerHTML = `<main class="game">${strip(s)}${tags(s)}<section class="tray">${tray(s)}</section>${till(s)}${desk(s)}</main>`;
+  const el = Date.now() - (ui.rollAt || 0);
+  ui.fresh = el < 4000;
+  app.innerHTML = `<main class="game" style="--el:${ui.fresh ? -el : -9999}ms">${strip(s)}${tags(s)}<section class="tray">${tray(s)}</section>${till(s)}${desk(s)}</main>`;
   wireTable(s);
   wireDesk(s);
   for (const c of me().hand) ui.seen.add(c.id);
@@ -985,12 +1043,16 @@ function strip(s) {
 }
 
 function tags(s) {
+  const up = s.phase === 'flip' || s.phase === 'shred' ? s.cur && s.cur.seat : -1;
   return `<section class="tags">${s.P.map(p => {
-    const cls = ['tag', p.human ? 'me' : '', s.turn === p.id && s.phase !== 'end' ? 'turn' : '', p.bank < 0 ? 'debt' : '', ui.target && !p.human ? 'pickable' : ''].join(' ');
+    const l = s.lodged[p.id];
+    const cls = ['tag', p.human ? 'me' : '', up === p.id ? 'turn' : '', p.bank < 0 ? 'debt' : '', ui.target && !p.human ? 'pickable' : ''].join(' ');
+    // bots "finish" lodging one after another once the dice land
+    const lodged = s.phase === 'lodge' && l ? `<i class="in ${ui.fresh && !p.human ? 'late' : ''}" style="--d:${1.8 + p.id * 0.7}s">${l.skip ? 'Nothing' : 'Lodged'}</i>` : '';
     return `<button class="${cls}" data-seat="${p.id}" ${ui.target && !p.human ? '' : 'tabindex="-1"'}>
       <span class="nm">${esc(p.name)}</span>
       <b class="num">${money(p.bank)}</b>
-      <span class="marks">${'<i class="halo" title="Cleared"></i>'.repeat(Math.min(p.halo, 4))}${p.caught ? `<i class="caught">Padded${p.caught > 1 ? ' ×' + p.caught : ''}</i>` : ''}${p.letter ? '<i class="letter">2× rent</i>' : ''}</span>
+      <span class="marks">${lodged}${'<i class="halo" title="Cleared"></i>'.repeat(Math.min(p.halo, 4))}${p.caught ? `<i class="caught">Padded${p.caught > 1 ? ' ×' + p.caught : ''}</i>` : ''}${p.letter ? '<i class="letter">2× rent</i>' : ''}</span>
       <span class="cards">${p.hand.length} cards</span>
     </button>`;
   }).join('')}</section>`;
@@ -998,34 +1060,54 @@ function tags(s) {
 
 // what's happening, in one line
 function status(s) {
-  const p = s.P[s.turn], you = p.human, n = esc(p.name);
-  const r = s.lastRoll && s.lastRoll.seat === s.turn ? s.lastRoll.k : 0;
+  const c = s.cur, n = c ? esc(s.P[c.seat].name) : '';
   switch (s.phase) {
-    case 'roll': return you ? 'Your turn. Roll for cards.' : `${n} is rolling.`;
-    case 'pick': return you ? `You rolled ${r}. Pick a receipt to lodge.` : `${n} rolled ${r} and is going through receipts.`;
-    case 'claim': return you ? 'How much are you claiming?' : `${n} is filling in a claim.`;
-    case 'audit': return s.cur.seat !== 0 && !(0 in s.cur.calls) ? `${n} wants ${money(s.cur.claim)}. Sign it or audit?` : 'With Accounts.';
-    case 'shred': return you ? "You're being audited." : `${n} is being audited.`;
-    case 'rent': return you ? 'Rent day.' : `${n} is paying rent.`;
+    case 'lodge':
+      if (s.lodged[0]) return 'Lodged. Shuffling the pile.';
+      return s.pend ? 'How much are you claiming?' : `Lap ${s.lap}. Everyone rolled. Pick a receipt to lodge.`;
+    case 'flip':
+      if (c.outcome) return { caught: `${n} padded it.`, halo: `${n} was honest.`, shredded: 'Into the shredder.', paid: c.nephew ? 'Nephew of the CEO. No questions.' : 'Signed off.' }[c.outcome];
+      if (c.seat === 0) return c.nephew ? 'Your claim. Nobody can touch it.' : 'Your claim. The table is deciding.';
+      return c.nephew ? `${n} wants ${money(c.claim)}, with the Nephew card.` : `${n} wants ${money(c.claim)}. Sign it or audit?`;
+    case 'shred': return "You're being audited.";
+    case 'rent': return 'Rent day.';
     default: return '';
   }
 }
 
 function tray(s) {
-  const c = s.cur && (s.cur.claim != null || s.cur.seat === 0) ? s.cur : s.claims[s.claims.length - 1];
+  if (s.phase === 'lodge') return `<p class="status">${status(s)}</p>${dice(s)}${s.pend ? receipt(s, s.pend, false) : s.lodged[0] && !s.lodged[0].skip ? receipt(s, s.lodged[0], false, 'sealed') : ''}`;
+  const c = s.cur || s.claims[s.claims.length - 1];
+  const left = s.phase === 'flip' || s.phase === 'shred' ? s.order.length - s.fi - 1 : 0;
+  const key = s.lap + ':' + s.fi;
+  const flipin = s.cur && ui.flipKey !== key; ui.flipKey = key;
   return `<p class="status">${status(s)}</p>
-    ${c ? receipt(s, c, c !== s.cur) : `<div class="rcpt empty"><span class="label">In tray</span><p>No claims yet.</p></div>`}`;
+    <div class="pile">${'<i></i>'.repeat(Math.min(left, 6))}${left ? `<span class="label">${left} to go</span>` : ''}</div>
+    ${c ? receipt(s, c, c !== s.cur, flipin ? 'flipin' : '') : ''}`;
+}
+
+// a die with faces 1,1,2,2,3,3: front/back 1, right/left 2, top/bottom 3
+const LAND = { 1: 'rotateX(0deg) rotateY(0deg)', 2: 'rotateX(0deg) rotateY(-90deg)', 3: 'rotateX(-90deg) rotateY(0deg)' };
+function cube(k, cls, d) {
+  const f = (n, side) => `<i class="f f${n} ${side}"></i>`;
+  return `<span class="die3 ${cls}" style="--end:${LAND[k] || LAND[1]};--d:${d}s"><span class="cube">${f(1, 'fr')}${f(1, 'bk')}${f(2, 'rt')}${f(2, 'lf')}${f(3, 'tp')}${f(3, 'bt')}</span></span>`;
+}
+function dice(s) {
+  return `<div class="dice">${s.P.map(p => {
+    const r = s.rolls[p.id] || { k: 1 };
+    return `<div class="dslot ${p.human ? 'me' : ''}">${cube(r.k, ui.fresh ? 'tumble' : '', p.human ? 0 : 0.15 + p.id * 0.08)}<span class="nm">${esc(p.name)}</span><b class="num">+${r.k}</b></div>`;
+  }).join('')}</div>`;
 }
 
 // a thermal receipt; the real cost stays blacked out until someone finds out
-function receipt(s, c, old) {
+function receipt(s, c, old, extra) {
   const mine = c.seat === 0, no = s.claims.indexOf(c) + 1 || s.claims.length + 1;
   const peeked = c.peeks && c.peeks.includes(0);
   const known = mine || peeked || c.outcome === 'caught' || c.outcome === 'halo';
   const bar = '<span class="redact">██████</span>';
-  const stamp = { caught: 'Caught padding', halo: 'Cleared', shredded: 'Shredded', paid: c.nephew ? 'Nephew of the CEO' : 'Signed' }[c.outcome] || '';
+  const stamp = extra === 'sealed' ? 'Lodged' : { caught: 'Caught padding', halo: 'Cleared', shredded: 'Shredded', paid: c.nephew ? 'Nephew of the CEO' : 'Signed' }[c.outcome] || '';
   const write = c.what.by != null ? 'wi' : '';
-  return `<article class="rcpt ${old ? 'old' : ''} ${c.outcome || ''}">
+  return `<article class="rcpt ${old ? 'old' : ''} ${c.outcome || ''} ${extra || ''}">
     <header><span class="label">Expense claim</span><span class="num">No. ${String(no).padStart(4, '0')}</span></header>
     <p class="by">${esc(s.P[c.seat].name)}</p>
     <p class="item">${c.who ? `<span class="w">${esc(c.who.name)}</span> ` : ''}<span class="${write}">${esc(c.what.name)}</span></p>
@@ -1035,7 +1117,7 @@ function receipt(s, c, old) {
       <dt>Real cost</dt><dd class="num">${known ? money(c.real) : bar}</dd>
     </dl>
     <div class="total"><span class="label">Claimed</span><b class="num">${c.claim != null ? money(c.claim) : '—'}</b></div>
-    ${stamp ? `<div class="stamp s-${c.outcome}">${stamp}</div>` : ''}
+    ${stamp ? `<div class="stamp s-${extra === 'sealed' ? 'sealed' : c.outcome}">${stamp}</div>` : ''}
   </article>`;
 }
 
@@ -1049,7 +1131,7 @@ function auditBar(s) {
 }
 
 function till(s) {
-  const lines = s.feed.filter(e => e.to == null || e.to === 0).slice(-5).reverse();
+  const lines = s.feed.filter(e => (e.to == null || e.to === 0) && e.kind !== 'claim').slice(-5).reverse();
   return `<section class="till" aria-live="polite">${lines.map((e, k) => `<p class="k-${e.kind} ${k ? '' : 'top'}">${esc(e.text)}</p>`).join('')}</section>`;
 }
 
@@ -1067,25 +1149,17 @@ function wireTable(s) {
 const PLAYABLE = { freeze: 1, letter: 1, creative: 1, key: 1 };
 
 function desk(s) {
-  const p = me(), myTurn = s.turn === 0;
+  const p = me();
   const rent = PC.rentFor(s, 0);
-  const busy = (s.phase === 'claim' && myTurn) || (s.phase === 'audit' && s.cur.seat !== 0 && !(0 in s.cur.calls));
+  const busy = !!s.pend || (s.phase === 'flip' && PC.needsHuman(s));
   return `<section class="desk ${busy ? 'busy' : ''}">
     <div class="dhead">
       <div class="mybank ${p.bank < 0 ? 'debt' : ''}"><span class="label">${p.bank < 0 ? 'On the tab' : 'Your bank'}</span><b class="num">${money(p.bank)}</b></div>
       <div class="mydue"><span class="label">Rent this lap</span><b class="num">${money(rent)}</b></div>
-      ${dieBtn(s, myTurn)}
     </div>
     <div class="hand">${handCards(s)}</div>
     <div class="ctl">${control(s)}</div>
   </section>`;
-}
-
-function dieBtn(s, myTurn) {
-  const k = s.lastRoll && s.lastRoll.seat === 0 ? s.lastRoll.k : 0;
-  const can = myTurn && s.phase === 'roll';
-  return `<button class="die ${can ? 'ready' : ''} ${ui.rolling ? 'rolling' : ''}" id="die" ${can ? '' : 'disabled'} aria-label="Roll">
-    <span class="face">${FACES[k] || '⚄'}</span><span class="label">${can ? 'Roll' : k ? `Drew ${k}` : 'Die'}</span></button>`;
 }
 
 function cardHtml(c) {
@@ -1108,36 +1182,36 @@ function handCards(s) {
 }
 
 // one control at a time, depending on the phase
+function canLodge(s) { return s.phase === 'lodge' && !s.lodged[0] && !s.pend; }
 function control(s) {
-  const p = me(), myTurn = s.turn === 0;
+  const p = me();
   if (ui.target) return `<p class="ask">Pick who gets the Landlord's Letter.</p><button class="ghost" id="cancel">Never mind</button>`;
   const a = ui.sel.act && p.hand.find(c => c.id === ui.sel.act);
   if (a) {
-    const can = PLAYABLE[a.v] && myTurn && s.phase === 'pick';
+    const can = PLAYABLE[a.v] && canLodge(s);
     const when = { shred: 'It plays when you get audited.', nephew: 'It plays when you lodge a claim.', peek: 'It plays while someone else has a claim open.', free: 'It plays on rent day.' }[a.v];
     return `<p class="ask"><b>${esc(PC.ACTIONS[a.v][0])}.</b> ${esc(PC.ACTIONS[a.v][1])}</p>
-      ${can ? `<button class="go" id="playact">Play it</button>` : `<p class="note">${when || 'Play it on your turn, after you roll.'}</p>`}
+      ${can ? `<button class="go" id="playact">Play it</button>` : `<p class="note">${when || 'Play it before you lodge.'}</p>`}
       <button class="ghost" id="cancel">Put it back</button>`;
   }
-  if (s.phase === 'audit' && s.cur.seat !== 0 && !(0 in s.cur.calls)) return auditBar(s);
-  if (!myTurn) return '';
-  if (s.phase === 'pick') {
+  if (s.phase === 'flip' && PC.needsHuman(s)) return auditBar(s);
+  if (s.pend) return claimCtl(s);
+  if (canLodge(s)) {
     const who = p.hand.find(c => c.id === ui.sel.who), what = p.hand.find(c => c.id === ui.sel.what);
     const g = what ? PC.guideOf(who, what) : 0;
     return `<p class="ask">${what ? `<b>${esc(PC.itemOf(who, what))}</b> · guide <span class="num">${money(g)}</span>` : 'Pick a what, and a who/how if you like.'}</p>
       <button class="go" id="lodge" ${what ? '' : 'disabled'}>Lodge receipt</button>
       <button class="ghost" id="skip">Nothing to claim</button>`;
   }
-  if (s.phase === 'claim') return claimCtl(s);
   if (s.phase === 'shred') return `<p class="ask">Someone's auditing your claim.</p>
     <button class="go" id="shredy">Shred the records</button><button class="ghost" id="shredn">Let them look</button>`;
-  if (s.phase === 'rent') return `<p class="ask">Rent's due: <span class="num">${money(PC.rentFor(s, 0))}</span>.</p>
+  if (s.phase === 'rent' && s.rentAsk) return `<p class="ask">Rent's due: <span class="num">${money(PC.rentFor(s, 0))}</span>.</p>
     <button class="go" id="freey">Play Free Rent</button><button class="ghost" id="freen">Pay it</button>`;
   return '';
 }
 
 function claimCtl(s) {
-  const c = s.cur, p = me();
+  const c = s.pend, p = me();
   if (ui.amt == null || ui.amtFor !== c.item + c.guide) { ui.amt = c.real; ui.amtFor = c.item + c.guide; ui.nephew = false; }
   const chips = [['Honest', c.real], ['Guide', c.guide], ['+50%', c.real * 1.5], ['Double', c.real * 2]]
     .map(([l, v]) => `<button class="chip" data-amt="${Math.round(v / 5) * 5}">${l}<span class="num">${money(Math.round(v / 5) * 5)}</span></button>`).join('');
@@ -1152,7 +1226,7 @@ function claimCtl(s) {
     <button class="go" id="claim">Lodge claim</button>`;
 }
 function afterLine(s) {
-  const c = s.cur, pad = ui.amt - c.real, left = me().bank + ui.amt - PC.rentFor(s, 0);
+  const c = s.pend, pad = ui.amt - c.real, left = me().bank + ui.amt - PC.rentFor(s, 0);
   return `${pad > 0 ? `Padding <b class="num">${money(pad)}</b>.` : pad < 0 ? `Under by <b class="num">${money(-pad)}</b>.` : 'Honest.'} After rent you'd have <b class="num ${left < 0 ? 'neg' : ''}">${money(left)}</b>.`;
 }
 
@@ -1164,14 +1238,10 @@ function wireDesk(s) {
     if (c.k === 'act') ui.sel = { act: ui.sel.act === c.id ? null : c.id };
     else {
       if (ui.sel.act) ui.sel = {};
-      if (!(s.turn === 0 && s.phase === 'pick')) { toast(s.turn !== 0 ? 'Wait for your turn.' : s.phase === 'roll' ? 'Roll first.' : 'Not now.'); return; }
+      if (!canLodge(s)) { toast(s.phase === 'lodge' ? 'Already lodged.' : 'Next lap.'); return; }
       ui.sel[c.k] = ui.sel[c.k] === c.id ? null : c.id;
     }
     render();
-  });
-  on('#die', () => {
-    ui.rolling = true; render();
-    setTimeout(() => { ui.rolling = false; act({ type: 'roll' }); }, 650);
   });
   on('#cancel', () => { ui.sel = {}; ui.target = null; render(); });
   on('#playact', () => {
@@ -1191,7 +1261,7 @@ function wireDesk(s) {
   const set = v => { ui.amt = Math.max(0, Math.round(v / 5) * 5); amt.value = ui.amt; q('#after').innerHTML = afterLine(s); };
   amt.oninput = () => { const v = parseInt(amt.value.replace(/\D/g, ''), 10) || 0; ui.amt = v; q('#after').innerHTML = afterLine(s); };
   amt.onblur = () => set(ui.amt);
-  const step = Math.max(5, Math.round(s.cur.guide * 0.1 / 5) * 5);
+  const step = Math.max(5, Math.round(s.pend.guide * 0.1 / 5) * 5);
   app.querySelectorAll('.step').forEach(b => b.onclick = () => set(ui.amt + step * +b.dataset.step));
   app.querySelectorAll('.chip').forEach(b => b.onclick = () => set(+b.dataset.amt));
   on('#neph', () => { ui.nephew = q('#neph').checked; });
@@ -1199,7 +1269,7 @@ function wireDesk(s) {
     if (ui.busy) return;
     set(ui.amt);
     ui.busy = true;
-    q('.tray .rcpt').classList.add('lodging');
+    const r = q('.tray .rcpt'); if (r) r.classList.add('lodging');
     q('#claim').disabled = true;
     setTimeout(() => { ui.busy = false; act({ type: 'claim', amount: ui.amt, nephew: ui.nephew }); }, 700);
   });

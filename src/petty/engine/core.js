@@ -41,7 +41,7 @@ const PC = (() => {
     const co = CO[opts.co] ? opts.co : 'party';
     const s = {
       v: 1, rs: (opts.seed >>> 0) || 1, seed: opts.seed >>> 0, n, co, spectate: !!opts.spectate,
-      lap: 1, phase: 'shop', turn: 0, start: 0, freeze: 0, cur: null, feed: [], claims: [], answers: [], pile: [], disc: [], end: null,
+      lap: 1, phase: 'shop', freeze: 0, cur: null, lodged: [], rolls: [], order: [], fi: -1, pend: null, rentAsk: false, feed: [], claims: [], answers: [], pile: [], disc: [], end: null,
     };
     const A = avgGuide(CO[co]);
     s.rent0 = round5(A * T.rent);
@@ -50,7 +50,6 @@ const PC = (() => {
     s.P = range(n).map(i => ({ id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate, bank: 0, hand: [], halo: 0, caught: 0, weasels: 0, key: false, letter: false, claims: 0, pads: 0, greed: 0.2 + 0.6 * rand(s) }));
     // bots answer the quick-fire
     for (const p of s.P) if (!p.human) for (let k = 0; k < 2 + ri(s, 2); k++) s.answers.push({ by: p.id, q: ri(s, PROMPTS.length), text: pickOne(s, ANSWERS) });
-    s.start = s.turn = ri(s, n);
     if (s.spectate) deal(s, []);
     return s;
   }
@@ -68,8 +67,8 @@ const PC = (() => {
     for (const p of s.P) for (const k of ['who', 'who', 'what', 'what']) {
       const at = s.pile.findIndex(c => c.k === k); p.hand.push(s.pile.splice(at, 1)[0]);
     }
-    s.phase = 'roll';
     log(s, E, 'lap', `Lap 1. Rent is $${rentFor(s, 0)}.`);
+    startLap(s, E);
   }
   const tidy = t => { t = String(t || '').trim().replace(/\s+/g, ' ').slice(0, 40); return t ? t[0].toUpperCase() + t.slice(1) : 'Something'; };
   function draw(s) {
@@ -84,17 +83,47 @@ const PC = (() => {
   const take = (p, id) => { const at = p.hand.findIndex(c => c.id === id); return at < 0 ? null : p.hand.splice(at, 1)[0]; };
   const has = (p, key) => p.hand.find(c => c.k === 'act' && c.v === key);
 
-  // ---------- turn ----------
-  function roll(s, E) {
-    const p = s.P[s.turn], k = pickOne(s, DIE), got = [];
-    for (let j = 0; j < k; j++) {
-      const c = draw(s); if (!c) break;
-      if (c.k === 'cash') { p.bank += c.v; s.disc.push(c); } else p.hand.push(c);
-      got.push(c);
+  // ---------- a lap: everyone rolls, everyone lodges, receipts flip one by one, everyone pays rent ----------
+  function startLap(s, E) {
+    s.rolls = []; s.lodged = s.P.map(() => null); s.pend = null; s.order = []; s.fi = -1; s.cur = null;
+    for (const p of s.P) {
+      const k = pickOne(s, DIE), got = [];
+      let cash = 0;
+      for (let j = 0; j < k; j++) {
+        const c = draw(s); if (!c) break;
+        if (c.k === 'cash') { p.bank += c.v; cash += c.v; s.disc.push(c); } else p.hand.push(c);
+        got.push(c.id);
+      }
+      s.rolls[p.id] = { k, got, cash };
     }
-    s.lastRoll = { seat: s.turn, k, got: got.map(c => c.id) };
-    log(s, E, 'roll', `${who(s, s.turn)} rolled ${k}.`, { seat: s.turn, k, cash: got.filter(c => c.k === 'cash').reduce((a, c) => a + c.v, 0) });
-    s.phase = 'pick';
+    log(s, E, 'roll', 'Everyone rolled: ' + s.P.map(p => `${p.name} ${s.rolls[p.id].k}`).join(', ') + '.', { rolls: s.rolls.map(r => r.k) });
+    s.phase = 'lodge';
+    // bots play their cards and lodge straight away
+    for (const p of s.P) if (!p.human) {
+      for (const a of B.plays(s, p.id)) { play(s, p.id, a, E); if (s.phase === 'end') return; }
+      lodgeBot(s, p.id);
+    }
+  }
+  // draw the secret surcharge for a receipt
+  function makeClaim(s, i, whoC, what) {
+    const p = s.P[i]; take(p, what.id); if (whoC) take(p, whoC.id);
+    const sur = pickOne(s, SUR), guide = guideOf(whoC, what);
+    return { seat: i, who: whoC, what, item: itemOf(whoC, what), guide, sur: sur[0], m: sur[1], real: round5(guide * sur[1]), claim: null, calls: {}, peeks: [], nephew: false, outcome: null };
+  }
+  function lodgeBot(s, i) {
+    const p = s.P[i], a = B.pick(s, i);
+    if (a.skip) { s.lodged[i] = { skip: true }; return; }
+    const c = makeClaim(s, i, a.who ? p.hand.find(x => x.id === a.who) : null, p.hand.find(x => x.id === a.what));
+    const was = s.cur; s.cur = c;
+    const d = B.claim(s, i, rand(s), rentFor(s, i));
+    s.cur = was;
+    fill(s, c, d.amount, d.nephew);
+    s.lodged[i] = c;
+  }
+  function fill(s, c, amt, nephew) {
+    const p = s.P[c.seat];
+    c.claim = amt; p.claims++; if (amt > c.real) p.pads++;
+    if (nephew) { const n = has(p, 'nephew'); if (n) { take(p, n.id); s.disc.push(n); c.nephew = true; } }
   }
   function play(s, i, a, E) {
     const p = s.P[i], c = p.hand.find(x => x.id === a.card);
@@ -109,43 +138,32 @@ const PC = (() => {
       log(s, E, 'action', `${who(s, i)} did some Creative Accounting. $${amt} left the tin.`, { seat: i, key });
     } else if (key === 'key') { p.key = true; log(s, E, 'action', `${who(s, i)} pocketed the Petty Cash Key.`, { seat: i, key }); }
     else if (key === 'peek') {
-      if (s.phase !== 'audit' || !s.cur || s.cur.seat === i) return 'Use it while a claim is open.';
+      if (s.phase !== 'flip' || !s.cur || s.cur.outcome || s.cur.seat === i) return 'Use it while a claim is open.';
       s.cur.peeks.push(i); log(s, E, 'peek', 'Payroll Peek.', { seat: i, key, to: i });
     } else return 'That card plays itself at the right time.';
     take(p, c.id); s.disc.push(c);
     if (s.tin < 0) return finish(s, E, true);
     return null;
   }
-  function pick(s, a, E) {
-    const p = s.P[s.turn];
-    if (a.skip) { log(s, E, 'skip', `${who(s, s.turn)} had nothing to claim.`, { seat: s.turn }); return toRent(s, E); }
-    const what = p.hand.find(c => c.id === a.what && c.k === 'what');
-    const whoC = a.who ? p.hand.find(c => c.id === a.who && c.k === 'who') : null;
-    if (!what) return 'Pick a what card.';
-    if (a.who && !whoC) return 'Pick a who/how card.';
-    take(p, what.id); if (whoC) take(p, whoC.id);
-    const sur = pickOne(s, SUR), guide = guideOf(whoC, what);
-    s.cur = { seat: s.turn, who: whoC, what, item: itemOf(whoC, what), guide, sur: sur[0], m: sur[1], real: round5(guide * sur[1]), claim: null, calls: {}, peeks: [], nephew: false, outcome: null };
-    s.phase = 'claim';
-    return null;
+  // everyone's in: shuffle the pile of receipts and start flipping
+  function startFlip(s, E) {
+    s.order = shuffle(s, range(s.n).filter(i => s.lodged[i] && !s.lodged[i].skip));
+    for (const i of range(s.n)) if (s.lodged[i] && s.lodged[i].skip) log(s, E, 'skip', `${who(s, i)} had nothing to claim.`, { seat: i });
+    s.phase = 'flip'; s.fi = -1;
+    return nextFlip(s, E);
   }
-  function claim(s, a, E) {
-    const c = s.cur, p = s.P[c.seat];
-    const amt = round5(+a.amount);
-    if (!(amt >= 0) || amt > c.guide * SMAX * 3) return 'Pick an amount.';
-    c.claim = amt; p.claims++; if (amt > c.real) p.pads++;
-    if (a.nephew) { const n = has(p, 'nephew'); if (!n) return 'No Nephew card.'; take(p, n.id); s.disc.push(n); c.nephew = true; }
+  function nextFlip(s, E) {
+    s.fi++;
+    if (s.fi >= s.order.length) return toRent(s, E);
+    const c = s.cur = s.lodged[s.order[s.fi]];
     s.claims.push(c);
-    log(s, E, 'claim', `${who(s, c.seat)} claimed $${amt} for ${c.item}.`, { seat: c.seat, item: c.item, amount: amt, guide: c.guide, nephew: c.nephew });
-    if (c.nephew) return settle(s, E);
-    s.phase = 'audit';
+    log(s, E, 'claim', `${who(s, c.seat)} claimed $${c.claim} for ${c.item}.`, { seat: c.seat, item: c.item, amount: c.claim, guide: c.guide, nephew: c.nephew });
+    if (c.nephew) return null;
     for (const q of s.P) if (q.id !== c.seat && !q.human) {
       let call = B.auditCall(s, q.id, rand(s));
-      // a bot peeks, then calls it straight
       if (call === 'peek') { const k = has(q, 'peek'); take(q, k.id); s.disc.push(k); c.peeks.push(q.id); call = c.claim > c.real ? 'audit' : 'sign'; }
       c.calls[q.id] = call;
     }
-    if (!needsHuman(s)) return settle(s, E);
     return null;
   }
   function settle(s, E) {
@@ -172,108 +190,114 @@ const PC = (() => {
       }
     }
     if (s.tin < 0) return finish(s, E, true);
-    return toRent(s, E);
+    return null;
   }
   function pay(s, i, amt) { s.tin -= amt; s.P[i].bank += amt; }
   function shred(s, use, E) {
     const c = s.cur, p = s.P[c.seat];
+    s.phase = 'flip';
     if (!use) { c.noShred = true; return settle(s, E); }
     const sh = has(p, 'shred'); take(p, sh.id); s.disc.push(sh);
     pay(s, c.seat, c.guide); c.outcome = 'shredded';
     log(s, E, 'shred', `${who(s, c.seat)} shredded the records. Paid the guide price, $${c.guide}. Nobody will ever know.`, { seat: c.seat });
     if (s.tin < 0) return finish(s, E, true);
-    return toRent(s, E);
-  }
-  function toRent(s, E) {
-    s.phase = 'rent';
-    const p = s.P[s.turn];
-    if (!(p.human && has(p, 'free'))) return payRent(s, p.human ? false : B.useFree(s, s.turn, rentFor(s, s.turn)), E);
     return null;
   }
-  function payRent(s, free, E) {
-    const i = s.turn, p = s.P[i], due = rentFor(s, i);
+  // rent: bots pay at once; you get asked only if you hold Free Rent
+  function toRent(s, E) {
+    s.cur = null; s.phase = 'rent'; s.rentAsk = false;
+    for (const p of s.P) {
+      if (p.human && has(p, 'free')) { s.rentAsk = true; continue; }
+      payRent(s, p.id, p.human ? false : B.useFree(s, p.id, rentFor(s, p.id)), E);
+    }
+    return null;
+  }
+  function payRent(s, i, free, E) {
+    const p = s.P[i], due = rentFor(s, i);
     if (free) { const f = has(p, 'free'); if (f) { take(p, f.id); s.disc.push(f); log(s, E, 'rent', `${who(s, i)} played Free Rent.`, { seat: i, free: true }); } else free = false; }
     if (!free) {
       p.bank -= due;
-      log(s, E, p.bank < 0 ? 'debt' : 'rent', p.bank < 0 ? `${who(s, i)} couldn't make rent. $${-p.bank} on the tab.` : `${who(s, i)} paid $${due} rent.`, { seat: i, due });
+      if (p.bank < 0) log(s, E, 'debt', `${who(s, i)} couldn't make rent. $${-p.bank} on the tab.`, { seat: i, due });
     }
     p.letter = false;
-    // hand limit
     while (p.hand.length > T.hand) s.disc.push(p.hand.splice(0, 1)[0]);
-    return nextTurn(s, E);
   }
-  function nextTurn(s, E) {
-    s.cur = null;
-    s.turn = (s.turn + 1) % s.n;
-    if (s.turn === s.start) {
-      s.lap++;
-      if (s.lap > T.laps) return finish(s, E, false);
-      log(s, E, 'lap', `Lap ${s.lap}. Rent is $${rentFor(s, s.turn)}${s.lap === T.laps ? '. Last lap' : ''}.`);
-    }
-    s.phase = 'roll';
+  function endLap(s, E) {
+    log(s, E, 'rent', `Rent day. Everyone paid up${s.P.some(p => p.bank < 0) ? ', or tried to' : ''}.`);
+    s.lap++;
+    if (s.lap > T.laps) return finish(s, E, false);
+    log(s, E, 'lap', `Lap ${s.lap}. Rent is $${rentFor(s, 0)}${s.lap === T.laps ? '. Last lap' : ''}.`);
+    startLap(s, E);
     return null;
   }
   function finish(s, E, bust) {
     const ranked = s.P.slice().sort((a, b) => b.bank - a.bank || a.id - b.id).map(p => p.id);
     s.end = { bust, ranked, winner: bust ? ranked[1] : ranked[0], jailed: bust ? ranked[0] : null };
-    s.phase = 'end'; s.cur = null;
+    s.phase = 'end';
     if (bust) log(s, E, 'bust', `The tin is empty. Royal Commission. ${who(s, ranked[0])} ${vb(s, ranked[0], 'takes', 'take')} the fall. ${who(s, ranked[1])} ${vb(s, ranked[1], 'walks', 'walk')} away clean.`);
     else log(s, E, 'win', `The company survived the year. ${who(s, ranked[0])} ${vb(s, ranked[0], 'is', 'are')} Employee of the Year.`);
     return null;
   }
 
-  // whose input the game is waiting for; -1 means a bot or the game itself
+  // is the game waiting on you?
   function needsHuman(s) {
     if (s.spectate || s.phase === 'end') return false;
-    if (s.phase === 'shop') return true;
-    if (s.phase === 'audit') return s.cur.seat !== 0 && !(0 in s.cur.calls);
-    if (['roll', 'pick', 'claim', 'shred', 'rent'].includes(s.phase)) return s.turn === 0;
+    if (s.phase === 'shop' || s.phase === 'shred') return true;
+    if (s.phase === 'lodge') return s.lodged[0] == null;
+    if (s.phase === 'flip') return !!s.cur && !s.cur.outcome && !s.cur.nephew && s.cur.seat !== 0 && !(0 in s.cur.calls);
+    if (s.phase === 'rent') return s.rentAsk;
     return false;
   }
 
   // ---------- the one entry point ----------
   function apply(state, seat, a) {
     const s = JSON.parse(JSON.stringify(state)), E = [];
-    // the open claim and its ledger line are one object
-    if (s.cur && s.cur.claim != null) s.claims[s.claims.length - 1] = s.cur;
+    // the open claim and its lodged slot are one object
+    if (s.cur) { s.lodged[s.cur.seat] = s.cur; if (s.claims.length && s.claims[s.claims.length - 1].seat === s.cur.seat) s.claims[s.claims.length - 1] = s.cur; }
     let err = null;
-    const mine = !s.spectate && seat === 0;
-    const myTurn = mine && s.turn === 0;
+    const mine = !s.spectate && seat === 0, p = s.P[0];
     switch (a.type) {
       case 'shop':
         if (s.phase !== 'shop' || !mine) { err = 'Not now.'; break; }
         for (const x of (a.answers || []).slice(0, 16)) if (x && PROMPTS[x.q] && String(x.text || '').trim()) s.answers.push({ by: 0, q: x.q, text: String(x.text) });
         deal(s, E); break;
-      case 'roll': if (s.phase !== 'roll' || !myTurn) err = 'Not your roll.'; else roll(s, E); break;
       case 'play':
-        if (!mine || !((s.phase === 'pick' && myTurn) || s.phase === 'audit')) { err = 'Not now.'; break; }
+        if (!mine || !((s.phase === 'lodge' && s.lodged[0] == null) || s.phase === 'flip')) { err = 'Not now.'; break; }
         err = play(s, 0, a, E); break;
-      case 'pick': if (s.phase !== 'pick' || !myTurn) err = 'Not your turn.'; else err = pick(s, a, E); break;
-      case 'claim': if (s.phase !== 'claim' || !myTurn) err = 'Not your claim.'; else err = claim(s, a, E); break;
+      case 'pick': {
+        if (!mine || s.phase !== 'lodge' || s.lodged[0] != null || s.pend) { err = 'Not now.'; break; }
+        if (a.skip) { s.lodged[0] = { skip: true }; break; }
+        const what = p.hand.find(c => c.id === a.what && c.k === 'what'), whoC = a.who ? p.hand.find(c => c.id === a.who && c.k === 'who') : null;
+        if (!what) { err = 'Pick a what card.'; break; }
+        if (a.who && !whoC) { err = 'Pick a who/how card.'; break; }
+        s.pend = makeClaim(s, 0, whoC, what); break;
+      }
+      case 'claim': {
+        if (!mine || s.phase !== 'lodge' || !s.pend) { err = 'Pick a receipt first.'; break; }
+        const amt = round5(+a.amount);
+        if (!(amt >= 0) || amt > s.pend.guide * SMAX * 3) { err = 'Pick an amount.'; break; }
+        if (a.nephew && !has(p, 'nephew')) { err = 'No Nephew card.'; break; }
+        fill(s, s.pend, amt, !!a.nephew); s.lodged[0] = s.pend; s.pend = null; break;
+      }
       case 'audit':
-        if (s.phase !== 'audit' || !mine || s.cur.seat === 0) { err = 'Nothing to audit.'; break; }
-        s.cur.calls[0] = a.call === 'audit' ? 'audit' : 'sign'; err = settle(s, E); break;
-      case 'shred': if (s.phase !== 'shred' || !myTurn) err = 'Not now.'; else err = shred(s, !!a.use, E); break;
-      case 'rent': if (s.phase !== 'rent' || !myTurn) err = 'Not now.'; else err = payRent(s, !!a.free, E); break;
+        if (!mine || !needsHuman(s) || s.phase !== 'flip') { err = 'Nothing to audit.'; break; }
+        s.cur.calls[0] = a.call === 'audit' ? 'audit' : 'sign'; break;
+      case 'shred': if (!mine || s.phase !== 'shred') err = 'Not now.'; else err = shred(s, !!a.use, E); break;
+      case 'rent':
+        if (!mine || s.phase !== 'rent' || !s.rentAsk) { err = 'Not now.'; break; }
+        payRent(s, 0, !!a.free, E); s.rentAsk = false; break;
       case 'advance': err = advance(s, E); break;
       default: err = 'Unknown action.';
     }
     return err ? { error: err } : { state: s, events: E };
   }
-  // one bot step for whoever the game is waiting on
+  // the game moves one beat
   function advance(s, E) {
     if (needsHuman(s)) return 'Waiting for you.';
-    const i = s.turn, p = s.P[i];
     switch (s.phase) {
-      case 'roll': roll(s, E); return null;
-      case 'pick': {
-        for (const a of B.plays(s, i)) { const e = play(s, i, a, E); if (s.phase === 'end') return null; if (e) break; }
-        return pick(s, B.pick(s, i), E);
-      }
-      case 'claim': return claim(s, B.claim(s, i, rand(s), rentFor(s, i)), E);
-      case 'audit': return settle(s, E);
-      case 'shred': return shred(s, true, E);
-      case 'rent': return payRent(s, B.useFree(s, i, rentFor(s, i)), E);
+      case 'lodge': return startFlip(s, E);
+      case 'flip': return s.cur.outcome ? nextFlip(s, E) : settle(s, E);
+      case 'rent': return endLap(s, E);
       default: return 'Nothing to do.';
     }
   }
