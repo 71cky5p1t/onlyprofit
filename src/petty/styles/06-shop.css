@@ -71,3 +71,5 @@
 .weasel .label { color: var(--ink-3) }
 @keyframes fade { from { opacity: 0 } }
 @keyframes slamin { from { transform: scale(1.8) rotate(-8deg); opacity: 0 } }
+
+.starts { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center }
