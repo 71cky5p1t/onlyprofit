@@ -54,7 +54,7 @@
   L.office = { name: 'Apex Synergy Holdings', short: 'APEX', slogan: 'Leveraging tomorrow, today', palette: { accent: '#2f6bff', accent2: '#ffd45a' },
     back: 'city', ground: ['carpark', '#7c8294'], sky: { clouds: 3, birds: 1 },
     props: [
-      ['tower', 'wide', 420, 650], ['tower', 'tall', 960, 660, { s: .9 }], ['helicopter', 'hover', 1300, 380, { s: .8 }], ['flag', 'brand', 700, 690],
+      ['tower', 'wide', 420, 650], ['tower', 'tall', 960, 660, { s: .9 }], ['helicopter', 'hover', 1300, 380, { s: .8, a: 'drive', t: 38 }], ['flag', 'brand', 700, 690],
       ['flag', 'halfmast', 1220, 690], ['lamp', 'street', 230, 760], ['lamp', 'street', 1440, 760], ['vending', 'snacks', 1120, 790],
       ['person', 'suit', 600, 820], ['person', 'suit', 660, 830], ['person', 'suit', 1290, 840], ['bin', 'wheelie', 1040, 840], ['bird', 'ibis', 970, 870]
     ] };
@@ -72,7 +72,7 @@
     props: [
       ['shed', 'factory', 760, 700, { txt: 'PROCESSING' }], ['fence', 'chain', 1230, 710, { len: 480 }], ['sign', 'billboard', 260, 720, { txt: 'Free range-ish', sub: 'Now 4% more range' }],
       ['flag', 'brand', 1040, 720], ['crate', 'chooks', 1000, 790], ['crate', 'chooks', 1090, 800], ['van', 'reefer', 500, 830, { a: 'drive', t: 34 }],
-      ['person', 'chef', 1210, 770], ['chicken', 'white', 1330, 880, { a: 'wander' }], ['chicken', 'brown', 300, 870, { a: 'wander' }], ['cone', 'up', 1550, 876]
+      ['person', 'chef', 1210, 770], ['chicken', 'white', 1330, 880, { a: 'drive', t: 90 }], ['chicken', 'brown', 300, 870, { a: 'drive', t: 110, flip: true }], ['cone', 'up', 1550, 876]
     ] };
 
   L.dental = { name: 'Budget Smiles Dental', short: 'BUDGET SMILES', slogan: 'Gentle-ish since 2019', palette: { accent: '#2fb5d6', accent2: '#ff5d8f' },

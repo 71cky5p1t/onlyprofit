@@ -48,6 +48,7 @@
 .a-twinkle { animation-name: ops-twinkle }
 .a-fly { animation-name: ops-fly; animation-timing-function: linear }
 .a-spin3 { animation-name: ops-spin3; transform-origin: 50% 50% }
+.a-walk { animation-name: ops-walk; transform-origin: 50% 100% }
 .a-wander { animation-name: ops-wander; animation-timing-function: linear }
 .eye { animation-name: ops-blink; animation-duration: 5s; transform-origin: 50% 50% }
 .drive { animation-name: ops-drive; animation-timing-function: linear }
@@ -82,6 +83,7 @@
 @keyframes ops-twinkle { 50% { opacity: .25 } }
 @keyframes ops-fly { 0% { transform: translate(-14px, -6px) } 25% { transform: translate(10px, -20px) } 50% { transform: translate(16px, 4px) } 75% { transform: translate(-8px, 12px) } 100% { transform: translate(-14px, -6px) } }
 @keyframes ops-spin3 { 0%, 70%, 100% { transform: none } 80% { transform: rotate(-8deg) } 90% { transform: rotate(8deg) } }
+@keyframes ops-walk { 25% { transform: translateY(-3px) rotate(-4deg) } 75% { transform: translateY(-3px) rotate(4deg) } }
 @keyframes ops-wander { 0% { transform: translateX(0) } 46% { transform: translateX(110px) } 50% { transform: translateX(110px) scaleX(-1) } 96% { transform: translateX(0) scaleX(-1) } 100% { transform: translateX(0) } }
 @keyframes ops-blink { 0%, 93%, 100% { transform: none } 95% { transform: scaleY(.1) } }
 @keyframes ops-drive { from { transform: translateX(var(--from)) } to { transform: translateX(var(--to)) } }
@@ -301,7 +303,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
         P('M-6-34q10-4 16 2', 'none', { stroke: '#5b5785', 'stroke-width': 2.5 }) + C(17, -44, 2.4, '#e9e4ff'), 3.8, r() * 4);
     } };
 
-  P_.chicken = { w: 40, ground: true, variants: ['white', 'brown'],
+  P_.chicken = { w: 40, ground: true, walk: true, variants: ['white', 'brown'],
     draw(v, c, r) {
       const f = v === 'brown' ? '#c7814a' : '#fbf7ef';
       return L('M-4-14v14M6-14v14', '#f0a35a', 3) + A('peck', E(0, -28, 20, 16, f) + P('M-18-34q-12-10-10 4z', dk(f, .15)) + C(14, -44, 10, f) +
@@ -486,7 +488,8 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       const k = c.accent;
       const body = P('M-60-30q-10-50 50-56h40q40 4 50 40l-10 16z', k) + P('M-50-50q0-26 30-28h20v28z', '#8cc6ec') + P('M80-50h90l6-12h-96z', dk(k, .2)) +
         A('rotor', R(158, -78, 8, 36, '#3d3b4c', 3), .25, 0) + L('M-40-10h100M-30-10v-20M40-10v-20', '#5d5b70', 4) + R(10, -96, 8, 12, '#3d3b4c');
-      const rotor = A('rotor', R(-110, -100, 240, 6, '#3d3b4c', 3), v === 'hover' ? .2 : 2.4, 0);
+      // spinning blades read as a soft disc plus a blade that sweeps through it
+      const rotor = (v === 'hover' ? E(10, -97, 120, 7, '#3d3b4c', { opacity: .18 }) : '') + A('rotor', R(-110, -100, 240, 6, '#3d3b4c', 3), v === 'hover' ? .12 : 2.4, 0);
       return v === 'hover' ? A('bob', body + rotor, 3, 0) : body + rotor;
     } };
 })();
@@ -971,7 +974,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
   L.office = { name: 'Apex Synergy Holdings', short: 'APEX', slogan: 'Leveraging tomorrow, today', palette: { accent: '#2f6bff', accent2: '#ffd45a' },
     back: 'city', ground: ['carpark', '#7c8294'], sky: { clouds: 3, birds: 1 },
     props: [
-      ['tower', 'wide', 420, 650], ['tower', 'tall', 960, 660, { s: .9 }], ['helicopter', 'hover', 1300, 380, { s: .8 }], ['flag', 'brand', 700, 690],
+      ['tower', 'wide', 420, 650], ['tower', 'tall', 960, 660, { s: .9 }], ['helicopter', 'hover', 1300, 380, { s: .8, a: 'drive', t: 38 }], ['flag', 'brand', 700, 690],
       ['flag', 'halfmast', 1220, 690], ['lamp', 'street', 230, 760], ['lamp', 'street', 1440, 760], ['vending', 'snacks', 1120, 790],
       ['person', 'suit', 600, 820], ['person', 'suit', 660, 830], ['person', 'suit', 1290, 840], ['bin', 'wheelie', 1040, 840], ['bird', 'ibis', 970, 870]
     ] };
@@ -989,7 +992,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
     props: [
       ['shed', 'factory', 760, 700, { txt: 'PROCESSING' }], ['fence', 'chain', 1230, 710, { len: 480 }], ['sign', 'billboard', 260, 720, { txt: 'Free range-ish', sub: 'Now 4% more range' }],
       ['flag', 'brand', 1040, 720], ['crate', 'chooks', 1000, 790], ['crate', 'chooks', 1090, 800], ['van', 'reefer', 500, 830, { a: 'drive', t: 34 }],
-      ['person', 'chef', 1210, 770], ['chicken', 'white', 1330, 880, { a: 'wander' }], ['chicken', 'brown', 300, 870, { a: 'wander' }], ['cone', 'up', 1550, 876]
+      ['person', 'chef', 1210, 770], ['chicken', 'white', 1330, 880, { a: 'drive', t: 90 }], ['chicken', 'brown', 300, 870, { a: 'drive', t: 110, flip: true }], ['cone', 'up', 1550, 876]
     ] };
 
   L.dental = { name: 'Budget Smiles Dental', short: 'BUDGET SMILES', slogan: 'Gentle-ish since 2019', palette: { accent: '#2fb5d6', accent2: '#ff5d8f' },
@@ -1084,6 +1087,8 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       inner += paint(res.body, depth) + (res.emit && t.emit ? G(res.emit, { opacity: t.emit }) : '');
       const flip = p.o.flip ? -1 : 1;
       let g = G(inner, { transform: `scale(${flip} 1)` });
+      // walkers waddle while they travel; nothing turns around on the spot
+      if (def.walk && p.o.a === 'drive') g = A('walk', g, .55, 0);
       if (p.o.a === 'drive') {
         const dur = p.o.t || 30, dir = flip, from = dir > 0 ? -p.x - 400 : W - p.x + 400, to = dir > 0 ? W - p.x + 400 : -p.x - 400;
         g = K.el('g', { class: 'drive', style: `--from:${from | 0}px;--to:${to | 0}px;--t:${dur}s;--d:${(-dur * (p.x + 400) / (W + 800)).toFixed(1)}s` }, g);

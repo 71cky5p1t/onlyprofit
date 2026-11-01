@@ -40,6 +40,7 @@
 .a-twinkle { animation-name: ops-twinkle }
 .a-fly { animation-name: ops-fly; animation-timing-function: linear }
 .a-spin3 { animation-name: ops-spin3; transform-origin: 50% 50% }
+.a-walk { animation-name: ops-walk; transform-origin: 50% 100% }
 .a-wander { animation-name: ops-wander; animation-timing-function: linear }
 .eye { animation-name: ops-blink; animation-duration: 5s; transform-origin: 50% 50% }
 .drive { animation-name: ops-drive; animation-timing-function: linear }
@@ -74,6 +75,7 @@
 @keyframes ops-twinkle { 50% { opacity: .25 } }
 @keyframes ops-fly { 0% { transform: translate(-14px, -6px) } 25% { transform: translate(10px, -20px) } 50% { transform: translate(16px, 4px) } 75% { transform: translate(-8px, 12px) } 100% { transform: translate(-14px, -6px) } }
 @keyframes ops-spin3 { 0%, 70%, 100% { transform: none } 80% { transform: rotate(-8deg) } 90% { transform: rotate(8deg) } }
+@keyframes ops-walk { 25% { transform: translateY(-3px) rotate(-4deg) } 75% { transform: translateY(-3px) rotate(4deg) } }
 @keyframes ops-wander { 0% { transform: translateX(0) } 46% { transform: translateX(110px) } 50% { transform: translateX(110px) scaleX(-1) } 96% { transform: translateX(0) scaleX(-1) } 100% { transform: translateX(0) } }
 @keyframes ops-blink { 0%, 93%, 100% { transform: none } 95% { transform: scaleY(.1) } }
 @keyframes ops-drive { from { transform: translateX(var(--from)) } to { transform: translateX(var(--to)) } }
