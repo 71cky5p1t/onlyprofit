@@ -19,12 +19,14 @@
     const k = OUTFIT[v], skin = r.pick(SKIN), hair = v === 'retiree' ? r.pick(['#e9e6e0', '#cfcac2']) : r.pick(HAIR), d = r() * 5;
     let s = '';
     if (!o.seated) s += R(-11, -30, 9, 30, k.leg, 4) + R(2, -30, 9, 30, k.leg, 4) + E(-7, -1, 8, 3.5, '#2a2836') + E(7, -1, 8, 3.5, '#2a2836');
+    // seated: thighs forward, shins down to o.shin
+    else s += R(-12, -36, 34, 12, k.leg, 6) + R(13, -36, 10, o.shin || 30, k.leg, 5) + E(22, -36 + (o.shin || 30), 9, 4, '#2a2836');
     const torso = P('M-17-28C-18-52-14-66 0-66C14-66 18-52 17-28Z', k.top) + P('M6-66C14-64 18-52 17-28H8C10-44 10-58 6-66Z', dk(k.top, .14));
     let extra = '';
     if (v === 'suit') extra = P('M-2-64l2 22 2-22z', o.accent || '#d9261c') + P('M-6-66l6 8 6-8z', '#f4f2ee');
     if (v === 'hivis') extra = R(-17, -46, 34, 4, '#e8eef2') + R(-17, -38, 34, 4, '#e8eef2');
     if (v === 'mourner') extra = P('M-2-64l2 8 2-8z', '#f4f2ee');
-    if (v === 'dad') extra = P('M-9-66q9 10 18 0', 'none', { stroke: k.top, 'stroke-width': 0 }) + E(0, -36, 13, 9, '#f6d8bf', { opacity: .5 });
+    if (v === 'dad') extra = L('M-8-66v10M8-66v10', dk(k.top, .12), 3);
     if (v === 'chef') extra = R(-15, -54, 30, 26, '#ffffff', 6);
     if (v === 'nurse') extra = R(4, -56, 6, 8, '#ffffff', 2) + R(6, -54, 2, 4, '#e2463c');
     if (v === 'retiree') extra = L('M-12-64v34M12-64v34', dk(k.top, .2), 2);
@@ -57,9 +59,8 @@
       const f = c.accent2 || '#3a7bd5';
       let s = L('M-26 0l40-44M26 0l-40-44', '#9aa4b0', 3.5) + P('M-28-44h48l6-34h-48z', dk(f, .15)) + P('M-26-44h50v-10h-50z', f);
       if (v === 'dad') {
-        const b = body('dad', c, r, { asleep: true, seated: true });
-        s += G(b.s, { transform: 'translate(0 -18) rotate(-12)' }) + L('M-8-44q14-4 30 6', '#2f5f8c', 9) + E(26, -34, 5, 3, '#2a2836') +
-          R(30, -16, 9, 14, '#c8cfd8', 2) + A('zzz', OPS.kit.T(10, -120, 'z', 18, '#ffffff', { opacity: .9 }), 3, 0) + A('zzz', OPS.kit.T(22, -134, 'z', 13, '#ffffff'), 3, 1.4);
+        const b = body('dad', c, r, { asleep: true, seated: true, shin: 34 });
+        s += G(b.s, { transform: 'translate(-4 -14) rotate(-10)' }) + R(30, -14, 9, 14, '#c8cfd8', 2) + R(30, -10, 9, 4, '#2e7a3c') + A('zzz', OPS.kit.T(10, -120, 'z', 18, '#ffffff', { opacity: .9 }), 3, 0) + A('zzz', OPS.kit.T(22, -134, 'z', 13, '#ffffff'), 3, 1.4);
       }
       return s;
     } };

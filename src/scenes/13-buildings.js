@@ -9,7 +9,7 @@
     if (!on) return { body, emit: '', glow: null };
     const col = o.col || WARM;
     const e = o.tv ? A('tv', R(x, y, w, h, col, o.rx || 2), 1.3, ph) : R(x, y, w, h, col, o.rx || 2);
-    return { body, emit: e + (o.curtain ? R(x, y, w * .22, h, dk(col, .25)) + R(x + w * .78, y, w * .22, h, dk(col, .25)) : ''), glow: [x + w / 2, y + h / 2, Math.max(w, h) * 1.4, col] };
+    return { body, emit: e + (o.curtain ? R(x, y, w * .22, h, dk(col, .25)) + R(x + w * .78, y, w * .22, h, dk(col, .25)) : ''), glow: [x + w / 2, y + h / 2, Math.max(w, h) * .9, col] };
   };
   // brand lettering: printed by day, lit by night
   const sign = (txt, t, glow) => ({ body: txt, emit: t.emit ? txt : '', glow: t.emit ? glow : null });
@@ -32,7 +32,7 @@
         rose, P('M-34 0v-70a34 34 0 0 1 68 0V0z', '#5a3e34'), L('M0-104V0', dk('#5a3e34', .3), 2), C(-8, -40, 3, '#c9a24a'), C(8, -40, 3, '#c9a24a'),
         win(-160, -130, 40, 70, r, t, .9, { rx: 20, curtain: true }), win(-100, -130, 40, 70, r, t, .7, { rx: 20, curtain: true }),
         win(70, -130, 40, 70, r, t, .6, { rx: 20, curtain: true }), win(130, -130, 40, 70, r, t, .9, { rx: 20, curtain: true }),
-        R(-190, -12, 380, 12, dk(wall, .18)), R(-120, -168, 240, 26, c.accent, 4), sign(T(0, -149, (o.txt || c.name).toUpperCase(), 13, '#fff8ea', { 'letter-spacing': 3 }), t, [0, -155, 140, c.accent])
+        R(-190, -12, 380, 12, dk(wall, .18)), R(-120, -168, 240, 26, c.accent, 4), sign(T(0, -149, (o.txt || c.name).toUpperCase(), OPS.kit.fit(o.txt || c.name, 190, 13), '#fff8ea', { 'letter-spacing': 2 }), t, [0, -155, 140, c.accent])
       ]);
     } };
 

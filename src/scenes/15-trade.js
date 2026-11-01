@@ -17,7 +17,7 @@
     draw(v, c, r) {
       const one = (x, y, f) => L(`M${x} ${y + 30}q-6 20 ${-x * .8} ${-y - 30}`, '#e8e4dc', 1.5) + E(x, y, 22, 27, f) + E(x - 7, y - 9, 6, 9, lt(f, .5), { opacity: .7 }) + P(`M${x - 4} ${y + 27}h8l-4 6z`, dk(f, .1));
       if (v === 'bunch') return A('bob', one(-22, -150, r.pick(BAL)) + one(20, -160, r.pick(BAL)) + one(0, -190, r.pick(BAL)), 3.2, r() * 3);
-      if (v === 'sad') return L('M0 0q10-6 18-14', '#e8e4dc', 1.5) + A('bob', E(28, -16, 16, 11, r.pick(BAL), { transform: 'rotate(30 28 -16)' }) + E(22, -20, 4, 3, '#ffffff', { opacity: .5 }), 7, r() * 3);
+      if (v === 'sad') { const f = r.pick(BAL); return L('M-30-2q14-6 30-2', '#e8e4dc', 1.5) + P('M0-2q6-12 22-12q20 0 22 10q-2 6-22 6q-14 0-22-4z', f) + P('M4-4q14 4 36 0', 'none', { stroke: dk(f, .2), 'stroke-width': 2 }) + P('M-2-6l-6-3v6z', dk(f, .1)); }
       if (v === 'escaped') return A('rise', one(0, -160, r.pick(BAL)), 14, r() * 14);
       return A('bob', one(0, -150, r.pick(BAL)), 2.8, r() * 3);
     } };
@@ -26,7 +26,7 @@
     draw(v, c, r) {
       const lid = v === 'red' ? '#e2463c' : '#3f7fd0';
       let s = R(-34, -44, 68, 44, '#f4f2ee', 6) + R(-34, -10, 68, 10, dk('#f4f2ee', .12), 4) + L('M-20-44v-10h40v10', '#9aa1ae', 3);
-      if (v === 'open') s += [-18, -4, 10].map(x => R(x, -60, 10, 18, '#c8cfd8', 2) + R(x, -56, 10, 5, '#2e7a3c')).join('') + R(-40, -96, 10, 52, lid, 4);
+      if (v === 'open') s += [-18, -4, 10].map(x => R(x, -60, 10, 18, '#c8cfd8', 2) + R(x, -56, 10, 5, '#2e7a3c')).join('') + P('M34-44l20-6 4 48-20 2z', lid);
       else s += R(-36, -52, 72, 12, lid, 5);
       return s;
     } };
@@ -38,8 +38,8 @@
       let s = P('M-70-36l20-20h100l20 20v20l-20 16h-100l-20-16z', dk(k, .25)) + P(shape, k);
       if (v === 'budget') s += T(0, -32, 'THIS WAY UP ↑', 10, '#6d4a2a') + L('M-40-46h30M10-46h30', '#a37f5a', 2);
       else s += L('M-50-36h100', lt(k, .15), 2) + C(-60, -36, 3, '#c9a24a') + C(60, -36, 3, '#c9a24a');
-      if (v === 'open') s = P('M-70-36l20-20h100l20 20v20l-20 16h-100l-20-16z', dk(k, .25)) + P(shape, '#f1e6f3') + E(-40, -38, 16, 10, '#ffffff') +
-        G(P('M0-56h50l20 20-20-6h-50z', k), { transform: 'rotate(-28 50 -56)' });
+      // open: lid stands up behind, satin inside
+    if (v === 'open') s = P('M-62-46l12-54h100l12 54z', k) + P('M-50-100h100l-4 10h-92z', lt(k, .12)) + P('M-70-36l20-20h100l20 20v20l-20 16h-100l-20-16z', dk(k, .25)) + P(shape, '#f1e6f3') + E(-40, -38, 16, 10, '#ffffff');
       if (v === 'display') s += G(R(20, -84, 50, 30, '#fff8ea', 2) + T(45, -71, 'DISPLAY', 8, '#2a2836') + T(45, -60, o.price || '$4,999', 9, '#d9261c') + L('M30-54l-6 14', '#e8e4dc', 1.2), { transform: 'rotate(8 45 -70)' });
       return s;
     } };
@@ -93,7 +93,7 @@
       for (let i = 0; i < 6; i++) s += A('shimmer', L(`M${-140 + i * 50} -32q10-6 20 0`, lt(w, .5), 3), 2.4, i * .4);
       s += A('bob', G(E(50, -36, 12, 5, '#ff5d8f') + E(60, -36, 6, 3, '#f4f2ee'), { transform: 'rotate(-12 50 -36)' }), 4.4, 1);
       if (v === 'green') s += A('bob', P('M-80-40q20-20 40-10q10-24 20-6l-10 16h-50z', '#ff8ab5', { opacity: .85 }), 6, 2);
-      return s + L('M150-70v-50h16M150-104h16M150-88h16', '#c3c8d4', 3);
+      return s + L('M130-50q0-30 14-30t14 30M150-50q0-30 14-30t14 30', '#c3c8d4', 3) + L('M136-58h32', '#c3c8d4', 2);
     } };
 
   P_.bbq = { w: 80, ground: true, variants: ['snags', 'cold'],
@@ -101,7 +101,7 @@
       let s = L('M-30 0l6-50M30 0l-6-50', '#3d3b4c', 4) + R(-44, -66, 88, 18, '#3d3b4c', 4) + R(-44, -70, 88, 6, '#5d5b70', 2);
       if (v === 'snags') {
         for (let i = 0; i < 5; i++) s += R(-36 + i * 15, -78, 12, 6, '#a8583a', 3);
-        s += G(P_.smoke.draw('grey', c, r), { transform: 'translate(0 -90) scale(.6)' });
+        s += G(P_.smoke.draw('grey', c, r), { transform: 'translate(0 -80) scale(.6)' });
       } else s += R(-40, -80, 80, 10, '#9aa1ae', 3);
       return s;
     } };
