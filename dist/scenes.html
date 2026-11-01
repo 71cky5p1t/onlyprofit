@@ -133,7 +133,8 @@ body { margin: 0; min-height: 100vh; color: var(--stock); font: 15px/1.45 var(--
 h2 { font: 900 13px/1 var(--f); letter-spacing: .14em; text-transform: uppercase; color: rgba(241,233,212,.6); margin: 56px 4px 16px }
 .sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px }
 .card { margin: 0; background: var(--stock); border-radius: 8px; padding: 6px 6px 8px; box-shadow: 0 1px 0 rgba(0,0,0,.18), 0 10px 20px -14px rgba(0,0,0,.7); color: var(--ink) }
-.card svg { display: block; width: 100%; aspect-ratio: 1; border-radius: 5px; background: linear-gradient(#cfe6f6 0 68%, #9ccc7c 68%) }
+.card .a-rise { animation: none }
+.card svg { display: block; width: 100%; height: auto; aspect-ratio: 1; border-radius: 5px; background: linear-gradient(#cfe6f6 0 68%, #9ccc7c 68%) }
 .card figcaption { display: flex; justify-content: space-between; gap: 6px; padding: 6px 4px 0; font: 800 11px/1.2 var(--f) }
 .card figcaption span { color: var(--ink-3); font-weight: 600 }
 .night .card svg { background: linear-gradient(#1a2150 0 68%, #2a3a40 68%) }
@@ -226,7 +227,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
 
   P_.cloud = { w: 200, sky: true, variants: ['puff', 'long', 'rain', 'storm'],
     draw(v, c, r) {
-      const col = v === 'storm' ? '#a4abc0' : v === 'rain' ? '#e3e7f2' : '#ffffff', w = v === 'long' ? 280 : 180;
+      const col = v === 'storm' ? '#a4abc0' : v === 'rain' ? '#c9cedc' : '#ffffff', w = v === 'long' ? 280 : 180;
       const blob = (f, dy) => R(-w / 2, -36 + dy, w, 36, f, 18) + C(-w * .2, -38 + dy, 34, f) + C(w * .08, -52 + dy, 46, f) + C(w * .3, -34 + dy, 28, f) + (v === 'long' ? C(-w * .38, -30 + dy, 22, f) : '');
       let s = blob(dk(col, .14), 6) + blob(col, 0) + C(w * .02, -70, 14, lt(col, .6), { opacity: .6 });
       if (v === 'rain' || v === 'storm') {
@@ -346,12 +347,14 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
     const k = OUTFIT[v], skin = r.pick(SKIN), hair = v === 'retiree' ? r.pick(['#e9e6e0', '#cfcac2']) : r.pick(HAIR), d = r() * 5;
     let s = '';
     if (!o.seated) s += R(-11, -30, 9, 30, k.leg, 4) + R(2, -30, 9, 30, k.leg, 4) + E(-7, -1, 8, 3.5, '#2a2836') + E(7, -1, 8, 3.5, '#2a2836');
+    // seated: thighs forward, shins down to o.shin
+    else s += R(-12, -36, 34, 12, k.leg, 6) + R(13, -36, 10, o.shin || 30, k.leg, 5) + E(22, -36 + (o.shin || 30), 9, 4, '#2a2836');
     const torso = P('M-17-28C-18-52-14-66 0-66C14-66 18-52 17-28Z', k.top) + P('M6-66C14-64 18-52 17-28H8C10-44 10-58 6-66Z', dk(k.top, .14));
     let extra = '';
     if (v === 'suit') extra = P('M-2-64l2 22 2-22z', o.accent || '#d9261c') + P('M-6-66l6 8 6-8z', '#f4f2ee');
     if (v === 'hivis') extra = R(-17, -46, 34, 4, '#e8eef2') + R(-17, -38, 34, 4, '#e8eef2');
     if (v === 'mourner') extra = P('M-2-64l2 8 2-8z', '#f4f2ee');
-    if (v === 'dad') extra = P('M-9-66q9 10 18 0', 'none', { stroke: k.top, 'stroke-width': 0 }) + E(0, -36, 13, 9, '#f6d8bf', { opacity: .5 });
+    if (v === 'dad') extra = L('M-8-66v10M8-66v10', dk(k.top, .12), 3);
     if (v === 'chef') extra = R(-15, -54, 30, 26, '#ffffff', 6);
     if (v === 'nurse') extra = R(4, -56, 6, 8, '#ffffff', 2) + R(6, -54, 2, 4, '#e2463c');
     if (v === 'retiree') extra = L('M-12-64v34M12-64v34', dk(k.top, .2), 2);
@@ -384,9 +387,8 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       const f = c.accent2 || '#3a7bd5';
       let s = L('M-26 0l40-44M26 0l-40-44', '#9aa4b0', 3.5) + P('M-28-44h48l6-34h-48z', dk(f, .15)) + P('M-26-44h50v-10h-50z', f);
       if (v === 'dad') {
-        const b = body('dad', c, r, { asleep: true, seated: true });
-        s += G(b.s, { transform: 'translate(0 -18) rotate(-12)' }) + L('M-8-44q14-4 30 6', '#2f5f8c', 9) + E(26, -34, 5, 3, '#2a2836') +
-          R(30, -16, 9, 14, '#c8cfd8', 2) + A('zzz', OPS.kit.T(10, -120, 'z', 18, '#ffffff', { opacity: .9 }), 3, 0) + A('zzz', OPS.kit.T(22, -134, 'z', 13, '#ffffff'), 3, 1.4);
+        const b = body('dad', c, r, { asleep: true, seated: true, shin: 34 });
+        s += G(b.s, { transform: 'translate(-4 -14) rotate(-10)' }) + R(30, -14, 9, 14, '#c8cfd8', 2) + R(30, -10, 9, 4, '#2e7a3c') + A('zzz', OPS.kit.T(10, -120, 'z', 18, '#ffffff', { opacity: .9 }), 3, 0) + A('zzz', OPS.kit.T(22, -134, 'z', 13, '#ffffff'), 3, 1.4);
       }
       return s;
     } };
@@ -429,7 +431,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
           glows.push([26, -116, 70, '#ff4a3a']);
         }
       }
-      const hx = v === 'hearse' ? 148 : v === 'ute' ? 100 : 124, hy = v === 'reefer' ? -40 : -40;
+      const hx = v === 'ute' ? 100 : v === 'reefer' ? 126 : 102, hy = -40;
       body += E(hx - 4, hy, 5, 4, '#fff9e0');
       const L1 = lamp(hx - 4, hy, t);
       emit += L1.emit; glows.push(L1.glow);
@@ -461,15 +463,18 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
   P_.scooter = { w: 90, ground: true, variants: ['red', 'blue'],
     draw(v, c, r) {
       const f = v === 'blue' ? '#4f86d6' : '#e2463c';
-      const b = OPS.kit.bean('retiree', c, r, { seated: true });
-      return G(b.s, { transform: 'translate(-10 -26)' }) + P('M-40-14q0-26 26-26h40l16-40h6l-10 50q20 0 22 16z', f) + L('M44-80l6-60', '#9aa4b0', 2) +
-        A('wave', P('M50-140l26 8-26 8z', '#ff8a3a'), 1.6, 0) + R(-46, -34, 22, 16, '#7d8496', 3) + wheel(-26, -10, 10) + wheel(44, -10, 10);
+      const b = OPS.kit.bean('retiree', c, r, { seated: true, shin: 20 });
+      // pennant pole, seat and backrest, rider, then deck, cowl, tiller, basket
+      return L('M-46-40l-6-110', '#9aa4b0', 2.5) + A('wave', P('M-52-150l26 7-26 8z', '#ff8a3a'), 1.6, 0) +
+        R(-24, -50, 8, 26, '#5d6274') + R(-50, -96, 12, 48, '#3d3b4c', 5) + G(b.s, { transform: 'translate(-22 -22)' }) + R(-44, -62, 42, 12, '#3d3b4c', 5) +
+        R(-50, -30, 104, 14, f, 7) + P('M34-28h18l10-36h-14z', f) + L('M52-62l-10-34M36-96h14', '#9aa4b0', 4) + R(48, -64, 22, 16, '#c9a27a', 3) +
+        L('M50-56h18M50-50h18', dk('#c9a27a', .2), 1.5) + E(62, -30, 4, 3, '#fff2b0') + wheel(-30, -10, 11) + wheel(44, -10, 11);
     } };
 
   P_.boat = { w: 280, variants: ['trawler', 'tinnie'],
     draw(v, c, r) {
-      if (v === 'tinnie') return A('bob', P('M-60-30h120l-14 30h-92z', '#b9c2cc') + R(-60, -34, 120, 6, '#8e98a6') + R(40, -50, 14, 20, '#3d3b4c', 3) +
-        G(OPS.kit.bean('dad', c, r, { seated: true }).s, { transform: 'translate(-10 -12) scale(.8)' }), 4, r() * 4);
+      if (v === 'tinnie') return A('bob', G(OPS.kit.bean('dad', c, r, { seated: true }).s, { transform: 'translate(-14 -6) scale(.8)' }) +
+        L('M4-44l70-50', '#7d6a52', 2.5) + L('M74-94q8 40 4 90', '#e8e4dc', 1) + P('M-60-30h120l-14 30h-92z', '#b9c2cc') + R(-60, -34, 120, 6, '#8e98a6') + R(44, -50, 14, 20, '#3d3b4c', 3), 4, r() * 4);
       const k = '#e9e4da';
       return A('bob', P('M-140-60h290l-30 60h-230z', '#2f4f7a') + R(-140, -66, 290, 8, '#e2463c') + R(-40, -130, 100, 64, k, 6) + R(-28, -118, 30, 22, '#8cc6ec', 3) +
         R(12, -118, 30, 22, '#8cc6ec', 3) + L('M-100-66v-110M-100-170l120 40', '#7d8496', 4) + P('M-100-176l-30 110h20z', '#8b9a7a', { opacity: .7 }) +
@@ -497,7 +502,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
     if (!on) return { body, emit: '', glow: null };
     const col = o.col || WARM;
     const e = o.tv ? A('tv', R(x, y, w, h, col, o.rx || 2), 1.3, ph) : R(x, y, w, h, col, o.rx || 2);
-    return { body, emit: e + (o.curtain ? R(x, y, w * .22, h, dk(col, .25)) + R(x + w * .78, y, w * .22, h, dk(col, .25)) : ''), glow: [x + w / 2, y + h / 2, Math.max(w, h) * 1.4, col] };
+    return { body, emit: e + (o.curtain ? R(x, y, w * .22, h, dk(col, .25)) + R(x + w * .78, y, w * .22, h, dk(col, .25)) : ''), glow: [x + w / 2, y + h / 2, Math.max(w, h) * .9, col] };
   };
   // brand lettering: printed by day, lit by night
   const sign = (txt, t, glow) => ({ body: txt, emit: t.emit ? txt : '', glow: t.emit ? glow : null });
@@ -520,7 +525,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
         rose, P('M-34 0v-70a34 34 0 0 1 68 0V0z', '#5a3e34'), L('M0-104V0', dk('#5a3e34', .3), 2), C(-8, -40, 3, '#c9a24a'), C(8, -40, 3, '#c9a24a'),
         win(-160, -130, 40, 70, r, t, .9, { rx: 20, curtain: true }), win(-100, -130, 40, 70, r, t, .7, { rx: 20, curtain: true }),
         win(70, -130, 40, 70, r, t, .6, { rx: 20, curtain: true }), win(130, -130, 40, 70, r, t, .9, { rx: 20, curtain: true }),
-        R(-190, -12, 380, 12, dk(wall, .18)), R(-120, -168, 240, 26, c.accent, 4), sign(T(0, -149, (o.txt || c.name).toUpperCase(), 13, '#fff8ea', { 'letter-spacing': 3 }), t, [0, -155, 140, c.accent])
+        R(-190, -12, 380, 12, dk(wall, .18)), R(-120, -168, 240, 26, c.accent, 4), sign(T(0, -149, (o.txt || c.name).toUpperCase(), OPS.kit.fit(o.txt || c.name, 190, 13), '#fff8ea', { 'letter-spacing': 2 }), t, [0, -155, 140, c.accent])
       ]);
     } };
 
@@ -639,10 +644,10 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
     } };
 
   P_.pole = { w: 30, ground: true, variants: ['power', 'stobie'],
-    draw(v) {
-      const w = v === 'stobie' ? '#9aa1ae' : '#8a6a52';
+    draw(v, c, r, t, o) {
+      const sp = o.span || 160, w = v === 'stobie' ? '#9aa1ae' : '#8a6a52';
       return R(-6, -300, 12, 300, w, 3) + R(-46, -280, 92, 8, dk(w, .2), 2) + C(-38, -286, 5, '#d8e4f0') + C(0, -286, 5, '#d8e4f0') + C(38, -286, 5, '#d8e4f0') +
-        L('M-38-286q-200 30-400 10M38-286q200 30 400 10', '#3d3b4c', 1.5) + R(-14, -200, 28, 20, '#a8aebb', 3);
+        L(`M-38-286q-${sp / 2} ${sp * .04} -${sp} 12M38-286q${sp / 2} ${sp * .04} ${sp} 12`, '#3d3b4c', 1.5) + R(-14, -200, 28, 20, '#a8aebb', 3);
     } };
 
   P_.sign = { w: 90, ground: true, variants: ['pylon', 'billboard', 'neon', 'aframe', 'tooth', 'bingo'],
@@ -655,7 +660,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       }
       if (v === 'billboard') {
         const body = R(-90, -160, 8, 160, '#7d8496') + R(82, -160, 8, 160, '#7d8496') + R(-160, -300, 320, 150, '#f4f0e6', 4) + R(-160, -300, 120, 150, c.accent, 4) +
-          T(-100, -210, c.short || 'CO', OPS.kit.fit(c.short || 'CO', 104, 30), '#fff8ea') + T(60, -240, txt, 18, '#2a2836') + T(60, -214, (o.sub || c.slogan || '').toUpperCase(), 11, dk(c.accent, .1), { 'letter-spacing': 1 }) +
+          T(-100, -210, c.short || 'CO', OPS.kit.fit(c.short || 'CO', 104, 30), '#fff8ea') + T(60, -240, o.txt || c.slogan || '', OPS.kit.fit(o.txt || c.slogan || '', 180, 18), '#2a2836') + (o.sub ? T(60, -214, o.sub.toUpperCase(), OPS.kit.fit(o.sub, 200, 11), dk(c.accent, .1), { 'letter-spacing': 1 }) : '') +
           L('M-150-160h300', '#5d6274', 4);
         return t.emit ? { body, emit: '', glows: [[-60, -300, 80, '#ffe3a0'], [60, -300, 80, '#ffe3a0']] } : body;
       }
@@ -666,9 +671,9 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
         return { body, emit: T(0, -250, txt, 26, n) + A('neonno', T(-56, -180, 'NO', 22, b), 4.4, ph) + T(22, -180, 'VACANCY', 18, b), glows: [[0, -258, 120, n], [0, -186, 90, b]] };
       }
       if (v === 'aframe') return P('M-34 0l14-90h40L34 0h-8l-12-80h-28L-26 0z', '#8a6a52') + R(-22, -84, 44, 60, '#2d3a32', 2) +
-        T(0, -66, o.txt || 'SPECIALS', 8, '#f4f0e6') + T(0, -50, o.sub || 'TODAY', 7, '#ffd45a') + L('M-14-40h28', '#f4f0e6', 1.2);
-      if (v === 'tooth') return R(-6, -170, 12, 170, '#7d8496') + A('spin3', P('M-46-290c-20 0-26 30-20 60 6 30 10 60 22 60s10-30 14-30 4 30 14 30 18-30 22-60 0-60-20-60c-12 0-14 8-16 8s-4-8-16-8z', '#ffffff') +
-        P('M14-290c20 0 26 30 20 60s-10 60-22 60c0 0 6-40 2-80z', '#dfe5ee') + OPS.kit.eye(-12, -250, 3, 0) + OPS.kit.eye(8, -250, 3, 0) + L('M-10-232q8 8 16 0', '#1c1a2c', 2.5), 7, 0);
+        T(0, -66, o.txt || 'SPECIALS', OPS.kit.fit(o.txt || 'SPECIALS', 38, 8), '#f4f0e6') + T(0, -50, o.sub || 'TODAY', OPS.kit.fit(o.sub || 'TODAY', 38, 7), '#ffd45a') + L('M-14-40h28', '#f4f0e6', 1.2);
+      if (v === 'tooth') return R(-6, -170, 12, 170, '#7d8496') + A('spin3', G(P('M-46-290c-20 0-26 30-20 60 6 30 10 60 22 60s10-30 14-30 4 30 14 30 18-30 22-60 0-60-20-60c-12 0-14 8-16 8s-4-8-16-8z', '#ffffff') +
+        P('M-14-290C2-290 10-262 6-230C2-200-6-170-16-170C-10-200-8-260-14-290Z', '#dfe5ee') + OPS.kit.eye(-38, -252, 3, 0) + OPS.kit.eye(-22, -252, 3, 0) + L('M-37-236q7 7 14 0', '#1c1a2c', 2.5), { transform: 'translate(30 0)' }), 7, 0);
       return R(-66, -170, 8, 170, '#7d8496') + R(58, -170, 8, 170, '#7d8496') + R(-90, -250, 180, 90, '#fff8ea', 6) + R(-90, -250, 180, 30, c.accent, 6) +
         T(0, -229, 'BINGO', 20, '#fff8ea', { 'letter-spacing': 3 }) + T(0, -192, o.txt || 'TONIGHT 7PM', 15, '#2a2836') + T(0, -172, o.sub || 'BYO OXYGEN', 10, dk(c.accent, .2), { 'letter-spacing': 1 });
     } };
@@ -680,7 +685,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       const g = '#3e8a54', lid = v === 'overflow' ? '#e2463c' : '#f2c531';
       let s = P('M-22-80h44l-4 72h-36z', g) + P('M8-80h14l-4 72h-10z', dk(g, .2)) + C(-14, -6, 7, '#26243a') + C(14, -6, 7, '#26243a');
       if (v === 'overflow') {
-        s += C(-6, -86, 16, '#2a2836') + C(12, -92, 13, '#3d3b4c') + P('M-24-90l48-28 4 8-46 26z', lid);
+        s = P('M14-80l22-40 7 4-20 38z', lid) + s + C(-8, -84, 15, '#2a2836') + C(10, -88, 12, '#3d3b4c') + E(-2, -98, 9, 7, '#2a2836');
         for (let i = 0; i < 3; i++) s += A('fly', C(0, -110, 2.2, '#1c1a2c'), 1.6 + i * .4, i * .5);
       } else s += R(-25, -86, 50, 8, lid, 3);
       return s;
@@ -688,8 +693,8 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
 
   P_.cone = { w: 30, ground: true, variants: ['up', 'down'],
     draw(v) {
-      const s = P('M-6-48h12l10 44h-32z', '#ff7a2a') + R(-10, -34, 20, 6, '#f4f0e6') + R(-20, -6, 40, 6, '#e05f1a', 2);
-      return v === 'down' ? G(s, { transform: 'translate(0 -8) rotate(80)' }) : s;
+      if (v === 'down') return P('M-40-10L4-18V2z', '#ff7a2a') + P('M-22-13l10-2v14l-10-2z', '#f4f0e6') + R(4, -22, 7, 26, '#e05f1a', 2);
+      return P('M-6-48h12l10 44h-32z', '#ff7a2a') + R(-10, -34, 20, 6, '#f4f0e6') + R(-20, -6, 40, 6, '#e05f1a', 2);
     } };
 
   P_.fence = { w: 300, ground: true, variants: ['picket', 'chain', 'site'],
@@ -738,7 +743,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
     draw(v, c, r) {
       const one = (x, y, f) => L(`M${x} ${y + 30}q-6 20 ${-x * .8} ${-y - 30}`, '#e8e4dc', 1.5) + E(x, y, 22, 27, f) + E(x - 7, y - 9, 6, 9, lt(f, .5), { opacity: .7 }) + P(`M${x - 4} ${y + 27}h8l-4 6z`, dk(f, .1));
       if (v === 'bunch') return A('bob', one(-22, -150, r.pick(BAL)) + one(20, -160, r.pick(BAL)) + one(0, -190, r.pick(BAL)), 3.2, r() * 3);
-      if (v === 'sad') return L('M0 0q10-6 18-14', '#e8e4dc', 1.5) + A('bob', E(28, -16, 16, 11, r.pick(BAL), { transform: 'rotate(30 28 -16)' }) + E(22, -20, 4, 3, '#ffffff', { opacity: .5 }), 7, r() * 3);
+      if (v === 'sad') { const f = r.pick(BAL); return L('M-30-2q14-6 30-2', '#e8e4dc', 1.5) + P('M0-2q6-12 22-12q20 0 22 10q-2 6-22 6q-14 0-22-4z', f) + P('M4-4q14 4 36 0', 'none', { stroke: dk(f, .2), 'stroke-width': 2 }) + P('M-2-6l-6-3v6z', dk(f, .1)); }
       if (v === 'escaped') return A('rise', one(0, -160, r.pick(BAL)), 14, r() * 14);
       return A('bob', one(0, -150, r.pick(BAL)), 2.8, r() * 3);
     } };
@@ -747,7 +752,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
     draw(v, c, r) {
       const lid = v === 'red' ? '#e2463c' : '#3f7fd0';
       let s = R(-34, -44, 68, 44, '#f4f2ee', 6) + R(-34, -10, 68, 10, dk('#f4f2ee', .12), 4) + L('M-20-44v-10h40v10', '#9aa1ae', 3);
-      if (v === 'open') s += [-18, -4, 10].map(x => R(x, -60, 10, 18, '#c8cfd8', 2) + R(x, -56, 10, 5, '#2e7a3c')).join('') + R(-40, -96, 10, 52, lid, 4);
+      if (v === 'open') s += [-18, -4, 10].map(x => R(x, -60, 10, 18, '#c8cfd8', 2) + R(x, -56, 10, 5, '#2e7a3c')).join('') + P('M34-44l20-6 4 48-20 2z', lid);
       else s += R(-36, -52, 72, 12, lid, 5);
       return s;
     } };
@@ -759,8 +764,8 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       let s = P('M-70-36l20-20h100l20 20v20l-20 16h-100l-20-16z', dk(k, .25)) + P(shape, k);
       if (v === 'budget') s += T(0, -32, 'THIS WAY UP ↑', 10, '#6d4a2a') + L('M-40-46h30M10-46h30', '#a37f5a', 2);
       else s += L('M-50-36h100', lt(k, .15), 2) + C(-60, -36, 3, '#c9a24a') + C(60, -36, 3, '#c9a24a');
-      if (v === 'open') s = P('M-70-36l20-20h100l20 20v20l-20 16h-100l-20-16z', dk(k, .25)) + P(shape, '#f1e6f3') + E(-40, -38, 16, 10, '#ffffff') +
-        G(P('M0-56h50l20 20-20-6h-50z', k), { transform: 'rotate(-28 50 -56)' });
+      // open: lid stands up behind, satin inside
+    if (v === 'open') s = P('M-62-46l12-54h100l12 54z', k) + P('M-50-100h100l-4 10h-92z', lt(k, .12)) + P('M-70-36l20-20h100l20 20v20l-20 16h-100l-20-16z', dk(k, .25)) + P(shape, '#f1e6f3') + E(-40, -38, 16, 10, '#ffffff');
       if (v === 'display') s += G(R(20, -84, 50, 30, '#fff8ea', 2) + T(45, -71, 'DISPLAY', 8, '#2a2836') + T(45, -60, o.price || '$4,999', 9, '#d9261c') + L('M30-54l-6 14', '#e8e4dc', 1.2), { transform: 'rotate(8 45 -70)' });
       return s;
     } };
@@ -814,7 +819,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       for (let i = 0; i < 6; i++) s += A('shimmer', L(`M${-140 + i * 50} -32q10-6 20 0`, lt(w, .5), 3), 2.4, i * .4);
       s += A('bob', G(E(50, -36, 12, 5, '#ff5d8f') + E(60, -36, 6, 3, '#f4f2ee'), { transform: 'rotate(-12 50 -36)' }), 4.4, 1);
       if (v === 'green') s += A('bob', P('M-80-40q20-20 40-10q10-24 20-6l-10 16h-50z', '#ff8ab5', { opacity: .85 }), 6, 2);
-      return s + L('M150-70v-50h16M150-104h16M150-88h16', '#c3c8d4', 3);
+      return s + L('M130-50q0-30 14-30t14 30M150-50q0-30 14-30t14 30', '#c3c8d4', 3) + L('M136-58h32', '#c3c8d4', 2);
     } };
 
   P_.bbq = { w: 80, ground: true, variants: ['snags', 'cold'],
@@ -822,7 +827,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       let s = L('M-30 0l6-50M30 0l-6-50', '#3d3b4c', 4) + R(-44, -66, 88, 18, '#3d3b4c', 4) + R(-44, -70, 88, 6, '#5d5b70', 2);
       if (v === 'snags') {
         for (let i = 0; i < 5; i++) s += R(-36 + i * 15, -78, 12, 6, '#a8583a', 3);
-        s += G(P_.smoke.draw('grey', c, r), { transform: 'translate(0 -90) scale(.6)' });
+        s += G(P_.smoke.draw('grey', c, r), { transform: 'translate(0 -80) scale(.6)' });
       } else s += R(-40, -80, 80, 10, '#9aa1ae', 3);
       return s;
     } };
@@ -923,11 +928,11 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       ['balloon', 'bunch', 300, 652], ['balloon', 'escaped', 980, 640], ['tree', 'round', 1450, 662],
       ['van', 'party', 1240, 730, { s: 1.1 }], ['bbq', 'snags', 470, 760], ['person', 'suit', 410, 790],
       ['campchair', 'dad', 1010, 800, { s: 1.1 }], ['esky', 'open', 1100, 812], ['balloon', 'sad', 640, 840],
-      ['bin', 'overflow', 1460, 820], ['bird', 'ibis', 1530, 850], ['sign', 'aframe', 230, 850, { txt: 'CLOWN $49', sub: 'NO REFUNDS' }]
+      ['bin', 'overflow', 1420, 820], ['bird', 'ibis', 1490, 850], ['sign', 'aframe', 230, 850, { txt: 'CLOWN $49', sub: 'NO REFUNDS' }]
     ] };
 
   L.funeral = { name: 'Eternal Rest Funeral Group', short: 'ETERNAL REST', slogan: 'You go, we tidy', palette: { accent: '#6b4f8a', accent2: '#c9a24a' },
-    back: 'hills', ground: ['grass', '#6c9a5a'], sky: { clouds: 3, kind: 'rain', rain: true },
+    back: 'hills', ground: ['grass', '#6c9a5a'], sky: { clouds: 6, kind: 'rain', rain: true },
     props: [
       ['tree', 'dead', 230, 668, { s: 1.3 }], ['chapel', 'chapel', 800, 700, { s: 1.15 }], ['tree', 'gum', 1400, 668],
       ['bird', 'crow', 262, 560, { s: .8 }], ['headstone', 'cross', 1210, 700], ['headstone', 'round', 1290, 712, { txt: 'GARY' }],
@@ -939,10 +944,10 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
   L.mine = { name: 'Deep Pit Resources', short: 'DEEP PIT', slogan: 'Digging deeper for you', palette: { accent: '#ff7a1a', accent2: '#3d3b4c' },
     back: 'pit', ground: ['dirt', '#c9845a'], sky: { clouds: 2, birds: 2 },
     props: [
-      ['excavator', 'dig', 1150, 680], ['dumptruck', 'loaded', 600, 700, { a: 'drive', t: 26 }], ['dust', 'brown', 1260, 690],
+      ['excavator', 'dig', 1150, 680], ['dumptruck', 'loaded', 600, 735, { a: 'drive', t: 26 }], ['dust', 'brown', 1260, 690],
       ['donga', 'office', 230, 720], ['flag', 'brand', 380, 724], ['lamp', 'flicker', 120, 760], ['fence', 'site', 900, 770, { len: 400 }],
-      ['person', 'hivis', 470, 800], ['person', 'hivis', 530, 812], ['cone', 'up', 700, 830], ['cone', 'down', 760, 840],
-      ['van', 'ute', 1360, 840], ['rock', 'boulder', 1530, 850], ['tree', 'dead', 1520, 770, { s: .7 }], ['bird', 'crow', 610, 860]
+      ['person', 'hivis', 470, 800], ['person', 'hivis', 530, 812], ['cone', 'up', 700, 830], ['cone', 'down', 770, 846],
+      ['van', 'ute', 1220, 840], ['rock', 'boulder', 1440, 856], ['tree', 'dead', 1520, 770, { s: .7 }], ['bird', 'crow', 610, 860]
     ] };
 
   L.retire = { name: 'Sunny Acres Retirement Living', short: 'SUNNY ACRES', slogan: 'Waitlist moving quickly', palette: { accent: '#2f9e8a', accent2: '#ffd45a' },
@@ -959,16 +964,16 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
     props: [
       ['shed', 'crematorium', 820, 700, { txt: 'FAREWELL' }], ['tree', 'round', 380, 676], ['sign', 'pylon', 240, 720, { sub: 'Same-day ashes' }],
       ['headstone', 'pet', 1120, 720, { txt: 'REX' }], ['headstone', 'pet', 1190, 726, { txt: 'MOGGY' }], ['headstone', 'pet', 1260, 732, { txt: 'FISH?' }],
-      ['bush', 'round', 1420, 726], ['van', 'ute', 520, 800], ['bin', 'overflow', 1080, 820], ['dog', 'kelpie', 760, 850],
-      ['dog', 'sausage', 1300, 850], ['person', 'suit', 940, 846], ['bird', 'crow', 1110, 812]
+      ['bush', 'round', 1420, 726], ['van', 'ute', 520, 800], ['bin', 'overflow', 1030, 820], ['dog', 'kelpie', 760, 850],
+      ['dog', 'sausage', 1300, 850], ['person', 'suit', 940, 846], ['bird', 'crow', 1110, 790]
     ] };
 
   L.office = { name: 'Apex Synergy Holdings', short: 'APEX', slogan: 'Leveraging tomorrow, today', palette: { accent: '#2f6bff', accent2: '#ffd45a' },
     back: 'city', ground: ['carpark', '#7c8294'], sky: { clouds: 3, birds: 1 },
     props: [
-      ['tower', 'wide', 420, 650], ['tower', 'tall', 960, 660], ['helicopter', 'hover', 1300, 380, { s: .8 }], ['flag', 'brand', 700, 690],
-      ['flag', 'halfmast', 1220, 690], ['lamp', 'street', 230, 760], ['lamp', 'street', 1440, 760], ['vending', 'snacks', 1180, 790],
-      ['person', 'suit', 600, 820], ['person', 'suit', 660, 830], ['person', 'suit', 1290, 840], ['bin', 'wheelie', 1100, 840], ['bird', 'ibis', 1050, 870]
+      ['tower', 'wide', 420, 650], ['tower', 'tall', 960, 660, { s: .9 }], ['helicopter', 'hover', 1300, 380, { s: .8 }], ['flag', 'brand', 700, 690],
+      ['flag', 'halfmast', 1220, 690], ['lamp', 'street', 230, 760], ['lamp', 'street', 1440, 760], ['vending', 'snacks', 1120, 790],
+      ['person', 'suit', 600, 820], ['person', 'suit', 660, 830], ['person', 'suit', 1290, 840], ['bin', 'wheelie', 1040, 840], ['bird', 'ibis', 970, 870]
     ] };
 
   L.motel = { name: 'Sunset Motor Inn', short: 'SUNSET', slogan: 'Hourly rates available', palette: { accent: '#ff8a3a', accent2: '#3f8f8a' },
@@ -982,17 +987,17 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
   L.chook = { name: 'Happy Hen Poultry', short: 'HAPPY HEN', slogan: 'Free range-ish', palette: { accent: '#e8a21c', accent2: '#e2463c' },
     back: 'hills', ground: ['dirt', '#b9a06a'], sky: { clouds: 3 },
     props: [
-      ['shed', 'factory', 760, 700, { txt: 'HAPPY HEN' }], ['fence', 'chain', 1230, 710, { len: 480 }], ['sign', 'billboard', 260, 720, { txt: 'Happy Hen', sub: 'Free range-ish' }],
+      ['shed', 'factory', 760, 700, { txt: 'PROCESSING' }], ['fence', 'chain', 1230, 710, { len: 480 }], ['sign', 'billboard', 260, 720, { txt: 'Free range-ish', sub: 'Now 4% more range' }],
       ['flag', 'brand', 1040, 720], ['crate', 'chooks', 1000, 790], ['crate', 'chooks', 1090, 800], ['van', 'reefer', 500, 830, { a: 'drive', t: 34 }],
-      ['person', 'chef', 1180, 830], ['chicken', 'white', 1360, 850, { a: 'wander' }], ['chicken', 'brown', 300, 870, { a: 'wander' }], ['cone', 'up', 1500, 860]
+      ['person', 'chef', 1210, 770], ['chicken', 'white', 1330, 880, { a: 'wander' }], ['chicken', 'brown', 300, 870, { a: 'wander' }], ['cone', 'up', 1550, 876]
     ] };
 
   L.dental = { name: 'Budget Smiles Dental', short: 'BUDGET SMILES', slogan: 'Gentle-ish since 2019', palette: { accent: '#2fb5d6', accent2: '#ff5d8f' },
     back: 'suburb', ground: ['carpark', '#858a98'], sky: { clouds: 3, birds: 1 },
     props: [
-      ['shopfront', 'dental', 650, 700, { txt: 'BUDGET SMILES' }], ['shopfront', 'pawn', 960, 700], ['sign', 'tooth', 300, 720], ['pole', 'power', 1240, 710],
+      ['shopfront', 'dental', 650, 700, { txt: 'BUDGET SMILES' }], ['shopfront', 'pawn', 960, 700], ['sign', 'tooth', 300, 720], ['pole', 'power', 1240, 710, { span: 1700 }],
       ['tree', 'round', 1420, 712], ['sign', 'aframe', 470, 790, { txt: 'WHITENING', sub: '$19 OR BEST' }], ['person', 'dentist', 560, 810],
-      ['person', 'suit', 1110, 820], ['lamp', 'street', 160, 800], ['bin', 'wheelie', 840, 812], ['bird', 'gull', 1280, 860], ['van', 'ute', 1450, 870]
+      ['person', 'suit', 1110, 820], ['lamp', 'street', 160, 800], ['bin', 'wheelie', 840, 812], ['bird', 'gull', 1230, 860], ['van', 'ute', 1390, 870]
     ] };
 
   L.wharf = { name: "Neptune's Catch Seafood", short: "NEPTUNE'S", slogan: 'Fresh-ish from the ocean', palette: { accent: '#e2463c', accent2: '#2f6fae' },
@@ -1021,6 +1026,8 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
     const DY = -70, gy = (loc.groundY || 620) + DY;
     const tint = (h, k) => K.mul(k ? K.mix(h, t.haze[0], t.haze[1] * k) : h, t.tint, t.ta);
     const paint = (s, k) => s.replace(/(fill|stroke)="(#[0-9a-fA-F]{3,6})"/g, (m, a, h) => `${a}="${tint(h, k)}"`);
+    // rain turns the sky overcast
+    const grey = h => (loc.sky || {}).rain ? K.mix(h, K.mul('#8c93a8', t.tint, t.ta), .5) : h;
     const glows = [];
     const glowCols = new Map();
     const glowId = col => { if (!glowCols.has(col)) glowCols.set(col, `${uid}g${glowCols.size}`); return glowCols.get(col); };
@@ -1034,8 +1041,8 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
       for (let i = 0; i < 70; i++) s += A('twinkle', C(r.range(0, W), r.range(0, gy - 120), r.range(.8, 2.2), '#ffffff'), r.range(2, 5), r() * 5);
       out += G(s, { opacity: t.stars });
     }
-    if (t.sun) out += C(t.sun[0], t.sun[1], t.sun[3] * 3.2, `url(#${uid}halo)`) + C(t.sun[0], t.sun[1], t.sun[3], t.sun[2]);
-    if (t.moon) { const [mx, my, mc, mr] = t.moon; out += C(mx, my, mr * 3, `url(#${uid}halo)`) + C(mx, my, mr, mc) + C(mx - mr * .3, my - mr * .2, mr * .22, K.dk(mc, .12)) + C(mx + mr * .35, my + mr * .3, mr * .15, K.dk(mc, .12)); }
+    if (t.sun && !(loc.sky || {}).rain) out += C(t.sun[0], t.sun[1], t.sun[3] * 3.2, `url(#${uid}halo)`) + C(t.sun[0], t.sun[1], t.sun[3], t.sun[2]);
+    if (t.moon && !(loc.sky || {}).rain) { const [mx, my, mc, mr] = t.moon; out += C(mx, my, mr * 3, `url(#${uid}halo)`) + C(mx, my, mr, mc) + C(mx - mr * .3, my - mr * .2, mr * .22, K.dk(mc, .12)) + C(mx + mr * .35, my + mr * .3, mr * .15, K.dk(mc, .12)); }
 
     // far layers
     const bk = OPS.backs[loc.back] ? OPS.backs[loc.back](c, K.rng(seed ^ 0xbac), t) : [];
@@ -1097,7 +1104,7 @@ OPS.time = id => OPS.times.find(t => t.id === id || t.lap === id) || OPS.times[1
     if (t.glow) out += G(glows.map(([x, y, rr, col]) => C(x | 0, y | 0, rr | 0, `url(#${glowId(col)})`)).join(''), { style: 'mix-blend-mode:screen', opacity: t.glow });
     out += R(0, 0, W, H, `url(#${uid}vig)`) + R(0, 0, W, H, '#000', 0, { filter: `url(#${uid}grain)`, opacity: .06 });
 
-    const defs = K.el('linearGradient', { id: uid + 'sky', x1: 0, y1: 0, x2: 0, y2: 1 }, K.el('stop', { offset: 0, 'stop-color': t.sky[0] }) + K.el('stop', { offset: .9, 'stop-color': t.sky[1] })) +
+    const defs = K.el('linearGradient', { id: uid + 'sky', x1: 0, y1: 0, x2: 0, y2: 1 }, K.el('stop', { offset: 0, 'stop-color': grey(t.sky[0]) }) + K.el('stop', { offset: .9, 'stop-color': grey(t.sky[1]) })) +
       K.el('radialGradient', { id: uid + 'halo' }, K.el('stop', { offset: 0, 'stop-color': (t.sun || t.moon)[2], 'stop-opacity': .55 }) + K.el('stop', { offset: 1, 'stop-color': (t.sun || t.moon)[2], 'stop-opacity': 0 })) +
       K.el('radialGradient', { id: uid + 'vig', r: .75 }, K.el('stop', { offset: .6, 'stop-color': '#120e24', 'stop-opacity': 0 }) + K.el('stop', { offset: 1, 'stop-color': '#120e24', 'stop-opacity': .22 + t.ta * .4 })) +
       [...glowCols].map(([col, gid]) => K.el('radialGradient', { id: gid }, K.el('stop', { offset: 0, 'stop-color': col, 'stop-opacity': .55 }) + K.el('stop', { offset: 1, 'stop-color': col, 'stop-opacity': 0 }))).join('') +

@@ -4,7 +4,7 @@
 
   P_.cloud = { w: 200, sky: true, variants: ['puff', 'long', 'rain', 'storm'],
     draw(v, c, r) {
-      const col = v === 'storm' ? '#a4abc0' : v === 'rain' ? '#e3e7f2' : '#ffffff', w = v === 'long' ? 280 : 180;
+      const col = v === 'storm' ? '#a4abc0' : v === 'rain' ? '#c9cedc' : '#ffffff', w = v === 'long' ? 280 : 180;
       const blob = (f, dy) => R(-w / 2, -36 + dy, w, 36, f, 18) + C(-w * .2, -38 + dy, 34, f) + C(w * .08, -52 + dy, 46, f) + C(w * .3, -34 + dy, 28, f) + (v === 'long' ? C(-w * .38, -30 + dy, 22, f) : '');
       let s = blob(dk(col, .14), 6) + blob(col, 0) + C(w * .02, -70, 14, lt(col, .6), { opacity: .6 });
       if (v === 'rain' || v === 'storm') {

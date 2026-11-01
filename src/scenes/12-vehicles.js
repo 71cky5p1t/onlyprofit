@@ -35,7 +35,7 @@
           glows.push([26, -116, 70, '#ff4a3a']);
         }
       }
-      const hx = v === 'hearse' ? 148 : v === 'ute' ? 100 : 124, hy = v === 'reefer' ? -40 : -40;
+      const hx = v === 'ute' ? 100 : v === 'reefer' ? 126 : 102, hy = -40;
       body += E(hx - 4, hy, 5, 4, '#fff9e0');
       const L1 = lamp(hx - 4, hy, t);
       emit += L1.emit; glows.push(L1.glow);
@@ -67,15 +67,18 @@
   P_.scooter = { w: 90, ground: true, variants: ['red', 'blue'],
     draw(v, c, r) {
       const f = v === 'blue' ? '#4f86d6' : '#e2463c';
-      const b = OPS.kit.bean('retiree', c, r, { seated: true });
-      return G(b.s, { transform: 'translate(-10 -26)' }) + P('M-40-14q0-26 26-26h40l16-40h6l-10 50q20 0 22 16z', f) + L('M44-80l6-60', '#9aa4b0', 2) +
-        A('wave', P('M50-140l26 8-26 8z', '#ff8a3a'), 1.6, 0) + R(-46, -34, 22, 16, '#7d8496', 3) + wheel(-26, -10, 10) + wheel(44, -10, 10);
+      const b = OPS.kit.bean('retiree', c, r, { seated: true, shin: 20 });
+      // pennant pole, seat and backrest, rider, then deck, cowl, tiller, basket
+      return L('M-46-40l-6-110', '#9aa4b0', 2.5) + A('wave', P('M-52-150l26 7-26 8z', '#ff8a3a'), 1.6, 0) +
+        R(-24, -50, 8, 26, '#5d6274') + R(-50, -96, 12, 48, '#3d3b4c', 5) + G(b.s, { transform: 'translate(-22 -22)' }) + R(-44, -62, 42, 12, '#3d3b4c', 5) +
+        R(-50, -30, 104, 14, f, 7) + P('M34-28h18l10-36h-14z', f) + L('M52-62l-10-34M36-96h14', '#9aa4b0', 4) + R(48, -64, 22, 16, '#c9a27a', 3) +
+        L('M50-56h18M50-50h18', dk('#c9a27a', .2), 1.5) + E(62, -30, 4, 3, '#fff2b0') + wheel(-30, -10, 11) + wheel(44, -10, 11);
     } };
 
   P_.boat = { w: 280, variants: ['trawler', 'tinnie'],
     draw(v, c, r) {
-      if (v === 'tinnie') return A('bob', P('M-60-30h120l-14 30h-92z', '#b9c2cc') + R(-60, -34, 120, 6, '#8e98a6') + R(40, -50, 14, 20, '#3d3b4c', 3) +
-        G(OPS.kit.bean('dad', c, r, { seated: true }).s, { transform: 'translate(-10 -12) scale(.8)' }), 4, r() * 4);
+      if (v === 'tinnie') return A('bob', G(OPS.kit.bean('dad', c, r, { seated: true }).s, { transform: 'translate(-14 -6) scale(.8)' }) +
+        L('M4-44l70-50', '#7d6a52', 2.5) + L('M74-94q8 40 4 90', '#e8e4dc', 1) + P('M-60-30h120l-14 30h-92z', '#b9c2cc') + R(-60, -34, 120, 6, '#8e98a6') + R(44, -50, 14, 20, '#3d3b4c', 3), 4, r() * 4);
       const k = '#e9e4da';
       return A('bob', P('M-140-60h290l-30 60h-230z', '#2f4f7a') + R(-140, -66, 290, 8, '#e2463c') + R(-40, -130, 100, 64, k, 6) + R(-28, -118, 30, 22, '#8cc6ec', 3) +
         R(12, -118, 30, 22, '#8cc6ec', 3) + L('M-100-66v-110M-100-170l120 40', '#7d8496', 4) + P('M-100-176l-30 110h20z', '#8b9a7a', { opacity: .7 }) +

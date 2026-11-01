@@ -12,10 +12,10 @@
     } };
 
   P_.pole = { w: 30, ground: true, variants: ['power', 'stobie'],
-    draw(v) {
-      const w = v === 'stobie' ? '#9aa1ae' : '#8a6a52';
+    draw(v, c, r, t, o) {
+      const sp = o.span || 160, w = v === 'stobie' ? '#9aa1ae' : '#8a6a52';
       return R(-6, -300, 12, 300, w, 3) + R(-46, -280, 92, 8, dk(w, .2), 2) + C(-38, -286, 5, '#d8e4f0') + C(0, -286, 5, '#d8e4f0') + C(38, -286, 5, '#d8e4f0') +
-        L('M-38-286q-200 30-400 10M38-286q200 30 400 10', '#3d3b4c', 1.5) + R(-14, -200, 28, 20, '#a8aebb', 3);
+        L(`M-38-286q-${sp / 2} ${sp * .04} -${sp} 12M38-286q${sp / 2} ${sp * .04} ${sp} 12`, '#3d3b4c', 1.5) + R(-14, -200, 28, 20, '#a8aebb', 3);
     } };
 
   P_.sign = { w: 90, ground: true, variants: ['pylon', 'billboard', 'neon', 'aframe', 'tooth', 'bingo'],
@@ -28,7 +28,7 @@
       }
       if (v === 'billboard') {
         const body = R(-90, -160, 8, 160, '#7d8496') + R(82, -160, 8, 160, '#7d8496') + R(-160, -300, 320, 150, '#f4f0e6', 4) + R(-160, -300, 120, 150, c.accent, 4) +
-          T(-100, -210, c.short || 'CO', OPS.kit.fit(c.short || 'CO', 104, 30), '#fff8ea') + T(60, -240, txt, 18, '#2a2836') + T(60, -214, (o.sub || c.slogan || '').toUpperCase(), 11, dk(c.accent, .1), { 'letter-spacing': 1 }) +
+          T(-100, -210, c.short || 'CO', OPS.kit.fit(c.short || 'CO', 104, 30), '#fff8ea') + T(60, -240, o.txt || c.slogan || '', OPS.kit.fit(o.txt || c.slogan || '', 180, 18), '#2a2836') + (o.sub ? T(60, -214, o.sub.toUpperCase(), OPS.kit.fit(o.sub, 200, 11), dk(c.accent, .1), { 'letter-spacing': 1 }) : '') +
           L('M-150-160h300', '#5d6274', 4);
         return t.emit ? { body, emit: '', glows: [[-60, -300, 80, '#ffe3a0'], [60, -300, 80, '#ffe3a0']] } : body;
       }
@@ -39,9 +39,9 @@
         return { body, emit: T(0, -250, txt, 26, n) + A('neonno', T(-56, -180, 'NO', 22, b), 4.4, ph) + T(22, -180, 'VACANCY', 18, b), glows: [[0, -258, 120, n], [0, -186, 90, b]] };
       }
       if (v === 'aframe') return P('M-34 0l14-90h40L34 0h-8l-12-80h-28L-26 0z', '#8a6a52') + R(-22, -84, 44, 60, '#2d3a32', 2) +
-        T(0, -66, o.txt || 'SPECIALS', 8, '#f4f0e6') + T(0, -50, o.sub || 'TODAY', 7, '#ffd45a') + L('M-14-40h28', '#f4f0e6', 1.2);
-      if (v === 'tooth') return R(-6, -170, 12, 170, '#7d8496') + A('spin3', P('M-46-290c-20 0-26 30-20 60 6 30 10 60 22 60s10-30 14-30 4 30 14 30 18-30 22-60 0-60-20-60c-12 0-14 8-16 8s-4-8-16-8z', '#ffffff') +
-        P('M14-290c20 0 26 30 20 60s-10 60-22 60c0 0 6-40 2-80z', '#dfe5ee') + OPS.kit.eye(-12, -250, 3, 0) + OPS.kit.eye(8, -250, 3, 0) + L('M-10-232q8 8 16 0', '#1c1a2c', 2.5), 7, 0);
+        T(0, -66, o.txt || 'SPECIALS', OPS.kit.fit(o.txt || 'SPECIALS', 38, 8), '#f4f0e6') + T(0, -50, o.sub || 'TODAY', OPS.kit.fit(o.sub || 'TODAY', 38, 7), '#ffd45a') + L('M-14-40h28', '#f4f0e6', 1.2);
+      if (v === 'tooth') return R(-6, -170, 12, 170, '#7d8496') + A('spin3', G(P('M-46-290c-20 0-26 30-20 60 6 30 10 60 22 60s10-30 14-30 4 30 14 30 18-30 22-60 0-60-20-60c-12 0-14 8-16 8s-4-8-16-8z', '#ffffff') +
+        P('M-14-290C2-290 10-262 6-230C2-200-6-170-16-170C-10-200-8-260-14-290Z', '#dfe5ee') + OPS.kit.eye(-38, -252, 3, 0) + OPS.kit.eye(-22, -252, 3, 0) + L('M-37-236q7 7 14 0', '#1c1a2c', 2.5), { transform: 'translate(30 0)' }), 7, 0);
       return R(-66, -170, 8, 170, '#7d8496') + R(58, -170, 8, 170, '#7d8496') + R(-90, -250, 180, 90, '#fff8ea', 6) + R(-90, -250, 180, 30, c.accent, 6) +
         T(0, -229, 'BINGO', 20, '#fff8ea', { 'letter-spacing': 3 }) + T(0, -192, o.txt || 'TONIGHT 7PM', 15, '#2a2836') + T(0, -172, o.sub || 'BYO OXYGEN', 10, dk(c.accent, .2), { 'letter-spacing': 1 });
     } };
@@ -53,7 +53,7 @@
       const g = '#3e8a54', lid = v === 'overflow' ? '#e2463c' : '#f2c531';
       let s = P('M-22-80h44l-4 72h-36z', g) + P('M8-80h14l-4 72h-10z', dk(g, .2)) + C(-14, -6, 7, '#26243a') + C(14, -6, 7, '#26243a');
       if (v === 'overflow') {
-        s += C(-6, -86, 16, '#2a2836') + C(12, -92, 13, '#3d3b4c') + P('M-24-90l48-28 4 8-46 26z', lid);
+        s = P('M14-80l22-40 7 4-20 38z', lid) + s + C(-8, -84, 15, '#2a2836') + C(10, -88, 12, '#3d3b4c') + E(-2, -98, 9, 7, '#2a2836');
         for (let i = 0; i < 3; i++) s += A('fly', C(0, -110, 2.2, '#1c1a2c'), 1.6 + i * .4, i * .5);
       } else s += R(-25, -86, 50, 8, lid, 3);
       return s;
@@ -61,8 +61,8 @@
 
   P_.cone = { w: 30, ground: true, variants: ['up', 'down'],
     draw(v) {
-      const s = P('M-6-48h12l10 44h-32z', '#ff7a2a') + R(-10, -34, 20, 6, '#f4f0e6') + R(-20, -6, 40, 6, '#e05f1a', 2);
-      return v === 'down' ? G(s, { transform: 'translate(0 -8) rotate(80)' }) : s;
+      if (v === 'down') return P('M-40-10L4-18V2z', '#ff7a2a') + P('M-22-13l10-2v14l-10-2z', '#f4f0e6') + R(4, -22, 7, 26, '#e05f1a', 2);
+      return P('M-6-48h12l10 44h-32z', '#ff7a2a') + R(-10, -34, 20, 6, '#f4f0e6') + R(-20, -6, 40, 6, '#e05f1a', 2);
     } };
 
   P_.fence = { w: 300, ground: true, variants: ['picket', 'chain', 'site'],

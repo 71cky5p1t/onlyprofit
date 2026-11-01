@@ -15,6 +15,8 @@
     const DY = -70, gy = (loc.groundY || 620) + DY;
     const tint = (h, k) => K.mul(k ? K.mix(h, t.haze[0], t.haze[1] * k) : h, t.tint, t.ta);
     const paint = (s, k) => s.replace(/(fill|stroke)="(#[0-9a-fA-F]{3,6})"/g, (m, a, h) => `${a}="${tint(h, k)}"`);
+    // rain turns the sky overcast
+    const grey = h => (loc.sky || {}).rain ? K.mix(h, K.mul('#8c93a8', t.tint, t.ta), .5) : h;
     const glows = [];
     const glowCols = new Map();
     const glowId = col => { if (!glowCols.has(col)) glowCols.set(col, `${uid}g${glowCols.size}`); return glowCols.get(col); };
@@ -28,8 +30,8 @@
       for (let i = 0; i < 70; i++) s += A('twinkle', C(r.range(0, W), r.range(0, gy - 120), r.range(.8, 2.2), '#ffffff'), r.range(2, 5), r() * 5);
       out += G(s, { opacity: t.stars });
     }
-    if (t.sun) out += C(t.sun[0], t.sun[1], t.sun[3] * 3.2, `url(#${uid}halo)`) + C(t.sun[0], t.sun[1], t.sun[3], t.sun[2]);
-    if (t.moon) { const [mx, my, mc, mr] = t.moon; out += C(mx, my, mr * 3, `url(#${uid}halo)`) + C(mx, my, mr, mc) + C(mx - mr * .3, my - mr * .2, mr * .22, K.dk(mc, .12)) + C(mx + mr * .35, my + mr * .3, mr * .15, K.dk(mc, .12)); }
+    if (t.sun && !(loc.sky || {}).rain) out += C(t.sun[0], t.sun[1], t.sun[3] * 3.2, `url(#${uid}halo)`) + C(t.sun[0], t.sun[1], t.sun[3], t.sun[2]);
+    if (t.moon && !(loc.sky || {}).rain) { const [mx, my, mc, mr] = t.moon; out += C(mx, my, mr * 3, `url(#${uid}halo)`) + C(mx, my, mr, mc) + C(mx - mr * .3, my - mr * .2, mr * .22, K.dk(mc, .12)) + C(mx + mr * .35, my + mr * .3, mr * .15, K.dk(mc, .12)); }
 
     // far layers
     const bk = OPS.backs[loc.back] ? OPS.backs[loc.back](c, K.rng(seed ^ 0xbac), t) : [];
@@ -91,7 +93,7 @@
     if (t.glow) out += G(glows.map(([x, y, rr, col]) => C(x | 0, y | 0, rr | 0, `url(#${glowId(col)})`)).join(''), { style: 'mix-blend-mode:screen', opacity: t.glow });
     out += R(0, 0, W, H, `url(#${uid}vig)`) + R(0, 0, W, H, '#000', 0, { filter: `url(#${uid}grain)`, opacity: .06 });
 
-    const defs = K.el('linearGradient', { id: uid + 'sky', x1: 0, y1: 0, x2: 0, y2: 1 }, K.el('stop', { offset: 0, 'stop-color': t.sky[0] }) + K.el('stop', { offset: .9, 'stop-color': t.sky[1] })) +
+    const defs = K.el('linearGradient', { id: uid + 'sky', x1: 0, y1: 0, x2: 0, y2: 1 }, K.el('stop', { offset: 0, 'stop-color': grey(t.sky[0]) }) + K.el('stop', { offset: .9, 'stop-color': grey(t.sky[1]) })) +
       K.el('radialGradient', { id: uid + 'halo' }, K.el('stop', { offset: 0, 'stop-color': (t.sun || t.moon)[2], 'stop-opacity': .55 }) + K.el('stop', { offset: 1, 'stop-color': (t.sun || t.moon)[2], 'stop-opacity': 0 })) +
       K.el('radialGradient', { id: uid + 'vig', r: .75 }, K.el('stop', { offset: .6, 'stop-color': '#120e24', 'stop-opacity': 0 }) + K.el('stop', { offset: 1, 'stop-color': '#120e24', 'stop-opacity': .22 + t.ta * .4 })) +
       [...glowCols].map(([col, gid]) => K.el('radialGradient', { id: gid }, K.el('stop', { offset: 0, 'stop-color': col, 'stop-opacity': .55 }) + K.el('stop', { offset: 1, 'stop-color': col, 'stop-opacity': 0 }))).join('') +
