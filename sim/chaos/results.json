@@ -1,0 +1,93 @@
+[
+ {
+  "model": "Petty Cash today",
+  "n": 5,
+  "leadChanges": "2.0",
+  "comeback": "35%",
+  "lastToTop2": "6%",
+  "winMargin": "32%",
+  "bigSwing": "76%",
+  "closeCalls": "6%",
+  "decisionsEach": "22.0",
+  "interaction": "41%",
+  "moments": "9.0"
+ },
+ {
+  "model": "Overtime (push your luck)",
+  "n": 5,
+  "leadChanges": "1.7",
+  "comeback": "38%",
+  "lastToTop2": "11%",
+  "winMargin": "35%",
+  "bigSwing": "104%",
+  "closeCalls": "14%",
+  "decisionsEach": "41.2",
+  "interaction": "18%",
+  "moments": "3.1"
+ },
+ {
+  "model": "Bonus Pool (greed)",
+  "n": 5,
+  "leadChanges": "1.8",
+  "comeback": "31%",
+  "lastToTop2": "6%",
+  "winMargin": "26%",
+  "bigSwing": "68%",
+  "closeCalls": "84%",
+  "decisionsEach": "6.0",
+  "interaction": "37%",
+  "moments": "2.2"
+ },
+ {
+  "model": "Pass the Buck (hot potato)",
+  "n": 5,
+  "leadChanges": "3.0",
+  "comeback": "76%",
+  "lastToTop2": "29%",
+  "winMargin": "26%",
+  "bigSwing": "61%",
+  "closeCalls": "32%",
+  "decisionsEach": "5.4",
+  "interaction": "98%",
+  "moments": "6.0"
+ },
+ {
+  "model": "Bribes on audit (Sheriff)",
+  "n": 5,
+  "leadChanges": "2.2",
+  "comeback": "40%",
+  "lastToTop2": "8%",
+  "winMargin": "32%",
+  "bigSwing": "60%",
+  "closeCalls": "9%",
+  "decisionsEach": "14.3",
+  "interaction": "70%",
+  "moments": "9.9"
+ },
+ {
+  "model": "The Forecast (bluff bidding)",
+  "n": 5,
+  "leadChanges": "2.6",
+  "comeback": "56%",
+  "lastToTop2": "16%",
+  "winMargin": "29%",
+  "bigSwing": "42%",
+  "closeCalls": "28%",
+  "decisionsEach": "15.1",
+  "interaction": "100%",
+  "moments": "12.0"
+ },
+ {
+  "model": "The Mix (Overtime + bribes + buck)",
+  "n": 5,
+  "leadChanges": "2.1",
+  "comeback": "43%",
+  "lastToTop2": "16%",
+  "winMargin": "44%",
+  "bigSwing": "63%",
+  "closeCalls": "19%",
+  "decisionsEach": "55.9",
+  "interaction": "85%",
+  "moments": "16.8"
+ }
+]
