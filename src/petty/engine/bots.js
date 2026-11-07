@@ -49,6 +49,40 @@ const PC_BOTS = (() => {
     return { type: 'claim', amount: amt, nephew: big && !!has(p, 'nephew') };
   }
   const useFree = (s, i, rent) => !!has(s.P[i], 'free') && (s.P[i].bank < rent || s.lap >= 6);
-  return { auditCall, plays, pick, claim, useFree };
+
+  // overtime: stay while the next card is worth more than the risk to what you've got
+  function otStay(s, i, r) {
+    const o = s.ot, d = o.deck, p = s.P[i];
+    if (!d.length) return false;
+    const rep = d.filter(c => c.hz && o.seen[c.name]).length / d.length;
+    const hours = d.filter(c => !c.hz), gain = hours.reduce((a, c) => a + c.v, 0) / d.length / o.inn.length;
+    const ev = gain - rep * (o.haul[i] + gain);
+    const nerve = p.nerve + (p.bank < s.rent0 ? 0.15 : 0);
+    const leave = ev < 0 ? 0.9 - nerve * 0.5 : rep * 2 * (1 - nerve);
+    return r >= leave;
+  }
+  // the envelope: padders pay some of the padding to make it go away; honest ones sometimes bluff a small one
+  function bribeOffer(s, i, r) {
+    const c = s.cur, pad = c.claim - c.real;
+    if (pad > 0) return r5(pad * (0.2 + 0.4 * r));
+    return r < 0.25 ? r5(c.claim * 0.08) : 0;
+  }
+  function bribeTake(s, i, r) {
+    const c = s.cur, p = s.P[i];
+    const pp = Math.min(0.95, q(c.guide, c.claim) * 0.8 + 0.15);
+    const fine = p.key ? 0 : c.claim * 0.25;
+    const ev = pp * Math.max(0, c.claim - c.guide) - (1 - pp) * fine;
+    return c.offer >= ev * (0.7 + 0.6 * r);
+  }
+  // the buck: pass while it's cheaper than dealing with it; aim it at whoever's in front
+  function buckMove(s, i, r, fee, blast) {
+    const b = s.buck, left = 7 - (b.passes + 1);
+    const pGo = b.passes + 1 < 2 ? 0 : 1 / Math.max(1, left);
+    if (pGo * blast * (0.5 + 0.5 * r) * (1.3 - s.P[i].nerve) > fee) return { deal: true };
+    const others = s.P.filter(o => o.id !== i), rich = others.slice().sort((a, b2) => b2.bank - a.bank)[0];
+    const t = r < 0.6 ? rich : others[Math.floor(r * 997) % others.length];
+    return { pass: t.id, excuse: Math.floor(r * 1e4) };
+  }
+  return { auditCall, plays, pick, claim, useFree, otStay, bribeOffer, bribeTake, buckMove };
 })();
 if (typeof module !== 'undefined') module.exports = PC_BOTS;

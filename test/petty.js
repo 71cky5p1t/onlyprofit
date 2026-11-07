@@ -19,15 +19,17 @@ for (const co of Object.keys(PC.CO)) for (const n of [4, 5, 6]) for (let seed = 
   }
   assert(s.end && s.end.ranked.length === n);
   for (const c of s.claims) assert(c.outcome, 'every claim settles');
+  for (const c of s.claims) if (c.outcome === 'bribed') assert(c.offer > 0 && c.offer <= c.claim, 'envelopes are real money');
   games++;
 }
 
 // a human who tries everything
 const seen = new Set();
+let takes = 0;
 for (let seed = 1; seed <= 150; seed++) {
   const co = Object.keys(PC.CO)[seed % 3];
   let s = PC.newGame({ players: 4 + seed % 3, co, seed });
-  const go = a => { const r = PC.apply(s, 0, a); if (!r.error) { s = r.state; seen.add(a.type + (a.call || '') + (a.use != null ? a.use : '') + (a.free != null ? a.free : '')); } return r; };
+  const go = a => { const r = PC.apply(s, 0, a); if (!r.error) { s = r.state; seen.add(a.type + (a.call || '') + (a.use != null ? a.use : '') + (a.free != null ? a.free : '') + (a.stay != null ? a.stay : '') + (a.accept != null ? a.accept : '') + (a.deal ? 'deal' : a.pass != null ? 'pass' : '')); } return r; };
   assert(!go({ type: 'shop', answers: [{ q: 0, text: 'a jar of teeth' }, { q: 4, text: 'my nan' }] }).error);
   assert(s.pile.concat(s.disc, ...s.P.map(p => p.hand), s.lodged.filter(c => c && c.what).map(c => c.what)).some(c => c.by === 0 && c.name === 'A jar of teeth'), 'write-ins join the pile, tidied');
   let steps = 0;
@@ -50,6 +52,12 @@ for (let seed = 1; seed <= 150; seed++) {
     } else if (s.phase === 'flip') {
       if (has('peek') && !s.cur.peeks.includes(0)) go({ type: 'play', card: has('peek').id });
       assert(!go({ type: 'audit', call: steps % 2 ? 'audit' : 'sign' }).error);
+    } else if (s.phase === 'overtime') assert(!go({ type: 'overtime', stay: s.ot.row.length < 2 + seed % 4 }).error);
+    else if (s.phase === 'bribe') assert(!go({ type: 'bribe', amount: steps % 3 ? Math.round(s.cur.claim * 0.2) : 0 }).error);
+    else if (s.phase === 'take') { takes++; assert(!go({ type: 'take', accept: takes % 2 === 0 }).error); }
+    else if (s.phase === 'buck') {
+      assert(go({ type: 'buck', pass: 0 }).error, "can't pass the buck to yourself");
+      assert(!go(s.buck.passes > 2 || seed % 3 === 0 ? { type: 'buck', deal: true } : { type: 'buck', pass: 1 + steps % (s.n - 1), excuse: steps }).error);
     } else if (s.phase === 'shred') assert(!go({ type: 'shred', use: steps % 2 === 0 }).error);
     else if (s.phase === 'rent') assert(!go({ type: 'rent', free: steps % 2 === 0 }).error);
     else assert.fail('stuck in ' + s.phase);
@@ -57,7 +65,7 @@ for (let seed = 1; seed <= 150; seed++) {
   }
   for (const c of s.claims) assert(c.outcome, 'every claim settles, including ones you audited');
 }
-for (const k of ['shop', 'play', 'pick', 'claim', 'auditaudit', 'auditsign', 'shredtrue', 'shredfalse', 'renttrue', 'rentfalse']) assert(seen.has(k), 'reached ' + k);
+for (const k of ['shop', 'play', 'pick', 'claim', 'auditaudit', 'auditsign', 'shredtrue', 'shredfalse', 'renttrue', 'rentfalse', 'overtimetrue', 'overtimefalse', 'bribe', 'taketrue', 'takefalse', 'buckpass', 'buckdeal']) assert(seen.has(k), 'reached ' + k);
 // out-of-turn moves are refused
 const s0 = PC.newGame({ players: 5, co: 'party', seed: 9 });
 assert(PC.apply(s0, 0, { type: 'pick', skip: true }).error, 'no lodging during the quick-fire');

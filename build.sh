@@ -21,7 +21,7 @@ for m in 01-water-cooler 04-q5-overtime 05-hold-music-clean 06-stripe-wipe; do c
 {
   cat src/petty/head.html; echo '<style>'; cat src/petty/styles/*.css; echo '</style>'
   echo '<div class="scene"></div><div id="app"></div><div id="ov" aria-live="polite"></div>'
-  echo '<script>'; sed '/^if (typeof module/d' src/petty/engine/cards.js src/petty/engine/bots.js src/petty/engine/core.js; echo '</script>'
+  echo '<script>'; sed '/^if (typeof module/d' src/petty/engine/cards.js src/petty/engine/bots.js src/petty/engine/beats.js src/petty/engine/core.js; echo '</script>'
   echo '<script>'; echo '(() => {'; cat src/petty/ui/*.js; echo '})();'; echo '</script>'
 } > dist/petty-cash.html
 # location scene gallery (src/scenes)
