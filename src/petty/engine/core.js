@@ -3,9 +3,10 @@
 const PC = (() => {
   const C = typeof PC_CARDS !== 'undefined' ? PC_CARDS : require('./cards.js');
   const B = typeof PC_BOTS !== 'undefined' ? PC_BOTS : require('./bots.js');
+  const BEATS = typeof PC_BEATS !== 'undefined' ? PC_BEATS : require('./beats.js');
   const { CO, SUR, ACTIONS, DIE, NAMES, PROMPTS, ANSWERS } = C;
   // tuning, set by sim/petty/run.js
-  const T = { laps: 6, rent: 0.7, rise: 0.1, tin: 1.12, cash: 0.7, act: 2, weasel: 0.25, hand: 10, tinN: { 3: 1.2, 4: 1.15, 5: 1.06, 6: 1, 7: 0.96, 8: 0.92 }, tinCo: { party: 0.9, funeral: 1, mining: 0.97 } };
+  const T = { laps: 6, rent: 0.7, rise: 0.1, tin: 1.03, act: 2, weasel: 0.25, hand: 10, ot: 0.1, fee: 0.2, feeUp: 0.1, blast: 0.7, buckCut: 0.3, tinN: { 3: 1.2, 4: 1.15, 5: 1.06, 6: 1, 7: 0.96, 8: 0.92 }, tinCo: { party: 0.9, funeral: 1, mining: 0.97 } };
   const SMAX = Math.max(...SUR.map(x => x[1]));
 
   // ---------- rng (s.rs) ----------
@@ -47,7 +48,7 @@ const PC = (() => {
     s.rent0 = round5(A * T.rent);
     s.tin0 = s.tin = Math.round(T.tin * T.tinN[n] * T.tinCo[co] * n * T.laps * A / 100) * 100;
     const names = shuffle(s, NAMES);
-    s.P = range(n).map(i => ({ id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate, bank: 0, hand: [], halo: 0, caught: 0, weasels: 0, key: false, letter: false, claims: 0, pads: 0, greed: 0.2 + 0.6 * rand(s) }));
+    s.P = range(n).map(i => ({ id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate, bank: 0, hand: [], halo: 0, caught: 0, weasels: 0, key: false, letter: false, claims: 0, pads: 0, greed: 0.2 + 0.6 * rand(s), nerve: 0.35 + 0.5 * rand(s) }));
     // bots answer the quick-fire
     for (const p of s.P) if (!p.human) for (let k = 0; k < 2 + ri(s, 2); k++) s.answers.push({ by: p.id, q: ri(s, PROMPTS.length), text: pickOne(s, ANSWERS) });
     if (s.spectate) deal(s, []);
@@ -55,12 +56,10 @@ const PC = (() => {
   }
   const card = (s, k, name, v, extra) => Object.assign({ id: 'c' + (s.nid = (s.nid || 0) + 1), k, name, v }, extra || {});
   function deal(s, E) {
-    const co = CO[s.co], A = avgGuide(co), pile = [];
+    const co = CO[s.co], pile = [];
     for (const [w, m] of co.who) for (let k = 0; k < 2; k++) pile.push(card(s, 'who', w, m));
     for (const [w, b] of co.what) pile.push(card(s, 'what', w, b));
     for (const a of s.answers) { const t = PROMPTS[a.q][1]; pile.push(card(s, 'what', tidy(a.text), co.tiers[t], { by: a.by, tier: t })); }
-    const cashN = Math.round(T.cash * s.n * 2);
-    for (let k = 0; k < cashN; k++) pile.push(card(s, 'cash', 'Wages', round5(A * [0.25, 0.5, 0.5, 0.75, 1][k % 5])));
     for (const key of Object.keys(ACTIONS)) for (let k = 0; k < T.act; k++) pile.push(card(s, 'act', ACTIONS[key][0], key));
     s.pile = shuffle(s, pile);
     // everyone starts with two of each receipt half
@@ -83,21 +82,19 @@ const PC = (() => {
   const take = (p, id) => { const at = p.hand.findIndex(c => c.id === id); return at < 0 ? null : p.hand.splice(at, 1)[0]; };
   const has = (p, key) => p.hand.find(c => c.k === 'act' && c.v === key);
 
-  // ---------- a lap: everyone rolls, everyone lodges, receipts flip one by one, everyone pays rent ----------
+  // ---------- a lap: roll for cards, overtime, everyone lodges, receipts flip one by one, the buck, rent ----------
   function startLap(s, E) {
-    s.rolls = []; s.lodged = s.P.map(() => null); s.pend = null; s.order = []; s.fi = -1; s.cur = null;
+    s.rolls = []; s.lodged = s.P.map(() => null); s.pend = null; s.order = []; s.fi = -1; s.cur = null; s.ot = null; s.buck = null;
     for (const p of s.P) {
       const k = pickOne(s, DIE), got = [];
-      let cash = 0;
-      for (let j = 0; j < k; j++) {
-        const c = draw(s); if (!c) break;
-        if (c.k === 'cash') { p.bank += c.v; cash += c.v; s.disc.push(c); } else p.hand.push(c);
-        got.push(c.id);
-      }
-      s.rolls[p.id] = { k, got, cash };
+      for (let j = 0; j < k; j++) { const c = draw(s); if (!c) break; p.hand.push(c); got.push(c.id); }
+      s.rolls[p.id] = { k, got };
     }
     log(s, E, 'roll', 'Everyone rolled: ' + s.P.map(p => `${p.name} ${s.rolls[p.id].k}`).join(', ') + '.', { rolls: s.rolls.map(r => r.k) });
-    s.phase = 'lodge';
+    X.startOvertime(s, E);
+  }
+  function startLodge(s, E) {
+    s.ot = null; s.phase = 'lodge';
     // bots play their cards and lodge straight away
     for (const p of s.P) if (!p.human) {
       for (const a of B.plays(s, p.id)) { play(s, p.id, a, E); if (s.phase === 'end') return; }
@@ -154,7 +151,7 @@ const PC = (() => {
   }
   function nextFlip(s, E) {
     s.fi++;
-    if (s.fi >= s.order.length) return toRent(s, E);
+    if (s.fi >= s.order.length) { s.cur = null; return X.startBuck(s, E); }
     const c = s.cur = s.lodged[s.order[s.fi]];
     s.claims.push(c);
     log(s, E, 'claim', `${who(s, c.seat)} claimed $${c.claim} for ${c.item}.`, { seat: c.seat, item: c.item, amount: c.claim, guide: c.guide, nephew: c.nephew });
@@ -173,10 +170,27 @@ const PC = (() => {
     if (!willing.length || c.nephew) { pay(s, c.seat, c.claim); c.outcome = 'paid'; }
     else {
       if (c.auditor == null) c.auditor = pickOne(s, willing.sort((x, y) => x - y));
+      const aud = s.P[c.auditor];
+      // first, the envelope: the claimant can try to buy the auditor off
+      if (c.offer == null) {
+        if (p.human) { s.phase = 'bribe'; return null; }
+        c.offer = Math.min(c.claim, round5(B.bribeOffer(s, c.seat, rand(s))));
+      }
+      if (c.offer > 0 && c.took == null) {
+        if (aud.human) { s.phase = 'take'; return null; }
+        c.took = B.bribeTake(s, c.auditor, rand(s));
+      }
+      if (c.took) {
+        s.tin -= c.claim; p.bank += c.claim - c.offer; aud.bank += c.offer; c.outcome = 'bribed';
+        log(s, E, 'bribed', `An envelope changed hands. ${poss(s, c.seat)} ${c.item} is signed.`, { seat: c.seat });
+        log(s, E, 'envelope', `You took a $${c.offer} envelope.`, { to: c.auditor, amount: c.offer });
+        if (s.tin < 0) return finish(s, E, true);
+        return null;
+      }
+      if (c.offer > 0 && !c.refused) { c.refused = true; log(s, E, 'refused', `${poss(s, c.seat)} envelope came back unopened.`, { seat: c.seat }); }
       const sh = has(p, 'shred');
       if (sh && !p.human && padded) return shred(s, true, E);
       if (sh && p.human && !c.noShred) { s.phase = 'shred'; return null; }
-      const aud = s.P[c.auditor];
       if (padded) {
         s.tin -= c.real; p.bank += c.real - (c.claim - c.real); aud.bank += c.claim - c.real; p.caught++; c.outcome = 'caught';
         log(s, E, 'caught', `CAUGHT PADDING. ${poss(s, c.seat)} ${c.item} really cost $${c.real}.`, { seat: c.seat, real: c.real, amount: c.claim, sur: c.sur });
@@ -242,7 +256,9 @@ const PC = (() => {
   // is the game waiting on you?
   function needsHuman(s) {
     if (s.spectate || s.phase === 'end') return false;
-    if (s.phase === 'shop' || s.phase === 'shred') return true;
+    if (s.phase === 'shop' || s.phase === 'shred' || s.phase === 'bribe' || s.phase === 'take') return true;
+    if (s.phase === 'overtime') return !s.ot.done && s.ot.inn.includes(0) && !(0 in s.ot.dec);
+    if (s.phase === 'buck') return !s.buck.done && s.buck.holder === 0;
     if (s.phase === 'lodge') return s.lodged[0] == null;
     if (s.phase === 'flip') return !!s.cur && !s.cur.outcome && !s.cur.nephew && s.cur.seat !== 0 && !(0 in s.cur.calls);
     if (s.phase === 'rent') return s.rentAsk;
@@ -282,6 +298,21 @@ const PC = (() => {
       case 'audit':
         if (!mine || !needsHuman(s) || s.phase !== 'flip') { err = 'Nothing to audit.'; break; }
         s.cur.calls[0] = a.call === 'audit' ? 'audit' : 'sign'; break;
+      case 'overtime':
+        if (!mine || s.phase !== 'overtime' || !needsHuman(s)) { err = 'Not now.'; break; }
+        s.ot.dec[0] = !!a.stay; break;
+      case 'bribe': {
+        if (!mine || s.phase !== 'bribe') { err = 'Not now.'; break; }
+        const amt = round5(+a.amount || 0);
+        if (amt > s.cur.claim) { err = "You can't offer more than you claimed."; break; }
+        s.cur.offer = amt; s.phase = 'flip'; err = settle(s, E); break;
+      }
+      case 'take':
+        if (!mine || s.phase !== 'take') { err = 'Not now.'; break; }
+        s.cur.took = !!a.accept; s.phase = 'flip'; err = settle(s, E); break;
+      case 'buck':
+        if (!mine || s.phase !== 'buck' || !needsHuman(s)) { err = 'Not now.'; break; }
+        err = X.buckMove(s, 0, a, E); break;
       case 'shred': if (!mine || s.phase !== 'shred') err = 'Not now.'; else err = shred(s, !!a.use, E); break;
       case 'rent':
         if (!mine || s.phase !== 'rent' || !s.rentAsk) { err = 'Not now.'; break; }
@@ -295,13 +326,16 @@ const PC = (() => {
   function advance(s, E) {
     if (needsHuman(s)) return 'Waiting for you.';
     switch (s.phase) {
+      case 'overtime': return s.ot.done ? startLodge(s, E) : X.otStep(s, E);
       case 'lodge': return startFlip(s, E);
+      case 'buck': return s.buck.done ? toRent(s, E) : X.buckStep(s, E);
       case 'flip': return s.cur.outcome ? nextFlip(s, E) : settle(s, E);
       case 'rent': return endLap(s, E);
       default: return 'Nothing to do.';
     }
   }
 
-  return { T, apply, newGame, needsHuman, rentFor, honestQ, guideOf, itemOf, avgGuide, rand, CO, SUR, ACTIONS, PROMPTS, SMAX };
+  const X = BEATS({ T, C, B, rand, ri, shuffle, range, round5, log, who, vb, avgGuide });
+  return { T, apply, newGame, needsHuman, rentFor, honestQ, guideOf, itemOf, avgGuide, rand, CO, SUR, ACTIONS, PROMPTS, SMAX, EXCUSES: C.EXCUSES, buckFee: X.buckFee, buckBlast: X.buckBlast };
 })();
 if (typeof module !== 'undefined') module.exports = PC;

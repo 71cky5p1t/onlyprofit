@@ -17,6 +17,7 @@ function renderEnd() {
     if (c.outcome === 'caught') return '<i class="o caught">Caught</i>';
     if (c.outcome === 'halo') return '<i class="o halo">Cleared</i>';
     if (c.outcome === 'shredded') return `<i class="o shred">Shredded</i>`;
+    if (c.outcome === 'bribed') return `<i class="o pad">Envelope ${money(c.offer)}</i>`;
     return pad > 0 ? `<i class="o pad">Got away with ${money(pad)}</i>` : '<i class="o ok">Honest</i>';
   };
   const ledger = s.claims.map((c, k) => `<tr class="${c.claim > c.real ? 'padded' : ''}">

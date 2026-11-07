@@ -7,6 +7,7 @@ const PC_CARDS = (() => {
       tiers: { Cheap: 40, Normal: 150, Pricey: 350, Outrageous: 550 },
       who: [['Hungover', 1], ['Unlicensed', 1.2], ['Clown', 1.3], ['Sobbing', 1.1], ['Emergency', 1.5], ['Discreet', 1.5], ['Second-Hand', 0.7], ['Recently Divorced', 1.1], ['Off-Duty', 1.2], ['Uninsured', 1.3]],
       what: [['Party Bags', 40], ['Fairy Bread', 25], ['Piñata', 60], ['Face Painter', 120], ['Clown', 180], ['Magician', 220], ['Bouncy Castle', 250], ['Therapist for the Parents', 300], ['Pony', 350], ['Stripper (wrong postcode)', 400], ['Sugar-Crash Paramedic', 500], ['Pony Removal', 600]],
+      hours: ['Deflate the Bouncy Castle', 'Hose Out the Pony Float', 'Count the Party Bags', 'Scrape Off the Face Paint', 'Untangle the Balloons', 'Re-stuff the Piñata', 'Clean the Clown Car', 'Return the Ferret', 'Mop Up the Fairy Bread', 'Fill In the Incident Report'],
       bot: [['Bail for Uncle Steve', 'Outrageous'], ['Fourteen litres of cask wine', 'Normal'], ['Emotional support ferret', 'Normal'], ['Apology fruit basket', 'Cheap'], ['Lawyer for the piñata incident', 'Pricey'], ['A whole pig, uncooked', 'Pricey'], ['Hush money for the neighbours', 'Pricey'], ['Trampoline (one spring)', 'Cheap'], ['Valium (for Mum)', 'Normal'], ['A second, better clown', 'Outrageous'], ['Smoke machine', 'Normal'], ['Jet ski', 'Outrageous']],
     },
     funeral: {
@@ -14,6 +15,7 @@ const PC_CARDS = (() => {
       tiers: { Cheap: 90, Normal: 250, Pricey: 500, Outrageous: 1000 },
       who: [["Cousin's", 0.7], ['Second-Hand', 0.6], ['Biodegradable', 0.8], ['Weeping', 1.2], ['Unlicensed', 1.2], ['Off-Duty', 1.2], ['Closed-Casket', 1.3], ['Last-Minute', 1.4], ['Emergency', 1.5], ['Discreet', 1.5]],
       what: [['Wreath', 90], ['Hired Mourner', 120], ['Eulogy Writer', 150], ['Dove Release', 200], ['Organist', 250], ['Grief Catering', 300], ['Body Pickup', 350], ['Embalming', 400], ['Hearse', 500], ['Casket', 1200]],
+      hours: ['Polish the Hearse', 'Re-alphabetise the Ashes', 'Iron the Shroud', 'Steam the Lilies', 'Rehearse the Sad Face', 'Wipe Down the Slab', 'Count the Tissues', 'Reschedule a Wake', 'Hoover the Chapel', 'Backdate a Death Certificate'],
       bot: [['Fake tan for the deceased', 'Normal'], ['Fog machine', 'Pricey'], ['Elvis impersonator', 'Pricey'], ['Open bar, closed casket', 'Outrageous'], ['Psychic to ask about the will', 'Pricey'], ['Bulk tissues', 'Cheap'], ['Bouncer for the ex-wife', 'Normal'], ['Drone flyover', 'Outrageous'], ['Replacement ashes (dog)', 'Cheap'], ['Second casket, just in case', 'Outrageous'], ['Karaoke machine', 'Normal'], ['Sympathy lasagne (catered)', 'Cheap']],
     },
     mining: {
@@ -21,6 +23,7 @@ const PC_CARDS = (() => {
       tiers: { Cheap: 100, Normal: 700, Pricey: 2000, Outrageous: 4000 },
       who: [['Second-Hand', 0.6], ['Environmental', 0.8], ['Community', 0.8], ['Ceremonial', 1.1], ['Unlicensed', 1.2], ['Offshore', 1.3], ['Overnight', 1.4], ['Unmarked', 1.4], ['Emergency', 1.5], ['Discreet', 1.5]],
       what: [['Hi-Vis', 40], ['Groundwater Test (results pending)', 400], ['Water Truck', 600], ['Lobbyist Lunch', 700], ['FIFO Flights', 800], ['Dust Suppression', 900], ['Wildlife Relocation', 1200], ['Community Consultation (catered)', 1500], ['Media Training', 2000], ['Helicopter', 3000], ['Whistleblower Settlement', 5000]],
+      hours: ['Fill In a Small Hole', 'Hose Down the Dozer', 'Count the Hi-Vis', 'Reword the Spill Report', 'Rehome a Lizard', 'Restock the Dynamite', 'Wipe the Core Samples', 'Brief the Lobbyist', 'Round Down the Injuries', 'Sign Off the Tailings Dam'],
       bot: [['Gold-plated hard hat', 'Pricey'], ["Senator's fishing trip", 'Outrageous'], ['Koala relocation (one way)', 'Normal'], ['Bulk sunscreen', 'Cheap'], ['Fake community barbecue', 'Normal'], ['Dynamite (recreational)', 'Pricey'], ['Second whistleblower settlement', 'Outrageous'], ['Thoughts and prayers (catered)', 'Normal'], ['Hi-vis for the CEO\'s dog', 'Cheap'], ['Climate scientist (to leave)', 'Pricey'], ['Ribbon, very long', 'Cheap'], ['Private jet (one way)', 'Outrageous']],
     },
   };
@@ -52,7 +55,12 @@ const PC_CARDS = (() => {
   // bot answers to the quick-fire
   const ANSWERS = ['A jar of teeth', "Nan's dentures", 'An expired kebab', 'A live eel', 'A bucket of prawns', "Someone else's thongs", 'A cursed doll', 'A wheelie bin', 'A used mattress', 'Forty kilos of glitter', 'A ventriloquist dummy', 'A bag of hair', 'A cask of goon', 'A taxidermied possum', 'A sombrero full of soup', 'Half a ute', 'A haunted printer', 'An inflatable church', 'Twelve feral cats', 'A urinal cake', 'A tub of mayonnaise', "My ex-wife's wig", 'A mankini', 'A pallet of Spam', 'A pet rock with a criminal record', 'Expired insulin', 'A signed Bible', "Somebody's retainer"];
   const DIE = [1, 1, 2, 2, 3, 3];
+  // overtime: two of a kind sends everyone still at work home with nothing
+  const HAZARDS = ['Fire Drill', 'Server Down', 'Reply-All Storm', 'The CEO Walks Past'];
+  // the buck: one problem a lap, passed around until someone deals with it or it goes off
+  const BUCKS = ['Missing Laptop', 'Dead Goldfish in Accounts', 'Mystery Smell in the Fridge', 'Lost Master Key', 'Unpaid Supplier', 'WorkSafe Visit', 'Leaked Group Chat', 'Car Park Prang'];
+  const EXCUSES = ['Not my department.', 'I was on leave.', 'Per my last email, this is yours.', "I've escalated it to you.", "That's above my pay grade.", 'Legal said it was yours.', 'You were cc\'d.', "I'm just the messenger.", 'Thought you were across it.', 'I was told you volunteered.'];
   const NAMES = ['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'Pam', 'Keith', 'Linda'];
-  return { CO, SUR, ACTIONS, DIE, NAMES, PROMPTS, ANSWERS };
+  return { CO, SUR, ACTIONS, DIE, NAMES, PROMPTS, ANSWERS, HAZARDS, BUCKS, EXCUSES };
 })();
 if (typeof module !== 'undefined') module.exports = PC_CARDS;

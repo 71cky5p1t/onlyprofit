@@ -1,5 +1,5 @@
 /* The end of the financial year. */
-.end { width: 100%; max-width: 760px; margin: 0 auto; padding: 36px 0 40px; display: grid; gap: 16px }
+.end { width: 100%; max-width: 760px; margin: 0 auto; padding: 36px 0 40px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px }
 .verdict { padding: 24px 24px 20px; background: #FFFDF6; color: var(--ink); border-radius: 4px; box-shadow: 0 22px 34px -18px rgba(0,0,0,.75); text-align: center; border-top: 8px solid var(--accent);
   animation: hang .9s var(--bounce) both }
 .verdict.bust { border-color: var(--red) }

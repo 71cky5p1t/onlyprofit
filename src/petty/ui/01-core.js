@@ -33,7 +33,10 @@ function pump() {
   clearTimeout(pumpT);
   const s = ui.s;
   if (!s || s.phase === 'end' || s.phase === 'shop' || PC.needsHuman(s)) return;
-  const base = s.phase === 'flip' ? (s.cur.outcome ? 1500 : 1700) : { lodge: 2600, rent: 1600 }[s.phase] || 900;
+  const base = s.phase === 'flip' ? (s.cur.outcome ? 1500 : 1700)
+    : s.phase === 'overtime' ? (s.ot.done ? 2200 : 1100)
+    : s.phase === 'buck' ? (s.buck.done ? 2400 : 1600)
+    : { lodge: 2600, rent: 1600 }[s.phase] || 900;
   const d = Math.max(base, ui.hold - Date.now()) * SPEED;
   pumpT = setTimeout(() => {
     const r = PC.apply(ui.s, 0, { type: 'advance' });
@@ -42,17 +45,17 @@ function pump() {
 }
 function onEvents(E) {
   for (const e of E) {
-    if (e.kind === 'caught' || e.kind === 'halo' || e.kind === 'shred') ui.hold = Date.now() + 2600;
-    if (e.kind === 'roll') {
-      ui.rollAt = Date.now(); ui.hold = Date.now() + 3200;
-      setTimeout(() => { const r = ui.s.rolls && ui.s.rolls[0]; if (r && r.cash) toast(`Wages: +${money(r.cash)}`, 'cash'); }, 1500);
-    }
+    if (['caught', 'halo', 'shred', 'bribed', 'otbust', 'blow'].includes(e.kind)) ui.hold = Date.now() + 2600;
+    if (e.kind === 'roll') { ui.rollAt = Date.now(); ui.hold = Date.now() + 3200; }
+    if (e.kind === 'otout' && e.seat === 0) toast(`Clocked off: +${money(e.got)}`, 'cash');
+    if (e.kind === 'otbust' && e.lost.includes(0)) toast('Sent home with nothing.', 'bad');
+    if (e.kind === 'blow' && e.seat === 0) toast(`It went off. ${money(e.dmg)} in damages.`, 'bad');
     if (e.to !== 0) {
       if (e.kind === 'action' && e.target === 0) toast("Landlord's Letter. Your rent is doubled this lap.", 'bad');
       continue;
     }
     if (e.kind === 'weasel') weasel(e);
-    else if (e.kind === 'bounty') toast(e.text, 'cash');
+    else if (e.kind === 'bounty' || e.kind === 'envelope') toast(e.text, 'cash');
     else if (e.kind === 'peek') toast('Payroll Peek: the real cost is on the receipt.');
   }
 }
@@ -61,6 +64,8 @@ function setScene() {
   const s = ui.s;
   document.body.dataset.co = s && s.phase !== 'shop' ? s.co : '';
   document.body.dataset.tod = s && s.phase !== 'shop' ? TOD[Math.min(TOD.length, s.lap) - 1] : '';
+  // the lights go down while people stay back
+  document.body.dataset.phase = s ? s.phase : '';
 }
 
 // ---------- overlays ----------

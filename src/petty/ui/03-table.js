@@ -6,6 +6,7 @@ function renderGame() {
   app.innerHTML = `<main class="game" style="--el:${ui.fresh ? -el : -9999}ms">${strip(s)}${tags(s)}<section class="tray">${tray(s)}</section>${till(s)}${desk(s)}</main>`;
   wireTable(s);
   wireDesk(s);
+  wireBeats(s);
   for (const c of me().hand) ui.seen.add(c.id);
 }
 
@@ -19,16 +20,17 @@ function strip(s) {
 }
 
 function tags(s) {
-  const up = s.phase === 'flip' || s.phase === 'shred' ? s.cur && s.cur.seat : -1;
+  const up = s.phase === 'buck' ? s.buck.holder : ['flip', 'shred', 'bribe', 'take'].includes(s.phase) ? s.cur && s.cur.seat : -1;
+  const pick = !!ui.target || buckMine(s);
   return `<section class="tags">${s.P.map(p => {
     const l = s.lodged[p.id];
-    const cls = ['tag', p.human ? 'me' : '', up === p.id ? 'turn' : '', p.bank < 0 ? 'debt' : '', ui.target && !p.human ? 'pickable' : ''].join(' ');
+    const cls = ['tag', p.human ? 'me' : '', up === p.id ? 'turn' : '', p.bank < 0 ? 'debt' : '', pick && !p.human ? 'pickable' : ''].join(' ');
     // bots "finish" lodging one after another once the dice land
     const lodged = s.phase === 'lodge' && l ? `<i class="in ${ui.fresh && !p.human ? 'late' : ''}" style="--d:${1.8 + p.id * 0.7}s">${l.skip ? 'Nothing' : 'Lodged'}</i>` : '';
-    return `<button class="${cls}" data-seat="${p.id}" ${ui.target && !p.human ? '' : 'tabindex="-1"'}>
+    return `<button class="${cls}" data-seat="${p.id}" ${pick && !p.human ? '' : 'tabindex="-1"'}>
       <span class="nm">${esc(p.name)}</span>
       <b class="num">${money(p.bank)}</b>
-      <span class="marks">${lodged}${'<i class="halo" title="Cleared"></i>'.repeat(Math.min(p.halo, 4))}${p.caught ? `<i class="caught">Padded${p.caught > 1 ? ' ×' + p.caught : ''}</i>` : ''}${p.letter ? '<i class="letter">2× rent</i>' : ''}</span>
+      <span class="marks">${s.phase === 'overtime' ? otMark(s, p) : ''}${lodged}${'<i class="halo" title="Cleared"></i>'.repeat(Math.min(p.halo, 4))}${p.caught ? `<i class="caught">Padded${p.caught > 1 ? ' ×' + p.caught : ''}</i>` : ''}${p.letter ? '<i class="letter">2× rent</i>' : ''}</span>
       <span class="cards">${p.hand.length} cards</span>
     </button>`;
   }).join('')}</section>`;
@@ -40,26 +42,30 @@ function status(s) {
   switch (s.phase) {
     case 'lodge':
       if (s.lodged[0]) return 'Lodged. Shuffling the pile.';
-      return s.pend ? 'How much are you claiming?' : `Lap ${s.lap}. Everyone rolled. Pick a receipt to lodge.`;
+      return s.pend ? 'How much are you claiming?' : 'Pick a receipt to lodge.';
     case 'flip':
-      if (c.outcome) return { caught: `${n} padded it.`, halo: `${n} was honest.`, shredded: 'Into the shredder.', paid: c.nephew ? 'Nephew of the CEO. No questions.' : 'Signed off.' }[c.outcome];
+      if (c.outcome) return { caught: `${n} padded it.`, halo: `${n} was honest.`, shredded: 'Into the shredder.', bribed: 'An envelope changed hands.', paid: c.nephew ? 'Nephew of the CEO. No questions.' : 'Signed off.' }[c.outcome];
       if (c.seat === 0) return c.nephew ? 'Your claim. Nobody can touch it.' : 'Your claim. The table is deciding.';
       return c.nephew ? `${n} wants ${money(c.claim)}, with the Nephew card.` : `${n} wants ${money(c.claim)}. Sign it or audit?`;
     case 'shred': return "You're being audited.";
+    case 'bribe': return 'Someone wants to open your receipt.';
+    case 'take': return `${n} slipped you an envelope.`;
     case 'rent': return 'Rent day.';
     default: return '';
   }
 }
 
 function tray(s) {
-  if (s.phase === 'lodge') return `<p class="status">${status(s)}</p>${dice(s)}${s.pend ? receipt(s, s.pend, false) : s.lodged[0] && !s.lodged[0].skip ? receipt(s, s.lodged[0], false, 'sealed') : ''}`;
+  if (s.phase === 'overtime') return otTray(s);
+  if (s.phase === 'buck' || (s.phase === 'rent' && s.buck)) return buckTray(s);
+  if (s.phase === 'lodge') return `<p class="status">${status(s)}</p>${s.pend ? receipt(s, s.pend, false) : s.lodged[0] && !s.lodged[0].skip ? receipt(s, s.lodged[0], false, 'sealed') : ''}`;
   const c = s.cur || s.claims[s.claims.length - 1];
-  const left = s.phase === 'flip' || s.phase === 'shred' ? s.order.length - s.fi - 1 : 0;
+  const left = ['flip', 'shred', 'bribe', 'take'].includes(s.phase) ? s.order.length - s.fi - 1 : 0;
   const key = s.lap + ':' + s.fi;
   const flipin = s.cur && ui.flipKey !== key; ui.flipKey = key;
   return `<p class="status">${status(s)}</p>
     <div class="pile">${'<i></i>'.repeat(Math.min(left, 6))}${left ? `<span class="label">${left} to go</span>` : ''}</div>
-    ${c ? receipt(s, c, c !== s.cur, flipin ? 'flipin' : '') : ''}`;
+    <div class="held">${c ? receipt(s, c, c !== s.cur, flipin ? 'flipin' : '') : ''}${c && c.offer > 0 && c === s.cur ? envelope(c, c.outcome === 'bribed' ? 'taken' : c.refused ? 'back' : 'open', key) : ''}</div>`;
 }
 
 // a die with faces 1,1,2,2,3,3: front/back 1, right/left 2, top/bottom 3
@@ -81,7 +87,7 @@ function receipt(s, c, old, extra) {
   const peeked = c.peeks && c.peeks.includes(0);
   const known = mine || peeked || c.outcome === 'caught' || c.outcome === 'halo';
   const bar = '<span class="redact">██████</span>';
-  const stamp = extra === 'sealed' ? 'Lodged' : { caught: 'Caught padding', halo: 'Cleared', shredded: 'Shredded', paid: c.nephew ? 'Nephew of the CEO' : 'Signed' }[c.outcome] || '';
+  const stamp = extra === 'sealed' ? 'Lodged' : { caught: 'Caught padding', halo: 'Cleared', shredded: 'Shredded', paid: c.nephew ? 'Nephew of the CEO' : 'Signed', bribed: 'Signed' }[c.outcome] || '';
   const write = c.what.by != null ? 'wi' : '';
   return `<article class="rcpt ${old ? 'old' : ''} ${c.outcome || ''} ${extra || ''}">
     <header><span class="label">Expense claim</span><span class="num">No. ${String(no).padStart(4, '0')}</span></header>
@@ -93,7 +99,7 @@ function receipt(s, c, old, extra) {
       <dt>Real cost</dt><dd class="num">${known ? money(c.real) : bar}</dd>
     </dl>
     <div class="total"><span class="label">Claimed</span><b class="num">${c.claim != null ? money(c.claim) : '—'}</b></div>
-    ${stamp ? `<div class="stamp s-${extra === 'sealed' ? 'sealed' : c.outcome}">${stamp}</div>` : ''}
+    ${stamp ? `<div class="stamp s-${extra === 'sealed' ? 'sealed' : c.outcome === 'bribed' ? 'paid' : c.outcome}">${stamp}</div>` : ''}
   </article>`;
 }
 
@@ -116,7 +122,7 @@ function wireTable(s) {
   if (q('#sign')) q('#sign').onclick = () => act({ type: 'audit', call: 'sign' });
   if (q('#audit')) q('#audit').onclick = () => act({ type: 'audit', call: 'audit' });
   if (q('#peek')) q('#peek').onclick = () => act({ type: 'play', card: has(me(), 'peek').id });
-  if (ui.target) app.querySelectorAll('.tag.pickable').forEach(b => b.onclick = () => {
+  if (ui.target && !buckMine(s)) app.querySelectorAll('.tag.pickable').forEach(b => b.onclick = () => {
     const card = ui.target; ui.target = null; ui.sel = {};
     act({ type: 'play', card, target: +b.dataset.seat });
   });

@@ -365,7 +365,7 @@ i.in.late { animation: printin .3s var(--bounce) both; animation-delay: calc(var
 
 .starts { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center }
 /* The end of the financial year. */
-.end { width: 100%; max-width: 760px; margin: 0 auto; padding: 36px 0 40px; display: grid; gap: 16px }
+.end { width: 100%; max-width: 760px; margin: 0 auto; padding: 36px 0 40px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px }
 .verdict { padding: 24px 24px 20px; background: #FFFDF6; color: var(--ink); border-radius: 4px; box-shadow: 0 22px 34px -18px rgba(0,0,0,.75); text-align: center; border-top: 8px solid var(--accent);
   animation: hang .9s var(--bounce) both }
 .verdict.bust { border-color: var(--red) }
@@ -397,6 +397,107 @@ i.in.late { animation: printin .3s var(--bounce) both; animation-delay: calc(var
 .o { font-style: normal; font-size: 11px; font-weight: 700; text-transform: uppercase; white-space: nowrap }
 .o.caught { color: var(--red) } .o.halo { color: #8C6A10 } .o.pad { color: var(--red-lo) } .o.ok { color: var(--good) } .o.shred { color: var(--ink-2) }
 .again { display: flex; gap: 10px; justify-content: center; align-items: center }
+/* The beats: overtime timesheet, the envelope, the buck folder. */
+
+/* staying back: the room goes dim */
+.scene { transition: filter 1.2s ease, background 1.2s ease }
+body[data-phase="overtime"] .scene { filter: brightness(.55) saturate(.75) }
+
+/* the timesheet */
+.shift { width: min(560px, 100%); padding: 10px 12px 12px; background: var(--paper); color: var(--ink); border-radius: 4px; box-shadow: var(--lift);
+  background-image: repeating-linear-gradient(180deg, transparent 0 27px, rgba(63,99,184,.14) 27px 28px); background-position: 0 30px }
+.shift header { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 6px; margin-bottom: 8px; border-bottom: 2px solid var(--ink); font-size: 12px }
+.shift header .num { color: var(--ink-3) }
+.shift .row { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px }
+.tc { position: relative; display: flex; flex-direction: column; gap: 2px; min-height: 74px; padding: 9px 8px 7px; background: var(--thermal); border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(0,0,0,.12), 0 6px 10px -7px rgba(0,0,0,.5); border-top: 4px solid var(--good) }
+.tc .label { font-size: 8.5px; color: var(--ink-3) }
+.tc b { font: 700 13px/1.15 var(--f-body); text-wrap: balance }
+.tc .num { margin-top: auto; font-size: 15px; color: var(--good) }
+.tc.hz { border-top: 0; padding-top: 13px; background: #FFF3C4;
+  background-image: repeating-linear-gradient(-45deg, var(--ink) 0 6px, var(--gold) 6px 12px); background-size: 100% 6px; background-repeat: no-repeat }
+.tc.hz .label { color: var(--ink-2) }
+.tc.bust { background-color: #FBD9D4; background-image: repeating-linear-gradient(-45deg, var(--ink) 0 6px, var(--red) 6px 12px) }
+.tc.bust .label, .tc.bust b { color: var(--red-lo) }
+.tc.new { animation: punch .5s var(--bounce) both }
+.tc.bust.new { animation: punch .5s var(--bounce) both, shake .5s .5s ease-in-out 2 }
+@keyframes punch { from { transform: translateY(-18px) rotate(-4deg) scale(.9); opacity: 0 } }
+@keyframes shake { 25% { transform: translateX(-4px) rotate(-1deg) } 75% { transform: translateX(4px) rotate(1deg) } }
+.shift.busted .tc:not(.hz) { opacity: .45; filter: grayscale(1); transition: opacity .6s .9s, filter .6s .9s }
+
+/* name-tag marks during overtime */
+i.ot { font: 700 9px/1 var(--f-type); text-transform: uppercase; letter-spacing: .05em; padding: 2px 4px; border-radius: 2px; font-style: normal }
+i.ot.here { background: var(--ink); color: var(--paper) }
+i.ot.off { color: var(--good); border: 1.5px solid currentColor }
+i.ot.sent { color: var(--red); border: 1.5px solid currentColor; transform: rotate(-3deg) }
+
+/* two big choices on the desk */
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 420px }
+.stampbtn.stay { background: var(--ink); color: var(--paper) }
+.stampbtn.off { background: var(--good) }
+.stampbtn .num { font-size: 15px; letter-spacing: 0; opacity: .9 }
+
+/* the envelope, tucked under the receipt */
+.held { position: relative; display: grid; justify-items: center; width: 100% }
+.env.still, .env.still.taken, .env.still.back { animation: none }
+.env.still.taken, .env.still.back { display: none }
+.env { position: absolute; right: max(4px, calc(50% - 200px)); bottom: -6px; width: 128px; height: 80px; padding: 30px 10px 8px; border-radius: 3px; overflow: hidden;
+  background: linear-gradient(160deg, #D9B98A, #C49A62); color: #3B2A14; box-shadow: 0 12px 18px -10px rgba(0,0,0,.7); transform: rotate(-8deg);
+  animation: slidein .55s var(--bounce) both; display: flex; flex-direction: column; justify-content: flex-end }
+.env .flap { position: absolute; inset: 0 0 auto; height: 44px; background: linear-gradient(160deg, #E5C99E, #CFA872); clip-path: polygon(0 0, 100% 0, 50% 100%); filter: drop-shadow(0 2px 1px rgba(0,0,0,.2)) }
+.env .label { font-size: 8.5px; opacity: .7 }
+.env b { font-size: 20px; line-height: 1 }
+.env.taken { animation: slidein .55s var(--bounce) both, pocket .6s 1.1s ease-in forwards }
+.env.back { filter: grayscale(.4); animation: slidein .55s var(--bounce) both, sendback .7s .9s ease-in forwards }
+@keyframes slidein { from { transform: translate(60px, 30px) rotate(12deg); opacity: 0 } }
+@keyframes pocket { to { transform: translate(40px, 90px) rotate(20deg) scale(.6); opacity: 0 } }
+@keyframes sendback { to { transform: translate(-120px, 10px) rotate(-30deg); opacity: 0 } }
+
+/* the buck: a manila folder that does the rounds */
+.folder { position: relative; width: min(330px, 92%); padding: 20px 18px 18px; margin-top: 14px; color: var(--ink); border-radius: 0 6px 6px 6px;
+  background: linear-gradient(180deg, #EBCB8B, #DDB36A); box-shadow: 0 18px 30px -16px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.4) }
+.folder .tab { position: absolute; left: 0; top: -16px; height: 18px; padding: 4px 14px 0; border-radius: 6px 6px 0 0; background: #EBCB8B; color: var(--red); font-size: 9px }
+.folder > .label { color: rgba(0,0,0,.45); font-size: 10px }
+.folder h3 { margin: 4px 0 2px; font: 800 24px/1.1 var(--f-body); letter-spacing: -.01em; text-wrap: balance }
+.folder .on { margin: 0 0 10px; font: 13px var(--f-type); color: rgba(0,0,0,.6) }
+.tally { display: flex; align-items: center; gap: 5px; min-height: 22px }
+.tally .label { font-size: 9px; color: rgba(0,0,0,.5); margin-right: 4px }
+.tally i { width: 3px; height: 18px; background: var(--ink); border-radius: 2px; transform: rotate(8deg) }
+.tally i:nth-of-type(5n) { width: 30px; height: 3px; margin-left: -34px; transform: rotate(-30deg) }
+.tally em { font: italic 12px var(--f-type); color: rgba(0,0,0,.5) }
+.folder blockquote { margin: 12px 0 0; color: var(--ink); padding: 10px 12px; background: var(--thermal); border-radius: 3px; font: 700 22px/1.1 var(--f-hand); transform: rotate(-1.2deg);
+  box-shadow: 0 4px 8px -4px rgba(0,0,0,.4) }
+.folder cite { display: block; margin-top: 4px; font: normal 11px var(--f-type); color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em }
+.folder.slide { animation: pass .55s var(--bounce) both }
+@keyframes pass { from { transform: translateX(-110%) rotate(-10deg); opacity: 0 } }
+.folder.blew { background: linear-gradient(180deg, #8B7A62, #4E4234); color: #F3ECDA }
+.folder.blew.land { animation: blast .6s ease-out both }
+.folder.dealt.land .stamp, .folder.blew.land .stamp { animation-delay: .25s }
+.folder:not(.land) .stamp { animation: none }
+.folder.blew .tab { background: #8B7A62 }
+.folder.blew .on, .folder.blew > .label, .folder.blew .tally .label { color: rgba(255,255,255,.6) }
+.folder.blew .tally i { background: var(--paper) }
+@keyframes blast { 0% { transform: scale(1.12) rotate(2deg); filter: brightness(2.2) } 40% { transform: scale(.97) rotate(-2deg) } }
+.s-blew { color: var(--red); font-size: 18px }
+.s-dealt { color: var(--good); font-size: 18px }
+.folder.blew .stamp { mix-blend-mode: normal; color: #FF6B5E }
+
+/* excuse chips */
+.chip.exc { text-transform: none; letter-spacing: 0; font: 700 13px var(--f-hand); font-size: 17px; line-height: 1.05; padding: 6px 10px; max-width: 220px; text-align: left }
+.chip.exc.on { background: var(--accent); box-shadow: 0 0 0 2px var(--ink) inset }
+
+@media (max-width: 560px) {
+  .shift { padding: 8px 8px 10px }
+  .shift .row { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 5px }
+  .tc { min-height: 60px; padding: 7px 6px 5px }
+  .tc b { font-size: 11.5px }
+  .tc .num { font-size: 13px }
+  .folder h3 { font-size: 20px }
+  .folder blockquote { font-size: 19px }
+  .env { width: 104px; height: 66px; padding-top: 24px }
+  .env b { font-size: 17px }
+  .chip.exc { font-size: 15px }
+}
 </style>
 <div class="scene"></div><div id="app"></div><div id="ov" aria-live="polite"></div>
 <script>
@@ -409,6 +510,7 @@ const PC_CARDS = (() => {
       tiers: { Cheap: 40, Normal: 150, Pricey: 350, Outrageous: 550 },
       who: [['Hungover', 1], ['Unlicensed', 1.2], ['Clown', 1.3], ['Sobbing', 1.1], ['Emergency', 1.5], ['Discreet', 1.5], ['Second-Hand', 0.7], ['Recently Divorced', 1.1], ['Off-Duty', 1.2], ['Uninsured', 1.3]],
       what: [['Party Bags', 40], ['Fairy Bread', 25], ['Piñata', 60], ['Face Painter', 120], ['Clown', 180], ['Magician', 220], ['Bouncy Castle', 250], ['Therapist for the Parents', 300], ['Pony', 350], ['Stripper (wrong postcode)', 400], ['Sugar-Crash Paramedic', 500], ['Pony Removal', 600]],
+      hours: ['Deflate the Bouncy Castle', 'Hose Out the Pony Float', 'Count the Party Bags', 'Scrape Off the Face Paint', 'Untangle the Balloons', 'Re-stuff the Piñata', 'Clean the Clown Car', 'Return the Ferret', 'Mop Up the Fairy Bread', 'Fill In the Incident Report'],
       bot: [['Bail for Uncle Steve', 'Outrageous'], ['Fourteen litres of cask wine', 'Normal'], ['Emotional support ferret', 'Normal'], ['Apology fruit basket', 'Cheap'], ['Lawyer for the piñata incident', 'Pricey'], ['A whole pig, uncooked', 'Pricey'], ['Hush money for the neighbours', 'Pricey'], ['Trampoline (one spring)', 'Cheap'], ['Valium (for Mum)', 'Normal'], ['A second, better clown', 'Outrageous'], ['Smoke machine', 'Normal'], ['Jet ski', 'Outrageous']],
     },
     funeral: {
@@ -416,6 +518,7 @@ const PC_CARDS = (() => {
       tiers: { Cheap: 90, Normal: 250, Pricey: 500, Outrageous: 1000 },
       who: [["Cousin's", 0.7], ['Second-Hand', 0.6], ['Biodegradable', 0.8], ['Weeping', 1.2], ['Unlicensed', 1.2], ['Off-Duty', 1.2], ['Closed-Casket', 1.3], ['Last-Minute', 1.4], ['Emergency', 1.5], ['Discreet', 1.5]],
       what: [['Wreath', 90], ['Hired Mourner', 120], ['Eulogy Writer', 150], ['Dove Release', 200], ['Organist', 250], ['Grief Catering', 300], ['Body Pickup', 350], ['Embalming', 400], ['Hearse', 500], ['Casket', 1200]],
+      hours: ['Polish the Hearse', 'Re-alphabetise the Ashes', 'Iron the Shroud', 'Steam the Lilies', 'Rehearse the Sad Face', 'Wipe Down the Slab', 'Count the Tissues', 'Reschedule a Wake', 'Hoover the Chapel', 'Backdate a Death Certificate'],
       bot: [['Fake tan for the deceased', 'Normal'], ['Fog machine', 'Pricey'], ['Elvis impersonator', 'Pricey'], ['Open bar, closed casket', 'Outrageous'], ['Psychic to ask about the will', 'Pricey'], ['Bulk tissues', 'Cheap'], ['Bouncer for the ex-wife', 'Normal'], ['Drone flyover', 'Outrageous'], ['Replacement ashes (dog)', 'Cheap'], ['Second casket, just in case', 'Outrageous'], ['Karaoke machine', 'Normal'], ['Sympathy lasagne (catered)', 'Cheap']],
     },
     mining: {
@@ -423,6 +526,7 @@ const PC_CARDS = (() => {
       tiers: { Cheap: 100, Normal: 700, Pricey: 2000, Outrageous: 4000 },
       who: [['Second-Hand', 0.6], ['Environmental', 0.8], ['Community', 0.8], ['Ceremonial', 1.1], ['Unlicensed', 1.2], ['Offshore', 1.3], ['Overnight', 1.4], ['Unmarked', 1.4], ['Emergency', 1.5], ['Discreet', 1.5]],
       what: [['Hi-Vis', 40], ['Groundwater Test (results pending)', 400], ['Water Truck', 600], ['Lobbyist Lunch', 700], ['FIFO Flights', 800], ['Dust Suppression', 900], ['Wildlife Relocation', 1200], ['Community Consultation (catered)', 1500], ['Media Training', 2000], ['Helicopter', 3000], ['Whistleblower Settlement', 5000]],
+      hours: ['Fill In a Small Hole', 'Hose Down the Dozer', 'Count the Hi-Vis', 'Reword the Spill Report', 'Rehome a Lizard', 'Restock the Dynamite', 'Wipe the Core Samples', 'Brief the Lobbyist', 'Round Down the Injuries', 'Sign Off the Tailings Dam'],
       bot: [['Gold-plated hard hat', 'Pricey'], ["Senator's fishing trip", 'Outrageous'], ['Koala relocation (one way)', 'Normal'], ['Bulk sunscreen', 'Cheap'], ['Fake community barbecue', 'Normal'], ['Dynamite (recreational)', 'Pricey'], ['Second whistleblower settlement', 'Outrageous'], ['Thoughts and prayers (catered)', 'Normal'], ['Hi-vis for the CEO\'s dog', 'Cheap'], ['Climate scientist (to leave)', 'Pricey'], ['Ribbon, very long', 'Cheap'], ['Private jet (one way)', 'Outrageous']],
     },
   };
@@ -454,8 +558,13 @@ const PC_CARDS = (() => {
   // bot answers to the quick-fire
   const ANSWERS = ['A jar of teeth', "Nan's dentures", 'An expired kebab', 'A live eel', 'A bucket of prawns', "Someone else's thongs", 'A cursed doll', 'A wheelie bin', 'A used mattress', 'Forty kilos of glitter', 'A ventriloquist dummy', 'A bag of hair', 'A cask of goon', 'A taxidermied possum', 'A sombrero full of soup', 'Half a ute', 'A haunted printer', 'An inflatable church', 'Twelve feral cats', 'A urinal cake', 'A tub of mayonnaise', "My ex-wife's wig", 'A mankini', 'A pallet of Spam', 'A pet rock with a criminal record', 'Expired insulin', 'A signed Bible', "Somebody's retainer"];
   const DIE = [1, 1, 2, 2, 3, 3];
+  // overtime: two of a kind sends everyone still at work home with nothing
+  const HAZARDS = ['Fire Drill', 'Server Down', 'Reply-All Storm', 'The CEO Walks Past'];
+  // the buck: one problem a lap, passed around until someone deals with it or it goes off
+  const BUCKS = ['Missing Laptop', 'Dead Goldfish in Accounts', 'Mystery Smell in the Fridge', 'Lost Master Key', 'Unpaid Supplier', 'WorkSafe Visit', 'Leaked Group Chat', 'Car Park Prang'];
+  const EXCUSES = ['Not my department.', 'I was on leave.', 'Per my last email, this is yours.', "I've escalated it to you.", "That's above my pay grade.", 'Legal said it was yours.', 'You were cc\'d.', "I'm just the messenger.", 'Thought you were across it.', 'I was told you volunteered.'];
   const NAMES = ['Gary', 'Denise', 'Trevor', 'Moira', 'Clive', 'Pam', 'Keith', 'Linda'];
-  return { CO, SUR, ACTIONS, DIE, NAMES, PROMPTS, ANSWERS };
+  return { CO, SUR, ACTIONS, DIE, NAMES, PROMPTS, ANSWERS, HAZARDS, BUCKS, EXCUSES };
 })();
 // Petty Cash bots: pad to make rent, audit claims that look steep, lie low when the tin is nearly empty.
 const PC_BOTS = (() => {
@@ -508,16 +617,144 @@ const PC_BOTS = (() => {
     return { type: 'claim', amount: amt, nephew: big && !!has(p, 'nephew') };
   }
   const useFree = (s, i, rent) => !!has(s.P[i], 'free') && (s.P[i].bank < rent || s.lap >= 6);
-  return { auditCall, plays, pick, claim, useFree };
+
+  // overtime: stay while the next card is worth more than the risk to what you've got
+  function otStay(s, i, r) {
+    const o = s.ot, d = o.deck, p = s.P[i];
+    if (!d.length) return false;
+    const rep = d.filter(c => c.hz && o.seen[c.name]).length / d.length;
+    const hours = d.filter(c => !c.hz), gain = hours.reduce((a, c) => a + c.v, 0) / d.length / o.inn.length;
+    const ev = gain - rep * (o.haul[i] + gain);
+    const nerve = p.nerve + (p.bank < s.rent0 ? 0.15 : 0);
+    const leave = ev < 0 ? 0.9 - nerve * 0.5 : rep * 2 * (1 - nerve);
+    return r >= leave;
+  }
+  // the envelope: padders pay some of the padding to make it go away; honest ones sometimes bluff a small one
+  function bribeOffer(s, i, r) {
+    const c = s.cur, pad = c.claim - c.real;
+    if (pad > 0) return r5(pad * (0.2 + 0.4 * r));
+    return r < 0.25 ? r5(c.claim * 0.08) : 0;
+  }
+  function bribeTake(s, i, r) {
+    const c = s.cur, p = s.P[i];
+    const pp = Math.min(0.95, q(c.guide, c.claim) * 0.8 + 0.15);
+    const fine = p.key ? 0 : c.claim * 0.25;
+    const ev = pp * Math.max(0, c.claim - c.guide) - (1 - pp) * fine;
+    return c.offer >= ev * (0.7 + 0.6 * r);
+  }
+  // the buck: pass while it's cheaper than dealing with it; aim it at whoever's in front
+  function buckMove(s, i, r, fee, blast) {
+    const b = s.buck, left = 7 - (b.passes + 1);
+    const pGo = b.passes + 1 < 2 ? 0 : 1 / Math.max(1, left);
+    if (pGo * blast * (0.5 + 0.5 * r) * (1.3 - s.P[i].nerve) > fee) return { deal: true };
+    const others = s.P.filter(o => o.id !== i), rich = others.slice().sort((a, b2) => b2.bank - a.bank)[0];
+    const t = r < 0.6 ? rich : others[Math.floor(r * 997) % others.length];
+    return { pass: t.id, excuse: Math.floor(r * 1e4) };
+  }
+  return { auditCall, plays, pick, claim, useFree, otStay, bribeOffer, bribeTake, buckMove };
 })();
+// Petty Cash: the two beats either side of the receipts. Pure; core.js hands in its helpers.
+// Overtime: cards flip, everyone still at work splits each one; a second hazard of a kind sends them home with nothing.
+// The buck: one problem a lap. Pass it with an excuse, or pay to deal with it. Every pass might be the one where it goes off.
+const PC_BEATS = K => {
+  const { T, C, B, rand, ri, shuffle, range, round5, log, who, vb, avgGuide } = K;
+  const SHARE = [0.5, 0.75, 1, 1, 1, 1.25, 1.25, 1.5, 0.75, 1];
+
+  // ---------- overtime ----------
+  function startOvertime(s, E) {
+    const co = C.CO[s.co], A = avgGuide(co);
+    const deck = co.hours.map((name, k) => ({ name, v: round5(s.n * A * T.ot * SHARE[k % SHARE.length]) }));
+    for (const h of shuffle(s, C.HAZARDS).slice(0, 3)) deck.push({ name: h, hz: true }, { name: h, hz: true });
+    s.ot = { deck: shuffle(s, deck), row: [], inn: range(s.n), haul: s.P.map(() => 0), out: s.P.map(() => null), dec: {}, seen: {}, done: false, bust: null };
+    s.phase = 'overtime';
+    flip(s, E);
+  }
+  function flip(s, E) {
+    const o = s.ot, c = o.deck.pop();
+    if (!c) return close(s, E);
+    o.row.push(c);
+    if (c.hz) {
+      if (!o.seen[c.name]) { o.seen[c.name] = 1; return; }
+      c.bust = true; o.bust = c.name;
+      const lost = o.inn.filter(i => o.haul[i] > 0);
+      log(s, E, 'otbust', `Second ${c.name}. ${o.inn.map(i => who(s, i)).join(', ')} ${o.inn.length === 1 ? vb(s, o.inn[0], 'goes', 'go') : 'go'} home with nothing.`, { lost });
+      for (const i of o.inn) { o.out[i] = 0; o.haul[i] = 0; }
+      o.inn = []; o.done = true;
+      return;
+    }
+    c.each = Math.floor(c.v / o.inn.length / 5) * 5;
+    for (const i of o.inn) o.haul[i] += c.each;
+  }
+  function clockOff(s, i, E) {
+    const o = s.ot, got = o.haul[i];
+    s.P[i].bank += got; o.out[i] = got;
+    log(s, E, 'otout', `${who(s, i)} clocked off with $${got}.`, { seat: i, got });
+  }
+  function close(s, E) {
+    for (const i of s.ot.inn) clockOff(s, i, E);
+    s.ot.inn = []; s.ot.done = true;
+  }
+  // everyone still here has said stay or go: the leavers bank it, then the next card flips
+  function otStep(s, E) {
+    const o = s.ot;
+    for (const i of o.inn) if (!(i in o.dec)) o.dec[i] = B.otStay(s, i, rand(s));
+    for (const i of o.inn) if (!o.dec[i]) clockOff(s, i, E);
+    o.inn = o.inn.filter(i => o.dec[i]); o.dec = {};
+    if (!o.inn.length) { o.done = true; return null; }
+    flip(s, E);
+    return null;
+  }
+
+  // ---------- the buck ----------
+  const buckFee = s => round5(avgGuide(C.CO[s.co]) * (T.fee + T.feeUp * s.buck.passes));
+  const buckBlast = (s, i) => round5(s.buck.base + T.buckCut * Math.max(0, s.P[i].bank));
+  function startBuck(s, E) {
+    const A = avgGuide(C.CO[s.co]), holder = ri(s, s.n);
+    const name = C.BUCKS[(s.seed + s.lap * 3) % C.BUCKS.length];
+    s.buck = { name, base: round5(A * (T.blast + 0.1 * s.lap)), fuse: 2 + ri(s, 5), passes: 0, holder, trail: [], done: false, blew: null, dealt: null, hit: 0 };
+    s.phase = 'buck';
+    log(s, E, 'buck', `The ${name} landed on ${s.P[holder].human ? 'your' : who(s, holder) + "'s"} desk.`, { seat: holder });
+  }
+  // mv: { pass: seat, excuse: index } or { deal: true }
+  function buckMove(s, i, mv, E) {
+    const b = s.buck, p = s.P[i];
+    if (mv.deal) {
+      const fee = buckFee(s);
+      p.bank -= fee; s.tin += fee; b.dealt = i; b.hit = fee; b.done = true;
+      log(s, E, 'dealt', `${who(s, i)} dealt with the ${b.name}. $${fee}, paid into the tin.`, { seat: i, fee });
+      return null;
+    }
+    const t = +mv.pass;
+    if (!(t >= 0 && t < s.n) || t === i) return 'Pass it to someone else.';
+    const excuse = C.EXCUSES[(+mv.excuse || 0) % C.EXCUSES.length];
+    b.passes++;
+    if (b.passes >= b.fuse) {
+      const dmg = buckBlast(s, i);
+      p.bank -= dmg; s.tin += dmg; b.blew = i; b.hit = dmg; b.done = true;
+      log(s, E, 'blow', `The ${b.name} went off in ${s.P[i].human ? 'your' : who(s, i) + "'s"} hands. $${dmg} in damages.`, { seat: i, dmg });
+      return null;
+    }
+    b.trail.push({ from: i, to: t, excuse });
+    b.holder = t;
+    log(s, E, 'pass', `${who(s, i)} to ${s.P[t].human ? 'you' : who(s, t)}: "${excuse}"`, { seat: i, target: t });
+    return null;
+  }
+  function buckStep(s, E) {
+    const i = s.buck.holder;
+    return buckMove(s, i, B.buckMove(s, i, rand(s), buckFee(s), buckBlast(s, i)), E);
+  }
+
+  return { startOvertime, otStep, startBuck, buckMove, buckStep, buckFee, buckBlast };
+};
 // Petty Cash rules and state. Pure: no DOM, no Math.random, no clock.
 // apply(state, seat, action) -> { state, events } | { error }
 const PC = (() => {
   const C = typeof PC_CARDS !== 'undefined' ? PC_CARDS : require('./cards.js');
   const B = typeof PC_BOTS !== 'undefined' ? PC_BOTS : require('./bots.js');
+  const BEATS = typeof PC_BEATS !== 'undefined' ? PC_BEATS : require('./beats.js');
   const { CO, SUR, ACTIONS, DIE, NAMES, PROMPTS, ANSWERS } = C;
   // tuning, set by sim/petty/run.js
-  const T = { laps: 6, rent: 0.7, rise: 0.1, tin: 1.12, cash: 0.7, act: 2, weasel: 0.25, hand: 10, tinN: { 3: 1.2, 4: 1.15, 5: 1.06, 6: 1, 7: 0.96, 8: 0.92 }, tinCo: { party: 0.9, funeral: 1, mining: 0.97 } };
+  const T = { laps: 6, rent: 0.7, rise: 0.1, tin: 1.03, act: 2, weasel: 0.25, hand: 10, ot: 0.1, fee: 0.2, feeUp: 0.1, blast: 0.7, buckCut: 0.3, tinN: { 3: 1.2, 4: 1.15, 5: 1.06, 6: 1, 7: 0.96, 8: 0.92 }, tinCo: { party: 0.9, funeral: 1, mining: 0.97 } };
   const SMAX = Math.max(...SUR.map(x => x[1]));
 
   // ---------- rng (s.rs) ----------
@@ -559,7 +796,7 @@ const PC = (() => {
     s.rent0 = round5(A * T.rent);
     s.tin0 = s.tin = Math.round(T.tin * T.tinN[n] * T.tinCo[co] * n * T.laps * A / 100) * 100;
     const names = shuffle(s, NAMES);
-    s.P = range(n).map(i => ({ id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate, bank: 0, hand: [], halo: 0, caught: 0, weasels: 0, key: false, letter: false, claims: 0, pads: 0, greed: 0.2 + 0.6 * rand(s) }));
+    s.P = range(n).map(i => ({ id: i, name: i === 0 && !s.spectate ? 'You' : names[i], human: i === 0 && !s.spectate, bank: 0, hand: [], halo: 0, caught: 0, weasels: 0, key: false, letter: false, claims: 0, pads: 0, greed: 0.2 + 0.6 * rand(s), nerve: 0.35 + 0.5 * rand(s) }));
     // bots answer the quick-fire
     for (const p of s.P) if (!p.human) for (let k = 0; k < 2 + ri(s, 2); k++) s.answers.push({ by: p.id, q: ri(s, PROMPTS.length), text: pickOne(s, ANSWERS) });
     if (s.spectate) deal(s, []);
@@ -567,12 +804,10 @@ const PC = (() => {
   }
   const card = (s, k, name, v, extra) => Object.assign({ id: 'c' + (s.nid = (s.nid || 0) + 1), k, name, v }, extra || {});
   function deal(s, E) {
-    const co = CO[s.co], A = avgGuide(co), pile = [];
+    const co = CO[s.co], pile = [];
     for (const [w, m] of co.who) for (let k = 0; k < 2; k++) pile.push(card(s, 'who', w, m));
     for (const [w, b] of co.what) pile.push(card(s, 'what', w, b));
     for (const a of s.answers) { const t = PROMPTS[a.q][1]; pile.push(card(s, 'what', tidy(a.text), co.tiers[t], { by: a.by, tier: t })); }
-    const cashN = Math.round(T.cash * s.n * 2);
-    for (let k = 0; k < cashN; k++) pile.push(card(s, 'cash', 'Wages', round5(A * [0.25, 0.5, 0.5, 0.75, 1][k % 5])));
     for (const key of Object.keys(ACTIONS)) for (let k = 0; k < T.act; k++) pile.push(card(s, 'act', ACTIONS[key][0], key));
     s.pile = shuffle(s, pile);
     // everyone starts with two of each receipt half
@@ -595,21 +830,19 @@ const PC = (() => {
   const take = (p, id) => { const at = p.hand.findIndex(c => c.id === id); return at < 0 ? null : p.hand.splice(at, 1)[0]; };
   const has = (p, key) => p.hand.find(c => c.k === 'act' && c.v === key);
 
-  // ---------- a lap: everyone rolls, everyone lodges, receipts flip one by one, everyone pays rent ----------
+  // ---------- a lap: roll for cards, overtime, everyone lodges, receipts flip one by one, the buck, rent ----------
   function startLap(s, E) {
-    s.rolls = []; s.lodged = s.P.map(() => null); s.pend = null; s.order = []; s.fi = -1; s.cur = null;
+    s.rolls = []; s.lodged = s.P.map(() => null); s.pend = null; s.order = []; s.fi = -1; s.cur = null; s.ot = null; s.buck = null;
     for (const p of s.P) {
       const k = pickOne(s, DIE), got = [];
-      let cash = 0;
-      for (let j = 0; j < k; j++) {
-        const c = draw(s); if (!c) break;
-        if (c.k === 'cash') { p.bank += c.v; cash += c.v; s.disc.push(c); } else p.hand.push(c);
-        got.push(c.id);
-      }
-      s.rolls[p.id] = { k, got, cash };
+      for (let j = 0; j < k; j++) { const c = draw(s); if (!c) break; p.hand.push(c); got.push(c.id); }
+      s.rolls[p.id] = { k, got };
     }
     log(s, E, 'roll', 'Everyone rolled: ' + s.P.map(p => `${p.name} ${s.rolls[p.id].k}`).join(', ') + '.', { rolls: s.rolls.map(r => r.k) });
-    s.phase = 'lodge';
+    X.startOvertime(s, E);
+  }
+  function startLodge(s, E) {
+    s.ot = null; s.phase = 'lodge';
     // bots play their cards and lodge straight away
     for (const p of s.P) if (!p.human) {
       for (const a of B.plays(s, p.id)) { play(s, p.id, a, E); if (s.phase === 'end') return; }
@@ -666,7 +899,7 @@ const PC = (() => {
   }
   function nextFlip(s, E) {
     s.fi++;
-    if (s.fi >= s.order.length) return toRent(s, E);
+    if (s.fi >= s.order.length) { s.cur = null; return X.startBuck(s, E); }
     const c = s.cur = s.lodged[s.order[s.fi]];
     s.claims.push(c);
     log(s, E, 'claim', `${who(s, c.seat)} claimed $${c.claim} for ${c.item}.`, { seat: c.seat, item: c.item, amount: c.claim, guide: c.guide, nephew: c.nephew });
@@ -685,10 +918,27 @@ const PC = (() => {
     if (!willing.length || c.nephew) { pay(s, c.seat, c.claim); c.outcome = 'paid'; }
     else {
       if (c.auditor == null) c.auditor = pickOne(s, willing.sort((x, y) => x - y));
+      const aud = s.P[c.auditor];
+      // first, the envelope: the claimant can try to buy the auditor off
+      if (c.offer == null) {
+        if (p.human) { s.phase = 'bribe'; return null; }
+        c.offer = Math.min(c.claim, round5(B.bribeOffer(s, c.seat, rand(s))));
+      }
+      if (c.offer > 0 && c.took == null) {
+        if (aud.human) { s.phase = 'take'; return null; }
+        c.took = B.bribeTake(s, c.auditor, rand(s));
+      }
+      if (c.took) {
+        s.tin -= c.claim; p.bank += c.claim - c.offer; aud.bank += c.offer; c.outcome = 'bribed';
+        log(s, E, 'bribed', `An envelope changed hands. ${poss(s, c.seat)} ${c.item} is signed.`, { seat: c.seat });
+        log(s, E, 'envelope', `You took a $${c.offer} envelope.`, { to: c.auditor, amount: c.offer });
+        if (s.tin < 0) return finish(s, E, true);
+        return null;
+      }
+      if (c.offer > 0 && !c.refused) { c.refused = true; log(s, E, 'refused', `${poss(s, c.seat)} envelope came back unopened.`, { seat: c.seat }); }
       const sh = has(p, 'shred');
       if (sh && !p.human && padded) return shred(s, true, E);
       if (sh && p.human && !c.noShred) { s.phase = 'shred'; return null; }
-      const aud = s.P[c.auditor];
       if (padded) {
         s.tin -= c.real; p.bank += c.real - (c.claim - c.real); aud.bank += c.claim - c.real; p.caught++; c.outcome = 'caught';
         log(s, E, 'caught', `CAUGHT PADDING. ${poss(s, c.seat)} ${c.item} really cost $${c.real}.`, { seat: c.seat, real: c.real, amount: c.claim, sur: c.sur });
@@ -754,7 +1004,9 @@ const PC = (() => {
   // is the game waiting on you?
   function needsHuman(s) {
     if (s.spectate || s.phase === 'end') return false;
-    if (s.phase === 'shop' || s.phase === 'shred') return true;
+    if (s.phase === 'shop' || s.phase === 'shred' || s.phase === 'bribe' || s.phase === 'take') return true;
+    if (s.phase === 'overtime') return !s.ot.done && s.ot.inn.includes(0) && !(0 in s.ot.dec);
+    if (s.phase === 'buck') return !s.buck.done && s.buck.holder === 0;
     if (s.phase === 'lodge') return s.lodged[0] == null;
     if (s.phase === 'flip') return !!s.cur && !s.cur.outcome && !s.cur.nephew && s.cur.seat !== 0 && !(0 in s.cur.calls);
     if (s.phase === 'rent') return s.rentAsk;
@@ -794,6 +1046,21 @@ const PC = (() => {
       case 'audit':
         if (!mine || !needsHuman(s) || s.phase !== 'flip') { err = 'Nothing to audit.'; break; }
         s.cur.calls[0] = a.call === 'audit' ? 'audit' : 'sign'; break;
+      case 'overtime':
+        if (!mine || s.phase !== 'overtime' || !needsHuman(s)) { err = 'Not now.'; break; }
+        s.ot.dec[0] = !!a.stay; break;
+      case 'bribe': {
+        if (!mine || s.phase !== 'bribe') { err = 'Not now.'; break; }
+        const amt = round5(+a.amount || 0);
+        if (amt > s.cur.claim) { err = "You can't offer more than you claimed."; break; }
+        s.cur.offer = amt; s.phase = 'flip'; err = settle(s, E); break;
+      }
+      case 'take':
+        if (!mine || s.phase !== 'take') { err = 'Not now.'; break; }
+        s.cur.took = !!a.accept; s.phase = 'flip'; err = settle(s, E); break;
+      case 'buck':
+        if (!mine || s.phase !== 'buck' || !needsHuman(s)) { err = 'Not now.'; break; }
+        err = X.buckMove(s, 0, a, E); break;
       case 'shred': if (!mine || s.phase !== 'shred') err = 'Not now.'; else err = shred(s, !!a.use, E); break;
       case 'rent':
         if (!mine || s.phase !== 'rent' || !s.rentAsk) { err = 'Not now.'; break; }
@@ -807,14 +1074,17 @@ const PC = (() => {
   function advance(s, E) {
     if (needsHuman(s)) return 'Waiting for you.';
     switch (s.phase) {
+      case 'overtime': return s.ot.done ? startLodge(s, E) : X.otStep(s, E);
       case 'lodge': return startFlip(s, E);
+      case 'buck': return s.buck.done ? toRent(s, E) : X.buckStep(s, E);
       case 'flip': return s.cur.outcome ? nextFlip(s, E) : settle(s, E);
       case 'rent': return endLap(s, E);
       default: return 'Nothing to do.';
     }
   }
 
-  return { T, apply, newGame, needsHuman, rentFor, honestQ, guideOf, itemOf, avgGuide, rand, CO, SUR, ACTIONS, PROMPTS, SMAX };
+  const X = BEATS({ T, C, B, rand, ri, shuffle, range, round5, log, who, vb, avgGuide });
+  return { T, apply, newGame, needsHuman, rentFor, honestQ, guideOf, itemOf, avgGuide, rand, CO, SUR, ACTIONS, PROMPTS, SMAX, EXCUSES: C.EXCUSES, buckFee: X.buckFee, buckBlast: X.buckBlast };
 })();
 </script>
 <script>
@@ -854,7 +1124,10 @@ function pump() {
   clearTimeout(pumpT);
   const s = ui.s;
   if (!s || s.phase === 'end' || s.phase === 'shop' || PC.needsHuman(s)) return;
-  const base = s.phase === 'flip' ? (s.cur.outcome ? 1500 : 1700) : { lodge: 2600, rent: 1600 }[s.phase] || 900;
+  const base = s.phase === 'flip' ? (s.cur.outcome ? 1500 : 1700)
+    : s.phase === 'overtime' ? (s.ot.done ? 2200 : 1100)
+    : s.phase === 'buck' ? (s.buck.done ? 2400 : 1600)
+    : { lodge: 2600, rent: 1600 }[s.phase] || 900;
   const d = Math.max(base, ui.hold - Date.now()) * SPEED;
   pumpT = setTimeout(() => {
     const r = PC.apply(ui.s, 0, { type: 'advance' });
@@ -863,17 +1136,17 @@ function pump() {
 }
 function onEvents(E) {
   for (const e of E) {
-    if (e.kind === 'caught' || e.kind === 'halo' || e.kind === 'shred') ui.hold = Date.now() + 2600;
-    if (e.kind === 'roll') {
-      ui.rollAt = Date.now(); ui.hold = Date.now() + 3200;
-      setTimeout(() => { const r = ui.s.rolls && ui.s.rolls[0]; if (r && r.cash) toast(`Wages: +${money(r.cash)}`, 'cash'); }, 1500);
-    }
+    if (['caught', 'halo', 'shred', 'bribed', 'otbust', 'blow'].includes(e.kind)) ui.hold = Date.now() + 2600;
+    if (e.kind === 'roll') { ui.rollAt = Date.now(); ui.hold = Date.now() + 3200; }
+    if (e.kind === 'otout' && e.seat === 0) toast(`Clocked off: +${money(e.got)}`, 'cash');
+    if (e.kind === 'otbust' && e.lost.includes(0)) toast('Sent home with nothing.', 'bad');
+    if (e.kind === 'blow' && e.seat === 0) toast(`It went off. ${money(e.dmg)} in damages.`, 'bad');
     if (e.to !== 0) {
       if (e.kind === 'action' && e.target === 0) toast("Landlord's Letter. Your rent is doubled this lap.", 'bad');
       continue;
     }
     if (e.kind === 'weasel') weasel(e);
-    else if (e.kind === 'bounty') toast(e.text, 'cash');
+    else if (e.kind === 'bounty' || e.kind === 'envelope') toast(e.text, 'cash');
     else if (e.kind === 'peek') toast('Payroll Peek: the real cost is on the receipt.');
   }
 }
@@ -882,6 +1155,8 @@ function setScene() {
   const s = ui.s;
   document.body.dataset.co = s && s.phase !== 'shop' ? s.co : '';
   document.body.dataset.tod = s && s.phase !== 'shop' ? TOD[Math.min(TOD.length, s.lap) - 1] : '';
+  // the lights go down while people stay back
+  document.body.dataset.phase = s ? s.phase : '';
 }
 
 // ---------- overlays ----------
@@ -927,9 +1202,11 @@ function renderTitle() {
     <div class="starts"><button class="go" id="go">Clock on</button><button class="ghost" id="skip">Skip to the game</button></div>
     <details class="how"><summary>How it works</summary><ol>
       <li>Answer quick-fire questions. Don't think too hard.</li>
-      <li>Each lap, everyone rolls and draws that many cards. Wages go straight in your bank.</li>
+      <li>Each lap, everyone rolls and draws that many cards.</li>
+      <li>Overtime. Cards flip and everyone still at work splits each one. Clock off whenever you like. Two of the same hazard sends everyone still there home with nothing.</li>
       <li>Everyone lodges a receipt at once. A secret surcharge sets what it really cost. Claim whatever you like.</li>
-      <li>The receipts flip one by one and anyone can audit. Padded: you're caught and the auditor pockets the difference. Honest: you get a halo and they pay a fine.</li>
+      <li>The receipts flip one by one and anyone can audit. If it's you being audited, slip them an envelope. Padded: the auditor pockets the difference. Honest: you get a halo and they pay a fine.</li>
+      <li>Then a problem lands on someone's desk. Pass it on with an excuse, or pay to deal with it. Any pass could be the one where it goes off.</li>
       <li>Rent goes up every lap. Six laps. If the tin survives, the richest wins. If it runs dry, the richest takes the fall and second place wins.</li>
     </ol></details>
   </main>`;
@@ -1046,6 +1323,7 @@ function renderGame() {
   app.innerHTML = `<main class="game" style="--el:${ui.fresh ? -el : -9999}ms">${strip(s)}${tags(s)}<section class="tray">${tray(s)}</section>${till(s)}${desk(s)}</main>`;
   wireTable(s);
   wireDesk(s);
+  wireBeats(s);
   for (const c of me().hand) ui.seen.add(c.id);
 }
 
@@ -1059,16 +1337,17 @@ function strip(s) {
 }
 
 function tags(s) {
-  const up = s.phase === 'flip' || s.phase === 'shred' ? s.cur && s.cur.seat : -1;
+  const up = s.phase === 'buck' ? s.buck.holder : ['flip', 'shred', 'bribe', 'take'].includes(s.phase) ? s.cur && s.cur.seat : -1;
+  const pick = !!ui.target || buckMine(s);
   return `<section class="tags">${s.P.map(p => {
     const l = s.lodged[p.id];
-    const cls = ['tag', p.human ? 'me' : '', up === p.id ? 'turn' : '', p.bank < 0 ? 'debt' : '', ui.target && !p.human ? 'pickable' : ''].join(' ');
+    const cls = ['tag', p.human ? 'me' : '', up === p.id ? 'turn' : '', p.bank < 0 ? 'debt' : '', pick && !p.human ? 'pickable' : ''].join(' ');
     // bots "finish" lodging one after another once the dice land
     const lodged = s.phase === 'lodge' && l ? `<i class="in ${ui.fresh && !p.human ? 'late' : ''}" style="--d:${1.8 + p.id * 0.7}s">${l.skip ? 'Nothing' : 'Lodged'}</i>` : '';
-    return `<button class="${cls}" data-seat="${p.id}" ${ui.target && !p.human ? '' : 'tabindex="-1"'}>
+    return `<button class="${cls}" data-seat="${p.id}" ${pick && !p.human ? '' : 'tabindex="-1"'}>
       <span class="nm">${esc(p.name)}</span>
       <b class="num">${money(p.bank)}</b>
-      <span class="marks">${lodged}${'<i class="halo" title="Cleared"></i>'.repeat(Math.min(p.halo, 4))}${p.caught ? `<i class="caught">Padded${p.caught > 1 ? ' ×' + p.caught : ''}</i>` : ''}${p.letter ? '<i class="letter">2× rent</i>' : ''}</span>
+      <span class="marks">${s.phase === 'overtime' ? otMark(s, p) : ''}${lodged}${'<i class="halo" title="Cleared"></i>'.repeat(Math.min(p.halo, 4))}${p.caught ? `<i class="caught">Padded${p.caught > 1 ? ' ×' + p.caught : ''}</i>` : ''}${p.letter ? '<i class="letter">2× rent</i>' : ''}</span>
       <span class="cards">${p.hand.length} cards</span>
     </button>`;
   }).join('')}</section>`;
@@ -1080,26 +1359,30 @@ function status(s) {
   switch (s.phase) {
     case 'lodge':
       if (s.lodged[0]) return 'Lodged. Shuffling the pile.';
-      return s.pend ? 'How much are you claiming?' : `Lap ${s.lap}. Everyone rolled. Pick a receipt to lodge.`;
+      return s.pend ? 'How much are you claiming?' : 'Pick a receipt to lodge.';
     case 'flip':
-      if (c.outcome) return { caught: `${n} padded it.`, halo: `${n} was honest.`, shredded: 'Into the shredder.', paid: c.nephew ? 'Nephew of the CEO. No questions.' : 'Signed off.' }[c.outcome];
+      if (c.outcome) return { caught: `${n} padded it.`, halo: `${n} was honest.`, shredded: 'Into the shredder.', bribed: 'An envelope changed hands.', paid: c.nephew ? 'Nephew of the CEO. No questions.' : 'Signed off.' }[c.outcome];
       if (c.seat === 0) return c.nephew ? 'Your claim. Nobody can touch it.' : 'Your claim. The table is deciding.';
       return c.nephew ? `${n} wants ${money(c.claim)}, with the Nephew card.` : `${n} wants ${money(c.claim)}. Sign it or audit?`;
     case 'shred': return "You're being audited.";
+    case 'bribe': return 'Someone wants to open your receipt.';
+    case 'take': return `${n} slipped you an envelope.`;
     case 'rent': return 'Rent day.';
     default: return '';
   }
 }
 
 function tray(s) {
-  if (s.phase === 'lodge') return `<p class="status">${status(s)}</p>${dice(s)}${s.pend ? receipt(s, s.pend, false) : s.lodged[0] && !s.lodged[0].skip ? receipt(s, s.lodged[0], false, 'sealed') : ''}`;
+  if (s.phase === 'overtime') return otTray(s);
+  if (s.phase === 'buck' || (s.phase === 'rent' && s.buck)) return buckTray(s);
+  if (s.phase === 'lodge') return `<p class="status">${status(s)}</p>${s.pend ? receipt(s, s.pend, false) : s.lodged[0] && !s.lodged[0].skip ? receipt(s, s.lodged[0], false, 'sealed') : ''}`;
   const c = s.cur || s.claims[s.claims.length - 1];
-  const left = s.phase === 'flip' || s.phase === 'shred' ? s.order.length - s.fi - 1 : 0;
+  const left = ['flip', 'shred', 'bribe', 'take'].includes(s.phase) ? s.order.length - s.fi - 1 : 0;
   const key = s.lap + ':' + s.fi;
   const flipin = s.cur && ui.flipKey !== key; ui.flipKey = key;
   return `<p class="status">${status(s)}</p>
     <div class="pile">${'<i></i>'.repeat(Math.min(left, 6))}${left ? `<span class="label">${left} to go</span>` : ''}</div>
-    ${c ? receipt(s, c, c !== s.cur, flipin ? 'flipin' : '') : ''}`;
+    <div class="held">${c ? receipt(s, c, c !== s.cur, flipin ? 'flipin' : '') : ''}${c && c.offer > 0 && c === s.cur ? envelope(c, c.outcome === 'bribed' ? 'taken' : c.refused ? 'back' : 'open', key) : ''}</div>`;
 }
 
 // a die with faces 1,1,2,2,3,3: front/back 1, right/left 2, top/bottom 3
@@ -1121,7 +1404,7 @@ function receipt(s, c, old, extra) {
   const peeked = c.peeks && c.peeks.includes(0);
   const known = mine || peeked || c.outcome === 'caught' || c.outcome === 'halo';
   const bar = '<span class="redact">██████</span>';
-  const stamp = extra === 'sealed' ? 'Lodged' : { caught: 'Caught padding', halo: 'Cleared', shredded: 'Shredded', paid: c.nephew ? 'Nephew of the CEO' : 'Signed' }[c.outcome] || '';
+  const stamp = extra === 'sealed' ? 'Lodged' : { caught: 'Caught padding', halo: 'Cleared', shredded: 'Shredded', paid: c.nephew ? 'Nephew of the CEO' : 'Signed', bribed: 'Signed' }[c.outcome] || '';
   const write = c.what.by != null ? 'wi' : '';
   return `<article class="rcpt ${old ? 'old' : ''} ${c.outcome || ''} ${extra || ''}">
     <header><span class="label">Expense claim</span><span class="num">No. ${String(no).padStart(4, '0')}</span></header>
@@ -1133,7 +1416,7 @@ function receipt(s, c, old, extra) {
       <dt>Real cost</dt><dd class="num">${known ? money(c.real) : bar}</dd>
     </dl>
     <div class="total"><span class="label">Claimed</span><b class="num">${c.claim != null ? money(c.claim) : '—'}</b></div>
-    ${stamp ? `<div class="stamp s-${extra === 'sealed' ? 'sealed' : c.outcome}">${stamp}</div>` : ''}
+    ${stamp ? `<div class="stamp s-${extra === 'sealed' ? 'sealed' : c.outcome === 'bribed' ? 'paid' : c.outcome}">${stamp}</div>` : ''}
   </article>`;
 }
 
@@ -1156,7 +1439,7 @@ function wireTable(s) {
   if (q('#sign')) q('#sign').onclick = () => act({ type: 'audit', call: 'sign' });
   if (q('#audit')) q('#audit').onclick = () => act({ type: 'audit', call: 'audit' });
   if (q('#peek')) q('#peek').onclick = () => act({ type: 'play', card: has(me(), 'peek').id });
-  if (ui.target) app.querySelectorAll('.tag.pickable').forEach(b => b.onclick = () => {
+  if (ui.target && !buckMine(s)) app.querySelectorAll('.tag.pickable').forEach(b => b.onclick = () => {
     const card = ui.target; ui.target = null; ui.sel = {};
     act({ type: 'play', card, target: +b.dataset.seat });
   });
@@ -1167,7 +1450,7 @@ const PLAYABLE = { freeze: 1, letter: 1, creative: 1, key: 1 };
 function desk(s) {
   const p = me();
   const rent = PC.rentFor(s, 0);
-  const busy = !!s.pend || (s.phase === 'flip' && PC.needsHuman(s));
+  const busy = !!s.pend || (PC.needsHuman(s) && s.phase !== 'lodge');
   return `<section class="desk ${busy ? 'busy' : ''}">
     <div class="dhead">
       <div class="mybank ${p.bank < 0 ? 'debt' : ''}"><span class="label">${p.bank < 0 ? 'On the tab' : 'Your bank'}</span><b class="num">${money(p.bank)}</b></div>
@@ -1210,6 +1493,10 @@ function control(s) {
       ${can ? `<button class="go" id="playact">Play it</button>` : `<p class="note">${when || 'Play it before you lodge.'}</p>`}
       <button class="ghost" id="cancel">Put it back</button>`;
   }
+  if (s.phase === 'overtime') return PC.needsHuman(s) ? otCtl(s) : '';
+  if (s.phase === 'bribe') return bribeCtl(s);
+  if (s.phase === 'take') return takeCtl(s);
+  if (s.phase === 'buck') return buckMine(s) ? buckCtl(s) : '';
   if (s.phase === 'flip' && PC.needsHuman(s)) return auditBar(s);
   if (s.pend) return claimCtl(s);
   if (canLodge(s)) {
@@ -1290,6 +1577,100 @@ function wireDesk(s) {
     setTimeout(() => { ui.busy = false; act({ type: 'claim', amount: ui.amt, nephew: ui.nephew }); }, 700);
   });
 }
+// The beats around the receipts: overtime, the envelope, and the buck.
+
+// ---------- overtime: a timesheet that fills up card by card ----------
+function otStatus(s) {
+  const o = s.ot, mine = o.inn.includes(0);
+  if (o.done) return o.bust ? `Second ${esc(o.bust)}. Everyone still here goes home with nothing.` : 'Everyone has clocked off.';
+  const warn = Object.keys(o.seen);
+  if (mine) return warn.length ? `One more ${esc(warn[warn.length - 1])} and everyone still here loses the lot.` : 'Overtime. Stay back or clock off?';
+  return o.out[0] === 0 ? 'Sent home with nothing.' : `You clocked off with ${money(o.out[0])}. The rest are still here.`;
+}
+function otTray(s) {
+  const o = s.ot, last = o.row.length - 1;
+  const key = s.lap + ':' + o.row.length, fresh = ui.otKey !== key; ui.otKey = key;
+  const cards = o.row.map((c, k) => `<div class="tc ${c.hz ? 'hz' : ''} ${c.bust ? 'bust' : ''} ${k === last && fresh ? 'new' : ''}">
+    <span class="label">${c.hz ? (c.bust ? 'Again' : 'Hazard') : 'Overtime'}</span><b>${esc(c.name)}</b>${c.hz ? '' : `<span class="num">+${money(c.each)}</span>`}</div>`).join('');
+  return `<p class="status">${otStatus(s)}</p>${ui.fresh ? dice(s) : ''}
+    <div class="shift ${o.bust ? 'busted' : ''}"><header><span class="label">Timesheet · after hours</span><span class="num">${o.deck.length} left</span></header><div class="row">${cards}</div></div>`;
+}
+function otMark(s, p) {
+  const o = s.ot;
+  if (!o) return '';
+  if (o.inn.includes(p.id)) return `<i class="ot here">Here ${money(o.haul[p.id])}</i>`;
+  if (o.out[p.id] === 0) return '<i class="ot sent">Sent home</i>';
+  return o.out[p.id] != null ? `<i class="ot off">+${money(o.out[p.id])}</i>` : '';
+}
+function otCtl(s) {
+  const h = s.ot.haul[0];
+  return `<div class="choice"><button class="stampbtn stay" id="stay">Stay back</button><button class="stampbtn off" id="off">Clock off <span class="num">+${money(h)}</span></button></div>`;
+}
+
+// ---------- the envelope ----------
+// animate each envelope state once, not on every redraw
+function envelope(c, state, key) {
+  const k = key + ':' + state, still = ui.envKey === k; ui.envKey = k;
+  return `<div class="env ${state} ${still ? 'still' : ''}"><i class="flap"></i><span class="label">${state === 'back' ? 'Returned' : 'Private'}</span><b class="num">${money(c.offer)}</b></div>`;
+}
+function bribeCtl(s) {
+  const c = s.cur;
+  const opts = [['Nothing', 0], ['A little', c.claim * 0.1], ['Generous', c.claim * 0.25], ['Very', c.claim * 0.4]];
+  return `<p class="ask">Slip them an envelope?</p>
+    <div class="chips">${opts.map(([l, v]) => `<button class="chip" data-offer="${Math.round(v / 5) * 5}">${l}<span class="num">${money(Math.round(v / 5) * 5)}</span></button>`).join('')}</div>`;
+}
+function takeCtl(s) {
+  const c = s.cur, fine = me().key ? 0 : Math.round(c.claim * PC.T.weasel / 5) * 5;
+  return `<div class="choice"><button class="stampbtn sign" id="take">Take it</button><button class="stampbtn audit" id="open">Open it</button>
+    <p class="risk">${fine ? `If it's honest, opening it costs you ${money(fine)}.` : 'Opening it is free: you hold the Key.'}</p></div>`;
+}
+
+// ---------- the buck: a folder nobody wants ----------
+function buckStatus(s) {
+  const b = s.buck, h = esc(s.P[b.holder].name);
+  if (b.blew != null) return `It went off in ${b.blew === 0 ? 'your' : esc(s.P[b.blew].name) + "'s"} hands.`;
+  if (b.dealt != null) return `${b.dealt === 0 ? 'You' : esc(s.P[b.dealt].name)} dealt with it.`;
+  return b.holder === 0 ? "Make it someone else's problem." : `${h} is looking for someone to blame.`;
+}
+function buckTray(s) {
+  const b = s.buck, last = b.trail[b.trail.length - 1];
+  const key = s.lap + ':' + b.passes + ':' + b.done, fresh = ui.buckKey !== key; ui.buckKey = key;
+  const end = b.blew != null ? 'blew' : b.dealt != null ? 'dealt' : '';
+  const stamp = end === 'blew' ? `Went off · ${money(b.hit)}` : end === 'dealt' ? `Dealt with · ${money(b.hit)}` : '';
+  return `<p class="status">${s.phase === 'rent' ? 'Rent day.' : buckStatus(s)}</p>
+    <article class="folder ${end} ${fresh ? (end ? 'land' : 'slide') : ''}">
+      <span class="tab label">Urgent</span>
+      <span class="label">Not my problem</span>
+      <h3>${esc(b.name)}</h3>
+      <p class="on">On ${b.holder === 0 && !end ? 'your' : esc(s.P[end ? (b.blew != null ? b.blew : b.dealt) : b.holder].name) + "'s"} desk</p>
+      <div class="tally"><span class="label">Passed</span>${'<i></i>'.repeat(b.passes)}${b.passes ? '' : '<em>not yet</em>'}</div>
+      ${last ? `<blockquote>“${esc(last.excuse)}”<cite>${esc(s.P[last.from].name)}</cite></blockquote>` : ''}
+      ${stamp ? `<div class="stamp s-${end}">${stamp}</div>` : ''}
+    </article>`;
+}
+// three excuses on offer, stable for this pass
+const excuses = s => [0, 1, 2].map(k => (s.lap * 7 + s.buck.passes * 3 + k) % PC.EXCUSES.length);
+function buckCtl(s) {
+  if (ui.exc == null || !excuses(s).includes(ui.exc)) ui.exc = excuses(s)[0];
+  const fee = PC.buckFee(s), blast = PC.buckBlast(s, 0);
+  return `<p class="ask">Pick an excuse, then tap who gets it.</p>
+    <div class="chips excuses">${excuses(s).map(k => `<button class="chip exc ${ui.exc === k ? 'on' : ''}" data-exc="${k}">${esc(PC.EXCUSES[k])}</button>`).join('')}</div>
+    <button class="go" id="deal">Deal with it · <span class="num">${money(fee)}</span></button>
+    <p class="note">${s.buck.passes ? `Any pass could be the one where it goes off: ${money(blast)}.` : 'The first pass is always safe.'}</p>`;
+}
+const buckMine = s => s.phase === 'buck' && PC.needsHuman(s);
+
+function wireBeats(s) {
+  const on = (id, f) => { const b = app.querySelector(id); if (b) b.onclick = f; };
+  on('#stay', () => act({ type: 'overtime', stay: true }));
+  on('#off', () => act({ type: 'overtime', stay: false }));
+  on('#take', () => act({ type: 'take', accept: true }));
+  on('#open', () => act({ type: 'take', accept: false }));
+  on('#deal', () => act({ type: 'buck', deal: true }));
+  app.querySelectorAll('[data-offer]').forEach(b => b.onclick = () => act({ type: 'bribe', amount: +b.dataset.offer }));
+  app.querySelectorAll('[data-exc]').forEach(b => b.onclick = () => { ui.exc = +b.dataset.exc; render(); });
+  if (buckMine(s)) app.querySelectorAll('.tag.pickable').forEach(b => b.onclick = () => act({ type: 'buck', pass: +b.dataset.seat, excuse: ui.exc }));
+}
 // End of the financial year: the verdict, the rankings, and everybody's receipts.
 function renderEnd() {
   const s = ui.s, e = s.end, P = s.P;
@@ -1309,6 +1690,7 @@ function renderEnd() {
     if (c.outcome === 'caught') return '<i class="o caught">Caught</i>';
     if (c.outcome === 'halo') return '<i class="o halo">Cleared</i>';
     if (c.outcome === 'shredded') return `<i class="o shred">Shredded</i>`;
+    if (c.outcome === 'bribed') return `<i class="o pad">Envelope ${money(c.offer)}</i>`;
     return pad > 0 ? `<i class="o pad">Got away with ${money(pad)}</i>` : '<i class="o ok">Honest</i>';
   };
   const ledger = s.claims.map((c, k) => `<tr class="${c.claim > c.real ? 'padded' : ''}">

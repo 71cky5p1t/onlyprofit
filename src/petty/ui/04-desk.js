@@ -4,7 +4,7 @@ const PLAYABLE = { freeze: 1, letter: 1, creative: 1, key: 1 };
 function desk(s) {
   const p = me();
   const rent = PC.rentFor(s, 0);
-  const busy = !!s.pend || (s.phase === 'flip' && PC.needsHuman(s));
+  const busy = !!s.pend || (PC.needsHuman(s) && s.phase !== 'lodge');
   return `<section class="desk ${busy ? 'busy' : ''}">
     <div class="dhead">
       <div class="mybank ${p.bank < 0 ? 'debt' : ''}"><span class="label">${p.bank < 0 ? 'On the tab' : 'Your bank'}</span><b class="num">${money(p.bank)}</b></div>
@@ -47,6 +47,10 @@ function control(s) {
       ${can ? `<button class="go" id="playact">Play it</button>` : `<p class="note">${when || 'Play it before you lodge.'}</p>`}
       <button class="ghost" id="cancel">Put it back</button>`;
   }
+  if (s.phase === 'overtime') return PC.needsHuman(s) ? otCtl(s) : '';
+  if (s.phase === 'bribe') return bribeCtl(s);
+  if (s.phase === 'take') return takeCtl(s);
+  if (s.phase === 'buck') return buckMine(s) ? buckCtl(s) : '';
   if (s.phase === 'flip' && PC.needsHuman(s)) return auditBar(s);
   if (s.pend) return claimCtl(s);
   if (canLodge(s)) {

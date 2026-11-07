@@ -15,9 +15,11 @@ function renderTitle() {
     <div class="starts"><button class="go" id="go">Clock on</button><button class="ghost" id="skip">Skip to the game</button></div>
     <details class="how"><summary>How it works</summary><ol>
       <li>Answer quick-fire questions. Don't think too hard.</li>
-      <li>Each lap, everyone rolls and draws that many cards. Wages go straight in your bank.</li>
+      <li>Each lap, everyone rolls and draws that many cards.</li>
+      <li>Overtime. Cards flip and everyone still at work splits each one. Clock off whenever you like. Two of the same hazard sends everyone still there home with nothing.</li>
       <li>Everyone lodges a receipt at once. A secret surcharge sets what it really cost. Claim whatever you like.</li>
-      <li>The receipts flip one by one and anyone can audit. Padded: you're caught and the auditor pockets the difference. Honest: you get a halo and they pay a fine.</li>
+      <li>The receipts flip one by one and anyone can audit. If it's you being audited, slip them an envelope. Padded: the auditor pockets the difference. Honest: you get a halo and they pay a fine.</li>
+      <li>Then a problem lands on someone's desk. Pass it on with an excuse, or pay to deal with it. Any pass could be the one where it goes off.</li>
       <li>Rent goes up every lap. Six laps. If the tin survives, the richest wins. If it runs dry, the richest takes the fall and second place wins.</li>
     </ol></details>
   </main>`;
