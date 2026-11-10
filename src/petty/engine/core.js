@@ -129,7 +129,7 @@ const PC = (() => {
     if (key === 'freeze') { s.freeze = s.lap; log(s, E, 'action', `${who(s, i)} froze the rent this lap.`, { seat: i, key }); }
     else if (key === 'letter') {
       const t = +a.target; if (!(t >= 0 && t < s.n) || t === i) return 'Pick someone else.';
-      s.P[t].letter = true; log(s, E, 'action', `${who(s, i)} sent ${who(s, t)} a Landlord's Letter. Double rent.`, { seat: i, key, target: t });
+      s.P[t].letter = true; log(s, E, 'action', `${who(s, i)} sent ${s.P[t].human ? 'you' : who(s, t)} a Landlord's Letter. Double rent.`, { seat: i, key, target: t });
     } else if (key === 'creative') {
       const amt = round5(s.rent0 * 0.5); s.tin -= amt; p.bank += amt;
       log(s, E, 'action', `${who(s, i)} did some Creative Accounting. $${amt} left the tin.`, { seat: i, key });

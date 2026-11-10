@@ -498,6 +498,57 @@ i.ot.sent { color: var(--red); border: 1.5px solid currentColor; transform: rota
   .env b { font-size: 17px }
   .chip.exc { font-size: 15px }
 }
+/* Flow: the lap as a punched time card, the blank claim form, cards that step back when they're no use. */
+
+/* time card along the bottom of the letterhead */
+.rail { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 2px -12px -10px -16px; padding: 0; list-style: none;
+  border-top: 1px dashed var(--rule); counter-reset: step }
+.rail li { position: relative; display: flex; align-items: center; gap: 6px; padding: 7px 8px 8px 10px; font: 700 11px/1.1 var(--f-type); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; counter-increment: step }
+.rail li + li { border-left: 1px dotted var(--rule) }
+.rail li::before { content: counter(step); flex: none; display: grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; font-size: 9px; letter-spacing: 0;
+  border: 1.5px solid currentColor }
+/* punched: a hole where the number was */
+.rail li.done { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 1.5px }
+.rail li.done::before { content: ""; border: 0; background: #22392F; box-shadow: inset 0 2px 2px rgba(0,0,0,.6) }
+.rail li.now { color: var(--ink); background: var(--accent); box-shadow: inset 0 -3px 0 rgba(0,0,0,.18) }
+.rail li.now::before { background: var(--ink); color: var(--accent); border-color: var(--ink); animation: tick 1.6s ease-in-out infinite }
+@keyframes tick { 50% { transform: scale(1.18) } }
+
+/* the blank claim form */
+.rcpt.draft { animation: printin .5s var(--bounce) both }
+.slots { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.3fr); align-items: stretch; gap: 6px; margin: 6px 0 12px }
+.op { align-self: center; font: 800 18px var(--f-body); color: var(--ink-3) }
+.slot { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 64px; padding: 7px 8px; text-align: left; border-radius: 6px;
+  border: 2px dashed var(--band); color: var(--band); background: color-mix(in srgb, var(--band) 6%, transparent); cursor: default }
+.slot.s-who { --band: var(--who) }
+.slot.s-what { --band: #A88415 }
+.slot .label { font-size: 9.5px; opacity: .8 }
+.slot.full { border-style: solid; border-top-width: 6px; background: var(--paper); color: var(--ink); cursor: pointer; box-shadow: 0 6px 10px -7px rgba(0,0,0,.45);
+  animation: drop .4s var(--bounce) both }
+.slot.full .nm { font: 800 15px/1.12 var(--f-body); overflow-wrap: anywhere }
+.slot.full .nm.wi { font: 700 20px/1 var(--f-hand) }
+.slot.full .num { font-size: 15px; color: var(--band) }
+.slot.full:hover::after { content: "×"; position: absolute; top: 2px; right: 6px; font: 700 14px var(--f-body); color: var(--ink-3) }
+@keyframes drop { from { transform: translateY(26px) rotate(-3deg) scale(.92); opacity: 0 } }
+
+/* cards on the form leave an outline behind; cards that are no use right now step back */
+.card.placed { opacity: .32; transform: none; box-shadow: none; outline: 2px dashed rgba(255,255,255,.55); outline-offset: -2px }
+.card.idle { opacity: .5; filter: saturate(.35); transform: translateY(10px) }
+.card.idle:hover { transform: translateY(6px) }
+
+@media (max-width: 560px) {
+  .rail { margin: 0 -8px -7px -12px }
+  .rail li { padding: 6px 4px 6px 5px; gap: 4px; font-size: 9px; letter-spacing: .02em }
+  .rail li::before { width: 12px; height: 12px; font-size: 8px }
+  .slot { min-height: 54px; padding: 6px }
+  .slot.full .nm { font-size: 13.5px }
+  .slot.full .nm.wi { font-size: 17px }
+}
+@media (max-width: 560px) { .rail .lg { display: none } }
+/* while the moment needs a decision, the hand gets out of the way */
+.desk.busy .hand { display: none }
+.desk.busy .ctl { margin-top: 10px }
 </style>
 <div class="scene"></div><div id="app"></div><div id="ov" aria-live="polite"></div>
 <script>
@@ -559,7 +610,7 @@ const PC_CARDS = (() => {
   const ANSWERS = ['A jar of teeth', "Nan's dentures", 'An expired kebab', 'A live eel', 'A bucket of prawns', "Someone else's thongs", 'A cursed doll', 'A wheelie bin', 'A used mattress', 'Forty kilos of glitter', 'A ventriloquist dummy', 'A bag of hair', 'A cask of goon', 'A taxidermied possum', 'A sombrero full of soup', 'Half a ute', 'A haunted printer', 'An inflatable church', 'Twelve feral cats', 'A urinal cake', 'A tub of mayonnaise', "My ex-wife's wig", 'A mankini', 'A pallet of Spam', 'A pet rock with a criminal record', 'Expired insulin', 'A signed Bible', "Somebody's retainer"];
   const DIE = [1, 1, 2, 2, 3, 3];
   // overtime: two of a kind sends everyone still at work home with nothing
-  const HAZARDS = ['Fire Drill', 'Server Down', 'Reply-All Storm', 'The CEO Walks Past'];
+  const HAZARDS = ['Fire Drill', 'Server Down', 'Reply-All Storm', 'Surprise CEO Visit'];
   // the buck: one problem a lap, passed around until someone deals with it or it goes off
   const BUCKS = ['Missing Laptop', 'Dead Goldfish in Accounts', 'Mystery Smell in the Fridge', 'Lost Master Key', 'Unpaid Supplier', 'WorkSafe Visit', 'Leaked Group Chat', 'Car Park Prang'];
   const EXCUSES = ['Not my department.', 'I was on leave.', 'Per my last email, this is yours.', "I've escalated it to you.", "That's above my pay grade.", 'Legal said it was yours.', 'You were cc\'d.', "I'm just the messenger.", 'Thought you were across it.', 'I was told you volunteered.'];
@@ -877,7 +928,7 @@ const PC = (() => {
     if (key === 'freeze') { s.freeze = s.lap; log(s, E, 'action', `${who(s, i)} froze the rent this lap.`, { seat: i, key }); }
     else if (key === 'letter') {
       const t = +a.target; if (!(t >= 0 && t < s.n) || t === i) return 'Pick someone else.';
-      s.P[t].letter = true; log(s, E, 'action', `${who(s, i)} sent ${who(s, t)} a Landlord's Letter. Double rent.`, { seat: i, key, target: t });
+      s.P[t].letter = true; log(s, E, 'action', `${who(s, i)} sent ${s.P[t].human ? 'you' : who(s, t)} a Landlord's Letter. Double rent.`, { seat: i, key, target: t });
     } else if (key === 'creative') {
       const amt = round5(s.rent0 * 0.5); s.tin -= amt; p.bank += amt;
       log(s, E, 'action', `${who(s, i)} did some Creative Accounting. $${amt} left the tin.`, { seat: i, key });
@@ -1327,12 +1378,16 @@ function renderGame() {
   for (const c of me().hand) ui.seen.add(c.id);
 }
 
+// the lap, as a time card: every step punched as it passes
+const STEPS = ['Stay back', 'Lodge', 'Audit', '<span class="lg">Pass the </span>buck', 'Rent'];
+const stepOf = ph => ({ overtime: 0, lodge: 1, flip: 2, shred: 2, bribe: 2, take: 2, buck: 3, rent: 4 })[ph];
 function strip(s) {
   const tod = TOD[Math.min(TOD.length, s.lap) - 1];
-  const f = Math.max(0, s.tin / s.tin0);
+  const f = Math.max(0, s.tin / s.tin0), at = stepOf(s.phase);
   return `<header class="tv">
     <div class="co"><b>${esc(co().name)}</b><span>Lap ${Math.min(s.lap, PC.T.laps)} of ${PC.T.laps} · ${TOD_NAME[tod]}</span></div>
     <div class="tin ${f < 0.25 ? 'low' : ''}"><span class="label">Petty cash tin</span><b class="num lcd">${money(s.tin)}</b><i class="gauge"><i style="width:${f * 100}%"></i></i></div>
+    <ol class="rail">${STEPS.map((t, k) => `<li class="${k < at ? 'done' : k === at ? 'now' : ''}">${t}</li>`).join('')}</ol>
   </header>`;
 }
 
@@ -1359,7 +1414,7 @@ function status(s) {
   switch (s.phase) {
     case 'lodge':
       if (s.lodged[0]) return 'Lodged. Shuffling the pile.';
-      return s.pend ? 'How much are you claiming?' : 'Pick a receipt to lodge.';
+      return s.pend ? 'How much are you claiming?' : 'What are you claiming for?';
     case 'flip':
       if (c.outcome) return { caught: `${n} padded it.`, halo: `${n} was honest.`, shredded: 'Into the shredder.', bribed: 'An envelope changed hands.', paid: c.nephew ? 'Nephew of the CEO. No questions.' : 'Signed off.' }[c.outcome];
       if (c.seat === 0) return c.nephew ? 'Your claim. Nobody can touch it.' : 'Your claim. The table is deciding.';
@@ -1375,7 +1430,7 @@ function status(s) {
 function tray(s) {
   if (s.phase === 'overtime') return otTray(s);
   if (s.phase === 'buck' || (s.phase === 'rent' && s.buck)) return buckTray(s);
-  if (s.phase === 'lodge') return `<p class="status">${status(s)}</p>${s.pend ? receipt(s, s.pend, false) : s.lodged[0] && !s.lodged[0].skip ? receipt(s, s.lodged[0], false, 'sealed') : ''}`;
+  if (s.phase === 'lodge') return `<p class="status">${status(s)}</p>${s.pend ? receipt(s, s.pend, false) : canLodge(s) ? draft(s) : s.lodged[0] && !s.lodged[0].skip ? receipt(s, s.lodged[0], false, 'sealed') : ''}`;
   const c = s.cur || s.claims[s.claims.length - 1];
   const left = ['flip', 'shred', 'bribe', 'take'].includes(s.phase) ? s.order.length - s.fi - 1 : 0;
   const key = s.lap + ':' + s.fi;
@@ -1396,6 +1451,26 @@ function dice(s) {
     const r = s.rolls[p.id] || { k: 1 };
     return `<div class="dslot ${p.human ? 'me' : ''}">${cube(r.k, ui.fresh ? 'tumble' : '', p.human ? 0 : 0.15 + p.id * 0.08)}<span class="nm">${esc(p.name)}</span><b class="num">+${r.k}</b></div>`;
   }).join('')}</div>`;
+}
+
+// a blank claim form: the cards you pick drop into its two slots
+function draft(s) {
+  const p = me(), who = p.hand.find(c => c.id === ui.sel.who), what = p.hand.find(c => c.id === ui.sel.what);
+  const slot = (k, c, ph) => `<button class="slot s-${k} ${c ? 'full' : ''}" data-clear="${k}" ${c ? '' : 'tabindex="-1"'}>${c
+    ? `<span class="nm ${c.by != null ? 'wi' : ''}">${esc(c.name)}</span><span class="num">${k === 'who' ? '×' + c.v : money(c.v)}</span>`
+    : `<span class="label">${ph}</span>`}</button>`;
+  const bar = '<span class="redact">██████</span>';
+  return `<article class="rcpt draft">
+    <header><span class="label">Expense claim</span><span class="num">No. ____</span></header>
+    <p class="by">You</p>
+    <div class="slots">${slot('who', who, 'Who / how')}<span class="op">×</span>${slot('what', what, 'What')}</div>
+    <dl>
+      <dt>Guide price</dt><dd class="num">${what ? money(PC.guideOf(who, what)) : '—'}</dd>
+      <dt>Surcharge</dt><dd>${bar}</dd>
+      <dt>Real cost</dt><dd>${bar}</dd>
+    </dl>
+    <div class="total"><span class="label">Claimed</span><b class="num">—</b></div>
+  </article>`;
 }
 
 // a thermal receipt; the real cost stays blacked out until someone finds out
@@ -1439,6 +1514,7 @@ function wireTable(s) {
   if (q('#sign')) q('#sign').onclick = () => act({ type: 'audit', call: 'sign' });
   if (q('#audit')) q('#audit').onclick = () => act({ type: 'audit', call: 'audit' });
   if (q('#peek')) q('#peek').onclick = () => act({ type: 'play', card: has(me(), 'peek').id });
+  app.querySelectorAll('[data-clear]').forEach(b => b.onclick = () => { ui.sel[b.dataset.clear] = null; render(); });
   if (ui.target && !buckMine(s)) app.querySelectorAll('.tag.pickable').forEach(b => b.onclick = () => {
     const card = ui.target; ui.target = null; ui.sel = {};
     act({ type: 'play', card, target: +b.dataset.seat });
@@ -1461,8 +1537,16 @@ function desk(s) {
   </section>`;
 }
 
-function cardHtml(c) {
+// is this card any use right now? the rest step back
+function live(s, c) {
+  if (canLodge(s)) return c.k !== 'act' || !!PLAYABLE[c.v];
+  if (c.k !== 'act') return false;
+  return { peek: s.phase === 'flip' && PC.needsHuman(s), free: s.rentAsk, shred: s.phase === 'shred', nephew: !!s.pend }[c.v] || false;
+}
+function cardHtml(c, s) {
   const sel = ui.sel.who === c.id || ui.sel.what === c.id || ui.sel.act === c.id;
+  // a who/what on the claim form leaves its outline behind in your hand
+  const placed = c.k !== 'act' && sel && canLodge(s);
   const fresh = !ui.seen.has(c.id);
   const k = { who: 'Who / how', what: 'What', act: 'Action' }[c.k];
   let v = '', nm = esc(c.name), sub = '';
@@ -1470,14 +1554,14 @@ function cardHtml(c) {
   if (c.k === 'what') { v = money(c.v); if (c.by != null) nm = `<span class="wi">${nm}</span>`; }
   if (c.k === 'act') sub = `<span class="desc">${esc(PC.ACTIONS[c.v][1])}</span>`;
   const len = Math.max(...String(c.name).split(/\s+/).map(w => w.length));
-  return `<button class="card k-${c.k} ${len > 9 ? 'long' : ''} ${sel ? 'sel' : ''} ${fresh ? 'new' : ''}" data-card="${c.id}" style="--len:${len}">
+  return `<button class="card k-${c.k} ${len > 9 ? 'long' : ''} ${placed ? 'placed' : sel ? 'sel' : ''} ${live(s, c) || sel ? '' : 'idle'} ${fresh ? 'new' : ''}" data-card="${c.id}" style="--len:${len}">
     <span class="label">${k}</span><span class="nm">${nm}</span>${sub}${v ? `<span class="v num">${v}</span>` : ''}</button>`;
 }
 
 function handCards(s) {
   const order = { who: 0, what: 1, act: 2 };
   const h = me().hand.slice().sort((a, b) => order[a.k] - order[b.k] || (a.k === 'act' ? 0 : b.v - a.v));
-  return h.length ? h.map(cardHtml).join('') : '<p class="emptyhand">Nothing in your hand.</p>';
+  return h.length ? h.map(c => cardHtml(c, s)).join('') : '<p class="emptyhand">Nothing in your hand.</p>';
 }
 
 // one control at a time, depending on the phase
@@ -1500,10 +1584,8 @@ function control(s) {
   if (s.phase === 'flip' && PC.needsHuman(s)) return auditBar(s);
   if (s.pend) return claimCtl(s);
   if (canLodge(s)) {
-    const who = p.hand.find(c => c.id === ui.sel.who), what = p.hand.find(c => c.id === ui.sel.what);
-    const g = what ? PC.guideOf(who, what) : 0;
-    return `<p class="ask">${what ? `<b>${esc(PC.itemOf(who, what))}</b> · guide <span class="num">${money(g)}</span>` : 'Pick a what, and a who/how if you like.'}</p>
-      <button class="go" id="lodge" ${what ? '' : 'disabled'}>Lodge receipt</button>
+    const what = p.hand.find(c => c.id === ui.sel.what);
+    return `<button class="go" id="lodge" ${what ? '' : 'disabled'}>Lodge receipt</button>
       <button class="ghost" id="skip">Nothing to claim</button>`;
   }
   if (s.phase === 'shred') return `<p class="ask">Someone's auditing your claim.</p>
@@ -1561,8 +1643,11 @@ function wireDesk(s) {
   // the claim
   const amt = q('#amt');
   if (!amt) return;
-  const set = v => { ui.amt = Math.max(0, Math.round(v / 5) * 5); amt.value = ui.amt; q('#after').innerHTML = afterLine(s); };
-  amt.oninput = () => { const v = parseInt(amt.value.replace(/\D/g, ''), 10) || 0; ui.amt = v; q('#after').innerHTML = afterLine(s); };
+  // the claimed total on the receipt follows the number you type
+  const show = () => { q('#after').innerHTML = afterLine(s); const t = q('.tray .rcpt .total b'); if (t) t.textContent = money(ui.amt); };
+  const set = v => { ui.amt = Math.max(0, Math.round(v / 5) * 5); amt.value = ui.amt; show(); };
+  amt.oninput = () => { ui.amt = parseInt(amt.value.replace(/\D/g, ''), 10) || 0; show(); };
+  show();
   amt.onblur = () => set(ui.amt);
   const step = Math.max(5, Math.round(s.pend.guide * 0.1 / 5) * 5);
   app.querySelectorAll('.step').forEach(b => b.onclick = () => set(ui.amt + step * +b.dataset.step));
