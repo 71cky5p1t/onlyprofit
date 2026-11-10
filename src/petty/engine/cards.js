@@ -56,7 +56,7 @@ const PC_CARDS = (() => {
   const ANSWERS = ['A jar of teeth', "Nan's dentures", 'An expired kebab', 'A live eel', 'A bucket of prawns', "Someone else's thongs", 'A cursed doll', 'A wheelie bin', 'A used mattress', 'Forty kilos of glitter', 'A ventriloquist dummy', 'A bag of hair', 'A cask of goon', 'A taxidermied possum', 'A sombrero full of soup', 'Half a ute', 'A haunted printer', 'An inflatable church', 'Twelve feral cats', 'A urinal cake', 'A tub of mayonnaise', "My ex-wife's wig", 'A mankini', 'A pallet of Spam', 'A pet rock with a criminal record', 'Expired insulin', 'A signed Bible', "Somebody's retainer"];
   const DIE = [1, 1, 2, 2, 3, 3];
   // overtime: two of a kind sends everyone still at work home with nothing
-  const HAZARDS = ['Fire Drill', 'Server Down', 'Reply-All Storm', 'The CEO Walks Past'];
+  const HAZARDS = ['Fire Drill', 'Server Down', 'Reply-All Storm', 'Surprise CEO Visit'];
   // the buck: one problem a lap, passed around until someone deals with it or it goes off
   const BUCKS = ['Missing Laptop', 'Dead Goldfish in Accounts', 'Mystery Smell in the Fridge', 'Lost Master Key', 'Unpaid Supplier', 'WorkSafe Visit', 'Leaked Group Chat', 'Car Park Prang'];
   const EXCUSES = ['Not my department.', 'I was on leave.', 'Per my last email, this is yours.', "I've escalated it to you.", "That's above my pay grade.", 'Legal said it was yours.', 'You were cc\'d.', "I'm just the messenger.", 'Thought you were across it.', 'I was told you volunteered.'];

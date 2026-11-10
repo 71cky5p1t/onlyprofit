@@ -10,12 +10,16 @@ function renderGame() {
   for (const c of me().hand) ui.seen.add(c.id);
 }
 
+// the lap, as a time card: every step punched as it passes
+const STEPS = ['Stay back', 'Lodge', 'Audit', '<span class="lg">Pass the </span>buck', 'Rent'];
+const stepOf = ph => ({ overtime: 0, lodge: 1, flip: 2, shred: 2, bribe: 2, take: 2, buck: 3, rent: 4 })[ph];
 function strip(s) {
   const tod = TOD[Math.min(TOD.length, s.lap) - 1];
-  const f = Math.max(0, s.tin / s.tin0);
+  const f = Math.max(0, s.tin / s.tin0), at = stepOf(s.phase);
   return `<header class="tv">
     <div class="co"><b>${esc(co().name)}</b><span>Lap ${Math.min(s.lap, PC.T.laps)} of ${PC.T.laps} · ${TOD_NAME[tod]}</span></div>
     <div class="tin ${f < 0.25 ? 'low' : ''}"><span class="label">Petty cash tin</span><b class="num lcd">${money(s.tin)}</b><i class="gauge"><i style="width:${f * 100}%"></i></i></div>
+    <ol class="rail">${STEPS.map((t, k) => `<li class="${k < at ? 'done' : k === at ? 'now' : ''}">${t}</li>`).join('')}</ol>
   </header>`;
 }
 
@@ -42,7 +46,7 @@ function status(s) {
   switch (s.phase) {
     case 'lodge':
       if (s.lodged[0]) return 'Lodged. Shuffling the pile.';
-      return s.pend ? 'How much are you claiming?' : 'Pick a receipt to lodge.';
+      return s.pend ? 'How much are you claiming?' : 'What are you claiming for?';
     case 'flip':
       if (c.outcome) return { caught: `${n} padded it.`, halo: `${n} was honest.`, shredded: 'Into the shredder.', bribed: 'An envelope changed hands.', paid: c.nephew ? 'Nephew of the CEO. No questions.' : 'Signed off.' }[c.outcome];
       if (c.seat === 0) return c.nephew ? 'Your claim. Nobody can touch it.' : 'Your claim. The table is deciding.';
@@ -58,7 +62,7 @@ function status(s) {
 function tray(s) {
   if (s.phase === 'overtime') return otTray(s);
   if (s.phase === 'buck' || (s.phase === 'rent' && s.buck)) return buckTray(s);
-  if (s.phase === 'lodge') return `<p class="status">${status(s)}</p>${s.pend ? receipt(s, s.pend, false) : s.lodged[0] && !s.lodged[0].skip ? receipt(s, s.lodged[0], false, 'sealed') : ''}`;
+  if (s.phase === 'lodge') return `<p class="status">${status(s)}</p>${s.pend ? receipt(s, s.pend, false) : canLodge(s) ? draft(s) : s.lodged[0] && !s.lodged[0].skip ? receipt(s, s.lodged[0], false, 'sealed') : ''}`;
   const c = s.cur || s.claims[s.claims.length - 1];
   const left = ['flip', 'shred', 'bribe', 'take'].includes(s.phase) ? s.order.length - s.fi - 1 : 0;
   const key = s.lap + ':' + s.fi;
@@ -79,6 +83,26 @@ function dice(s) {
     const r = s.rolls[p.id] || { k: 1 };
     return `<div class="dslot ${p.human ? 'me' : ''}">${cube(r.k, ui.fresh ? 'tumble' : '', p.human ? 0 : 0.15 + p.id * 0.08)}<span class="nm">${esc(p.name)}</span><b class="num">+${r.k}</b></div>`;
   }).join('')}</div>`;
+}
+
+// a blank claim form: the cards you pick drop into its two slots
+function draft(s) {
+  const p = me(), who = p.hand.find(c => c.id === ui.sel.who), what = p.hand.find(c => c.id === ui.sel.what);
+  const slot = (k, c, ph) => `<button class="slot s-${k} ${c ? 'full' : ''}" data-clear="${k}" ${c ? '' : 'tabindex="-1"'}>${c
+    ? `<span class="nm ${c.by != null ? 'wi' : ''}">${esc(c.name)}</span><span class="num">${k === 'who' ? '×' + c.v : money(c.v)}</span>`
+    : `<span class="label">${ph}</span>`}</button>`;
+  const bar = '<span class="redact">██████</span>';
+  return `<article class="rcpt draft">
+    <header><span class="label">Expense claim</span><span class="num">No. ____</span></header>
+    <p class="by">You</p>
+    <div class="slots">${slot('who', who, 'Who / how')}<span class="op">×</span>${slot('what', what, 'What')}</div>
+    <dl>
+      <dt>Guide price</dt><dd class="num">${what ? money(PC.guideOf(who, what)) : '—'}</dd>
+      <dt>Surcharge</dt><dd>${bar}</dd>
+      <dt>Real cost</dt><dd>${bar}</dd>
+    </dl>
+    <div class="total"><span class="label">Claimed</span><b class="num">—</b></div>
+  </article>`;
 }
 
 // a thermal receipt; the real cost stays blacked out until someone finds out
@@ -122,6 +146,7 @@ function wireTable(s) {
   if (q('#sign')) q('#sign').onclick = () => act({ type: 'audit', call: 'sign' });
   if (q('#audit')) q('#audit').onclick = () => act({ type: 'audit', call: 'audit' });
   if (q('#peek')) q('#peek').onclick = () => act({ type: 'play', card: has(me(), 'peek').id });
+  app.querySelectorAll('[data-clear]').forEach(b => b.onclick = () => { ui.sel[b.dataset.clear] = null; render(); });
   if (ui.target && !buckMine(s)) app.querySelectorAll('.tag.pickable').forEach(b => b.onclick = () => {
     const card = ui.target; ui.target = null; ui.sel = {};
     act({ type: 'play', card, target: +b.dataset.seat });

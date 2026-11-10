@@ -15,8 +15,16 @@ function desk(s) {
   </section>`;
 }
 
-function cardHtml(c) {
+// is this card any use right now? the rest step back
+function live(s, c) {
+  if (canLodge(s)) return c.k !== 'act' || !!PLAYABLE[c.v];
+  if (c.k !== 'act') return false;
+  return { peek: s.phase === 'flip' && PC.needsHuman(s), free: s.rentAsk, shred: s.phase === 'shred', nephew: !!s.pend }[c.v] || false;
+}
+function cardHtml(c, s) {
   const sel = ui.sel.who === c.id || ui.sel.what === c.id || ui.sel.act === c.id;
+  // a who/what on the claim form leaves its outline behind in your hand
+  const placed = c.k !== 'act' && sel && canLodge(s);
   const fresh = !ui.seen.has(c.id);
   const k = { who: 'Who / how', what: 'What', act: 'Action' }[c.k];
   let v = '', nm = esc(c.name), sub = '';
@@ -24,14 +32,14 @@ function cardHtml(c) {
   if (c.k === 'what') { v = money(c.v); if (c.by != null) nm = `<span class="wi">${nm}</span>`; }
   if (c.k === 'act') sub = `<span class="desc">${esc(PC.ACTIONS[c.v][1])}</span>`;
   const len = Math.max(...String(c.name).split(/\s+/).map(w => w.length));
-  return `<button class="card k-${c.k} ${len > 9 ? 'long' : ''} ${sel ? 'sel' : ''} ${fresh ? 'new' : ''}" data-card="${c.id}" style="--len:${len}">
+  return `<button class="card k-${c.k} ${len > 9 ? 'long' : ''} ${placed ? 'placed' : sel ? 'sel' : ''} ${live(s, c) || sel ? '' : 'idle'} ${fresh ? 'new' : ''}" data-card="${c.id}" style="--len:${len}">
     <span class="label">${k}</span><span class="nm">${nm}</span>${sub}${v ? `<span class="v num">${v}</span>` : ''}</button>`;
 }
 
 function handCards(s) {
   const order = { who: 0, what: 1, act: 2 };
   const h = me().hand.slice().sort((a, b) => order[a.k] - order[b.k] || (a.k === 'act' ? 0 : b.v - a.v));
-  return h.length ? h.map(cardHtml).join('') : '<p class="emptyhand">Nothing in your hand.</p>';
+  return h.length ? h.map(c => cardHtml(c, s)).join('') : '<p class="emptyhand">Nothing in your hand.</p>';
 }
 
 // one control at a time, depending on the phase
@@ -54,10 +62,8 @@ function control(s) {
   if (s.phase === 'flip' && PC.needsHuman(s)) return auditBar(s);
   if (s.pend) return claimCtl(s);
   if (canLodge(s)) {
-    const who = p.hand.find(c => c.id === ui.sel.who), what = p.hand.find(c => c.id === ui.sel.what);
-    const g = what ? PC.guideOf(who, what) : 0;
-    return `<p class="ask">${what ? `<b>${esc(PC.itemOf(who, what))}</b> · guide <span class="num">${money(g)}</span>` : 'Pick a what, and a who/how if you like.'}</p>
-      <button class="go" id="lodge" ${what ? '' : 'disabled'}>Lodge receipt</button>
+    const what = p.hand.find(c => c.id === ui.sel.what);
+    return `<button class="go" id="lodge" ${what ? '' : 'disabled'}>Lodge receipt</button>
       <button class="ghost" id="skip">Nothing to claim</button>`;
   }
   if (s.phase === 'shred') return `<p class="ask">Someone's auditing your claim.</p>
@@ -115,8 +121,11 @@ function wireDesk(s) {
   // the claim
   const amt = q('#amt');
   if (!amt) return;
-  const set = v => { ui.amt = Math.max(0, Math.round(v / 5) * 5); amt.value = ui.amt; q('#after').innerHTML = afterLine(s); };
-  amt.oninput = () => { const v = parseInt(amt.value.replace(/\D/g, ''), 10) || 0; ui.amt = v; q('#after').innerHTML = afterLine(s); };
+  // the claimed total on the receipt follows the number you type
+  const show = () => { q('#after').innerHTML = afterLine(s); const t = q('.tray .rcpt .total b'); if (t) t.textContent = money(ui.amt); };
+  const set = v => { ui.amt = Math.max(0, Math.round(v / 5) * 5); amt.value = ui.amt; show(); };
+  amt.oninput = () => { ui.amt = parseInt(amt.value.replace(/\D/g, ''), 10) || 0; show(); };
+  show();
   amt.onblur = () => set(ui.amt);
   const step = Math.max(5, Math.round(s.pend.guide * 0.1 / 5) * 5);
   app.querySelectorAll('.step').forEach(b => b.onclick = () => set(ui.amt + step * +b.dataset.step));
